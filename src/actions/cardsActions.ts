@@ -1,3 +1,4 @@
+import { PlantCard } from "../types/plantCardType";
 export enum CardsActions {
   ADD_NEW_PLANT_CARD,
   DELETE_PLANT_CARD,
@@ -5,16 +6,13 @@ export enum CardsActions {
 interface addNewPlantCard {
   type: CardsActions.ADD_NEW_PLANT_CARD;
   payload: {
-    cardId: string;
-    ownerId: string;
-    plantName: string;
-    species: string;
-    tags: string[];
-    birthday?: number;
-    parents?: string[];
+    newCard: PlantCard;
   };
 }
 interface deletePlantCard {
   type: CardsActions.DELETE_PLANT_CARD;
+  payload: {
+    cardId: string;
+  };
 }
 export type CardsActionTypes = addNewPlantCard | deletePlantCard;
