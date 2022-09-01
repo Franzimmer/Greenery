@@ -3,7 +3,14 @@ import styled, { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 import { Reset } from "styled-reset";
 
-import { addANewUser, getUserData, addANewPlantCard } from "./utils/firebase";
+import {
+  addANewUser,
+  getUserData,
+  addANewPlantCard,
+  getUserActivities,
+  addUserWateringActivity,
+} from "./utils/firebase";
+import { serverTimestamp } from "firebase/firestore";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -30,6 +37,10 @@ function App() {
     plantName: "Plannnn",
     species: "flowwowwow",
   };
+  const fakeWateringEvent = {
+    plantId: "86799",
+    time: Date.now(),
+  };
   return (
     <>
       <Reset />
@@ -43,6 +54,16 @@ function App() {
       </TestBtn>
       <TestBtn onClick={() => addANewPlantCard(fakePlantCardData)}>
         Add A New Card
+      </TestBtn>
+      <TestBtn onClick={() => getUserActivities("FUkF1ospP88e49yFR5gI")}>
+        Get user activity subcollection
+      </TestBtn>
+      <TestBtn
+        onClick={() =>
+          addUserWateringActivity("FUkF1ospP88e49yFR5gI", fakeWateringEvent)
+        }
+      >
+        Add watering event
       </TestBtn>
     </>
   );

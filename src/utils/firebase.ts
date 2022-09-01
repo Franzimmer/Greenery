@@ -8,6 +8,9 @@ import {
   updateDoc,
   query,
   where,
+  Timestamp,
+  arrayUnion,
+  FieldValue,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -43,6 +46,10 @@ interface PlantCardData {
   plantName: string;
   species: string;
 }
+interface Activity {
+  plantId: string;
+  time: number;
+}
 export async function addANewUser(data: UserData) {
   try {
     const user = doc(users);
@@ -72,5 +79,29 @@ export async function getUserData(userId: string) {
 }
 
 //Delete
+//Delete document will not delete its subcollection
 
 //subcollection
+export async function getUserActivities(userId: string) {
+  const activitiesRef = collection(db, "users", userId, "activities");
+  const querySnapshot = await getDocs(activitiesRef);
+  console.log(querySnapshot);
+  if (querySnapshot.empty) {
+    alert("User not existed!");
+    return;
+  }
+  querySnapshot.forEach((doc) => {
+    return doc.data();
+  });
+}
+
+export async function addUserWateringActivity(userId: string, data: Activity) {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const date = String(today.getDate()).padStart(2, "0");
+  const activityDate = `${today.getFullYear()}-${month}-${date}`;
+  const activityRef = doc(db, "users", userId, "activities", activityDate);
+  await setDoc(activityRef, {
+    watering: arrayUnion(data),
+  });
+}
