@@ -1,7 +1,18 @@
 import { combineReducers } from "redux";
 import userInfo from "./userInfoReducer";
-import plantCard from "./plantCardReducer";
+import cards from "./cardsReducer";
+import followList from "./followListReducer";
+import notifications from "./notificationsReducer";
+import favoritePlants from "./favoritePlantsReducer";
+import favoritePosts from "./favoritePostsReducer";
 
-const allReducers = combineReducers({ userInfo, plantCard });
+const allReducers = combineReducers({
+  userInfo,
+  cards,
+  followList,
+  notifications,
+  favoritePlants,
+  favoritePosts,
+});
 
 export default allReducers;

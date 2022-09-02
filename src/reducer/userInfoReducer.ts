@@ -9,7 +9,6 @@ const initialUserInfo: UserInfo = {
   userPhotoUrl: "",
 };
 
-//action
 const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
   switch (action.type) {
     case UserInfoActions.ADD_NEW_USER_INFO: {
