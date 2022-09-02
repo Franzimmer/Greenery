@@ -3,7 +3,6 @@ import {
   favoritePostActions,
   favoritePostActionTypes,
 } from "../actions/favoritePostActions";
-import { act } from "react-dom/test-utils";
 
 const initialFavoritePosts: favoritePost[] = [];
 

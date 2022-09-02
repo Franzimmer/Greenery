@@ -8,9 +8,7 @@ import {
   updateDoc,
   query,
   where,
-  Timestamp,
   arrayUnion,
-  FieldValue,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -22,13 +20,13 @@ const firebaseConfig = {
   appId: "1:460789801269:web:251f13169aa8a314d52c7c",
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const users = collection(db, "users");
-const cards = collection(db, "cards");
-const posts = collection(db, "posts");
-const species = collection(db, "species");
-const chatrooms = collection(db, "chatrooms");
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const users = collection(db, "users");
+export const cards = collection(db, "cards");
+export const posts = collection(db, "posts");
+export const species = collection(db, "species");
+export const chatrooms = collection(db, "chatrooms");
 
 interface UserData {
   userId: string;
