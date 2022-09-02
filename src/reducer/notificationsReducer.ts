@@ -25,6 +25,8 @@ const notifications = (
       );
       return result;
     }
+    default:
+      return state;
   }
 };
 export default notifications;

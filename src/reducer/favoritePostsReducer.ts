@@ -23,6 +23,8 @@ const favoritePosts = (
       );
       return result;
     }
+    default:
+      return state;
   }
 };
 

@@ -63,6 +63,7 @@ interface plantPropogate {
   payload: {
     cardId: string;
     number: number;
+    childId: string[];
   };
 }
 export type CardsActionTypes =

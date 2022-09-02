@@ -1,14 +1,15 @@
 import { initializeApp } from "firebase/app";
+import { PlantCard } from "../types/plantCardType";
 import {
   getFirestore,
   collection,
   doc,
   setDoc,
   getDocs,
-  updateDoc,
   query,
   where,
   arrayUnion,
+  DocumentData,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -38,12 +39,6 @@ interface UserData {
   favoritePlants: string[];
   favoritePosts: string[];
 }
-interface PlantCardData {
-  cardId: string;
-  ownerId: string;
-  plantName: string;
-  species: string;
-}
 interface Activity {
   plantId: string;
   time: number;
@@ -56,7 +51,7 @@ export async function addANewUser(data: UserData) {
     console.error("Error adding document: ", e);
   }
 }
-export async function addANewPlantCard(data: PlantCardData) {
+export async function addANewPlantCard(data: PlantCard) {
   try {
     const plantCard = doc(cards);
     await setDoc(plantCard, data);
@@ -75,7 +70,19 @@ export async function getUserData(userId: string) {
     return doc.data();
   });
 }
-
+export async function getCards(userId: string) {
+  let results: DocumentData[] = [];
+  const q = query(cards, where("ownerId", "==", userId));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) {
+    alert("User not existed!");
+    return;
+  }
+  querySnapshot.forEach((doc) => {
+    results.push(doc.data());
+  });
+  return results;
+}
 //Delete
 //Delete document will not delete its subcollection
 

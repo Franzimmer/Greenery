@@ -23,6 +23,8 @@ const favoritePlants = (
       );
       return result;
     }
+    default:
+      return state;
   }
 };
 

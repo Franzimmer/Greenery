@@ -30,6 +30,8 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
         userPhotoUrl: action.payload.userPhotoUrl,
       };
     }
+    default:
+      return state;
   }
 };
 

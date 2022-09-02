@@ -24,6 +24,8 @@ const followList = (
       );
       return result;
     }
+    default:
+      return state;
   }
 };
 
