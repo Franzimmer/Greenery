@@ -26,11 +26,15 @@ const GridWrapper = styled.div`
   grid-gap: 20px;
   margin-top: 20px;
 `;
-const Card = styled.div`
+interface CardProps {
+  show: boolean;
+}
+const Card = styled.div<CardProps>`
   display: flex;
   flex-direction: column;
   border: 1px solid black;
   padding: 10px;
+  display: ${(props) => (props.show ? "block" : "none")};
 `;
 interface PlantImgProps {
   path: string | undefined;
@@ -70,13 +74,25 @@ const CardsGrid = () => {
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [tagList, setTagList] = useState<string[]>([]);
-  const [filter, setFilterOpen] = useState(false);
+  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("");
 
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
   function filterToggle() {
-    filter ? setFilterOpen(false) : setFilterOpen(true);
+    if (filterOptions) {
+      setFilterOptionsOpen(false);
+      setFilter("");
+    } else setFilterOptionsOpen(true);
+  }
+  function selectFilter(e: React.MouseEvent<HTMLElement>) {
+    let eventTarget = e.target as HTMLDivElement;
+    setFilter(eventTarget.textContent!);
+  }
+  function filterCard(tagList: string[]): boolean {
+    if (filter) return tagList.includes(filter);
+    else return true;
   }
   useEffect(() => {
     async function getCards() {
@@ -107,7 +123,7 @@ const CardsGrid = () => {
       });
     }
     getCards();
-  }, [cardList]);
+  }, []);
   return (
     <>
       <OperationMenu>
@@ -116,10 +132,12 @@ const CardsGrid = () => {
         <OperationBtn>選取</OperationBtn>
         <OperationBtn>切換檢視</OperationBtn>
       </OperationMenu>
-      {filter && tagList.length && (
+      {filterOptions && tagList.length && (
         <TagsWrapper>
           {tagList.map((tag: string) => (
-            <Tag key={tag}>{tag}</Tag>
+            <Tag key={tag} onClick={selectFilter}>
+              {tag}
+            </Tag>
           ))}
         </TagsWrapper>
       )}
@@ -127,17 +145,20 @@ const CardsGrid = () => {
         {cardList &&
           cardList.map((card) => {
             return (
-              <Card key={card.cardId} id={card.cardId}>
+              <Card
+                key={card.cardId}
+                id={card.cardId}
+                show={filterCard(card.tags || [])}
+              >
                 <PlantImg path={card.plantPhoto} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
-                {card?.tags?.length && (
-                  <TagsWrapper>
-                    {card.tags?.map((tag) => {
+                <TagsWrapper>
+                  {card?.tags?.length !== 0 &&
+                    card.tags?.map((tag) => {
                       return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                     })}
-                  </TagsWrapper>
-                )}
+                </TagsWrapper>
                 <OperationBtn>Diary</OperationBtn>
                 <OperationBtn
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
