@@ -11,13 +11,16 @@ const followList = (
   action: FollowListActionTypes
 ) => {
   switch (action.type) {
+    case FollowListActions.SET_FOLLOW_LIST: {
+      return action.payload.data;
+    }
     case FollowListActions.ADD_FOLLOW_PERSON: {
-      let currentFollowList = JSON.parse(JSON.stringify(state));
+      let currentFollowList = [...state];
       currentFollowList.push(action.payload.followPersonData);
       return currentFollowList;
     }
     case FollowListActions.DELETE_FOLLOW_PERSON: {
-      let currentFollowList = JSON.parse(JSON.stringify(state));
+      let currentFollowList = [...state];
       const result = currentFollowList.filter(
         (followPerson: UserInfo) =>
           followPerson.userId !== action.payload.deleteUserID

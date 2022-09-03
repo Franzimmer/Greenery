@@ -1,16 +1,21 @@
 import { UserInfo } from "../types/userInfoType";
 export enum FollowListActions {
+  SET_FOLLOW_LIST,
   ADD_FOLLOW_PERSON,
   DELETE_FOLLOW_PERSON,
 }
-
+interface setFollowList {
+  type: FollowListActions.SET_FOLLOW_LIST;
+  payload: {
+    data: UserInfo[];
+  };
+}
 interface addFollowPerson {
   type: FollowListActions.ADD_FOLLOW_PERSON;
   payload: {
     followPersonData: UserInfo;
   };
 }
-
 interface deleteFollowPerson {
   type: FollowListActions.DELETE_FOLLOW_PERSON;
   payload: {
@@ -18,4 +23,7 @@ interface deleteFollowPerson {
   };
 }
 
-export type FollowListActionTypes = addFollowPerson | deleteFollowPerson;
+export type FollowListActionTypes =
+  | setFollowList
+  | addFollowPerson
+  | deleteFollowPerson;

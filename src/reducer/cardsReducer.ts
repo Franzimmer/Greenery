@@ -5,6 +5,9 @@ let initialCards: PlantCard[] = [];
 
 const cards = (state = initialCards, action: CardsActionTypes) => {
   switch (action.type) {
+    case CardsActions.SET_CARDS_DATA: {
+      return action.payload.data;
+    }
     case CardsActions.ADD_NEW_PLANT_CARD: {
       let currentCards = [...state];
       currentCards.push(action.payload.newCard);

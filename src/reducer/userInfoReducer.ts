@@ -11,12 +11,8 @@ const initialUserInfo: UserInfo = {
 
 const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
   switch (action.type) {
-    case UserInfoActions.ADD_NEW_USER_INFO: {
-      return {
-        userId: action.payload.userId,
-        userName: action.payload.userName,
-        userPhotoUrl: action.payload.userPhotoUrl,
-      };
+    case UserInfoActions.SET_USER_INFO: {
+      return action.payload.data;
     }
     case UserInfoActions.EDIT_USER_NAME: {
       return {

@@ -5,5 +5,5 @@ export interface notification {
   userName: string;
   cardId?: string;
   articleId?: string;
-  read: Boolean;
+  read: boolean;
 }
