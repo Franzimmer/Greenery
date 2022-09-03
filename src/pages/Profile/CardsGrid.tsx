@@ -127,7 +127,14 @@ const CardsGrid = () => {
   return (
     <>
       <OperationMenu>
-        <OperationBtn onClick={editorToggle}>新增卡片</OperationBtn>
+        <OperationBtn
+          onClick={() => {
+            setEditCardId(null);
+            editorToggle();
+          }}
+        >
+          新增卡片
+        </OperationBtn>
         <OperationBtn onClick={filterToggle}>Filter</OperationBtn>
         <OperationBtn>選取</OperationBtn>
         <OperationBtn>切換檢視</OperationBtn>

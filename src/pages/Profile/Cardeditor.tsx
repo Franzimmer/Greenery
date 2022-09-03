@@ -134,7 +134,23 @@ const CardEditor = ({
     const dowloadLink = await getDownloadURL(storageRef);
     return dowloadLink;
   }
-
+  function checkTagList(tags: string[]) {
+    let currentTagList = [...tagList];
+    tags.forEach((tag) => {
+      !tagList.includes(tag) && currentTagList.push(tag);
+    });
+    setTagList(currentTagList);
+  }
+  function resetEditor() {
+    nameRef.current!.value = "";
+    speciesRef.current!.value = "";
+    birthdayRef.current!.value = "";
+    tagRef.current!.value = "";
+    waterRef.current!.value = "";
+    lightRef.current!.value = "";
+    setPreviewLink(null);
+    setTags([]);
+  }
   async function addCard() {
     const imgLink = await uploadFile();
     const card = doc(cards);
@@ -154,6 +170,7 @@ const CardEditor = ({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
+    checkTagList(tags);
     editorToggle();
   }
   async function editCard() {
@@ -179,6 +196,7 @@ const CardEditor = ({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
+    checkTagList(data.tags);
     editorToggle();
   }
   useEffect(() => {
@@ -210,6 +228,7 @@ const CardEditor = ({
     }
     if (editCardId) getEditCardData();
   }, [editCardId]);
+
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
@@ -275,11 +294,32 @@ const CardEditor = ({
         })}
       <InputWrapper>
         {editCardId ? (
-          <OperationBtn onClick={editCard}>Save</OperationBtn>
+          <OperationBtn
+            onClick={() => {
+              editCard();
+              resetEditor();
+            }}
+          >
+            Save
+          </OperationBtn>
         ) : (
-          <OperationBtn onClick={addCard}>Add</OperationBtn>
+          <OperationBtn
+            onClick={() => {
+              addCard();
+              resetEditor();
+            }}
+          >
+            Add
+          </OperationBtn>
         )}
-        <OperationBtn onClick={editorToggle}>Cancel</OperationBtn>
+        <OperationBtn
+          onClick={() => {
+            editorToggle();
+            resetEditor();
+          }}
+        >
+          Cancel
+        </OperationBtn>
       </InputWrapper>
     </CardEditorWrapper>
   );
