@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
-import { species, storage, cards } from "../../utils/firebase";
+import { db, storage, cards, species } from "../../utils/firebase";
 import { getDocs, query, where, setDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { CardsActions } from "../../actions/cardsActions";
@@ -148,8 +148,41 @@ const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
     });
     editorToggle();
   }
+  async function editCard() {
+    let imgLink;
+    if (imageRef.current?.value) {
+      imgLink = await uploadFile();
+    } else {
+      imgLink = previewLink;
+    }
+    const data = {
+      cardId: editCardId,
+      ownerId: "test",
+      plantName: nameRef.current?.value,
+      plantPhoto: imgLink,
+      tags: tags || [],
+      species: speciesRef.current?.value,
+      waterPref: waterRef.current?.value,
+      lightPref: lightRef.current?.value,
+      birthday: Date.parse(birthdayRef.current?.value || ""),
+    };
+    // console.log(data);
+    await setDoc(doc(db, "cards", editCardId!), data);
+    dispatch({
+      type: CardsActions.EDIT_PLANT_INFO,
+      payload: { editCard: data },
+    });
+    editorToggle();
+  }
   useEffect(() => {
-    // function unixTimeToString(unixTime) {}
+    function unixTimeToString(unixTime: number) {
+      let date = new Date(unixTime);
+      let year = date.getFullYear();
+      let month = String(date.getMonth() + 1).padStart(2, "0");
+      let day = String(date.getDate()).padStart(2, "0");
+      const formatedDate = `${year}-${month}-${day}`;
+      return formatedDate;
+    }
     async function getEditCardData() {
       const q = query(cards, where("cardId", "==", editCardId));
       const querySnapshot = await getDocs(q);
@@ -160,11 +193,12 @@ const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
       querySnapshot.forEach((doc) => {
         let data = doc.data();
         setPreviewLink(data?.plantPhoto);
-        setTags(data?.tags);
+        setTags(data?.tags || []);
         nameRef.current!.value = data.plantName;
         speciesRef.current!.value = data.species;
-        waterRef.current!.value = data?.waterPref ?? "No Info";
-        lightRef.current!.value = data?.lightPref ?? "No Info";
+        waterRef.current!.value = data?.waterPref ?? "";
+        lightRef.current!.value = data?.lightPref ?? "";
+        birthdayRef.current!.value = unixTimeToString(data?.birthday);
       });
     }
     if (editCardId) getEditCardData();
@@ -234,7 +268,7 @@ const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
         })}
       <InputWrapper>
         {editCardId ? (
-          <OperationBtn>Save</OperationBtn>
+          <OperationBtn onClick={editCard}>Save</OperationBtn>
         ) : (
           <OperationBtn onClick={addCard}>Add</OperationBtn>
         )}

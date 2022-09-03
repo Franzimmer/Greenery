@@ -13,46 +13,20 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       currentCards.push(action.payload.newCard);
       return currentCards;
     }
+    case CardsActions.EDIT_PLANT_INFO: {
+      let currentCards = [...state];
+      let editTargetIndex = currentCards.findIndex(
+        (card) => card.cardId === action.payload.editCard.cardId
+      );
+      currentCards[editTargetIndex] = action.payload.editCard;
+      return currentCards;
+    }
     case CardsActions.DELETE_PLANT_CARD: {
       let currentCards = [...state];
       let result = currentCards.filter(
         (card: PlantCard) => card.cardId !== action.payload.cardId
       );
       return result;
-    }
-    case CardsActions.EDIT_PLANT_NAME: {
-      let currentCards = [...state];
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      currentCards[editCardIndex].plantName = action.payload.plantName;
-      return currentCards;
-    }
-    case CardsActions.EDIT_PLANT_SPECIES: {
-      let currentCards = [...state];
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      currentCards[editCardIndex].species = action.payload.species;
-      currentCards[editCardIndex].waterPref = action.payload.waterPref;
-      currentCards[editCardIndex].lightPref = action.payload.lightPref;
-      return currentCards;
-    }
-    case CardsActions.EDIT_PLANT_PHOTO: {
-      let currentCards = [...state];
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      currentCards[editCardIndex].plantPhoto = action.payload.plantPhoto;
-      return currentCards;
-    }
-    case CardsActions.EDIT_PLANT_TAGS: {
-      let currentCards = [...state];
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      currentCards[editCardIndex]?.tags?.concat(action.payload.tags);
-      return currentCards;
     }
     case CardsActions.EDIT_PLANT_OWNER: {
       let currentCards = [...state];
