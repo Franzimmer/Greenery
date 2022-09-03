@@ -10,12 +10,17 @@ const MenuWrapper = styled.div`
 const MenuItem = styled.button`
   margin-right: 5px;
   padding: 5px;
+  &:hover {
+    background: #000;
+    color: #fff;
+  }
 `;
 
 const ProfileMenu = () => {
   return (
     <MenuWrapper>
       <MenuItem>Cards</MenuItem>
+      <MenuItem>Calendar</MenuItem>
       <MenuItem>Gallery</MenuItem>
       <MenuItem>Favorites</MenuItem>
     </MenuWrapper>

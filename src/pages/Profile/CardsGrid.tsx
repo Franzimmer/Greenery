@@ -11,7 +11,7 @@ const OperationMenu = styled.div`
   display: flex;
 `;
 export const OperationBtn = styled.button`
-  margin-right: 5px;
+  margin: 5px 5px 0px 0px;
   padding: 5px;
   cursor: pointer;
 
@@ -48,18 +48,40 @@ const PlantImg = styled.div<PlantImgProps>`
 const Text = styled.p`
   margin-bottom: 10px;
 `;
+const Tag = styled.p`
+  background: #eee;
+  font-size: 14px;
+  border: 1px solid #000;
+  margin-right: 5px;
+
+  &:hover {
+    background: #000;
+    color: #fff;
+  }
+`;
+const TagsWrapper = styled.div`
+  display: flex;
+  margin-top: 5px;
+  padding: 2px;
+`;
 const CardsGrid = () => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [filter, setFilterOpen] = useState(false);
 
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
+  function filterToggle() {
+    filter ? setFilterOpen(false) : setFilterOpen(true);
+  }
   useEffect(() => {
     async function getCards() {
       let results: DocumentData[] = [];
+      let tags: string[] = [];
       const q = query(cards, where("ownerId", "==", "test"));
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
@@ -68,22 +90,39 @@ const CardsGrid = () => {
       }
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
+        let searchTargets = doc.data()?.tags || [];
+        if (searchTargets.length) {
+          let checkResults = searchTargets.map((tag: string) => {
+            return tags.includes(tag);
+          });
+          searchTargets.forEach((tag: string, index: number) => {
+            !checkResults[index] && tags.push(tag);
+          });
+        }
       });
+      setTagList(tags);
       dispatch({
         type: CardsActions.SET_CARDS_DATA,
         payload: { data: results },
       });
     }
     getCards();
-  }, []);
+  }, [cardList]);
   return (
     <>
       <OperationMenu>
         <OperationBtn onClick={editorToggle}>新增卡片</OperationBtn>
-        <OperationBtn>Filter</OperationBtn>
+        <OperationBtn onClick={filterToggle}>Filter</OperationBtn>
         <OperationBtn>選取</OperationBtn>
         <OperationBtn>切換檢視</OperationBtn>
       </OperationMenu>
+      {filter && tagList.length && (
+        <TagsWrapper>
+          {tagList.map((tag: string) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </TagsWrapper>
+      )}
       <GridWrapper>
         {cardList &&
           cardList.map((card) => {
@@ -92,6 +131,13 @@ const CardsGrid = () => {
                 <PlantImg path={card.plantPhoto} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
+                {card?.tags?.length && (
+                  <TagsWrapper>
+                    {card.tags?.map((tag) => {
+                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                    })}
+                  </TagsWrapper>
+                )}
                 <OperationBtn>Diary</OperationBtn>
                 <OperationBtn
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
@@ -110,6 +156,8 @@ const CardsGrid = () => {
         editorDisplay={editorDisplay}
         editorToggle={editorToggle}
         editCardId={editCardId}
+        tagList={tagList}
+        setTagList={setTagList}
       />
     </>
   );

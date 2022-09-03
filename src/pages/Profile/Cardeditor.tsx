@@ -63,8 +63,16 @@ interface FCProps {
   editorDisplay: boolean;
   editorToggle: () => void;
   editCardId: string | null;
+  tagList: string[];
+  setTagList: React.Dispatch<React.SetStateAction<string[]>>;
 }
-const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
+const CardEditor = ({
+  editorDisplay,
+  editorToggle,
+  editCardId,
+  tagList,
+  setTagList,
+}: FCProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
@@ -166,7 +174,6 @@ const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
       lightPref: lightRef.current?.value,
       birthday: Date.parse(birthdayRef.current?.value || ""),
     };
-    // console.log(data);
     await setDoc(doc(db, "cards", editCardId!), data);
     dispatch({
       type: CardsActions.EDIT_PLANT_INFO,
