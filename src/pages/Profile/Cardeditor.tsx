@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
@@ -62,8 +62,9 @@ const RemoveTagBtn = styled.div`
 interface FCProps {
   editorDisplay: boolean;
   editorToggle: () => void;
+  editCardId: string | null;
 }
-const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
+const CardEditor = ({ editorDisplay, editorToggle, editCardId }: FCProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
@@ -102,11 +103,6 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
       let newTags = currentTags.concat(doc.data().category);
       setTags(newTags);
     });
-  }
-  function test() {
-    if (birthdayRef.current) {
-      console.log(Date.parse(birthdayRef.current.value));
-    }
   }
   function addTag() {
     if (!tagRef.current) return;
@@ -150,7 +146,29 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
+    editorToggle();
   }
+  useEffect(() => {
+    // function unixTimeToString(unixTime) {}
+    async function getEditCardData() {
+      const q = query(cards, where("cardId", "==", editCardId));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        alert("User not existed!");
+        return;
+      }
+      querySnapshot.forEach((doc) => {
+        let data = doc.data();
+        setPreviewLink(data?.plantPhoto);
+        setTags(data?.tags);
+        nameRef.current!.value = data.plantName;
+        speciesRef.current!.value = data.species;
+        waterRef.current!.value = data?.waterPref ?? "No Info";
+        lightRef.current!.value = data?.lightPref ?? "No Info";
+      });
+    }
+    if (editCardId) getEditCardData();
+  }, [editCardId]);
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
@@ -215,7 +233,11 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
           );
         })}
       <InputWrapper>
-        <OperationBtn onClick={addCard}>Add</OperationBtn>
+        {editCardId ? (
+          <OperationBtn>Save</OperationBtn>
+        ) : (
+          <OperationBtn onClick={addCard}>Add</OperationBtn>
+        )}
         <OperationBtn onClick={editorToggle}>Cancel</OperationBtn>
       </InputWrapper>
     </CardEditorWrapper>

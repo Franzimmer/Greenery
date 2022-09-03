@@ -6,7 +6,7 @@ import { CardsActions } from "../../actions/cardsActions";
 import { cards } from "../../utils/firebase";
 import { getDocs, query, where, DocumentData } from "firebase/firestore";
 import CardEditor from "./CardEditor";
-
+import defaultImg from "./default.jpg";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -32,10 +32,16 @@ const Card = styled.div`
   border: 1px solid black;
   padding: 10px;
 `;
-const PlantImg = styled.div`
+interface PlantImgProps {
+  path: string | undefined;
+}
+const PlantImg = styled.div<PlantImgProps>`
   border-radius: 10px;
   margin: 8px;
-  background-color: #ddd;
+  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
   width: 150px;
   height: 100px;
 `;
@@ -46,6 +52,7 @@ const CardsGrid = () => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
+  const [editCardId, setEditCardId] = useState<string | null>(null);
 
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
@@ -81,16 +88,29 @@ const CardsGrid = () => {
         {cardList &&
           cardList.map((card) => {
             return (
-              <Card key={card.cardId}>
-                <PlantImg />
+              <Card key={card.cardId} id={card.cardId}>
+                <PlantImg path={card.plantPhoto} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
                 <OperationBtn>Diary</OperationBtn>
+                <OperationBtn
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    let button = e.target as HTMLButtonElement;
+                    setEditCardId(button.parentElement!.id);
+                    editorToggle();
+                  }}
+                >
+                  Edit
+                </OperationBtn>
               </Card>
             );
           })}
       </GridWrapper>
-      <CardEditor editorDisplay={editorDisplay} editorToggle={editorToggle} />
+      <CardEditor
+        editorDisplay={editorDisplay}
+        editorToggle={editorToggle}
+        editCardId={editCardId}
+      />
     </>
   );
 };
