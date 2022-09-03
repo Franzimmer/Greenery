@@ -5,7 +5,7 @@ import { RootState } from "../../reducer/index";
 import { CardsActions } from "../../actions/cardsActions";
 import { cards } from "../../utils/firebase";
 import { getDocs, query, where, DocumentData } from "firebase/firestore";
-import CardEditor from "./Cardeditor";
+import CardEditor from "./CardEditor";
 
 const OperationMenu = styled.div`
   display: flex;

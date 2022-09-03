@@ -9,7 +9,10 @@ const initialUserInfo: UserInfo = {
   userPhotoUrl: "",
 };
 
-const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
+const userInfo = (
+  state = initialUserInfo,
+  action: userInfoActionsTypes
+): UserInfo => {
   switch (action.type) {
     case UserInfoActions.SET_USER_INFO: {
       return action.payload.data;
@@ -27,7 +30,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     default:
-      return state;
+      return typeof state === "undefined" ? initialUserInfo : state;
   }
 };
 

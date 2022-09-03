@@ -2,8 +2,12 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
-import { species } from "../../utils/firebase";
-import { getDocs, query, where } from "firebase/firestore";
+import { species, storage, cards } from "../../utils/firebase";
+import { getDocs, query, where, setDoc, doc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { CardsActions } from "../../actions/cardsActions";
+import { useDispatch } from "react-redux";
+
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -60,6 +64,8 @@ interface FCProps {
   editorToggle: () => void;
 }
 const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
+  const imageRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
   const birthdayRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
@@ -67,11 +73,12 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
   const lightRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const dispatch = useDispatch();
 
-  function createPreviewLink(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files) return;
-    if (e.target.files.length !== 0) {
-      let path = URL.createObjectURL(e.target.files[0]);
+  function createPreviewLink() {
+    if (!imageRef.current) return;
+    if (imageRef.current.files!.length !== 0) {
+      let path = URL.createObjectURL(imageRef.current.files![0]);
       setPreviewLink(path);
     } else {
       setPreviewLink(null);
@@ -115,21 +122,51 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
     let newTags = currentTags.filter((tag) => tag !== button.parentElement!.id);
     setTags(newTags);
   }
+  async function uploadFile() {
+    if (!imageRef.current) return;
+    let file = imageRef.current!.files![0];
+    const storageRef = ref(storage, `${file.name}`);
+    await uploadBytes(storageRef, file);
+    const dowloadLink = await getDownloadURL(storageRef);
+    return dowloadLink;
+  }
+
+  async function addCard() {
+    const imgLink = await uploadFile();
+    const card = doc(cards);
+    const data = {
+      cardId: card.id,
+      ownerId: "test",
+      plantName: nameRef.current?.value,
+      plantPhoto: imgLink,
+      tags: tags,
+      species: speciesRef.current?.value,
+      waterPref: waterRef.current?.value,
+      lightPref: lightRef.current?.value,
+      birthday: Date.parse(birthdayRef.current?.value || ""),
+    };
+    await setDoc(card, data);
+    dispatch({
+      type: CardsActions.ADD_NEW_PLANT_CARD,
+      payload: { newCard: data },
+    });
+  }
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
         <PhotoPreview path={previewLink} />
         <PhotoInput
+          ref={imageRef}
           type="file"
           accept="image/*"
-          onChange={(e) => {
-            createPreviewLink(e);
+          onChange={() => {
+            createPreviewLink();
           }}
         />
       </InputWrapper>
       <InputWrapper>
         <InputLabel>幫你的植物取個名字！</InputLabel>
-        <Input type="text" />
+        <Input type="text" ref={nameRef} />
       </InputWrapper>
       <InputWrapper>
         <InputLabel>品種</InputLabel>
@@ -178,7 +215,7 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
           );
         })}
       <InputWrapper>
-        <OperationBtn onClick={test}>Add</OperationBtn>
+        <OperationBtn onClick={addCard}>Add</OperationBtn>
         <OperationBtn onClick={editorToggle}>Cancel</OperationBtn>
       </InputWrapper>
     </CardEditorWrapper>

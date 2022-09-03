@@ -16,7 +16,7 @@ const notifications = (
     case NotificationActions.UPDATE_READ_STATUS: {
       let currentNotifications = [...state];
       let editTarget = currentNotifications.find(
-        (notice: notification) => notice.msgId === action.paylaod.msgId
+        (notice: notification) => notice?.msgId === action.paylaod?.msgId
       ) as notification;
       if (editTarget) editTarget["read"] = true;
       return currentNotifications;

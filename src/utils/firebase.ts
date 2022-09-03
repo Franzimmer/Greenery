@@ -1,16 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { PlantCard } from "../types/plantCardType";
-import {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  getDocs,
-  query,
-  where,
-  arrayUnion,
-  DocumentData,
-} from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -22,6 +12,7 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
+export const storage = getStorage(app);
 export const db = getFirestore(app);
 export const users = collection(db, "users");
 export const cards = collection(db, "cards");
@@ -29,60 +20,6 @@ export const posts = collection(db, "posts");
 export const species = collection(db, "species");
 export const chatrooms = collection(db, "chatrooms");
 
-interface UserData {
-  userId: string;
-  userName: string;
-  email: string;
-  photoUrl: string;
-  gallery: string[];
-  followList: string[];
-  favoritePlants: string[];
-  favoritePosts: string[];
-}
-interface Activity {
-  plantId: string;
-  time: number;
-}
-export async function addANewUser(data: UserData) {
-  try {
-    const user = doc(users);
-    await setDoc(user, data);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
-export async function addANewPlantCard(data: PlantCard) {
-  try {
-    const plantCard = doc(cards);
-    await setDoc(plantCard, data);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
-export async function getUserData(userId: string) {
-  const q = query(users, where("userId", "==", userId));
-  const querySnapshot = await getDocs(q);
-  if (querySnapshot.empty) {
-    alert("User not existed!");
-    return;
-  }
-  querySnapshot.forEach((doc) => {
-    return doc.data();
-  });
-}
-export async function getCards(userId: string) {
-  let results: DocumentData[] = [];
-  const q = query(cards, where("ownerId", "==", userId));
-  const querySnapshot = await getDocs(q);
-  if (querySnapshot.empty) {
-    alert("User not existed!");
-    return;
-  }
-  querySnapshot.forEach((doc) => {
-    results.push(doc.data());
-  });
-  return results;
-}
 //Delete
 //Delete document will not delete its subcollection
 
@@ -97,16 +34,5 @@ export async function getUserActivities(userId: string) {
   }
   querySnapshot.forEach((doc) => {
     return doc.data();
-  });
-}
-
-export async function addUserWateringActivity(userId: string, data: Activity) {
-  const today = new Date();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const date = String(today.getDate()).padStart(2, "0");
-  const activityDate = `${today.getFullYear()}-${month}-${date}`;
-  const activityRef = doc(db, "users", userId, "activities", activityDate);
-  await setDoc(activityRef, {
-    watering: arrayUnion(data),
   });
 }
