@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
+import { species } from "../../utils/firebase";
+import { getDocs, query, where, DocumentData } from "firebase/firestore";
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -36,6 +38,10 @@ const Input = styled.input`
   width: 80%;
   height: 30px;
 `;
+const TextArea = styled.textarea`
+  width: 80%;
+  height: 100px;
+`;
 const InputWrapper = styled.div`
   margin-bottom: 10px;
   width: 100%;
@@ -46,6 +52,8 @@ interface FCProps {
 }
 const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
   const speciesRef = useRef<HTMLInputElement>(null);
+  const waterRef = useRef<HTMLTextAreaElement>(null);
+  const lightRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
 
   function createPreviewLink(e: React.ChangeEvent<HTMLInputElement>) {
@@ -58,6 +66,22 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
       return;
     }
   }
+  async function searchPlantSpecies(input: string) {
+    if (!waterRef.current || !lightRef.current) return;
+    const q = query(species, where("speciesName", "==", input));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      alert("Species not existed!");
+      waterRef.current!.value = "";
+      lightRef.current!.value = "";
+      return;
+    }
+    querySnapshot.forEach((doc) => {
+      waterRef.current!.value = doc.data().waterPref;
+      lightRef.current!.value = doc.data().lightPref;
+    });
+  }
+
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
@@ -76,7 +100,24 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
       </InputWrapper>
       <InputWrapper>
         <InputLabel>品種</InputLabel>
-        <Input type="text" ref={speciesRef} />
+        <Input
+          type="text"
+          ref={speciesRef}
+          onKeyPress={(e) => {
+            if (!speciesRef.current) return;
+            if (e.key === "Enter") {
+              searchPlantSpecies(speciesRef.current.value);
+            }
+          }}
+        />
+      </InputWrapper>
+      <InputWrapper>
+        <InputLabel>水分需求</InputLabel>
+        <TextArea ref={waterRef} placeholder="搜尋品種可自動帶入資訊" />
+      </InputWrapper>
+      <InputWrapper>
+        <InputLabel>光線需求</InputLabel>
+        <TextArea ref={lightRef} placeholder="搜尋品種可自動帶入資訊" />
       </InputWrapper>
       <InputWrapper>
         <InputLabel>生日</InputLabel>
