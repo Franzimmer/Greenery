@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
 import { species } from "../../utils/firebase";
-import { getDocs, query, where, DocumentData } from "firebase/firestore";
+import { getDocs, query, where } from "firebase/firestore";
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -46,15 +46,27 @@ const InputWrapper = styled.div`
   margin-bottom: 10px;
   width: 100%;
 `;
+const Tag = styled.div`
+  display: flex;
+  border: 1px solid #000;
+`;
+const TagText = styled.div``;
+const RemoveTagBtn = styled.div`
+  background: #ddd;
+  font-weight: 700;
+`;
 interface FCProps {
   editorDisplay: boolean;
   editorToggle: () => void;
 }
 const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
   const speciesRef = useRef<HTMLInputElement>(null);
+  const birthdayRef = useRef<HTMLInputElement>(null);
+  const tagRef = useRef<HTMLInputElement>(null);
   const waterRef = useRef<HTMLTextAreaElement>(null);
   const lightRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
 
   function createPreviewLink(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return;
@@ -79,9 +91,30 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
     querySnapshot.forEach((doc) => {
       waterRef.current!.value = doc.data().waterPref;
       lightRef.current!.value = doc.data().lightPref;
+      let currentTags = [...tags];
+      let newTags = currentTags.concat(doc.data().category);
+      setTags(newTags);
     });
   }
-
+  function test() {
+    if (birthdayRef.current) {
+      console.log(Date.parse(birthdayRef.current.value));
+    }
+  }
+  function addTag() {
+    if (!tagRef.current) return;
+    if (tags.includes(tagRef.current.value)) return;
+    let currentTags = [...tags];
+    currentTags.push(tagRef.current.value);
+    setTags(currentTags);
+  }
+  function RemoveTag(e: React.MouseEvent<HTMLElement>) {
+    if (!tagRef.current) return;
+    let currentTags = [...tags];
+    let button = e.target as HTMLDivElement;
+    let newTags = currentTags.filter((tag) => tag !== button.parentElement!.id);
+    setTags(newTags);
+  }
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
@@ -121,14 +154,31 @@ const CardEditor = ({ editorDisplay, editorToggle }: FCProps) => {
       </InputWrapper>
       <InputWrapper>
         <InputLabel>生日</InputLabel>
-        <Input type="date" />
+        <Input type="date" ref={birthdayRef} />
       </InputWrapper>
       <InputWrapper>
         <InputLabel>標籤</InputLabel>
-        <Input type="text" />
+        <Input
+          type="text"
+          ref={tagRef}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              addTag();
+            }
+          }}
+        />
       </InputWrapper>
+      {tags &&
+        tags.map((tag) => {
+          return (
+            <Tag key={tag} id={tag}>
+              <TagText>{tag}</TagText>
+              <RemoveTagBtn onClick={(e) => RemoveTag(e)}>X</RemoveTagBtn>
+            </Tag>
+          );
+        })}
       <InputWrapper>
-        <OperationBtn>Add</OperationBtn>
+        <OperationBtn onClick={test}>Add</OperationBtn>
         <OperationBtn onClick={editorToggle}>Cancel</OperationBtn>
       </InputWrapper>
     </CardEditorWrapper>
