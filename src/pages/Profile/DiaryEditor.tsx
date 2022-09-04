@@ -1,22 +1,33 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import Canvas from "./Canvas";
-import { db, storage, cards, species } from "../../utils/firebase";
+import { db, storage, diaries } from "../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 const BtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const Wrapper = styled.div`
-  display: flex;
+interface WrapperProps {
+  $display: boolean;
+}
+const Wrapper = styled.div<WrapperProps>`
+  display: ${(props) => (props.$display ? "flex" : "none")};
 `;
 const AddImgInput = styled.input``;
-const DiaryEditor = () => {
+
+interface DiaryEditorProps {
+  diaryDisplay: boolean;
+  diaryId: string;
+}
+const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
+  const [diariesData, setDiariesData] = useState<string[]>([]);
+  const [mode, setMode] = useState<"view" | "edit">("view");
   function addText() {
     let text = new fabric.IText("hello world", {
       left: 100,
@@ -52,25 +63,67 @@ const DiaryEditor = () => {
   function resetCanvas() {
     canvas?.remove(...canvas.getObjects());
   }
-  function save() {
+  async function save() {
     let record = JSON.stringify(canvas);
-    console.log(record);
+    let docRef = doc(diaries, "CuJOTbSx2rWdS69occdw");
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { pages: [] });
+    }
+    await updateDoc(docRef, { pages: arrayUnion(record) });
   }
+  async function getDiary() {
+    let docRef = doc(diaries, diaryId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      alert("無日記資料");
+    } else {
+      setDiariesData(docSnap.data().pages);
+      canvas?.loadFromJSON(docSnap.data().pages[0], () => {
+        canvas.renderAll();
+        canvas.selection = false;
+        canvas.getObjects().forEach((obj) => {
+          obj.set({ selectable: false, hoverCursor: "text" });
+        });
+        // console.log(canvas.getObjects());
+      });
+    }
+  }
+  function load(page: number) {
+    canvas?.loadFromJSON(diariesData[page], () => {
+      canvas.renderAll();
+    });
+  }
+  useEffect(() => {
+    if (diaryId) getDiary();
+  }, [diaryId]);
   return (
-    <Wrapper>
+    <Wrapper $display={diaryDisplay}>
       <Canvas setCanvas={setCanvas} />
       <BtnWrapper>
-        <OperationBtn onClick={addText}>Add Text</OperationBtn>
-        <AddImgInput
-          ref={fileRef}
-          type="file"
-          onChange={async () => {
-            await addImage();
-          }}
-        />
-        <OperationBtn onClick={removeItem}>Remove</OperationBtn>
-        <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
-        <OperationBtn onClick={save}>Save</OperationBtn>
+        {mode === "view" && (
+          <>
+            <OperationBtn>Edit Page</OperationBtn>
+            <OperationBtn>Previous Page</OperationBtn>
+            <OperationBtn>Next Page</OperationBtn>
+          </>
+        )}
+        {mode === "edit" && (
+          <>
+            <OperationBtn onClick={addText}>Add Text</OperationBtn>
+            <AddImgInput
+              ref={fileRef}
+              type="file"
+              onChange={async () => {
+                await addImage();
+              }}
+            />
+            <OperationBtn onClick={removeItem}>Remove</OperationBtn>
+            <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
+            <OperationBtn onClick={save}>Save</OperationBtn>
+          </>
+        )}
+        <OperationBtn>Close</OperationBtn>
       </BtnWrapper>
     </Wrapper>
   );

@@ -2,8 +2,8 @@ export interface PlantCard {
   cardId: string;
   ownerId: string;
   plantName: string;
-  plantPhoto?: string;
   species: string;
+  plantPhoto?: string;
   waterPref?: string;
   lightPref?: string;
   tags?: string[];
