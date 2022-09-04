@@ -24,7 +24,7 @@ const notifications = (
     case NotificationActions.DELETE_NOTIFICATION: {
       let currentNotifications = [...state];
       let result = currentNotifications.filter(
-        (notice: notification) => notice.msgId !== action.paylaod.msgId
+        (notice: notification) => notice.msgId !== action.paylaod?.msgId
       );
       return result;
     }

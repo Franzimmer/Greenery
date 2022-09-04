@@ -295,8 +295,8 @@ const CardEditor = ({
       <InputWrapper>
         {editCardId ? (
           <OperationBtn
-            onClick={() => {
-              editCard();
+            onClick={async () => {
+              await editCard();
               resetEditor();
             }}
           >
@@ -304,8 +304,8 @@ const CardEditor = ({
           </OperationBtn>
         ) : (
           <OperationBtn
-            onClick={() => {
-              addCard();
+            onClick={async () => {
+              await addCard();
               resetEditor();
             }}
           >

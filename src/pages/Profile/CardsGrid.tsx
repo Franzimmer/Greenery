@@ -16,6 +16,7 @@ import {
   setDoc,
   updateDoc,
   arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
 import CardEditor from "./CardEditor";
 import defaultImg from "./default.jpg";
@@ -157,6 +158,22 @@ const CardsGrid = () => {
     clearAllCheck();
     addEventToDB(type, nameList);
   }
+  async function deleteCard(cardId: string) {
+    dispatch({
+      type: CardsActions.DELETE_PLANT_CARD,
+      payload: { cardId: cardId },
+    });
+    await deleteDoc(doc(db, "cards", cardId));
+  }
+  function deleteCards() {
+    const targets = Object.keys(checkList).filter(
+      (key) => checkList[key] === true
+    );
+    if (!targets.length) return;
+    console.log(targets);
+    let promises = targets.map((target) => deleteCard(target));
+    Promise.all(promises).then(() => alert("刪除成功！"));
+  }
   useEffect(() => {
     async function getCards() {
       let results: DocumentData[] = [];
@@ -208,7 +225,7 @@ const CardsGrid = () => {
         <OperationBtn onClick={clearAllCheck}>全選清除</OperationBtn>
         <OperationBtn onClick={() => addEvents("water")}>澆水</OperationBtn>
         <OperationBtn onClick={() => addEvents("fertilize")}>施肥</OperationBtn>
-        <OperationBtn>刪除卡片</OperationBtn>
+        <OperationBtn onClick={deleteCards}>刪除卡片</OperationBtn>
       </OperationMenu>
       {filterOptions && tagList.length && (
         <TagsWrapper>

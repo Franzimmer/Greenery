@@ -23,7 +23,7 @@ const followList = (
       let currentFollowList = [...state];
       const result = currentFollowList.filter(
         (followPerson: UserInfo) =>
-          followPerson.userId !== action.payload.deleteUserID
+          followPerson?.userId !== action.payload.deleteUserID
       );
       return result;
     }
