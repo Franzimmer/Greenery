@@ -52,6 +52,10 @@ const DiaryEditor = () => {
   function resetCanvas() {
     canvas?.remove(...canvas.getObjects());
   }
+  function save() {
+    let record = JSON.stringify(canvas);
+    console.log(record);
+  }
   return (
     <Wrapper>
       <Canvas setCanvas={setCanvas} />
@@ -66,6 +70,7 @@ const DiaryEditor = () => {
         />
         <OperationBtn onClick={removeItem}>Remove</OperationBtn>
         <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
+        <OperationBtn onClick={save}>Save</OperationBtn>
       </BtnWrapper>
     </Wrapper>
   );
