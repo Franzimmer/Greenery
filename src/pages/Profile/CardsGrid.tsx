@@ -19,8 +19,9 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import CardEditor from "./CardEditor";
+import DetailedCard from "./DetailedCard";
 import defaultImg from "./default.jpg";
-// import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../types/plantCardType";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -82,19 +83,32 @@ const TagsWrapper = styled.div`
   margin-top: 5px;
   padding: 2px;
 `;
+
 const CheckBox = styled.input``;
 type CheckList = Record<string, boolean>;
+
 const CardsGrid = () => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
+  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [tagList, setTagList] = useState<string[]>([]);
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("");
   const [checkList, setCheckList] = useState<CheckList>({});
+  const [detailData, setDetailData] = useState<PlantCard>();
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
+  }
+  function detailToggle() {
+    detailDisplay ? setDetailDisplay(false) : setDetailDisplay(true);
+  }
+  function selectDetailData(e: React.MouseEvent<HTMLElement>) {
+    const target = e.currentTarget as HTMLDivElement;
+    let selectedData = cardList.find((card) => target.id === card.cardId);
+    console.log(selectedData);
+    setDetailData(selectedData);
   }
   function filterToggle() {
     if (filterOptions) {
@@ -170,7 +184,6 @@ const CardsGrid = () => {
       (key) => checkList[key] === true
     );
     if (!targets.length) return;
-    console.log(targets);
     let promises = targets.map((target) => deleteCard(target));
     Promise.all(promises).then(() => alert("刪除成功！"));
   }
@@ -244,6 +257,10 @@ const CardsGrid = () => {
                 key={card.cardId}
                 id={card.cardId}
                 show={filterCard(card.tags || [])}
+                onClick={(e) => {
+                  detailToggle();
+                  selectDetailData(e);
+                }}
               >
                 <CheckBox
                   type="checkbox"
@@ -279,6 +296,11 @@ const CardsGrid = () => {
         editCardId={editCardId}
         tagList={tagList}
         setTagList={setTagList}
+      />
+      <DetailedCard
+        detailDisplay={detailDisplay}
+        detailToggle={detailToggle}
+        detailData={detailData!}
       />
     </>
   );

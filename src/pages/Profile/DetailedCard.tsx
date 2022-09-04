@@ -1,0 +1,73 @@
+import React from "react";
+import styled from "styled-components";
+import { PlantCard } from "../../types/plantCardType";
+import { unixTimeToString } from "./CardEditor";
+import { OperationBtn } from "./CardsGrid";
+interface DetailedCardWrapperProps {
+  $display: boolean;
+}
+const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
+  border: 1px solid #000;
+  width: 360px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  display: ${(props) => (props.$display ? "block" : "none")};
+`;
+const Text = styled.p``;
+const PlantImg = styled.img`
+  width: 80%;
+  height: auto;
+`;
+interface DetailedCardProps {
+  detailDisplay: boolean;
+  detailData: PlantCard;
+  detailToggle: () => void;
+}
+const DetailedCard = ({
+  detailDisplay,
+  detailData,
+  detailToggle,
+}: DetailedCardProps) => {
+  return (
+    <DetailedCardWrapper $display={detailDisplay}>
+      {detailData?.plantPhoto && <PlantImg src={detailData.plantPhoto} />}
+      {detailData?.plantName && (
+        <>
+          <Text>名字</Text>
+          <Text>{detailData.plantName}</Text>
+        </>
+      )}
+      {detailData?.species && (
+        <>
+          <Text>品種</Text>
+          <Text>{detailData.species}</Text>
+        </>
+      )}
+      {detailData?.waterPref && (
+        <>
+          <Text>水分需求</Text>
+          <Text>{detailData.waterPref}</Text>
+        </>
+      )}
+      {detailData?.lightPref && (
+        <>
+          <Text>光線需求</Text>
+          <Text>{detailData.lightPref}</Text>
+        </>
+      )}
+      {detailData?.birthday && (
+        <>
+          <Text>生日</Text>
+          <Text>{unixTimeToString(detailData.birthday)}</Text>
+        </>
+      )}
+      <OperationBtn onClick={detailToggle}>close</OperationBtn>
+    </DetailedCardWrapper>
+  );
+};
+
+export default DetailedCard;
