@@ -6,11 +6,16 @@ import { CardsActions } from "../../actions/cardsActions";
 import { unixTimeToString } from "./CardEditor";
 import { db, users, cards } from "../../utils/firebase";
 import {
+  getDoc,
   getDocs,
   query,
   where,
   DocumentData,
   collection,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import CardEditor from "./CardEditor";
 import defaultImg from "./default.jpg";
@@ -121,27 +126,36 @@ const CardsGrid = () => {
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setCheckList(newObj);
   }
-  async function addEventToDB() {
-    const date = new Date(Date.now());
-    const year = date.getFullYear();
-    const month = date.getFullYear();
-    const year = date.getFullYear();
+  async function addEventToDB(type: "water" | "fertilize", plants: string[]) {
+    let docName = unixTimeToString(Date.now());
     const activitiesRef = collection(db, "users", "test", "activities");
-    const querySnapshot = await getDocs(activitiesRef);
-    console.log(querySnapshot);
+    let docRef = doc(activitiesRef, docName);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { watering: [], fertilizing: [] });
+    }
+    if (type === "water") {
+      await updateDoc(docRef, { watering: arrayUnion(...plants) });
+    } else if (type === "fertilize") {
+      await updateDoc(docRef, { fertilizing: arrayUnion(...plants) });
+    }
   }
   function addEvents(type: "water" | "fertilize") {
     const eventIds = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
+    if (!eventIds.length) return;
     let nameList: string[] = [];
     eventIds.forEach((eventId) => {
       let targetCard = cardList.filter((card) => card.cardId === eventId)[0];
       nameList.push(targetCard.plantName);
     });
-    if (type === "water") alert(`已爲 ${nameList.join(" & ")} 澆水！`);
+    if (type === "water") {
+      alert(`已爲 ${nameList.join(" & ")} 澆水！`);
+    }
     if (type === "fertilize") alert(`已爲 ${nameList.join(" & ")} 施肥！`);
     clearAllCheck();
+    addEventToDB(type, nameList);
   }
   useEffect(() => {
     async function getCards() {
