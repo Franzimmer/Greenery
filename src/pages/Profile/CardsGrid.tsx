@@ -142,10 +142,14 @@ const CardsGrid = () => {
     );
     setCheckList(newObj);
   }
-  function switchOneCheck(cardId: string) {
+  function switchOneCheck(
+    event: React.MouseEvent<HTMLElement>,
+    cardId: string
+  ) {
     let newObj = { ...checkList };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setCheckList(newObj);
+    event?.stopPropagation();
   }
   async function addEventToDB(type: "water" | "fertilize", plants: string[]) {
     let docName = unixTimeToString(Date.now());
@@ -277,7 +281,7 @@ const CardsGrid = () => {
                 <CheckBox
                   type="checkbox"
                   checked={checkList[card.cardId]}
-                  onClick={() => switchOneCheck(card.cardId)}
+                  onClick={(event) => switchOneCheck(event, card.cardId)}
                 />
                 <PlantImg path={card.plantPhoto} />
                 <Text>名字: {card.plantName}</Text>
