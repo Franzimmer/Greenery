@@ -3,10 +3,18 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { CardsActions } from "../../actions/cardsActions";
-import { cards } from "../../utils/firebase";
-import { getDocs, query, where, DocumentData } from "firebase/firestore";
+import { unixTimeToString } from "./CardEditor";
+import { db, users, cards } from "../../utils/firebase";
+import {
+  getDocs,
+  query,
+  where,
+  DocumentData,
+  collection,
+} from "firebase/firestore";
 import CardEditor from "./CardEditor";
 import defaultImg from "./default.jpg";
+// import { PlantCard } from "../../types/plantCardType";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -68,6 +76,8 @@ const TagsWrapper = styled.div`
   margin-top: 5px;
   padding: 2px;
 `;
+const CheckBox = styled.input``;
+type CheckList = Record<string, boolean>;
 const CardsGrid = () => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
@@ -76,7 +86,7 @@ const CardsGrid = () => {
   const [tagList, setTagList] = useState<string[]>([]);
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("");
-
+  const [checkList, setCheckList] = useState<CheckList>({});
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -94,10 +104,50 @@ const CardsGrid = () => {
     if (filter) return tagList.includes(filter);
     else return true;
   }
+  function allCheck() {
+    let newObj = Object.fromEntries(
+      Object.keys(checkList).map((key) => [key, true])
+    );
+    setCheckList(newObj);
+  }
+  function clearAllCheck() {
+    let newObj = Object.fromEntries(
+      Object.keys(checkList).map((key) => [key, false])
+    );
+    setCheckList(newObj);
+  }
+  function switchOneCheck(cardId: string) {
+    let newObj = { ...checkList };
+    newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
+    setCheckList(newObj);
+  }
+  async function addEventToDB() {
+    const date = new Date(Date.now());
+    const year = date.getFullYear();
+    const month = date.getFullYear();
+    const year = date.getFullYear();
+    const activitiesRef = collection(db, "users", "test", "activities");
+    const querySnapshot = await getDocs(activitiesRef);
+    console.log(querySnapshot);
+  }
+  function addEvents(type: "water" | "fertilize") {
+    const eventIds = Object.keys(checkList).filter(
+      (key) => checkList[key] === true
+    );
+    let nameList: string[] = [];
+    eventIds.forEach((eventId) => {
+      let targetCard = cardList.filter((card) => card.cardId === eventId)[0];
+      nameList.push(targetCard.plantName);
+    });
+    if (type === "water") alert(`已爲 ${nameList.join(" & ")} 澆水！`);
+    if (type === "fertilize") alert(`已爲 ${nameList.join(" & ")} 施肥！`);
+    clearAllCheck();
+  }
   useEffect(() => {
     async function getCards() {
       let results: DocumentData[] = [];
       let tags: string[] = [];
+      let checkboxes = {} as CheckList;
       const q = query(cards, where("ownerId", "==", "test"));
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
@@ -106,6 +156,7 @@ const CardsGrid = () => {
       }
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
+        checkboxes[doc.data().cardId] = false;
         let searchTargets = doc.data()?.tags || [];
         if (searchTargets.length) {
           let checkResults = searchTargets.map((tag: string) => {
@@ -117,6 +168,8 @@ const CardsGrid = () => {
         }
       });
       setTagList(tags);
+
+      setCheckList(checkboxes);
       dispatch({
         type: CardsActions.SET_CARDS_DATA,
         payload: { data: results },
@@ -136,8 +189,12 @@ const CardsGrid = () => {
           新增卡片
         </OperationBtn>
         <OperationBtn onClick={filterToggle}>Filter</OperationBtn>
-        <OperationBtn>選取</OperationBtn>
         <OperationBtn>切換檢視</OperationBtn>
+        <OperationBtn onClick={allCheck}>全選</OperationBtn>
+        <OperationBtn onClick={clearAllCheck}>全選清除</OperationBtn>
+        <OperationBtn onClick={() => addEvents("water")}>澆水</OperationBtn>
+        <OperationBtn onClick={() => addEvents("fertilize")}>施肥</OperationBtn>
+        <OperationBtn>刪除卡片</OperationBtn>
       </OperationMenu>
       {filterOptions && tagList.length && (
         <TagsWrapper>
@@ -157,6 +214,11 @@ const CardsGrid = () => {
                 id={card.cardId}
                 show={filterCard(card.tags || [])}
               >
+                <CheckBox
+                  type="checkbox"
+                  checked={checkList[card.cardId]}
+                  onClick={() => switchOneCheck(card.cardId)}
+                />
                 <PlantImg path={card.plantPhoto} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
