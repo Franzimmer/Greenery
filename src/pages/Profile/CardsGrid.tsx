@@ -229,7 +229,11 @@ const CardsGrid = () => {
   }, []);
   return (
     <>
-      <DiaryEditor diaryDisplay={diaryDisplay} diaryId={diaryId!} />
+      <DiaryEditor
+        diaryDisplay={diaryDisplay}
+        setDiaryDisplay={setDiaryDisplay}
+        diaryId={diaryId!}
+      />
       <OperationMenu>
         <OperationBtn
           onClick={() => {

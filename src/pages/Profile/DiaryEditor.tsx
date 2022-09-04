@@ -21,13 +21,36 @@ const AddImgInput = styled.input``;
 
 interface DiaryEditorProps {
   diaryDisplay: boolean;
+  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   diaryId: string;
 }
-const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
+const DiaryEditor = ({
+  diaryDisplay,
+  setDiaryDisplay,
+  diaryId,
+}: DiaryEditorProps) => {
+  const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
   const [mode, setMode] = useState<"view" | "edit">("view");
+
+  function switchToEditMode() {
+    setMode("edit");
+    if (!canvas) return;
+    canvas!.selection = true;
+    canvas.getObjects().forEach((obj) => {
+      obj.set({ selectable: true, hoverCursor: "move" });
+    });
+  }
+  function switchToViewMode() {
+    setMode("view");
+    if (!canvas) return;
+    canvas!.selection = false;
+    canvas.getObjects().forEach((obj) => {
+      obj.set({ selectable: false, hoverCursor: "text" });
+    });
+  }
   function addText() {
     let text = new fabric.IText("hello world", {
       left: 100,
@@ -71,6 +94,7 @@ const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
       await setDoc(docRef, { pages: [] });
     }
     await updateDoc(docRef, { pages: arrayUnion(record) });
+    switchToViewMode();
   }
   async function getDiary() {
     let docRef = doc(diaries, diaryId);
@@ -85,10 +109,10 @@ const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
         canvas.getObjects().forEach((obj) => {
           obj.set({ selectable: false, hoverCursor: "text" });
         });
-        // console.log(canvas.getObjects());
       });
     }
   }
+
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
       canvas.renderAll();
@@ -103,9 +127,13 @@ const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
       <BtnWrapper>
         {mode === "view" && (
           <>
-            <OperationBtn>Edit Page</OperationBtn>
+            <OperationBtn onClick={switchToEditMode}>Edit Page</OperationBtn>
             <OperationBtn>Previous Page</OperationBtn>
             <OperationBtn>Next Page</OperationBtn>
+            <OperationBtn>Add New Page</OperationBtn>
+            <OperationBtn onClick={() => load(diariesData.length - 1)}>
+              Jump to Last Page
+            </OperationBtn>
           </>
         )}
         {mode === "edit" && (
@@ -121,9 +149,12 @@ const DiaryEditor = ({ diaryDisplay, diaryId }: DiaryEditorProps) => {
             <OperationBtn onClick={removeItem}>Remove</OperationBtn>
             <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
             <OperationBtn onClick={save}>Save</OperationBtn>
+            <OperationBtn onClick={switchToViewMode}>Cancel</OperationBtn>
           </>
         )}
-        <OperationBtn>Close</OperationBtn>
+        <OperationBtn onClick={() => setDiaryDisplay(false)}>
+          Close
+        </OperationBtn>
       </BtnWrapper>
     </Wrapper>
   );
