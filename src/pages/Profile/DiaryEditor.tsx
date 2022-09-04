@@ -94,15 +94,20 @@ const DiaryEditor = ({
       await setDoc(docRef, { pages: [] });
     }
     await updateDoc(docRef, { pages: arrayUnion(record) });
+    let currentDiaries = [...diariesData];
+    currentDiaries.push(record);
     switchToViewMode();
+    load(currentDiaries.length - 1);
   }
   async function getDiary() {
     let docRef = doc(diaries, diaryId);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
-      alert("無日記資料");
+      resetCanvas();
+      switchToEditMode();
     } else {
       setDiariesData(docSnap.data().pages);
+      switchToViewMode();
       canvas?.loadFromJSON(docSnap.data().pages[0], () => {
         canvas.renderAll();
         canvas.selection = false;
@@ -112,11 +117,20 @@ const DiaryEditor = ({
       });
     }
   }
-
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
       canvas.renderAll();
     });
+  }
+  function switchPage(type: "+" | "-") {
+    if (type === "+" && pageRef.current !== diariesData.length - 1)
+      pageRef.current++;
+    else if (type === "-" && pageRef.current !== 0) pageRef.current--;
+    load(pageRef.current);
+  }
+  function cancelEdit() {
+    load(pageRef.current);
+    switchToViewMode();
   }
   useEffect(() => {
     if (diaryId) getDiary();
@@ -128,9 +142,20 @@ const DiaryEditor = ({
         {mode === "view" && (
           <>
             <OperationBtn onClick={switchToEditMode}>Edit Page</OperationBtn>
-            <OperationBtn>Previous Page</OperationBtn>
-            <OperationBtn>Next Page</OperationBtn>
-            <OperationBtn>Add New Page</OperationBtn>
+            <OperationBtn onClick={() => switchPage("-")}>
+              Previous Page
+            </OperationBtn>
+            <OperationBtn onClick={() => switchPage("+")}>
+              Next Page
+            </OperationBtn>
+            <OperationBtn
+              onClick={() => {
+                resetCanvas();
+                switchToEditMode();
+              }}
+            >
+              Add New Page
+            </OperationBtn>
             <OperationBtn onClick={() => load(diariesData.length - 1)}>
               Jump to Last Page
             </OperationBtn>
@@ -149,10 +174,16 @@ const DiaryEditor = ({
             <OperationBtn onClick={removeItem}>Remove</OperationBtn>
             <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
             <OperationBtn onClick={save}>Save</OperationBtn>
-            <OperationBtn onClick={switchToViewMode}>Cancel</OperationBtn>
+            <OperationBtn onClick={cancelEdit}>Cancel</OperationBtn>
           </>
         )}
-        <OperationBtn onClick={() => setDiaryDisplay(false)}>
+        <OperationBtn
+          onClick={() => {
+            resetCanvas();
+            setDiariesData([]);
+            setDiaryDisplay(false);
+          }}
+        >
           Close
         </OperationBtn>
       </BtnWrapper>
