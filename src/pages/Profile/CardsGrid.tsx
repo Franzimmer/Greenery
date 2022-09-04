@@ -3,8 +3,12 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { CardsActions } from "../../actions/cardsActions";
-import { unixTimeToString } from "./CardEditor";
 import { db, users, cards } from "../../utils/firebase";
+import CardEditor, { unixTimeToString } from "./CardEditor";
+import DiaryEditor from "./DiaryEditor";
+import DetailedCard from "./DetailedCard";
+import defaultImg from "./default.jpg";
+import { PlantCard } from "../../types/plantCardType";
 import {
   getDoc,
   getDocs,
@@ -18,10 +22,6 @@ import {
   arrayUnion,
   deleteDoc,
 } from "firebase/firestore";
-import CardEditor from "./CardEditor";
-import DetailedCard from "./DetailedCard";
-import defaultImg from "./default.jpg";
-import { PlantCard } from "../../types/plantCardType";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -223,6 +223,7 @@ const CardsGrid = () => {
   }, []);
   return (
     <>
+      <DiaryEditor />
       <OperationMenu>
         <OperationBtn
           onClick={() => {
