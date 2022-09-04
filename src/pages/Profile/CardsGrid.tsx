@@ -233,6 +233,7 @@ const CardsGrid = () => {
         diaryDisplay={diaryDisplay}
         setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}
+        setDiaryId={setDiaryId}
       />
       <OperationMenu>
         <OperationBtn

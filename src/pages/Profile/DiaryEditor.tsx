@@ -23,11 +23,13 @@ interface DiaryEditorProps {
   diaryDisplay: boolean;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   diaryId: string;
+  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 const DiaryEditor = ({
   diaryDisplay,
   setDiaryDisplay,
   diaryId,
+  setDiaryId,
 }: DiaryEditorProps) => {
   const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -88,7 +90,7 @@ const DiaryEditor = ({
   }
   async function save() {
     let record = JSON.stringify(canvas);
-    let docRef = doc(diaries, "CuJOTbSx2rWdS69occdw");
+    let docRef = doc(diaries, diaryId);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
       await setDoc(docRef, { pages: [] });
@@ -182,6 +184,7 @@ const DiaryEditor = ({
             resetCanvas();
             setDiariesData([]);
             setDiaryDisplay(false);
+            setDiaryId(null);
           }}
         >
           Close
