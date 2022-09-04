@@ -4,7 +4,7 @@ import { fabric } from "fabric";
 interface CanvasProps {
   setCanvas: (canvas: fabric.Canvas) => void;
 }
-function Canvas({ setCanvas }: CanvasProps) {
+function Canvas({ setCanvas }: CanvasProps): JSX.Element {
   const canvasRef = useRef(null);
 
   useEffect(() => {
