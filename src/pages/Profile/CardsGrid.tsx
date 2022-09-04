@@ -289,9 +289,9 @@ const CardsGrid = () => {
                     })}
                 </TagsWrapper>
                 <OperationBtn
-                  onClick={(event) => {
-                    diaryToggle(event);
-                    event.stopPropagation();
+                  onClick={(e) => {
+                    diaryToggle(e);
+                    e.stopPropagation();
                   }}
                 >
                   Diary
@@ -301,6 +301,7 @@ const CardsGrid = () => {
                     let button = e.target as HTMLButtonElement;
                     setEditCardId(button.parentElement!.id);
                     editorToggle();
+                    e.stopPropagation();
                   }}
                 >
                   Edit

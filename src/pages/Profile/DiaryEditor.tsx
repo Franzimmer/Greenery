@@ -98,8 +98,10 @@ const DiaryEditor = ({
     await updateDoc(docRef, { pages: arrayUnion(record) });
     let currentDiaries = [...diariesData];
     currentDiaries.push(record);
+    setDiariesData(currentDiaries);
     switchToViewMode();
-    load(currentDiaries.length - 1);
+    pageRef.current = currentDiaries.length - 1;
+    load(pageRef.current);
   }
   async function getDiary() {
     let docRef = doc(diaries, diaryId);
@@ -117,6 +119,7 @@ const DiaryEditor = ({
           obj.set({ selectable: false, hoverCursor: "text" });
         });
       });
+      pageRef.current = 0;
     }
   }
   function load(page: number) {
