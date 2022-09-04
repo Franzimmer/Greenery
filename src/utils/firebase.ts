@@ -11,28 +11,14 @@ const firebaseConfig = {
   appId: "1:460789801269:web:251f13169aa8a314d52c7c",
 };
 
-export const app = initializeApp(firebaseConfig);
-export const storage = getStorage(app);
-export const db = getFirestore(app);
-export const users = collection(db, "users");
-export const cards = collection(db, "cards");
-export const posts = collection(db, "posts");
-export const species = collection(db, "species");
-export const chatrooms = collection(db, "chatrooms");
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const db = getFirestore(app);
+const users = collection(db, "users");
+const cards = collection(db, "cards");
+const posts = collection(db, "posts");
+const species = collection(db, "species");
+const chatrooms = collection(db, "chatrooms");
+const diaries = collection(db, "diaries");
 
-//Delete
-//Delete document will not delete its subcollection
-
-//subcollection
-export async function getUserActivities(userId: string) {
-  const activitiesRef = collection(db, "users", userId, "activities");
-  const querySnapshot = await getDocs(activitiesRef);
-  console.log(querySnapshot);
-  if (querySnapshot.empty) {
-    alert("User not existed!");
-    return;
-  }
-  querySnapshot.forEach((doc) => {
-    return doc.data();
-  });
-}
+export { app, db, storage, users, cards, posts, species, chatrooms, diaries };

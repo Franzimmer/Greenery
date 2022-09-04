@@ -3,8 +3,12 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { CardsActions } from "../../actions/cardsActions";
-import { unixTimeToString } from "./CardEditor";
-import { db, users, cards } from "../../utils/firebase";
+import { db, cards } from "../../utils/firebase";
+import CardEditor, { unixTimeToString } from "./CardEditor";
+import DiaryEditor from "./DiaryEditor";
+import DetailedCard from "./DetailedCard";
+import defaultImg from "./default.jpg";
+import { PlantCard } from "../../types/plantCardType";
 import {
   getDoc,
   getDocs,
@@ -18,10 +22,6 @@ import {
   arrayUnion,
   deleteDoc,
 } from "firebase/firestore";
-import CardEditor from "./CardEditor";
-import DetailedCard from "./DetailedCard";
-import defaultImg from "./default.jpg";
-import { PlantCard } from "../../types/plantCardType";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -92,7 +92,9 @@ const CardsGrid = () => {
   const dispatch = useDispatch();
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
+  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [diaryId, setDiaryId] = useState<string | null>(null);
   const [tagList, setTagList] = useState<string[]>([]);
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("");
@@ -104,10 +106,14 @@ const CardsGrid = () => {
   function detailToggle() {
     detailDisplay ? setDetailDisplay(false) : setDetailDisplay(true);
   }
+  function diaryToggle(e: React.MouseEvent<HTMLElement>) {
+    const target = e.target as HTMLDivElement;
+    setDiaryId(target.parentElement!.id);
+    diaryDisplay ? setDiaryDisplay(false) : setDiaryDisplay(true);
+  }
   function selectDetailData(e: React.MouseEvent<HTMLElement>) {
     const target = e.currentTarget as HTMLDivElement;
     let selectedData = cardList.find((card) => target.id === card.cardId);
-    console.log(selectedData);
     setDetailData(selectedData);
   }
   function filterToggle() {
@@ -223,6 +229,12 @@ const CardsGrid = () => {
   }, []);
   return (
     <>
+      <DiaryEditor
+        diaryDisplay={diaryDisplay}
+        setDiaryDisplay={setDiaryDisplay}
+        diaryId={diaryId!}
+        setDiaryId={setDiaryId}
+      />
       <OperationMenu>
         <OperationBtn
           onClick={() => {
@@ -276,12 +288,20 @@ const CardsGrid = () => {
                       return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                     })}
                 </TagsWrapper>
-                <OperationBtn>Diary</OperationBtn>
+                <OperationBtn
+                  onClick={(e) => {
+                    diaryToggle(e);
+                    e.stopPropagation();
+                  }}
+                >
+                  Diary
+                </OperationBtn>
                 <OperationBtn
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
                     let button = e.target as HTMLButtonElement;
                     setEditCardId(button.parentElement!.id);
                     editorToggle();
+                    e.stopPropagation();
                   }}
                 >
                   Edit
