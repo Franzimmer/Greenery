@@ -14,5 +14,5 @@ const allReducers = combineReducers({
   favoritePlants,
   favoritePosts,
 });
-
+export type RootState = ReturnType<typeof allReducers>;
 export default allReducers;

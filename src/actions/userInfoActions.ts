@@ -1,15 +1,13 @@
+import { UserInfo } from "../types/userInfoType";
 export enum UserInfoActions {
-  ADD_NEW_USER_INFO,
+  SET_USER_INFO,
   EDIT_USER_NAME,
   EDIT_USER_PHOTO,
 }
-
-interface addANewUser {
-  type: UserInfoActions.ADD_NEW_USER_INFO;
+interface setUserInfo {
+  type: UserInfoActions.SET_USER_INFO;
   payload: {
-    userId: string;
-    userName: string;
-    userPhotoUrl: string;
+    data: UserInfo;
   };
 }
 interface editUserName {
@@ -20,4 +18,4 @@ interface editUserPhoto {
   type: UserInfoActions.EDIT_USER_PHOTO;
   payload: { userPhotoUrl: string };
 }
-export type userInfoActionsTypes = addANewUser | editUserName | editUserPhoto;
+export type userInfoActionsTypes = setUserInfo | editUserName | editUserPhoto;

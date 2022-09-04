@@ -11,18 +11,23 @@ const favoritePlants = (
   action: favoritePlantsActionTypes
 ) => {
   switch (action.type) {
+    case favoritePlantsActions.SET_FAVORITE_PLANTS_DATA: {
+      return action.payload.data;
+    }
     case favoritePlantsActions.ADD_FAVORITE_PLANT: {
-      let currentFavoritePlants = JSON.parse(JSON.stringify(state));
+      let currentFavoritePlants = [...state];
       currentFavoritePlants.push(action.payload.data);
       return currentFavoritePlants;
     }
     case favoritePlantsActions.DELETE_FAVORITE_PLANT: {
-      let currentFavoritePlants = JSON.parse(JSON.stringify(state));
+      let currentFavoritePlants = [...state];
       const result = currentFavoritePlants.filter(
         (plant: favoritePlant) => plant.cardId !== action.payload.cardId
       );
       return result;
     }
+    default:
+      return state;
   }
 };
 
