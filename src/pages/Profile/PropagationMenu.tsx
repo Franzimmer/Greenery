@@ -40,15 +40,26 @@ const PropagationMenu = ({
       payload: { newCard: uploadData },
     });
     await setDoc(document, uploadData);
-    console.log("promise");
   }
 
   function propagate() {
-    if (!numberRef.current?.value) return;
-    else if (!inputRef.current?.value) return;
+    if (!numberRef.current?.value) {
+      alert("請填寫數量");
+      return;
+    } else if (
+      typeRef.current?.value === "Seedling" &&
+      !inputRef.current?.value
+    ) {
+      alert("請完整填寫親本植物");
+      return;
+    }
+    let parents = [propagateParentData.plantName];
+    if (typeRef.current?.value === "Seedling") {
+      parents.push(inputRef.current!.value);
+    }
     const data = {
       ...propagateParentData,
-      parents: [propagateParentData.plantName, inputRef.current.value],
+      parents: parents,
       birthday: Date.now(),
       plantPhoto: "",
       cardId: "",
