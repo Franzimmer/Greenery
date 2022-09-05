@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
-import CardsGrid from "./CardsGrid";
+import CardsGrid from "./cards/CardsGrid";
 
 const Wrapper = styled.div`
   display: flex;

@@ -2,11 +2,11 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { DialogWrapper } from "./Dialog";
 import { OperationBtn } from "./CardsGrid";
-import { PlantCard } from "../../types/plantCardType";
-import { cards } from "../../utils/firebase";
+import { PlantCard } from "../../../types/plantCardType";
+import { cards } from "../../../utils/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { CardsActions } from "../../actions/cardsActions";
+import { CardsActions } from "../../../actions/cardsActions";
 
 const Text = styled.p``;
 const Input = styled.input`
@@ -16,7 +16,7 @@ const DropDown = styled.select`
   margin: 0px 0px 10px 0px;
 `;
 const DropDownOptions = styled.option``;
-interface PropagationMenu {
+interface PropagationMenuProps {
   propagateDisplay: boolean;
   setPropagateDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   propagateParentData: PlantCard;
@@ -25,7 +25,7 @@ const PropagationMenu = ({
   propagateDisplay,
   setPropagateDisplay,
   propagateParentData,
-}: PropagationMenu) => {
+}: PropagationMenuProps) => {
   const numberRef = useRef<HTMLInputElement>(null);
   const typeRef = useRef<HTMLSelectElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
