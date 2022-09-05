@@ -86,8 +86,10 @@ const TagsWrapper = styled.div`
 
 const CheckBox = styled.input``;
 type CheckList = Record<string, boolean>;
-
-const CardsGrid = () => {
+interface CardsGridProps {
+  $display: boolean;
+}
+const CardsGrid = ({ $display }: CardsGridProps) => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
@@ -238,9 +240,9 @@ const CardsGrid = () => {
     });
     setCheckList(checkboxes);
   }, [cardList.length]);
-
+  let displayProp = $display ? "block" : "none";
   return (
-    <>
+    <div style={{ display: displayProp }}>
       <DiaryEditor
         diaryDisplay={diaryDisplay}
         setDiaryDisplay={setDiaryDisplay}
@@ -335,7 +337,7 @@ const CardsGrid = () => {
         detailToggle={detailToggle}
         detailData={detailData!}
       />
-    </>
+    </div>
   );
 };
 

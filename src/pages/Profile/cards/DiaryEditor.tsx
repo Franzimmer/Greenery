@@ -53,6 +53,7 @@ const DiaryEditor = ({
   }
   function switchToViewMode() {
     setMode("view");
+    canvas!.selection = false;
     canvas?.getObjects().forEach((obj) => {
       obj.set({ selectable: false, hoverCursor: "text" });
     });
@@ -154,6 +155,10 @@ const DiaryEditor = ({
   }
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
+      canvas!.selection = false;
+      canvas?.getObjects().forEach((obj) => {
+        obj.set({ selectable: false, hoverCursor: "text" });
+      });
       canvas.renderAll();
     });
   }

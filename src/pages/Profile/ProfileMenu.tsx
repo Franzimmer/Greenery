@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const MenuWrapper = styled.div`
@@ -15,12 +15,24 @@ const MenuItem = styled.button`
     color: #fff;
   }
 `;
-
-const ProfileMenu = () => {
+interface ProfileMenuProps {
+  setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+}
+const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
+  function tabSwitcher(event: React.MouseEvent<HTMLElement>) {
+    let defaultState = {
+      Cards: false,
+      Calendar: false,
+    };
+    let target = event.target as HTMLButtonElement;
+    let key = target.textContent as "Cards" | "Calendar";
+    defaultState[key] = true;
+    setTabDisplay(defaultState);
+  }
   return (
     <MenuWrapper>
-      <MenuItem>Cards</MenuItem>
-      <MenuItem>Calendar</MenuItem>
+      <MenuItem onClick={(e) => tabSwitcher(e)}>Cards</MenuItem>
+      <MenuItem onClick={(e) => tabSwitcher(e)}>Calendar</MenuItem>
       <MenuItem>Gallery</MenuItem>
       <MenuItem>Favorites</MenuItem>
     </MenuWrapper>
