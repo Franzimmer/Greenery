@@ -28,15 +28,6 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       );
       return result;
     }
-    case CardsActions.EDIT_PLANT_OWNER: {
-      let currentCards = [...state];
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      currentCards[editCardIndex].ownerId = action.payload.cardId;
-      currentCards.splice(editCardIndex, 1);
-      return currentCards;
-    }
     case CardsActions.PLANT_PROPAGATE: {
       let currentCards = [...state];
       let parentCard = currentCards.find(

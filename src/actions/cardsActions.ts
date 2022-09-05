@@ -3,7 +3,6 @@ export enum CardsActions {
   SET_CARDS_DATA,
   ADD_NEW_PLANT_CARD,
   DELETE_PLANT_CARD,
-  EDIT_PLANT_OWNER,
   EDIT_PLANT_INFO,
   PLANT_PROPAGATE,
 }
@@ -31,13 +30,6 @@ interface deletePlantCard {
     cardId: string;
   };
 }
-interface editPlantOwner {
-  type: CardsActions.EDIT_PLANT_OWNER;
-  payload: {
-    cardId: string;
-    ownerId: string;
-  };
-}
 interface plantPropogate {
   type: CardsActions.PLANT_PROPAGATE;
   payload: {
@@ -51,5 +43,4 @@ export type CardsActionTypes =
   | addNewPlantCard
   | editPlantCard
   | deletePlantCard
-  | editPlantOwner
   | plantPropogate;
