@@ -52,7 +52,9 @@ const DiaryEditor = ({
   }
   function switchToViewMode() {
     setMode("view");
-    setAllObjDeactive();
+    canvas?.getObjects().forEach((obj) => {
+      obj.set({ selectable: false, hoverCursor: "text" });
+    });
   }
   function addText() {
     let text = new fabric.IText("hello world", {
@@ -74,8 +76,10 @@ const DiaryEditor = ({
   }
   async function addImage() {
     let fileLink = await uploadFile();
+
     fabric.Image.fromURL(fileLink!, function(oImg) {
       oImg.set({ left: 20, top: 50 });
+      oImg.scaleToWidth(200, false);
       canvas?.add(oImg);
       canvas?.setActiveObject(oImg);
     });
@@ -101,7 +105,7 @@ const DiaryEditor = ({
     setDiariesData(currentDiaries);
     pageRef.current = currentDiaries.length - 1;
     load(pageRef.current);
-    setMode("view");
+    switchToViewMode();
   }
   async function saveEdit() {
     setAllObjDeactive();
@@ -113,7 +117,7 @@ const DiaryEditor = ({
     await setDoc(docRef, { pages: currentDiaries });
     alert("成功更新資料！");
     setDiariesData(currentDiaries);
-    setMode("view");
+    switchToViewMode();
   }
   async function getDiary() {
     let docRef = doc(diaries, diaryId);
