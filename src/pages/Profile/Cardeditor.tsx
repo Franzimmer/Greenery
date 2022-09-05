@@ -6,7 +6,8 @@ import { db, storage, cards, species } from "../../utils/firebase";
 import { getDocs, query, where, setDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { CardsActions } from "../../actions/cardsActions";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducer/index";
 
 interface CardEditorWrapperProps {
   $display: boolean;
@@ -90,6 +91,7 @@ const CardEditor = ({
   const lightRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
 
   function createPreviewLink() {
@@ -150,6 +152,7 @@ const CardEditor = ({
     setTagList(currentTagList);
   }
   function resetEditor() {
+    imageRef.current!.value = "";
     nameRef.current!.value = "";
     speciesRef.current!.value = "";
     birthdayRef.current!.value = "";
@@ -190,6 +193,7 @@ const CardEditor = ({
     }
     const data = {
       cardId: editCardId,
+      parents: cardList.find((card) => card.cardId === editCardId)?.parents,
       ownerId: "test",
       plantName: nameRef.current?.value,
       plantPhoto: imgLink,

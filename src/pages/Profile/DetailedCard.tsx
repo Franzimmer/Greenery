@@ -57,6 +57,12 @@ const DetailedCard = ({
             <Text>{detailData.species}</Text>
           </>
         )}
+        {detailData?.parents && (
+          <>
+            <Text>Family</Text>
+            <Text>{detailData.parents.join(" & ")}的寶寶</Text>
+          </>
+        )}
         {detailData?.waterPref && (
           <>
             <Text>水分需求</Text>
