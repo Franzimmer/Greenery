@@ -36,7 +36,12 @@ const DiaryEditor = ({
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
   const [mode, setMode] = useState<"view" | "edit">("view");
-
+  const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(null);
+  function setAllObjDeactive() {
+    if (!canvas) return;
+    canvas!.selection = false;
+    canvas.discardActiveObject().renderAll();
+  }
   function switchToEditMode() {
     setMode("edit");
     if (!canvas) return;
@@ -47,11 +52,7 @@ const DiaryEditor = ({
   }
   function switchToViewMode() {
     setMode("view");
-    if (!canvas) return;
-    canvas!.selection = false;
-    canvas.getObjects().forEach((obj) => {
-      obj.set({ selectable: false, hoverCursor: "text" });
-    });
+    setAllObjDeactive();
   }
   function addText() {
     let text = new fabric.IText("hello world", {
@@ -87,6 +88,7 @@ const DiaryEditor = ({
     canvas?.remove(...canvas.getObjects());
   }
   async function save() {
+    setAllObjDeactive();
     let record = JSON.stringify(canvas);
     let docRef = doc(diaries, diaryId);
     const docSnap = await getDoc(docRef);
@@ -97,9 +99,21 @@ const DiaryEditor = ({
     let currentDiaries = [...diariesData];
     currentDiaries.push(record);
     setDiariesData(currentDiaries);
-    switchToViewMode();
     pageRef.current = currentDiaries.length - 1;
     load(pageRef.current);
+    setMode("view");
+  }
+  async function saveEdit() {
+    setAllObjDeactive();
+    let index = pageRef.current;
+    let record = JSON.stringify(canvas);
+    let currentDiaries = [...diariesData];
+    currentDiaries[index] = record;
+    let docRef = doc(diaries, diaryId);
+    await setDoc(docRef, { pages: currentDiaries });
+    alert("成功更新資料！");
+    setDiariesData(currentDiaries);
+    setMode("view");
   }
   async function getDiary() {
     let docRef = doc(diaries, diaryId);
@@ -144,7 +158,14 @@ const DiaryEditor = ({
       <BtnWrapper>
         {mode === "view" && (
           <>
-            <OperationBtn onClick={switchToEditMode}>Edit Page</OperationBtn>
+            <OperationBtn
+              onClick={() => {
+                setSaveMode("saveEdit");
+                switchToEditMode();
+              }}
+            >
+              Edit Page
+            </OperationBtn>
             <OperationBtn onClick={() => switchPage("-")}>
               Previous Page
             </OperationBtn>
@@ -154,6 +175,7 @@ const DiaryEditor = ({
             <OperationBtn
               onClick={() => {
                 resetCanvas();
+                setSaveMode("saveAdd");
                 switchToEditMode();
               }}
             >
@@ -176,7 +198,12 @@ const DiaryEditor = ({
             />
             <OperationBtn onClick={removeItem}>Remove</OperationBtn>
             <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
-            <OperationBtn onClick={save}>Save</OperationBtn>
+            {saveMode === "saveAdd" && (
+              <OperationBtn onClick={save}>Save</OperationBtn>
+            )}
+            {saveMode === "saveEdit" && (
+              <OperationBtn onClick={saveEdit}>Save Edit</OperationBtn>
+            )}
             <OperationBtn onClick={cancelEdit}>Cancel</OperationBtn>
           </>
         )}
