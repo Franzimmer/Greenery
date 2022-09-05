@@ -33,6 +33,7 @@ const DiaryEditor = ({
 }: DiaryEditorProps) => {
   const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const colorRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
   const [mode, setMode] = useState<"view" | "edit">("view");
@@ -63,6 +64,19 @@ const DiaryEditor = ({
     });
     canvas?.add(text);
     canvas?.setActiveObject(text);
+  }
+  function changeTextColor() {
+    let cValue = colorRef.current?.value;
+    if (canvas?.getActiveObject().type !== "i-text") return;
+    canvas?.getActiveObject().set("fill", cValue);
+    canvas?.renderAll();
+  }
+  function changeTextWeight() {
+    if (canvas?.getActiveObject().type !== "i-text") return;
+    let target = canvas?.getActiveObject() as fabric.IText;
+    if (target.fontWeight === "normal") target.set("fontWeight", "bold");
+    else if (target.fontWeight === "bold") target.set("fontWeight", "normal");
+    canvas?.renderAll();
   }
   async function uploadFile() {
     if (!fileRef.current) return;
@@ -193,6 +207,11 @@ const DiaryEditor = ({
         {mode === "edit" && (
           <>
             <OperationBtn onClick={addText}>Add Text</OperationBtn>
+            <input type="color" ref={colorRef} onChange={changeTextColor} />
+            <OperationBtn onClick={changeTextWeight}>
+              Bold Switcher
+            </OperationBtn>
+            <br />
             <AddImgInput
               ref={fileRef}
               type="file"
