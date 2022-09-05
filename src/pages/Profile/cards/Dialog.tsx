@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { CardsActions } from "../../actions/cardsActions";
+import { CardsActions } from "../../../actions/cardsActions";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import { doc, setDoc } from "firebase/firestore";
-import { cards } from "../../utils/firebase";
+import { cards } from "../../../utils/firebase";
 interface DialogWrapperProps {
   $display: boolean;
 }

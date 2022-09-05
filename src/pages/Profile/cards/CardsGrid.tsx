@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer/index";
-import { CardsActions } from "../../actions/cardsActions";
-import { db, cards } from "../../utils/firebase";
+import { RootState } from "../../../reducer/index";
+import { CardsActions } from "../../../actions/cardsActions";
+import { db, cards } from "../../../utils/firebase";
 import CardEditor, { unixTimeToString } from "./CardEditor";
 import DiaryEditor from "./DiaryEditor";
 import DetailedCard from "./DetailedCard";
 import defaultImg from "./default.jpg";
-import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../../types/plantCardType";
 import {
   getDoc,
   getDocs,

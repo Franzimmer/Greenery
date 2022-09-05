@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../../types/plantCardType";
 import { unixTimeToString } from "./CardEditor";
 import { OperationBtn } from "./CardsGrid";
 import Dialog from "./Dialog";

@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
-import { db, storage, cards, species } from "../../utils/firebase";
+import { db, storage, cards, species } from "../../../utils/firebase";
 import { getDocs, query, where, setDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { CardsActions } from "../../actions/cardsActions";
+import { CardsActions } from "../../../actions/cardsActions";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer/index";
+import { RootState } from "../../../reducer/index";
 
 interface CardEditorWrapperProps {
   $display: boolean;

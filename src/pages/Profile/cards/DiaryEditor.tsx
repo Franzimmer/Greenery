@@ -3,7 +3,7 @@ import { fabric } from "fabric";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import Canvas from "./Canvas";
-import { db, storage, diaries } from "../../utils/firebase";
+import { storage, diaries } from "../../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
