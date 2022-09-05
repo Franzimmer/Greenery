@@ -291,7 +291,7 @@ const CardsGrid = () => {
                   checked={checkList[card.cardId]}
                   onClick={(event) => switchOneCheck(event, card.cardId)}
                 />
-                <PlantImg path={card.plantPhoto} />
+                <PlantImg path={card.plantPhoto || defaultImg} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
                 <TagsWrapper>

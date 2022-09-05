@@ -5,6 +5,7 @@ import { unixTimeToString } from "./CardEditor";
 import { OperationBtn } from "./CardsGrid";
 import Dialog from "./Dialog";
 import PropagationMenu from "./PropagationMenu";
+import defaultImg from "./default.jpg";
 interface DetailedCardWrapperProps {
   $display: boolean;
 }
@@ -39,7 +40,11 @@ const DetailedCard = ({
   return (
     <>
       <DetailedCardWrapper $display={detailDisplay}>
-        {detailData?.plantPhoto && <PlantImg src={detailData.plantPhoto} />}
+        {detailData.plantPhoto ? (
+          <PlantImg src={detailData.plantPhoto} />
+        ) : (
+          <PlantImg src={defaultImg} />
+        )}
         {detailData?.plantName && (
           <>
             <Text>名字</Text>
