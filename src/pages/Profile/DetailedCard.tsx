@@ -40,7 +40,7 @@ const DetailedCard = ({
   return (
     <>
       <DetailedCardWrapper $display={detailDisplay}>
-        {detailData.plantPhoto ? (
+        {detailData?.plantPhoto ? (
           <PlantImg src={detailData.plantPhoto} />
         ) : (
           <PlantImg src={defaultImg} />
