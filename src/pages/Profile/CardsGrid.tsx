@@ -231,6 +231,14 @@ const CardsGrid = () => {
     }
     getCards();
   }, []);
+  useEffect(() => {
+    let checkboxes = {} as CheckList;
+    cardList.forEach((card) => {
+      checkboxes[card.cardId] = false;
+    });
+    setCheckList(checkboxes);
+  }, [cardList.length]);
+
   return (
     <>
       <DiaryEditor
@@ -310,6 +318,7 @@ const CardsGrid = () => {
                 >
                   Edit
                 </OperationBtn>
+                <OperationBtn>favorite</OperationBtn>
               </Card>
             );
           })}

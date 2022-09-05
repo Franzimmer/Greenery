@@ -80,9 +80,7 @@ const DiaryEditor = ({
     });
   }
   function removeItem() {
-    canvas?.getActiveObjects().forEach((obj) => {
-      canvas?.remove(obj);
-    });
+    canvas?.remove(...canvas?.getActiveObjects());
     canvas?.discardActiveObject().renderAll();
   }
   function resetCanvas() {

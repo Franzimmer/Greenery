@@ -8,5 +8,5 @@ export interface PlantCard {
   lightPref?: string;
   tags?: string[];
   birthday?: number;
-  parents?: string;
+  parents?: string[];
 }

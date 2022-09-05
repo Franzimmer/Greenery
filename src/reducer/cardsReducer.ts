@@ -28,26 +28,6 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       );
       return result;
     }
-    case CardsActions.PLANT_PROPAGATE: {
-      let currentCards = [...state];
-      let parentCard = currentCards.find(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-      let editCardIndex = currentCards.findIndex(
-        (card: PlantCard) => card.cardId === action.payload.cardId
-      );
-
-      for (let i = 0; i++; i < action.payload.number) {
-        const childCard = {
-          ...parentCard,
-          cardId: action.payload.childId[i],
-          parents: parentCard?.cardId,
-          birthday: Date.now(),
-        } as PlantCard;
-        currentCards.splice(editCardIndex, 0, childCard);
-      }
-      return currentCards;
-    }
     default:
       return state;
   }

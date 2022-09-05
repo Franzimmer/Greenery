@@ -1,15 +1,14 @@
 import React, { useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { CardsActions } from "../../actions/cardsActions";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
-import { RootState } from "../../reducer/index";
 import { doc, setDoc } from "firebase/firestore";
 import { cards } from "../../utils/firebase";
 interface DialogWrapperProps {
   $display: boolean;
 }
-const DialogWrapper = styled.div<DialogWrapperProps>`
+export const DialogWrapper = styled.div<DialogWrapperProps>`
   padding: 10px;
   width: 200px;
   border: 1px solid #000;
@@ -20,7 +19,6 @@ const DialogInput = styled.input`
   height: 30px;
   margin-top: 10px;
 `;
-const Text = styled.p``;
 
 interface DialogProps {
   tradeDisplay: boolean;
@@ -34,7 +32,6 @@ const Dialog = ({
   tradeId,
   detailToggle,
 }: DialogProps) => {
-  const cardList = useSelector((state: RootState) => state.cards);
   const inputRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
 

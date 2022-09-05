@@ -19,13 +19,13 @@ const favoritePlants = (
       currentFavoritePlants.push(action.payload.data);
       return currentFavoritePlants;
     }
-    case favoritePlantsActions.DELETE_FAVORITE_PLANT: {
-      let currentFavoritePlants = [...state];
-      const result = currentFavoritePlants.filter(
-        (plant: favoritePlant) => plant.cardId !== action.payload.cardId
-      );
-      return result;
-    }
+    // case favoritePlantsActions.DELETE_FAVORITE_PLANT: {
+    //   let currentFavoritePlants = [...state];
+    //   const result = currentFavoritePlants.filter(
+    //     (plant: favoritePlant) => plant?.cardId !== action.payload?.cardId
+    //   );
+    //   return result;
+    // }
     default:
       return state;
   }

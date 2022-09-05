@@ -4,7 +4,6 @@ export enum CardsActions {
   ADD_NEW_PLANT_CARD,
   DELETE_PLANT_CARD,
   EDIT_PLANT_INFO,
-  PLANT_PROPAGATE,
 }
 interface getCardsData {
   type: CardsActions.SET_CARDS_DATA;
@@ -30,17 +29,8 @@ interface deletePlantCard {
     cardId: string;
   };
 }
-interface plantPropogate {
-  type: CardsActions.PLANT_PROPAGATE;
-  payload: {
-    cardId: string;
-    number: number;
-    childId: string[];
-  };
-}
 export type CardsActionTypes =
   | getCardsData
   | addNewPlantCard
   | editPlantCard
-  | deletePlantCard
-  | plantPropogate;
+  | deletePlantCard;
