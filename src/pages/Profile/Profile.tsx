@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import CardsGrid from "./cards/CardsGrid";
+import CalendarApp from "./calendar/CalendarApp";
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,12 +25,17 @@ const SideBar = styled.div`
 `;
 
 const Profile = () => {
+  const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>({
+    Cards: true,
+    Calendar: false,
+  });
   return (
     <Wrapper>
       <MainWrapper>
         <UserInfoSection />
-        <ProfileMenu />
-        <CardsGrid />
+        <ProfileMenu setTabDisplay={setTabDisplay} />
+        <CardsGrid $display={tabDisplay.Cards} />
+        <CalendarApp $display={tabDisplay.Calendar} />
       </MainWrapper>
       <SideBar>
         <h3>SideBar Here</h3>
