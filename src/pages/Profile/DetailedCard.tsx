@@ -4,6 +4,8 @@ import { PlantCard } from "../../types/plantCardType";
 import { unixTimeToString } from "./CardEditor";
 import { OperationBtn } from "./CardsGrid";
 import Dialog from "./Dialog";
+import PropagationMenu from "./PropagationMenu";
+import defaultImg from "./default.jpg";
 interface DetailedCardWrapperProps {
   $display: boolean;
 }
@@ -34,11 +36,15 @@ const DetailedCard = ({
   detailToggle,
 }: DetailedCardProps) => {
   const [tradeDisplay, setTradeDisplay] = useState(false);
-  function tradeToggle() {}
+  const [propagateDisplay, setPropagateDisplay] = useState(false);
   return (
     <>
       <DetailedCardWrapper $display={detailDisplay}>
-        {detailData?.plantPhoto && <PlantImg src={detailData.plantPhoto} />}
+        {detailData.plantPhoto ? (
+          <PlantImg src={detailData.plantPhoto} />
+        ) : (
+          <PlantImg src={defaultImg} />
+        )}
         {detailData?.plantName && (
           <>
             <Text>名字</Text>
@@ -49,6 +55,12 @@ const DetailedCard = ({
           <>
             <Text>品種</Text>
             <Text>{detailData.species}</Text>
+          </>
+        )}
+        {detailData?.parents && (
+          <>
+            <Text>Family</Text>
+            <Text>{detailData.parents.join(" & ")}的寶寶</Text>
           </>
         )}
         {detailData?.waterPref && (
@@ -70,6 +82,9 @@ const DetailedCard = ({
           </>
         )}
         <OperationBtn onClick={() => setTradeDisplay(true)}>trade</OperationBtn>
+        <OperationBtn onClick={() => setPropagateDisplay(true)}>
+          propagate
+        </OperationBtn>
         <OperationBtn onClick={detailToggle}>close</OperationBtn>
       </DetailedCardWrapper>
       <Dialog
@@ -77,6 +92,11 @@ const DetailedCard = ({
         detailToggle={detailToggle}
         setTradeDisplay={setTradeDisplay}
         tradeId={detailData?.cardId}
+      />
+      <PropagationMenu
+        propagateDisplay={propagateDisplay}
+        setPropagateDisplay={setPropagateDisplay}
+        propagateParentData={detailData}
       />
     </>
   );

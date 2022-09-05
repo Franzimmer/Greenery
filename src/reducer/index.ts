@@ -11,8 +11,8 @@ const allReducers = combineReducers({
   cards,
   followList,
   notifications,
-  favoritePlants,
-  favoritePosts,
+  // favoritePlants,
+  // favoritePosts,
 });
 export type RootState = ReturnType<typeof allReducers>;
 export default allReducers;

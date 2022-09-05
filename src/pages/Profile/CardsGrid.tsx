@@ -231,6 +231,14 @@ const CardsGrid = () => {
     }
     getCards();
   }, []);
+  useEffect(() => {
+    let checkboxes = {} as CheckList;
+    cardList.forEach((card) => {
+      checkboxes[card.cardId] = false;
+    });
+    setCheckList(checkboxes);
+  }, [cardList.length]);
+
   return (
     <>
       <DiaryEditor
@@ -283,7 +291,7 @@ const CardsGrid = () => {
                   checked={checkList[card.cardId]}
                   onClick={(event) => switchOneCheck(event, card.cardId)}
                 />
-                <PlantImg path={card.plantPhoto} />
+                <PlantImg path={card.plantPhoto || defaultImg} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>
                 <TagsWrapper>
@@ -310,6 +318,7 @@ const CardsGrid = () => {
                 >
                   Edit
                 </OperationBtn>
+                <OperationBtn>favorite</OperationBtn>
               </Card>
             );
           })}
