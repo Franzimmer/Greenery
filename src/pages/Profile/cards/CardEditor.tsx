@@ -193,7 +193,8 @@ const CardEditor = ({
     }
     const data = {
       cardId: editCardId,
-      parents: cardList.find((card) => card.cardId === editCardId)?.parents,
+      parents:
+        cardList.find((card) => card.cardId === editCardId)?.parents || [],
       ownerId: "test",
       plantName: nameRef.current?.value,
       plantPhoto: imgLink,

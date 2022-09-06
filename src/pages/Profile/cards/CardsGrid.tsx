@@ -122,11 +122,23 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     if (filterOptions) {
       setFilterOptionsOpen(false);
       setFilter("");
+      let checkboxes = {} as CheckList;
+      cardList.forEach((card) => {
+        checkboxes[card.cardId] = false;
+      });
+      setCheckList(checkboxes);
     } else setFilterOptionsOpen(true);
   }
   function selectFilter(e: React.MouseEvent<HTMLElement>) {
     let eventTarget = e.target as HTMLDivElement;
-    setFilter(eventTarget.textContent!);
+    let filter = eventTarget.textContent!;
+    setFilter(filter);
+    let filtered = cardList.filter((card) => card.tags?.includes(filter));
+    let checkboxes = {} as CheckList;
+    filtered.forEach((card) => {
+      checkboxes[card.cardId] = false;
+    });
+    setCheckList(checkboxes);
   }
   function filterCard(tagList: string[]): boolean {
     if (filter) return tagList.includes(filter);
