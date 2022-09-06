@@ -214,7 +214,6 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
   useEffect(() => {
     async function getCards() {
       let results: DocumentData[] = [];
-      let tags: string[] = [];
       let checkboxes = {} as CheckList;
       const q = query(cards, where("ownerId", "==", "test"));
       const querySnapshot = await getDocs(q);
@@ -225,18 +224,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
         checkboxes[doc.data().cardId] = false;
-        let searchTargets = doc.data()?.tags || [];
-        if (searchTargets.length) {
-          let checkResults = searchTargets.map((tag: string) => {
-            return tags.includes(tag);
-          });
-          searchTargets.forEach((tag: string, index: number) => {
-            !checkResults[index] && tags.push(tag);
-          });
-        }
       });
-      setTagList(tags);
-
       setCheckList(checkboxes);
       dispatch({
         type: CardsActions.SET_CARDS_DATA,
@@ -246,12 +234,22 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     getCards();
   }, []);
   useEffect(() => {
+    let tags: string[] = [];
+    cardList.forEach((card) => {
+      let searchTargets = card.tags;
+      searchTargets?.forEach((tag) => {
+        if (!tags.includes(tag)) tags.push(tag);
+      });
+    });
+    setTagList(tags);
+  }, [cardList]);
+  useEffect(() => {
     let checkboxes = {} as CheckList;
     cardList.forEach((card) => {
       checkboxes[card.cardId] = false;
     });
     setCheckList(checkboxes);
-  }, [cardList.length]);
+  }, [cardList]);
   let displayProp = $display ? "block" : "none";
   console.log(tagList);
   return (

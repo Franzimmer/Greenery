@@ -146,13 +146,6 @@ const CardEditor = ({
     const dowloadLink = await getDownloadURL(storageRef);
     return dowloadLink;
   }
-  function checkTagList(tags: string[]) {
-    let currentTagList = [...tagList];
-    tags.forEach((tag) => {
-      !tagList.includes(tag) && currentTagList.push(tag);
-    });
-    setTagList(currentTagList);
-  }
   function resetEditor() {
     imageRef.current!.value = "";
     nameRef.current!.value = "";
@@ -183,7 +176,6 @@ const CardEditor = ({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
-    checkTagList(tags);
     editorToggle();
   }
   async function editCard() {
@@ -211,7 +203,6 @@ const CardEditor = ({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
-    checkTagList(data.tags);
     editorToggle();
   }
   useEffect(() => {
@@ -314,6 +305,7 @@ const CardEditor = ({
             onClick={async () => {
               await addCard();
               resetEditor();
+              setEditCardId(null);
             }}
           >
             Add
