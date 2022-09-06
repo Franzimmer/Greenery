@@ -162,7 +162,7 @@ const CardsGrid = () => {
     setCheckList(newObj);
     event?.stopPropagation();
   }
-  async function addEventToDB(type: "water" | "fertilize", plants: string[]) {
+  async function addEventToDB(type: "water" | "fertilize", plantIds: string[]) {
     let docName = unixTimeToString(Date.now());
     const activitiesRef = collection(db, "users", "test", "activities");
     let docRef = doc(activitiesRef, docName);
@@ -171,9 +171,9 @@ const CardsGrid = () => {
       await setDoc(docRef, { watering: [], fertilizing: [] });
     }
     if (type === "water") {
-      await updateDoc(docRef, { watering: arrayUnion(...plants) });
+      await updateDoc(docRef, { watering: arrayUnion(...plantIds) });
     } else if (type === "fertilize") {
-      await updateDoc(docRef, { fertilizing: arrayUnion(...plants) });
+      await updateDoc(docRef, { fertilizing: arrayUnion(...plantIds) });
     }
   }
   function addEvents(type: "water" | "fertilize") {
@@ -181,17 +181,19 @@ const CardsGrid = () => {
       (key) => checkList[key] === true
     );
     if (!eventIds.length) return;
+    let idList: string[] = [];
     let nameList: string[] = [];
     eventIds.forEach((eventId) => {
-      let targetCard = cardList.filter((card) => card.cardId === eventId)[0];
-      nameList.push(targetCard.plantName);
+      let targetCard = cardList.find((card) => card.cardId === eventId);
+      idList.push(targetCard!.cardId);
+      nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
       alert(`已爲 ${nameList.join(" & ")} 澆水！`);
     }
     if (type === "fertilize") alert(`已爲 ${nameList.join(" & ")} 施肥！`);
     clearAllCheck();
-    addEventToDB(type, nameList);
+    addEventToDB(type, idList);
   }
   async function deleteCard(cardId: string) {
     dispatch({
