@@ -34,8 +34,8 @@ const Profile = () => {
       <MainWrapper>
         <UserInfoSection />
         <ProfileMenu setTabDisplay={setTabDisplay} />
-        <CardsGrid $display={tabDisplay.Cards} />
-        <CalendarApp $display={tabDisplay.Calendar} />
+        {tabDisplay.Cards && <CardsGrid />}
+        {tabDisplay.Calendar && <CalendarApp />}
       </MainWrapper>
       <SideBar>
         <h3>SideBar Here</h3>
