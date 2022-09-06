@@ -251,7 +251,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     setCheckList(checkboxes);
   }, [cardList]);
   let displayProp = $display ? "block" : "none";
-  console.log(tagList);
+  console.log(editCardId);
   return (
     <div style={{ display: displayProp }}>
       <DiaryEditor

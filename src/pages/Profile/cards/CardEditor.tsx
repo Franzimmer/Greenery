@@ -296,6 +296,7 @@ const CardEditor = ({
             onClick={async () => {
               await editCard();
               resetEditor();
+              setEditCardId(null);
             }}
           >
             Save
@@ -305,7 +306,6 @@ const CardEditor = ({
             onClick={async () => {
               await addCard();
               resetEditor();
-              setEditCardId(null);
             }}
           >
             Add
