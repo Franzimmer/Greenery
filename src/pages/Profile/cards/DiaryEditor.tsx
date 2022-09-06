@@ -37,7 +37,9 @@ const DiaryEditor = ({
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
   const [mode, setMode] = useState<"view" | "edit">("view");
-  const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(null);
+  const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(
+    "saveAdd"
+  );
   function setAllObjDeactive() {
     if (!canvas) return;
     canvas!.selection = false;

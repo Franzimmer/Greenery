@@ -66,6 +66,7 @@ interface FCProps {
   editCardId: string | null;
   tagList: string[];
   setTagList: React.Dispatch<React.SetStateAction<string[]>>;
+  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 export function unixTimeToString(unixTime: number) {
   let date = new Date(unixTime);
@@ -81,6 +82,7 @@ const CardEditor = ({
   editCardId,
   tagList,
   setTagList,
+  setEditCardId,
 }: FCProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -144,13 +146,6 @@ const CardEditor = ({
     const dowloadLink = await getDownloadURL(storageRef);
     return dowloadLink;
   }
-  function checkTagList(tags: string[]) {
-    let currentTagList = [...tagList];
-    tags.forEach((tag) => {
-      !tagList.includes(tag) && currentTagList.push(tag);
-    });
-    setTagList(currentTagList);
-  }
   function resetEditor() {
     imageRef.current!.value = "";
     nameRef.current!.value = "";
@@ -181,7 +176,6 @@ const CardEditor = ({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
-    checkTagList(tags);
     editorToggle();
   }
   async function editCard() {
@@ -193,7 +187,8 @@ const CardEditor = ({
     }
     const data = {
       cardId: editCardId,
-      parents: cardList.find((card) => card.cardId === editCardId)?.parents,
+      parents:
+        cardList.find((card) => card.cardId === editCardId)?.parents || [],
       ownerId: "test",
       plantName: nameRef.current?.value,
       plantPhoto: imgLink,
@@ -208,7 +203,6 @@ const CardEditor = ({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
-    checkTagList(data.tags);
     editorToggle();
   }
   useEffect(() => {
@@ -302,6 +296,7 @@ const CardEditor = ({
             onClick={async () => {
               await editCard();
               resetEditor();
+              setEditCardId(null);
             }}
           >
             Save
@@ -320,6 +315,7 @@ const CardEditor = ({
           onClick={() => {
             editorToggle();
             resetEditor();
+            setEditCardId(null);
           }}
         >
           Cancel

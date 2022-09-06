@@ -92,16 +92,16 @@ interface CardsGridProps {
 const CardsGrid = ({ $display }: CardsGridProps) => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
-  const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
-  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
-  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
-  const [tagList, setTagList] = useState<string[]>([]);
-  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>("");
-  const [checkList, setCheckList] = useState<CheckList>({});
+  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
+  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [checkList, setCheckList] = useState<CheckList>({});
+  const [filter, setFilter] = useState<string>("");
+  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -122,11 +122,23 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     if (filterOptions) {
       setFilterOptionsOpen(false);
       setFilter("");
+      let checkboxes = {} as CheckList;
+      cardList.forEach((card) => {
+        checkboxes[card.cardId] = false;
+      });
+      setCheckList(checkboxes);
     } else setFilterOptionsOpen(true);
   }
   function selectFilter(e: React.MouseEvent<HTMLElement>) {
     let eventTarget = e.target as HTMLDivElement;
-    setFilter(eventTarget.textContent!);
+    let filter = eventTarget.textContent!;
+    setFilter(filter);
+    let filtered = cardList.filter((card) => card.tags?.includes(filter));
+    let checkboxes = {} as CheckList;
+    filtered.forEach((card) => {
+      checkboxes[card.cardId] = false;
+    });
+    setCheckList(checkboxes);
   }
   function filterCard(tagList: string[]): boolean {
     if (filter) return tagList.includes(filter);
@@ -202,7 +214,6 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
   useEffect(() => {
     async function getCards() {
       let results: DocumentData[] = [];
-      let tags: string[] = [];
       let checkboxes = {} as CheckList;
       const q = query(cards, where("ownerId", "==", "test"));
       const querySnapshot = await getDocs(q);
@@ -213,18 +224,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
         checkboxes[doc.data().cardId] = false;
-        let searchTargets = doc.data()?.tags || [];
-        if (searchTargets.length) {
-          let checkResults = searchTargets.map((tag: string) => {
-            return tags.includes(tag);
-          });
-          searchTargets.forEach((tag: string, index: number) => {
-            !checkResults[index] && tags.push(tag);
-          });
-        }
       });
-      setTagList(tags);
-
       setCheckList(checkboxes);
       dispatch({
         type: CardsActions.SET_CARDS_DATA,
@@ -234,13 +234,24 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     getCards();
   }, []);
   useEffect(() => {
+    let tags: string[] = [];
+    cardList.forEach((card) => {
+      let searchTargets = card.tags;
+      searchTargets?.forEach((tag) => {
+        if (!tags.includes(tag)) tags.push(tag);
+      });
+    });
+    setTagList(tags);
+  }, [cardList]);
+  useEffect(() => {
     let checkboxes = {} as CheckList;
     cardList.forEach((card) => {
       checkboxes[card.cardId] = false;
     });
     setCheckList(checkboxes);
-  }, [cardList.length]);
+  }, [cardList]);
   let displayProp = $display ? "block" : "none";
+  console.log(editCardId);
   return (
     <div style={{ display: displayProp }}>
       <DiaryEditor
@@ -331,6 +342,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
         editCardId={editCardId}
         tagList={tagList}
         setTagList={setTagList}
+        setEditCardId={setEditCardId}
       />
       <DetailedCard
         detailDisplay={detailDisplay}
