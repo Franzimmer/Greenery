@@ -66,6 +66,7 @@ interface FCProps {
   editCardId: string | null;
   tagList: string[];
   setTagList: React.Dispatch<React.SetStateAction<string[]>>;
+  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 export function unixTimeToString(unixTime: number) {
   let date = new Date(unixTime);
@@ -81,6 +82,7 @@ const CardEditor = ({
   editCardId,
   tagList,
   setTagList,
+  setEditCardId,
 }: FCProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -321,6 +323,7 @@ const CardEditor = ({
           onClick={() => {
             editorToggle();
             resetEditor();
+            setEditCardId(null);
           }}
         >
           Cancel

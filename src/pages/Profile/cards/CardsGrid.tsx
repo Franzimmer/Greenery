@@ -92,16 +92,16 @@ interface CardsGridProps {
 const CardsGrid = ({ $display }: CardsGridProps) => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
-  const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
-  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
-  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
-  const [tagList, setTagList] = useState<string[]>([]);
-  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>("");
-  const [checkList, setCheckList] = useState<CheckList>({});
+  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
+  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [checkList, setCheckList] = useState<CheckList>({});
+  const [filter, setFilter] = useState<string>("");
+  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -253,6 +253,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
     setCheckList(checkboxes);
   }, [cardList.length]);
   let displayProp = $display ? "block" : "none";
+  console.log(tagList);
   return (
     <div style={{ display: displayProp }}>
       <DiaryEditor
@@ -343,6 +344,7 @@ const CardsGrid = ({ $display }: CardsGridProps) => {
         editCardId={editCardId}
         tagList={tagList}
         setTagList={setTagList}
+        setEditCardId={setEditCardId}
       />
       <DetailedCard
         detailDisplay={detailDisplay}
