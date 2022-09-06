@@ -3,35 +3,31 @@ import styled from "styled-components";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { unixTimeToString } from "../cards/CardEditor";
-import { db, users } from "../../../utils/firebase";
+import { db } from "../../../utils/firebase";
 import { doc, getDoc, collection } from "firebase/firestore";
 
-interface CalendarAppProps {
-  $display: boolean;
-}
-
-const CalendarApp = ({ $display }: CalendarAppProps) => {
+const CalendarApp = () => {
   let defaultState = {
     watering: [],
     fertilizing: [],
   };
   const [events, setEvents] = useState<Record<string, string[]>>(defaultState);
   const [value, onChange] = useState(new Date());
-  let displayProp = $display ? "block" : "none";
-  async function getEventData() {
-    let docName = unixTimeToString(value.getTime());
-    const activitiesRef = collection(db, "users", "test", "activities");
-    let docRef = doc(activitiesRef, docName);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setEvents(docSnap.data());
-    } else setEvents(defaultState);
-  }
+
   useEffect(() => {
+    async function getEventData() {
+      let docName = unixTimeToString(value.getTime());
+      const activitiesRef = collection(db, "users", "test", "activities");
+      let docRef = doc(activitiesRef, docName);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setEvents(docSnap.data());
+      } else setEvents(defaultState);
+    }
     getEventData();
   }, [value]);
   return (
-    <div style={{ display: displayProp }}>
+    <div>
       <Calendar onChange={onChange} value={value} />
       {events.watering.length !== 0 && (
         <>
