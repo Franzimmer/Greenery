@@ -4,6 +4,7 @@ import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import CardsGrid from "./cards/CardsGrid";
 import CalendarApp from "./calendar/CalendarApp";
+import Gallery from "./gallery/Gallery";
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,6 +29,7 @@ const Profile = () => {
   const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>({
     Cards: true,
     Calendar: false,
+    Gallery: false,
   });
   return (
     <Wrapper>
@@ -36,6 +38,7 @@ const Profile = () => {
         <ProfileMenu setTabDisplay={setTabDisplay} />
         {tabDisplay.Cards && <CardsGrid />}
         {tabDisplay.Calendar && <CalendarApp />}
+        {tabDisplay.Gallery && <Gallery />}
       </MainWrapper>
       <SideBar>
         <h3>SideBar Here</h3>

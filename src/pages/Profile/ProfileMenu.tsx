@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
 const MenuWrapper = styled.div`
@@ -23,9 +23,10 @@ const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
     let defaultState = {
       Cards: false,
       Calendar: false,
+      Gallery: false,
     };
     let target = event.target as HTMLButtonElement;
-    let key = target.textContent as "Cards" | "Calendar";
+    let key = target.textContent as "Cards" | "Calendar" | "Gallery";
     defaultState[key] = true;
     setTabDisplay(defaultState);
   }
@@ -33,7 +34,7 @@ const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
     <MenuWrapper>
       <MenuItem onClick={(e) => tabSwitcher(e)}>Cards</MenuItem>
       <MenuItem onClick={(e) => tabSwitcher(e)}>Calendar</MenuItem>
-      <MenuItem>Gallery</MenuItem>
+      <MenuItem onClick={(e) => tabSwitcher(e)}>Gallery</MenuItem>
       <MenuItem>Favorites</MenuItem>
     </MenuWrapper>
   );
