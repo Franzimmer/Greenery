@@ -14,13 +14,13 @@ import {
   getDocs,
   query,
   where,
-  DocumentData,
   collection,
   doc,
   setDoc,
   updateDoc,
   arrayUnion,
   deleteDoc,
+  CollectionReference,
 } from "firebase/firestore";
 const OperationMenu = styled.div`
   display: flex;
@@ -86,7 +86,11 @@ const TagsWrapper = styled.div`
 
 const CheckBox = styled.input``;
 type CheckList = Record<string, boolean>;
-const CardsGrid = () => {
+interface CardsGridProps {
+  id: string | undefined;
+  isSelf: boolean;
+}
+const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   const cardList = useSelector((state: RootState) => state.cards);
   const dispatch = useDispatch();
   const [editCardId, setEditCardId] = useState<string | null>(null);
@@ -212,12 +216,14 @@ const CardsGrid = () => {
   }
   useEffect(() => {
     async function getCards() {
-      let results: DocumentData[] = [];
+      let results: PlantCard[] = [];
       let checkboxes = {} as CheckList;
-      const q = query(cards, where("ownerId", "==", "test"));
+      const q = query(cards, where("ownerId", "==", id)) as CollectionReference<
+        PlantCard
+      >;
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
-        alert("User not existed!");
+        alert("No Cards Data");
         return;
       }
       querySnapshot.forEach((doc) => {
@@ -252,27 +258,36 @@ const CardsGrid = () => {
   return (
     <div>
       <DiaryEditor
+        isSelf={isSelf}
         diaryDisplay={diaryDisplay}
         setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}
         setDiaryId={setDiaryId}
       />
       <OperationMenu>
-        <OperationBtn
-          onClick={() => {
-            setEditCardId(null);
-            editorToggle();
-          }}
-        >
-          新增卡片
-        </OperationBtn>
+        {isSelf && (
+          <OperationBtn
+            onClick={() => {
+              setEditCardId(null);
+              editorToggle();
+            }}
+          >
+            新增卡片
+          </OperationBtn>
+        )}
         <OperationBtn onClick={filterToggle}>Filter</OperationBtn>
         <OperationBtn>切換檢視</OperationBtn>
-        <OperationBtn onClick={allCheck}>全選</OperationBtn>
-        <OperationBtn onClick={clearAllCheck}>全選清除</OperationBtn>
-        <OperationBtn onClick={() => addEvents("water")}>澆水</OperationBtn>
-        <OperationBtn onClick={() => addEvents("fertilize")}>施肥</OperationBtn>
-        <OperationBtn onClick={deleteCards}>刪除卡片</OperationBtn>
+        {isSelf && (
+          <>
+            <OperationBtn onClick={allCheck}>全選</OperationBtn>
+            <OperationBtn onClick={clearAllCheck}>全選清除</OperationBtn>
+            <OperationBtn onClick={() => addEvents("water")}>澆水</OperationBtn>
+            <OperationBtn onClick={() => addEvents("fertilize")}>
+              施肥
+            </OperationBtn>
+            <OperationBtn onClick={deleteCards}>刪除卡片</OperationBtn>
+          </>
+        )}
       </OperationMenu>
       {filterOptions && tagList.length && (
         <TagsWrapper>
@@ -318,16 +333,18 @@ const CardsGrid = () => {
                 >
                   Diary
                 </OperationBtn>
-                <OperationBtn
-                  onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    let button = e.target as HTMLButtonElement;
-                    setEditCardId(button.parentElement!.id);
-                    editorToggle();
-                    e.stopPropagation();
-                  }}
-                >
-                  Edit
-                </OperationBtn>
+                {isSelf && (
+                  <OperationBtn
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
+                      let button = e.target as HTMLButtonElement;
+                      setEditCardId(button.parentElement!.id);
+                      editorToggle();
+                      e.stopPropagation();
+                    }}
+                  >
+                    Edit
+                  </OperationBtn>
+                )}
                 <OperationBtn>favorite</OperationBtn>
               </Card>
             );
@@ -342,6 +359,7 @@ const CardsGrid = () => {
         setEditCardId={setEditCardId}
       />
       <DetailedCard
+        isSelf={isSelf}
         detailDisplay={detailDisplay}
         detailToggle={detailToggle}
         detailData={detailData!}

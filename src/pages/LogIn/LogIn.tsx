@@ -46,7 +46,10 @@ const LogIn = () => {
           photoUrl: "",
           gallery: [],
         });
-        navigate(`/profile/${user.uid}`);
+        return user.uid;
+      })
+      .then((id) => {
+        navigate(`/profile/${id}`);
       })
       .catch((error) => {
         const errorCode = error.code;

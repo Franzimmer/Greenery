@@ -13,10 +13,14 @@ import { OperationBtn } from "../cards/CardsGrid";
 
 const MediaWrapper = styled.div``;
 
-const Gallery = () => {
+interface GalleryProps {
+  id: string | undefined;
+  isSelf: boolean;
+}
+const Gallery = ({ id, isSelf }: GalleryProps) => {
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
-  const docRef = doc(users, "test");
+  const docRef = doc(users, id);
 
   async function getMediaData() {
     const docData = await getDoc(docRef);
@@ -57,8 +61,12 @@ const Gallery = () => {
   }, []);
   return (
     <>
-      <input type="file" accept="image/*" ref={mediaRef} />
-      <OperationBtn onClick={saveGalleryData}>上傳</OperationBtn>
+      {isSelf && (
+        <>
+          <input type="file" accept="image/*" ref={mediaRef} />
+          <OperationBtn onClick={saveGalleryData}>上傳</OperationBtn>
+        </>
+      )}
       {media &&
         media.map((asset: string) => {
           return (
