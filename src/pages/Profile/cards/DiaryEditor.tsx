@@ -20,12 +20,14 @@ const Wrapper = styled.div<WrapperProps>`
 const AddImgInput = styled.input``;
 
 interface DiaryEditorProps {
+  isSelf: boolean;
   diaryDisplay: boolean;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   diaryId: string;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 const DiaryEditor = ({
+  isSelf,
   diaryDisplay,
   setDiaryDisplay,
   diaryId,
@@ -183,35 +185,39 @@ const DiaryEditor = ({
       <BtnWrapper>
         {mode === "view" && (
           <>
-            <OperationBtn
-              onClick={() => {
-                setSaveMode("saveEdit");
-                switchToEditMode();
-              }}
-            >
-              Edit Page
-            </OperationBtn>
+            {isSelf && (
+              <OperationBtn
+                onClick={() => {
+                  setSaveMode("saveEdit");
+                  switchToEditMode();
+                }}
+              >
+                Edit Page
+              </OperationBtn>
+            )}
             <OperationBtn onClick={() => switchPage("-")}>
               Previous Page
             </OperationBtn>
             <OperationBtn onClick={() => switchPage("+")}>
               Next Page
             </OperationBtn>
-            <OperationBtn
-              onClick={() => {
-                resetCanvas();
-                setSaveMode("saveAdd");
-                switchToEditMode();
-              }}
-            >
-              Add New Page
-            </OperationBtn>
+            {isSelf && (
+              <OperationBtn
+                onClick={() => {
+                  resetCanvas();
+                  setSaveMode("saveAdd");
+                  switchToEditMode();
+                }}
+              >
+                Add New Page
+              </OperationBtn>
+            )}
             <OperationBtn onClick={() => load(diariesData.length - 1)}>
               Jump to Last Page
             </OperationBtn>
           </>
         )}
-        {mode === "edit" && (
+        {mode === "edit" && isSelf && (
           <>
             <OperationBtn onClick={addText}>Add Text</OperationBtn>
             <input type="color" ref={colorRef} onChange={changeTextColor} />

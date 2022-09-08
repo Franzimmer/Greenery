@@ -9,9 +9,7 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       return action.payload.data;
     }
     case CardsActions.ADD_NEW_PLANT_CARD: {
-      let currentCards = [...state];
-      currentCards.push(action.payload.newCard);
-      return currentCards;
+      return [...state, action.payload.newCard];
     }
     case CardsActions.EDIT_PLANT_INFO: {
       let currentCards = [...state];

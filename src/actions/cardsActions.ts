@@ -1,9 +1,9 @@
 import { PlantCard } from "../types/plantCardType";
 export enum CardsActions {
-  SET_CARDS_DATA,
-  ADD_NEW_PLANT_CARD,
-  DELETE_PLANT_CARD,
-  EDIT_PLANT_INFO,
+  SET_CARDS_DATA = "SET_CARDS_DATA",
+  ADD_NEW_PLANT_CARD = "ADD_NEW_PLANT_CARD",
+  DELETE_PLANT_CARD = "DELETE_PLANT_CARD",
+  EDIT_PLANT_INFO = "EDIT_PLANT_INFO",
 }
 interface getCardsData {
   type: CardsActions.SET_CARDS_DATA;

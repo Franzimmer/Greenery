@@ -26,11 +26,13 @@ const PlantImg = styled.img`
   height: auto;
 `;
 interface DetailedCardProps {
+  isSelf: boolean;
   detailDisplay: boolean;
   detailData: PlantCard;
   detailToggle: () => void;
 }
 const DetailedCard = ({
+  isSelf,
   detailDisplay,
   detailData,
   detailToggle,
@@ -60,7 +62,7 @@ const DetailedCard = ({
         {detailData?.parents?.length !== 0 && (
           <>
             <Text>Family</Text>
-            <Text>{detailData?.parents!.join(" & ")}的寶寶</Text>
+            <Text>{detailData?.parents?.join(" & ")}的寶寶</Text>
           </>
         )}
         {detailData?.waterPref && (
@@ -81,10 +83,16 @@ const DetailedCard = ({
             <Text>{unixTimeToString(detailData.birthday)}</Text>
           </>
         )}
-        <OperationBtn onClick={() => setTradeDisplay(true)}>trade</OperationBtn>
-        <OperationBtn onClick={() => setPropagateDisplay(true)}>
-          propagate
-        </OperationBtn>
+        {isSelf && (
+          <OperationBtn onClick={() => setTradeDisplay(true)}>
+            trade
+          </OperationBtn>
+        )}
+        {isSelf && (
+          <OperationBtn onClick={() => setPropagateDisplay(true)}>
+            propagate
+          </OperationBtn>
+        )}
         <OperationBtn onClick={detailToggle}>close</OperationBtn>
       </DetailedCardWrapper>
       <Dialog

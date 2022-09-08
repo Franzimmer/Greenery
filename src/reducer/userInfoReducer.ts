@@ -6,16 +6,14 @@ import {
 const initialUserInfo: UserInfo = {
   userId: "",
   userName: "",
-  userPhotoUrl: "",
+  photoUrl: "",
+  gallery: [],
 };
 
-const userInfo = (
-  state = initialUserInfo,
-  action: userInfoActionsTypes
-): UserInfo => {
+const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
   switch (action.type) {
     case UserInfoActions.SET_USER_INFO: {
-      return action.payload.data;
+      return action.payload.userData;
     }
     case UserInfoActions.EDIT_USER_NAME: {
       return {
@@ -26,11 +24,11 @@ const userInfo = (
     case UserInfoActions.EDIT_USER_PHOTO: {
       return {
         ...state,
-        userPhotoUrl: action.payload.userPhotoUrl,
+        photoUrl: action.payload.photoUrl,
       };
     }
     default:
-      return typeof state === "undefined" ? initialUserInfo : state;
+      return state;
   }
 };
 

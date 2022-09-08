@@ -1,8 +1,8 @@
 import { notification } from "../types/notificationType";
 export enum NotificationActions {
-  SET_NOTIFICATIONS,
-  UPDATE_READ_STATUS,
-  DELETE_NOTIFICATION,
+  SET_NOTIFICATIONS = "SET_NOTIFICATIONS",
+  UPDATE_READ_STATUS = "UPDATE_READ_STATUS",
+  DELETE_NOTIFICATION = " DELETE_NOTIFICATION",
 }
 interface setNotifications {
   type: NotificationActions.SET_NOTIFICATIONS;

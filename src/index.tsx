@@ -17,7 +17,7 @@ root.render(
         <Route path="profile/:id" element={<Profile />} />
         <Route path="login" element={<LogIn />} />
         <Route path="forum" element={<ForumHomePage />} />
-        <Route path="forum/:id" element={<ForumHomePage />} />
+        <Route path="forum/:id" element={<ForumPost />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
