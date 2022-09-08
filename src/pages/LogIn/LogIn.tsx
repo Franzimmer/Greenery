@@ -2,10 +2,10 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
 import { auth, users } from "../../utils/firebase";
+import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 const LogInPanel = styled.div`
@@ -27,7 +27,7 @@ const Input = styled.input`
 const LogIn = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-
+  const navigate = useNavigate();
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current) return;
     if (emailRef.current.value === "" || passwordRef.current.value === "") {
@@ -46,6 +46,7 @@ const LogIn = () => {
           photoUrl: "",
           gallery: [],
         });
+        navigate(`/profile/${user.uid}`);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -63,21 +64,12 @@ const LogIn = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
+        navigate(`/profile/${user.uid}`);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         alert(`[${errorCode}] ${errorMessage}`);
-      });
-  }
-  function userSignOut() {
-    signOut(auth)
-      .then(() => {
-        alert("Sign-out successful.");
-      })
-      .catch((error) => {
-        alert("An error happened..");
       });
   }
   return (
@@ -87,8 +79,6 @@ const LogIn = () => {
           <OperationBtn>登入</OperationBtn>
           <OperationBtn>註冊</OperationBtn>
         </MethodWrapper>
-        {/* <InputLabel htmlFor="nameInput">Name</InputLabel>
-      <input type="text" name="nameInput"></input> */}
         <InputLabel htmlFor="emailInput">Mail</InputLabel>
         <Input
           type="text"

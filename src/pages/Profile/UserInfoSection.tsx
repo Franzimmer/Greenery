@@ -1,5 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { signOut } from "firebase/auth";
+import { auth } from "../../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { OperationBtn } from "./cards/CardsGrid";
 
 const UserInfoWrapper = styled.div`
   display: flex;
@@ -16,18 +20,25 @@ const UserPhoto = styled.img`
   border: 1px solid black;
 `;
 const UserInfoText = styled.p``;
-const EditButton = styled.button`
-  height: 20px;
-  margin-right: 5px;
-`;
 
 const UserInfoSection = () => {
+  const navigate = useNavigate();
+  function userSignOut() {
+    signOut(auth)
+      .then(() => {
+        navigate("/login");
+      })
+      .catch((error) => {
+        alert("An error happened..");
+      });
+  }
   return (
     <UserInfoWrapper>
       <UserPhoto />
-      <EditButton>編輯相片</EditButton>
+      <OperationBtn>編輯相片</OperationBtn>
       <UserInfoText>User Name</UserInfoText>
-      <EditButton>編輯姓名</EditButton>
+      <OperationBtn>編輯姓名</OperationBtn>
+      <OperationBtn onClick={userSignOut}>登出</OperationBtn>
     </UserInfoWrapper>
   );
 };
