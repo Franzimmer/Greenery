@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -13,6 +14,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
+const auth = getAuth();
 const db = getFirestore(app);
 const users = collection(db, "users");
 const cards = collection(db, "cards");
@@ -21,4 +23,15 @@ const species = collection(db, "species");
 const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
-export { app, db, storage, users, cards, posts, species, chatrooms, diaries };
+export {
+  app,
+  db,
+  storage,
+  auth,
+  users,
+  cards,
+  posts,
+  species,
+  chatrooms,
+  diaries,
+};

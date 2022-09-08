@@ -1,8 +1,113 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
+import { OperationBtn } from "../Profile/cards/CardsGrid";
+import { auth, users } from "../../utils/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+const LogInPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  border: 1px solid #000;
+  margin: 0 auto;
+`;
+const MethodWrapper = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+`;
+const InputLabel = styled.label``;
+const Input = styled.input`
+  height: 30px;
+`;
 
 const LogIn = () => {
-  return <h1>Log In Page</h1>;
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  function createNewAccount() {
+    if (!emailRef.current || !passwordRef.current) return;
+    if (emailRef.current.value === "" || passwordRef.current.value === "") {
+      alert("請完整填寫資料！");
+    }
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        const docRef = doc(users, user.uid);
+        setDoc(docRef, {
+          userId: user.uid,
+          userName: "user",
+          photoUrl: "",
+          gallery: [],
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(`[${errorCode}] ${errorMessage}`);
+      });
+  }
+  function userSignIn() {
+    if (!emailRef.current || !passwordRef.current) return;
+    if (emailRef.current.value === "" || passwordRef.current.value === "") {
+      alert("請完整填寫資料！");
+    }
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(`[${errorCode}] ${errorMessage}`);
+      });
+  }
+  function userSignOut() {
+    signOut(auth)
+      .then(() => {
+        alert("Sign-out successful.");
+      })
+      .catch((error) => {
+        alert("An error happened..");
+      });
+  }
+  return (
+    <>
+      <LogInPanel>
+        <MethodWrapper>
+          <OperationBtn>登入</OperationBtn>
+          <OperationBtn>註冊</OperationBtn>
+        </MethodWrapper>
+        {/* <InputLabel htmlFor="nameInput">Name</InputLabel>
+      <input type="text" name="nameInput"></input> */}
+        <InputLabel htmlFor="emailInput">Mail</InputLabel>
+        <Input
+          type="text"
+          name="emailInput"
+          id="emailInput"
+          ref={emailRef}
+        ></Input>
+        <InputLabel htmlFor="passwordInput">Password</InputLabel>
+        <Input
+          type="password"
+          name="passwordInput"
+          id="passwordInput"
+          ref={passwordRef}
+        ></Input>
+        <OperationBtn onClick={userSignIn}>Log In</OperationBtn>
+        <OperationBtn onClick={createNewAccount}>Sign In</OperationBtn>
+      </LogInPanel>
+    </>
+  );
 };
 
 export default LogIn;
