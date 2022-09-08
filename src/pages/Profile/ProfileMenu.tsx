@@ -36,6 +36,7 @@ const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
       <MenuItem onClick={(e) => tabSwitcher(e)}>Calendar</MenuItem>
       <MenuItem onClick={(e) => tabSwitcher(e)}>Gallery</MenuItem>
       <MenuItem>Favorites</MenuItem>
+      <input type="string" placeholder="搜尋使用者id開啟聊天室"></input>
     </MenuWrapper>
   );
 };

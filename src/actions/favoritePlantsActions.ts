@@ -1,8 +1,8 @@
 import { favoritePlant } from "../types/favoritePlantType";
 export enum favoritePlantsActions {
-  SET_FAVORITE_PLANTS_DATA,
-  ADD_FAVORITE_PLANT,
-  DELETE_FAVORITE_PLANT,
+  SET_FAVORITE_PLANTS_DATA = "SET_FAVORITE_PLANTS_DATA",
+  ADD_FAVORITE_PLANT = "ADD_FAVORITE_PLANT",
+  DELETE_FAVORITE_PLANT = "DELETE_FAVORITE_PLANT",
 }
 interface setFavoritePlantsData {
   type: favoritePlantsActions.SET_FAVORITE_PLANTS_DATA;

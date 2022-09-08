@@ -1,8 +1,8 @@
 import { UserInfo } from "../types/userInfoType";
 export enum FollowListActions {
-  SET_FOLLOW_LIST,
-  ADD_FOLLOW_PERSON,
-  DELETE_FOLLOW_PERSON,
+  SET_FOLLOW_LIST = "SET_FOLLOW_LIST",
+  ADD_FOLLOW_PERSON = "ADD_FOLLOW_PERSON",
+  DELETE_FOLLOW_PERSON = "DELETE_FOLLOW_PERSON",
 }
 interface setFollowList {
   type: FollowListActions.SET_FOLLOW_LIST;

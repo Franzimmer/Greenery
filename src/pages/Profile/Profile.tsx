@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { auth } from "../../utils/firebase";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
@@ -34,10 +34,15 @@ const Profile = () => {
     Gallery: false,
   });
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isSelf, setIsSelf] = useState<boolean>(false);
 
   useEffect(() => {
     auth.onAuthStateChanged(async function(user) {
+      if (!id) {
+        alert("此頁面不存在");
+        navigate("/");
+      }
       if (user) {
         const userId = user.uid;
         if (id === userId) setIsSelf(true);
@@ -47,7 +52,7 @@ const Profile = () => {
   return (
     <Wrapper>
       <MainWrapper>
-        <UserInfoSection />
+        <UserInfoSection id={id} isSelf={isSelf} />
         <ProfileMenu setTabDisplay={setTabDisplay} />
         {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
         {tabDisplay.Calendar && <CalendarApp />}

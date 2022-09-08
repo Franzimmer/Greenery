@@ -38,7 +38,6 @@ const LogIn = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
         const docRef = doc(users, user.uid);
         setDoc(docRef, {
           userId: user.uid,

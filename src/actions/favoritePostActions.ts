@@ -1,8 +1,8 @@
 import { favoritePost } from "../types/favoritePostType";
 export enum favoritePostActions {
-  SET_FAVORITE_POSTS_DATA,
-  ADD_FAVORITE_POST,
-  DELETE_FAVORITE_POST,
+  SET_FAVORITE_POSTS_DATA = "SET_FAVORITE_POSTS_DATA",
+  ADD_FAVORITE_POST = "ADD_FAVORITE_POST",
+  DELETE_FAVORITE_POST = "DELETE_FAVORITE_POST",
 }
 interface setFavoritePosts {
   type: favoritePostActions.SET_FAVORITE_POSTS_DATA;

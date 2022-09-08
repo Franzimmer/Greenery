@@ -1,5 +1,6 @@
 export interface UserInfo {
   userId: string;
   userName: string;
-  userPhotoUrl: string;
+  photoUrl: string;
+  gallery: string[];
 }

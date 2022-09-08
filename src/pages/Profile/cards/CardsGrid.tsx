@@ -231,10 +231,12 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
         checkboxes[doc.data().cardId] = false;
       });
       setCheckList(checkboxes);
-      dispatch({
-        type: CardsActions.SET_CARDS_DATA,
-        payload: { data: results },
-      });
+      if (results) {
+        dispatch({
+          type: CardsActions.SET_CARDS_DATA,
+          payload: { data: results },
+        });
+      }
     }
     getCards();
   }, []);
@@ -311,11 +313,13 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                   selectDetailData(e);
                 }}
               >
-                <CheckBox
-                  type="checkbox"
-                  checked={checkList[card.cardId]}
-                  onClick={(event) => switchOneCheck(event, card.cardId)}
-                />
+                {isSelf && (
+                  <CheckBox
+                    type="checkbox"
+                    checked={checkList[card.cardId]}
+                    onClick={(event) => switchOneCheck(event, card.cardId)}
+                  />
+                )}
                 <PlantImg path={card.plantPhoto || defaultImg} />
                 <Text>名字: {card.plantName}</Text>
                 <Text>品種: {card.species}</Text>

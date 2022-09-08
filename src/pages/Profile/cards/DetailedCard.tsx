@@ -62,7 +62,7 @@ const DetailedCard = ({
         {detailData?.parents?.length !== 0 && (
           <>
             <Text>Family</Text>
-            <Text>{detailData?.parents!.join(" & ")}的寶寶</Text>
+            <Text>{detailData?.parents?.join(" & ")}的寶寶</Text>
           </>
         )}
         {detailData?.waterPref && (
