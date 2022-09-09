@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import { Reset } from "styled-reset";
 import { Provider } from "react-redux";
 import store from "./store";
+import Chatroom from "./components/Chatroom/Chatroom";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -26,6 +27,7 @@ function App() {
       <Provider store={store}>
         <Outlet />
       </Provider>
+      <Chatroom />
     </>
   );
 }
