@@ -27,7 +27,7 @@ const OperationMenu = styled.div`
 `;
 export const OperationBtn = styled.button`
   margin: 0px 5px 0px 0px;
-  padding: 2px;
+  padding: px;
   cursor: pointer;
 
   &:hover {

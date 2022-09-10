@@ -26,8 +26,8 @@ function App() {
       <GlobalStyle />
       <Provider store={store}>
         <Outlet />
+        <Chatroom />
       </Provider>
-      <Chatroom />
     </>
   );
 }
