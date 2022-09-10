@@ -38,6 +38,7 @@ const MsgWindow = styled.div`
   background: #eee;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 `;
 const ChatInput = styled.input`
   width: 100%;
@@ -63,15 +64,17 @@ const Chatroom = () => {
       msg: inputRef.current?.value || "",
     };
     firebase.storeChatroomData(usersTarget, data);
+    inputRef.current!.value = "";
   }
 
   async function listenToChatroom() {
     if (!userRef.current?.value) return;
     if (!selfIdRef.current) return;
     const usersTarget = [userId, selfIdRef.current];
+    const usersTargetFlip = [selfIdRef.current, userId];
     const q = query(
       chatrooms,
-      where("users", "array-contains-any", usersTarget)
+      where("users", "in", [usersTarget, usersTargetFlip])
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return;

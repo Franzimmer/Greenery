@@ -48,7 +48,11 @@ const firebase = {
     await updateDoc(docRef, { userName: name });
   },
   async storeChatroomData(users: string[], msg: message) {
-    const q = query(chatrooms, where("users", "array-contains-any", users));
+    let usersCopy = [...users];
+    const q = query(
+      chatrooms,
+      where("users", "in", [users, usersCopy.reverse()])
+    );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
       let room = doc(chatrooms);
