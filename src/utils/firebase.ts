@@ -4,8 +4,14 @@ import {
   collection,
   CollectionReference,
   doc,
+  addDoc,
   getDoc,
+  getDocs,
+  where,
   updateDoc,
+  query,
+  setDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -32,6 +38,11 @@ const species = collection(db, "species");
 const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
+interface message {
+  userId: string;
+  msg: string;
+}
+
 const firebase = {
   async updateUserPhoto(id: string, url: string) {
     let docRef = doc(users, id);
@@ -40,6 +51,34 @@ const firebase = {
   async updateUserName(id: string, name: string) {
     let docRef = doc(users, id);
     await updateDoc(docRef, { userName: name });
+  },
+  async checkChatroomExist(users: string[]) {
+    const q = query(chatrooms, where("users", "array-contains-any", users));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      let room = doc(chatrooms);
+      await setDoc(room, { users: users, msgs: [] });
+      onSnapshot(room, (doc) => {
+        console.log("Current data: ", doc.data());
+      });
+    } else {
+      querySnapshot.forEach((docData) => {
+        let room = doc(chatrooms, docData.id);
+        onSnapshot(room, (docData) => {
+          console.log("Current data: ", docData.data());
+        });
+        return docData.data();
+      });
+    }
+  },
+  async storeChatroomData(users: string[], msg: message) {
+    const q = query(chatrooms, where("users", "array-contains-any", users));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (docData) => {
+      let docRef = doc(chatrooms, docData.id);
+      let docMsgs = docData.data().msgs;
+      await updateDoc(docRef, { msgs: [...docMsgs, msg] });
+    });
   },
 };
 
