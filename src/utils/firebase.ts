@@ -11,12 +11,12 @@ import {
   updateDoc,
   query,
   setDoc,
-  onSnapshot,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { PlantCard } from "../types/plantCardType";
 import { UserInfo } from "../types/userInfoType";
+import { message } from "../components/Chatroom/Chatroom";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -38,11 +38,6 @@ const species = collection(db, "species");
 const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
-interface message {
-  userId: string;
-  msg: string;
-}
-
 const firebase = {
   async updateUserPhoto(id: string, url: string) {
     let docRef = doc(users, id);
@@ -52,33 +47,19 @@ const firebase = {
     let docRef = doc(users, id);
     await updateDoc(docRef, { userName: name });
   },
-  async checkChatroomExist(users: string[]) {
+  async storeChatroomData(users: string[], msg: message) {
     const q = query(chatrooms, where("users", "array-contains-any", users));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
       let room = doc(chatrooms);
-      await setDoc(room, { users: users, msgs: [] });
-      onSnapshot(room, (doc) => {
-        console.log("Current data: ", doc.data());
-      });
+      await setDoc(room, { users: users, msgs: [msg] });
     } else {
-      querySnapshot.forEach((docData) => {
-        let room = doc(chatrooms, docData.id);
-        onSnapshot(room, (docData) => {
-          console.log("Current data: ", docData.data());
-        });
-        return docData.data();
+      querySnapshot.forEach(async (docData) => {
+        let docRef = doc(chatrooms, docData.id);
+        let docMsgs = docData.data().msgs;
+        await updateDoc(docRef, { msgs: [...docMsgs, msg] });
       });
     }
-  },
-  async storeChatroomData(users: string[], msg: message) {
-    const q = query(chatrooms, where("users", "array-contains-any", users));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(async (docData) => {
-      let docRef = doc(chatrooms, docData.id);
-      let docMsgs = docData.data().msgs;
-      await updateDoc(docRef, { msgs: [...docMsgs, msg] });
-    });
   },
 };
 
