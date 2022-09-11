@@ -25,6 +25,7 @@
     "components": "^0.1.0",
     "fabric": "^5.2.4",
     "firebase": "^9.9.3",
+    "html-react-parser": "^3.0.4",
     "react": "^18.2.0",
     "react-calendar": "^3.7.0",
     "react-dom": "^18.2.0",

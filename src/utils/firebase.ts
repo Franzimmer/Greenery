@@ -11,12 +11,14 @@ import {
   updateDoc,
   query,
   setDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { PlantCard } from "../types/plantCardType";
 import { UserInfo } from "../types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
+import { Post } from "../pages/Forum/ForumPost";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -33,12 +35,17 @@ const auth = getAuth();
 const db = getFirestore(app);
 const users = collection(db, "users") as CollectionReference<UserInfo>;
 const cards = collection(db, "cards");
-const posts = collection(db, "posts");
+const posts = collection(db, "posts") as CollectionReference<Post>;
 const species = collection(db, "species");
 const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
 const firebase = {
+  async getUserInfo(id: string) {
+    let docRef = doc(users, id);
+    let docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
   async updateUserPhoto(id: string, url: string) {
     let docRef = doc(users, id);
     await updateDoc(docRef, { photoUrl: url });
@@ -68,6 +75,25 @@ const firebase = {
   async changePlantOwner(cardId: string, newOwnerId: string) {
     let docRef = doc(cards, cardId);
     await updateDoc(docRef, { ownerId: newOwnerId });
+  },
+  async savePostData(postData: {
+    title: string;
+    content: string;
+    authorId: string;
+  }) {
+    let post = doc(posts);
+    await setDoc(post, {
+      ...postData,
+      type: "discussion",
+      postId: post.id,
+      createdTime: serverTimestamp(),
+    });
+  },
+  async getPostData(postId: string) {
+    let docRef = doc(posts, postId);
+    let docSnapshot = await getDoc(docRef);
+    console.log(docSnapshot.data());
+    return docSnapshot;
   },
 };
 
