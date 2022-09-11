@@ -3,6 +3,7 @@ export enum CardsActions {
   SET_CARDS_DATA = "SET_CARDS_DATA",
   ADD_NEW_PLANT_CARD = "ADD_NEW_PLANT_CARD",
   DELETE_PLANT_CARD = "DELETE_PLANT_CARD",
+  DELETE_PLANT_CARDS = "DELETE_PLANT_CARDS",
   EDIT_PLANT_INFO = "EDIT_PLANT_INFO",
 }
 interface getCardsData {
@@ -29,8 +30,15 @@ interface deletePlantCard {
     cardId: string;
   };
 }
+interface deletePlantCards {
+  type: CardsActions.DELETE_PLANT_CARDS;
+  payload: {
+    cardIds: string[];
+  };
+}
 export type CardsActionTypes =
   | getCardsData
   | addNewPlantCard
   | editPlantCard
-  | deletePlantCard;
+  | deletePlantCard
+  | deletePlantCards;

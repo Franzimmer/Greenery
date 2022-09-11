@@ -4,13 +4,19 @@ import {
   collection,
   CollectionReference,
   doc,
+  addDoc,
   getDoc,
+  getDocs,
+  where,
   updateDoc,
+  query,
+  setDoc,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { PlantCard } from "../types/plantCardType";
 import { UserInfo } from "../types/userInfoType";
+import { message } from "../components/Chatroom/Chatroom";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -40,6 +46,28 @@ const firebase = {
   async updateUserName(id: string, name: string) {
     let docRef = doc(users, id);
     await updateDoc(docRef, { userName: name });
+  },
+  async storeChatroomData(users: string[], msg: message) {
+    let usersCopy = [...users];
+    const q = query(
+      chatrooms,
+      where("users", "in", [users, usersCopy.reverse()])
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      let room = doc(chatrooms);
+      await setDoc(room, { users: users, msgs: [msg] });
+    } else {
+      querySnapshot.forEach(async (docData) => {
+        let docRef = doc(chatrooms, docData.id);
+        let docMsgs = docData.data().msgs;
+        await updateDoc(docRef, { msgs: [...docMsgs, msg] });
+      });
+    }
+  },
+  async changePlantOwner(cardId: string, newOwnerId: string) {
+    let docRef = doc(cards, cardId);
+    await updateDoc(docRef, { ownerId: newOwnerId });
   },
 };
 
