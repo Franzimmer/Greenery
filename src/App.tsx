@@ -11,7 +11,6 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    border: 1px solid black;
   }
   body {
     width: 100%;
@@ -22,7 +21,7 @@ const GlobalStyle = createGlobalStyle`
 function App() {
   return (
     <>
-      <Reset />
+      {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
         <Outlet />

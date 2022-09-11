@@ -19,10 +19,11 @@ export interface message {
   msg: string;
 }
 
-const ChatroomWindow = styled.div`
+const ChatroomWindow = styled.div<DialogProps>`
   border: 1px solid #000;
   width: 250px;
   height: 300px;
+  display: ${(props) => (props.show ? "block" : "none")};
 `;
 const LeftText = styled.div`
   max-width: 60%;
@@ -102,6 +103,7 @@ const Chatroom = () => {
   const userRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
+  const [chatroomDisplay, setChatroomDisplay] = useState<boolean>(false);
   const [dialogDisplay, setDialogDisplay] = useState<boolean>(false);
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
   const userId = userRef.current?.value;
@@ -204,7 +206,7 @@ const Chatroom = () => {
 
   return (
     <>
-      <ChatroomWindow>
+      <ChatroomWindow show={chatroomDisplay}>
         <FlexWrapper>
           <ChatInput
             type="string"
@@ -216,7 +218,13 @@ const Chatroom = () => {
               }
             }}
           ></ChatInput>
-          <OperationBtn>x</OperationBtn>
+          <OperationBtn
+            onClick={() => {
+              setChatroomDisplay(false);
+            }}
+          >
+            x
+          </OperationBtn>
         </FlexWrapper>
         <MsgWindow>
           {msgs.length !== 0 &&
