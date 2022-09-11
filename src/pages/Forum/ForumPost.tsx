@@ -66,9 +66,16 @@ const ForumPost = () => {
   const { id } = useParams();
   const [post, setPost] = useState<Post>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
-  const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
   const [initContent, setInitContent] = useState<string>("");
   const [initTitle, setInitTitle] = useState<string>("");
+  const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
+  const [editorMode, setEditorMode] = useState<string>("");
+
+  function addComment() {
+    setEditorMode("Comment");
+    setTextEditorDisplay(true);
+    setInitContent("");
+  }
 
   useEffect(() => {
     async function getPost() {
@@ -100,13 +107,15 @@ const ForumPost = () => {
           <OperationBtn>Delete</OperationBtn>
         </BtnWrapper>
       </PostWrapper>
-      <OperationBtn>Comment</OperationBtn>
+      <OperationBtn onClick={addComment}>Comment</OperationBtn>
       {textEditorDisplay && (
         <Tiptap
+          editorMode={editorMode}
           initContent={initContent}
           initTitle={initTitle}
           post={post}
           setPost={setPost}
+          setEditorMode={setEditorMode}
           setTextEditorDisplay={setTextEditorDisplay}
         />
       )}

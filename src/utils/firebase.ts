@@ -13,6 +13,7 @@ import {
   query,
   setDoc,
   serverTimestamp,
+  arrayUnion,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -93,7 +94,6 @@ const firebase = {
   async getPostData(postId: string) {
     let docRef = doc(posts, postId);
     let docSnapshot = await getDoc(docRef);
-    console.log(docSnapshot.data());
     return docSnapshot;
   },
   async saveEditPost(postId: string, post: Post) {
@@ -108,6 +108,19 @@ const firebase = {
     let docRef = doc(posts, postId);
     let docSnapshot = await deleteDoc(docRef);
     return docSnapshot;
+  },
+  async getPosts() {
+    const q = query(posts);
+    const querySnapshot = getDocs(q);
+    return querySnapshot;
+  },
+  async saveComment(
+    postId: string,
+    comment: { content: string; authorId: string }
+  ) {
+    let data = { ...comment, createdTime: Date.now() };
+    let docRef = doc(posts, postId);
+    await updateDoc(docRef, { comments: arrayUnion(data) });
   },
 };
 

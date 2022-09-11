@@ -13,13 +13,16 @@ import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
 
 interface TiptapProps {
+  editorMode: string;
   initContent?: string;
   initTitle?: string;
   post?: Post;
-  setPost: React.Dispatch<React.SetStateAction<Post | undefined>>;
+  setEditorMode?: React.Dispatch<React.SetStateAction<string>>;
+  setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const Tiptap = ({
+  editorMode,
   initContent,
   initTitle,
   post,
@@ -61,14 +64,24 @@ const Tiptap = ({
       ...html,
     } as Post;
     await firebase.saveEditPost(post!.postId, data);
-    setPost(data);
+    if (setPost) setPost(data);
     alert("編輯成功！");
   }
-
+  async function saveComment() {
+    const { content } = getPostHTML()!;
+    const authorId = userInfo.userId;
+    const comment = {
+      content,
+      authorId,
+    };
+    await firebase.saveComment(post!.postId, comment);
+  }
   return (
     <>
       <label htmlFor="title">輸入文章標題</label>
-      <EditorContent editor={titleEditor} id="title" />
+      {editorMode !== "Comment" && (
+        <EditorContent editor={titleEditor} id="title" />
+      )}
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
       <OperationBtn
@@ -86,6 +99,14 @@ const Tiptap = ({
         }}
       >
         Save Edit
+      </OperationBtn>
+      <OperationBtn
+        onClick={() => {
+          saveComment();
+          setTextEditorDisplay(false);
+        }}
+      >
+        Save Comment
       </OperationBtn>
     </>
   );
