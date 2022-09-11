@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer/index";
+import { CardsActions } from "../../actions/cardsActions";
 
 export interface message {
   userId: string;
@@ -24,7 +25,7 @@ const ChatroomWindow = styled.div`
   height: 300px;
 `;
 const LeftText = styled.div`
-  height: 30px;
+  max-width: 60%;
   align-self: flex-start;
   border: 1px solid #000;
   padding: 2px;
@@ -32,7 +33,6 @@ const LeftText = styled.div`
 `;
 const RightText = styled(LeftText)`
   align-self: flex-end;
-  color: red;
 `;
 const MsgWindow = styled.div`
   width: 100%;
@@ -106,7 +106,8 @@ const Chatroom = () => {
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
   const userId = userRef.current?.value;
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
-  const [confirm, setConfirm] = useState<string>("");
+  const [confirm, setConfirm] = useState<string>();
+  const dispatch = useDispatch();
 
   function writeMsg() {
     if (!userId) return;
@@ -120,6 +121,7 @@ const Chatroom = () => {
     inputRef.current!.value = "";
   }
   async function listenToChatroom() {
+    console.log("test");
     // if (!userRef.current?.value) return;
     if (!selfIdRef.current) return;
     const usersTarget = [userId, selfIdRef.current];
@@ -140,7 +142,6 @@ const Chatroom = () => {
       });
     }
   }
-
   function confirmTradeItems() {
     if (!userRef.current?.value) return;
     setCardListDisplay(false);
@@ -153,11 +154,34 @@ const Chatroom = () => {
     }嗎?`;
     setConfirm(msg);
   }
-
   function switchOneCheck(cardId: string): void {
     let newObj = { ...menuSelect };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setMenuSelect(newObj);
+  }
+  async function tradePlants() {
+    let selected = cardList.filter((card) => menuSelect[card.cardId] === true);
+    let idList = selected.map((card) => {
+      return card.cardId;
+    });
+    let nameList = selected.map((card) => {
+      return card.plantName;
+    });
+    const newOwnerId = userRef.current!.value;
+    let promises = idList.map((cardId) => {
+      return firebase.changePlantOwner(cardId, newOwnerId);
+    });
+    await Promise.all(promises);
+    dispatch({
+      type: CardsActions.DELETE_PLANT_CARDS,
+      payload: { cardIds: idList },
+    });
+    const usersTarget = [userId!, selfIdRef.current!];
+    const data = {
+      userId: selfIdRef.current as string,
+      msg: `已經將${nameList.join(" & ")}交給你了，要好好照顧喔！`,
+    };
+    firebase.storeChatroomData(usersTarget, data);
   }
 
   useEffect(() => {
@@ -252,9 +276,12 @@ const Chatroom = () => {
               <OperationBtn onClick={() => setCardListDisplay(true)}>
                 Back
               </OperationBtn>
+              <OperationBtn onClick={tradePlants}>Next</OperationBtn>
             </>
           )}
-          <OperationBtn onClick={confirmTradeItems}>Next</OperationBtn>
+          {cardListDisplay && (
+            <OperationBtn onClick={confirmTradeItems}>Next</OperationBtn>
+          )}
         </DialogWrapper>
       )}
     </>

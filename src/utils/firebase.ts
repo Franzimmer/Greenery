@@ -65,6 +65,10 @@ const firebase = {
       });
     }
   },
+  async changePlantOwner(cardId: string, newOwnerId: string) {
+    let docRef = doc(cards, cardId);
+    await updateDoc(docRef, { ownerId: newOwnerId });
+  },
 };
 
 export {
