@@ -9,6 +9,7 @@ import {
   getDocs,
   where,
   updateDoc,
+  deleteDoc,
   query,
   setDoc,
   serverTimestamp,
@@ -76,7 +77,7 @@ const firebase = {
     let docRef = doc(cards, cardId);
     await updateDoc(docRef, { ownerId: newOwnerId });
   },
-  async savePostData(postData: {
+  async addPostData(postData: {
     title: string;
     content: string;
     authorId: string;
@@ -93,6 +94,19 @@ const firebase = {
     let docRef = doc(posts, postId);
     let docSnapshot = await getDoc(docRef);
     console.log(docSnapshot.data());
+    return docSnapshot;
+  },
+  async saveEditPost(postId: string, post: Post) {
+    let docRef = doc(posts, postId);
+    let docSnapshot = await setDoc(docRef, {
+      ...post,
+      createdTime: serverTimestamp(),
+    });
+    return docSnapshot;
+  },
+  async deletePost(postId: string) {
+    let docRef = doc(posts, postId);
+    let docSnapshot = await deleteDoc(docRef);
     return docSnapshot;
   },
 };

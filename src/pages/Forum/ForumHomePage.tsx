@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Tiptap from "./Tiptap";
+import Tiptap from "../../components/TextEditor/Tiptap";
 const ForumSectionWrapper = styled.div`
   width: 60vw;
   padding: 10px;
@@ -20,7 +20,6 @@ const ForumHomePage = () => {
         <ForumSection>討論區</ForumSection>
         <ForumSection>交易區</ForumSection>
       </ForumSectionWrapper>
-      <Tiptap />
     </>
   );
 };

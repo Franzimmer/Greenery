@@ -4,6 +4,8 @@ import { firebase } from "../../utils/firebase";
 import { useParams } from "react-router-dom";
 import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
+import { OperationBtn } from "../Profile/cards/CardsGrid";
+import Tiptap from "../../components/TextEditor/Tiptap";
 
 const PostWrapper = styled.div`
   display: flex;
@@ -25,23 +27,27 @@ const AuthorName = styled.p`
   text-align: center;
 `;
 const Content = styled.div`
+  padding: 8px;
+
   & > * + * {
     margin-top: 0.75em;
   }
+
   & h1,
   h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h3 {
     line-height: 1.1;
   }
+
   & ul,
   ol {
     padding: 0 1rem;
   }
 `;
-
+const BtnWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 export interface Post {
   postId: string;
   authorId: string;
@@ -60,6 +66,9 @@ const ForumPost = () => {
   const { id } = useParams();
   const [post, setPost] = useState<Post>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
+  const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
+  const [initContent, setInitContent] = useState<string>("");
+  const [initTitle, setInitTitle] = useState<string>("");
 
   useEffect(() => {
     async function getPost() {
@@ -67,6 +76,8 @@ const ForumPost = () => {
         let postData = await firebase.getPostData(id);
         let userInfo = await firebase.getUserInfo(postData.data()!.authorId);
         setPost(postData.data());
+        setInitTitle(postData.data()!.title);
+        setInitContent(postData.data()!.content);
         setAuthorInfo(userInfo.data());
       }
     }
@@ -82,7 +93,23 @@ const ForumPost = () => {
           <AuthorName>{authorInfo?.userName}</AuthorName>
         </AuthorInfo>
         <Content>{post?.content && parse(post.content)}</Content>
+        <BtnWrapper>
+          <OperationBtn onClick={() => setTextEditorDisplay(true)}>
+            Edit
+          </OperationBtn>
+          <OperationBtn>Delete</OperationBtn>
+        </BtnWrapper>
       </PostWrapper>
+      <OperationBtn>Comment</OperationBtn>
+      {textEditorDisplay && (
+        <Tiptap
+          initContent={initContent}
+          initTitle={initTitle}
+          post={post}
+          setPost={setPost}
+          setTextEditorDisplay={setTextEditorDisplay}
+        />
+      )}
     </>
   );
 };
