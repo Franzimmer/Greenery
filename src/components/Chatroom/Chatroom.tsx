@@ -121,20 +121,25 @@ const Chatroom = () => {
     inputRef.current!.value = "";
   }
   async function listenToChatroom() {
-    console.log("test");
-    // if (!userRef.current?.value) return;
+    if (!userRef.current?.value) return;
     if (!selfIdRef.current) return;
-    const usersTarget = [userId, selfIdRef.current];
-    const usersTargetFlip = [selfIdRef.current, userId];
+    const usersTarget = [userRef.current?.value, selfIdRef.current];
+    const usersTargetFlip = [selfIdRef.current, userRef.current?.value];
+    console.log(usersTarget);
     const q = query(
       chatrooms,
       where("users", "in", [usersTarget, usersTargetFlip])
     );
     const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) return;
-    else {
+    console.log("test");
+    if (querySnapshot.empty) {
+      console.log("fail");
+      return;
+    } else {
       querySnapshot.forEach((docData) => {
         let docRef = doc(chatrooms, docData.id);
+        console.log(docData.data().msgs);
+        setMsgs(docData.data().msgs);
         onSnapshot(docRef, async (doc: DocumentData) => {
           let msgs = doc.data().msgs;
           setMsgs(msgs);
