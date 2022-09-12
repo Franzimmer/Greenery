@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { firebase } from "../../utils/firebase";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
@@ -71,6 +71,7 @@ export interface Comment {
 }
 const ForumPost = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [post, setPost] = useState<Post>();
   const [comments, setComments] = useState<Comment[] | undefined>();
@@ -161,9 +162,14 @@ const ForumPost = () => {
       <p>{post?.type}</p>
       <PostWrapper>
         <AuthorInfo>
-          <AuthorPhoto src={authorInfo?.photoUrl}/>
+          <AuthorPhoto
+            src={authorInfo?.photoUrl}
+            onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
+          />
           <AuthorName>{authorInfo?.userName}</AuthorName>
-          {userInfo.userId !== authorInfo?.userId &&<OperationBtn>Open Chatroom</OperationBtn>}
+          {userInfo.userId !== authorInfo?.userId && (
+            <OperationBtn>Open Chatroom</OperationBtn>
+          )}
         </AuthorInfo>
         <Content>{post?.content && parse(post.content)}</Content>
         {cards &&
@@ -201,11 +207,14 @@ const ForumPost = () => {
               <AuthorInfo>
                 <AuthorPhoto
                   src={commentAuthorInfos[comment.authorId]?.photoUrl}
+                  onClick={() => navigate(`/profile/${comment.authorId}`)}
                 />
                 <AuthorName>
                   {commentAuthorInfos[comment.authorId]?.userName}
                 </AuthorName>
-                {userInfo.userId !== comment.authorId &&<OperationBtn>Open Chatroom</OperationBtn>}
+                {userInfo.userId !== comment.authorId && (
+                  <OperationBtn>Open Chatroom</OperationBtn>
+                )}
               </AuthorInfo>
               <Content>{post?.content && parse(comment.content)}</Content>
               {userInfo.userId === comment.authorId && (

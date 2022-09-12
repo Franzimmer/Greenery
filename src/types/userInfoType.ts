@@ -3,4 +3,6 @@ export interface UserInfo {
   userName: string;
   photoUrl: string;
   gallery: string[];
+  followList?: string[];
+  // notices?:
 }

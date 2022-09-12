@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Chatroom from "./components/Chatroom/Chatroom";
 import Header from "./components/Header/Header";
+import { auth, firebase } from "./utils/firebase";
+import { UserInfoActions } from "./actions/userInfoActions";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -18,6 +20,23 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
 `;
+function UserLogInObserver() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async function(user) {
+      if (user) {
+        let userInfo = await firebase.getUserInfo(user.uid);
+        dispatch({
+          type: UserInfoActions.SET_USER_INFO,
+          payload: { userData: userInfo.data() },
+        });
+      } else {
+      }
+    });
+  }, []);
+  return null;
+}
 
 function App() {
   return (
@@ -25,6 +44,7 @@ function App() {
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
+        <UserLogInObserver />
         <Header></Header>
         <Outlet />
         <Chatroom />

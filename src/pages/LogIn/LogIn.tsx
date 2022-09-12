@@ -1,16 +1,15 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
-import { auth, firebase, users } from "../../utils/firebase";
+import { auth, users } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { UserInfoActions } from "../../actions/userInfoActions";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc, DocumentSnapshot } from "firebase/firestore";
-import { UserInfo } from "../../types/userInfoType";
+import { doc, setDoc } from "firebase/firestore";
+
 const LogInPanel = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,7 +29,6 @@ const Input = styled.input`
 const LogIn = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current) return;
@@ -50,14 +48,10 @@ const LogIn = () => {
           gallery: [],
         };
         setDoc(docRef, data);
-        return data;
+        return data.userId;
       })
-      .then((data) => {
-        dispatch({
-          type: UserInfoActions.SET_USER_INFO,
-          payload: { userData: data },
-        });
-        navigate(`/profile/${data.userId}`);
+      .then((id) => {
+        navigate(`/profile/${id}`);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -78,14 +72,7 @@ const LogIn = () => {
         return user.uid;
       })
       .then((id) => {
-        return firebase.getUserInfo(id);
-      })
-      .then((userData) => {
-        dispatch({
-          type: UserInfoActions.SET_USER_INFO,
-          payload: { userData: userData.data() },
-        });
-        navigate(`/profile/${userData.data()!.userId}`);
+        navigate(`/profile/${id}`);
       })
       .catch((error) => {
         const errorCode = error.code;

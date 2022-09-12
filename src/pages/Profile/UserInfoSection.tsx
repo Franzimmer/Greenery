@@ -2,11 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { signOut } from "firebase/auth";
 import { UserInfo } from "../../types/userInfoType";
-import { auth, firebase } from "../../utils/firebase";
+import { auth, firebase, storage } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { OperationBtn } from "./cards/CardsGrid";
-import { storage, users } from "../../utils/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
@@ -28,6 +26,8 @@ const UserPhoto = styled.div<UserPhotoProps>`
   border: 1px solid black;
   background-image: url(${(props) => (props.path ? props.path : "")});
   background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 const UserInfoText = styled.p``;
 const LabelForHiddenInput = styled.label`
@@ -54,11 +54,12 @@ async function uploadFile(file: File) {
 }
 
 const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
-  const docRef = doc(users, id);
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<string>("none");
+  const [isFollowed, setIsFollowed] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   function userSignOut() {
@@ -92,22 +93,50 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
     await firebase.updateUserName(id!, nameRef.current.value);
     nameRef.current.value = "";
   }
-  // useEffect(() => {
-  //   async function getUserInfo() {
-  //     let result = await getDoc(docRef);
-  //     if (result.data()) {
-  //       dispatch({
-  //         type: UserInfoActions.SET_USER_INFO,
-  //         payload: { userData: result.data() },
-  //       });
-  //     }
-  //   }
-  //   getUserInfo();
-  // }, []);
-  // console.log(userInfo);
+  async function followStatusToggle() {
+    if (isFollowed) {
+      setIsFollowed(false);
+      await firebase.removeFollowList(userInfo.userId, id!);
+      dispatch({
+        type: UserInfoActions.REMOVE_FOLLOW_LIST,
+        payload: { targetId: id },
+      });
+    }
+    if (!isFollowed) {
+      setIsFollowed(true);
+      await firebase.addFollowList(userInfo.userId, id!);
+      dispatch({
+        type: UserInfoActions.ADD_FOLLOW_LIST,
+        payload: { targetId: id },
+      });
+    }
+  }
+  useEffect(() => {
+    async function getUserInfo() {
+      if (id && !isSelf) {
+        let result = await firebase.getUserInfo(id);
+        setUserData(result.data());
+      } else if (id && isSelf) {
+        setUserData(userInfo);
+        userInfo.followList?.includes(id)
+          ? setIsFollowed(true)
+          : setIsFollowed(false);
+      } else {
+        alert("此頁面不存在！");
+        navigate("/");
+      }
+    }
+    getUserInfo();
+  }, []);
+
+  useEffect(() => {
+    if (isSelf) {
+      setUserData(userInfo);
+    }
+  }, [userInfo]);
   return (
     <UserInfoWrapper>
-      <UserPhoto path={userInfo?.photoUrl} />
+      <UserPhoto path={userData?.photoUrl} />
       {isSelf && (
         <LabelForHiddenInput htmlFor="upload">
           編輯相片
@@ -121,7 +150,7 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
           />
         </LabelForHiddenInput>
       )}
-      <UserInfoText>{userInfo?.userName}</UserInfoText>
+      <UserInfoText>{userData?.userName}</UserInfoText>
       {isSelf && (
         <LabelForHiddenInput
           htmlFor="nameInput"
@@ -138,6 +167,12 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
             style={{ display: showNameInput }}
           />
         </LabelForHiddenInput>
+      )}
+      {!isSelf && !isFollowed && (
+        <OperationBtn onClick={followStatusToggle}>Follow</OperationBtn>
+      )}
+      {!isSelf && isFollowed && (
+        <OperationBtn onClick={followStatusToggle}>Unfollow</OperationBtn>
       )}
       {isSelf && <OperationBtn onClick={userSignOut}>登出</OperationBtn>}
     </UserInfoWrapper>

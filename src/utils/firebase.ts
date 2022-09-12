@@ -13,6 +13,7 @@ import {
   setDoc,
   serverTimestamp,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -145,6 +146,14 @@ const firebase = {
   async editCard(cardId: string, data: PlantCard) {
     const docRef = doc(cards, cardId);
     await setDoc(docRef, data);
+  },
+  async addFollowList(selfId: string, followId: string) {
+    let docRef = doc(users, selfId);
+    await updateDoc(docRef, { followList: arrayUnion(followId) });
+  },
+  async removeFollowList(selfId: string, followId: string) {
+    let docRef = doc(users, selfId);
+    await updateDoc(docRef, { followList: arrayRemove(followId) });
   },
 };
 

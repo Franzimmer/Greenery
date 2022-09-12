@@ -7,6 +7,8 @@ import ProfileMenu from "./ProfileMenu";
 import CardsGrid from "./cards/CardsGrid";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
+import { useSelector } from "react-redux";
+import { RootState } from "../../reducer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,26 +30,17 @@ const SideBar = styled.div`
 `;
 
 const Profile = () => {
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>({
     Cards: true,
     Calendar: false,
     Gallery: false,
   });
   const { id } = useParams();
-  const navigate = useNavigate();
   const [isSelf, setIsSelf] = useState<boolean>(false);
 
   useEffect(() => {
-    auth.onAuthStateChanged(async function(user) {
-      if (!id) {
-        alert("此頁面不存在");
-        navigate("/");
-      }
-      if (user) {
-        const userId = user.uid;
-        if (id === userId) setIsSelf(true);
-      }
-    });
+    if (id === userInfo.userId) setIsSelf(true);
   }, []);
   return (
     <Wrapper>
