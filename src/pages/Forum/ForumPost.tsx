@@ -83,6 +83,12 @@ const ForumPost = () => {
     setTextEditorDisplay(true);
     setInitContent("");
   }
+  function deleteComment(deleteTarget: Comment) {
+    let postId = post!.postId;
+    let newComments = comments!.filter((comment) => comment !== deleteTarget);
+    firebase.saveEditComment(postId, newComments);
+    setComments(newComments);
+  }
   function sliceComments(begin: number, end: number) {
     if (!comments) return;
     return comments.slice(begin, end);
@@ -171,7 +177,9 @@ const ForumPost = () => {
                   <OperationBtn onClick={() => editComment(comment)}>
                     Edit
                   </OperationBtn>
-                  <OperationBtn>Delete</OperationBtn>
+                  <OperationBtn onClick={() => deleteComment(comment)}>
+                    Delete
+                  </OperationBtn>
                 </BtnWrapper>
               )}
             </PostWrapper>

@@ -116,11 +116,10 @@ const firebase = {
   },
   async saveComment(
     postId: string,
-    comment: { content: string; authorId: string }
+    comment: { content: string; authorId: string; createdTime: number }
   ) {
-    let data = { ...comment, createdTime: Date.now() };
     let docRef = doc(posts, postId);
-    await updateDoc(docRef, { comments: arrayUnion(data) });
+    await updateDoc(docRef, { comments: arrayUnion(comment) });
   },
   async saveEditComment(postId: string, comments: Comment[]) {
     let docRef = doc(posts, postId);

@@ -104,7 +104,7 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
   //   }
   //   getUserInfo();
   // }, []);
-  console.log(userInfo);
+  // console.log(userInfo);
   return (
     <UserInfoWrapper>
       <UserPhoto path={userInfo?.photoUrl} />

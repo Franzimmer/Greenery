@@ -75,14 +75,20 @@ const Tiptap = ({
     if (setPost) setPost(data);
     alert("編輯成功！");
   }
-  async function saveComment() {
+  async function addComment() {
+    if (!comments || !setComments) return;
     const { content } = getPostHTML()!;
     const authorId = userInfo.userId;
     const comment = {
       content,
       authorId,
-    };
+      createdTime: Date.now(),
+    } as Comment;
     await firebase.saveComment(post!.postId, comment);
+    let newComments = [...comments];
+    newComments.push(comment);
+    setComments(newComments);
+    console.log(newComments);
   }
   async function saveEditComment() {
     if (!comments || !setComments) return;
@@ -130,12 +136,12 @@ const Tiptap = ({
         Save Edit
       </OperationBtn>
       <OperationBtn
-        onClick={() => {
-          saveComment();
+        onClick={async () => {
+          await addComment();
           setTextEditorDisplay(false);
         }}
       >
-        Save Comment
+        Add Comment
       </OperationBtn>
       <OperationBtn
         onClick={() => {
