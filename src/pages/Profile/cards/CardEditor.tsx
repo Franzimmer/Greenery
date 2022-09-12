@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "./CardsGrid";
 import preview from "./previewDefault.png";
-import { db, storage, cards, species } from "../../../utils/firebase";
-import { getDocs, query, where, setDoc, doc } from "firebase/firestore";
+import { storage, species, firebase } from "../../../utils/firebase";
+import { getDocs, query, where } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { CardsActions } from "../../../actions/cardsActions";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
-
+import { PlantCard } from "../../../types/plantCardType";
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -61,6 +61,7 @@ const RemoveTagBtn = styled.div`
   font-weight: 700;
 `;
 interface FCProps {
+  userId: string;
   editorDisplay: boolean;
   editorToggle: () => void;
   editCardId: string | null;
@@ -77,6 +78,7 @@ export function unixTimeToString(unixTime: number) {
   return formatedDate;
 }
 const CardEditor = ({
+  userId,
   editorDisplay,
   editorToggle,
   editCardId,
@@ -159,19 +161,20 @@ const CardEditor = ({
   }
   async function addCard() {
     const imgLink = await uploadFile();
-    const card = doc(cards);
-    const data = {
-      cardId: card.id,
-      ownerId: "test",
-      plantName: nameRef.current?.value,
+    const data: PlantCard = {
+      cardId: null,
+      ownerId: userId,
+      plantName: nameRef.current?.value!,
       plantPhoto: imgLink,
       tags: tags,
-      species: speciesRef.current?.value,
+      species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
-      birthday: Date.parse(birthdayRef.current?.value || ""),
     };
-    await setDoc(card, data);
+    if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
+      data["birthday"] = Date.parse(birthdayRef.current?.value!);
+    }
+    await firebase.addCard(data);
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
@@ -180,25 +183,22 @@ const CardEditor = ({
   }
   async function editCard() {
     let imgLink;
-    if (imageRef.current?.value) {
-      imgLink = await uploadFile();
-    } else {
-      imgLink = previewLink;
-    }
+    if (imageRef.current?.value) imgLink = await uploadFile();
+    else imgLink = previewLink!;
     const data = {
-      cardId: editCardId,
+      cardId: editCardId!,
       parents:
         cardList.find((card) => card.cardId === editCardId)?.parents || [],
-      ownerId: "test",
-      plantName: nameRef.current?.value,
+      ownerId: userId,
+      plantName: nameRef.current?.value!,
       plantPhoto: imgLink,
       tags: tags || [],
-      species: speciesRef.current?.value,
+      species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       birthday: Date.parse(birthdayRef.current?.value || ""),
     };
-    await setDoc(doc(db, "cards", editCardId!), data);
+    await firebase.editCard(editCardId!, data);
     dispatch({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
@@ -207,22 +207,17 @@ const CardEditor = ({
   }
   useEffect(() => {
     async function getEditCardData() {
-      const q = query(cards, where("cardId", "==", editCardId));
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
-        alert("User not existed!");
-        return;
-      }
-      querySnapshot.forEach((doc) => {
-        let data = doc.data();
-        setPreviewLink(data?.plantPhoto);
-        setTags(data?.tags || []);
-        nameRef.current!.value = data.plantName;
-        speciesRef.current!.value = data.species;
-        waterRef.current!.value = data?.waterPref ?? "";
-        lightRef.current!.value = data?.lightPref ?? "";
+      if (!editCardId) return;
+      let docdata = await firebase.getCardData(editCardId!);
+      let data = docdata.data();
+      setPreviewLink(data!.plantPhoto || null);
+      setTags(data?.tags || []);
+      nameRef.current!.value = data!.plantName;
+      speciesRef.current!.value = data!.species;
+      waterRef.current!.value = data?.waterPref ?? "";
+      lightRef.current!.value = data?.lightPref ?? "";
+      if (data?.birthday)
         birthdayRef.current!.value = unixTimeToString(data?.birthday);
-      });
     }
     if (editCardId) getEditCardData();
   }, [editCardId]);

@@ -1,5 +1,5 @@
 export interface PlantCard {
-  cardId: string;
+  cardId: string | null;
   ownerId: string;
   plantName: string;
   species: string;

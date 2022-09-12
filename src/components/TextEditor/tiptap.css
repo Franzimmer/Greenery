@@ -1,0 +1,32 @@
+
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+}
+
+.ProseMirror ul,ol {
+  padding: 0 1rem;
+}
+
+.ProseMirror h1,h2,h3,h4,h5,h6 {
+  line-height: 1.1;
+}
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ProseMirror blockquote {
+  padding-left: 1rem;
+  border-left: 5px solid rgba(0,0,0, 0.9);
+}
+
+.ProseMirror hr {
+  border-top: 2px solid rgba(#0D0D0D, 0.1);
+  margin: 2rem 0;
+}
+
+.ProseMirror {
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid #000;
+}

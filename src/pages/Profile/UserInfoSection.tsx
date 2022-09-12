@@ -92,18 +92,19 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
     await firebase.updateUserName(id!, nameRef.current.value);
     nameRef.current.value = "";
   }
-  useEffect(() => {
-    async function getUserInfo() {
-      let result = await getDoc(docRef);
-      if (result.data()) {
-        dispatch({
-          type: UserInfoActions.SET_USER_INFO,
-          payload: { userData: result.data() },
-        });
-      }
-    }
-    getUserInfo();
-  }, []);
+  // useEffect(() => {
+  //   async function getUserInfo() {
+  //     let result = await getDoc(docRef);
+  //     if (result.data()) {
+  //       dispatch({
+  //         type: UserInfoActions.SET_USER_INFO,
+  //         payload: { userData: result.data() },
+  //       });
+  //     }
+  //   }
+  //   getUserInfo();
+  // }, []);
+  // console.log(userInfo);
   return (
     <UserInfoWrapper>
       <UserPhoto path={userInfo?.photoUrl} />
