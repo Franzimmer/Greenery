@@ -4,7 +4,6 @@ import {
   collection,
   CollectionReference,
   doc,
-  addDoc,
   getDoc,
   getDocs,
   where,
@@ -17,7 +16,6 @@ import {
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { PlantCard } from "../types/plantCardType";
 import { UserInfo } from "../types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";

@@ -10,10 +10,9 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
-import { CardsActions } from "../../actions/cardsActions";
-import Dialog from "./Dialog";
+import CardSelectDialog from "../CardSelectDialog/CardSelectDialog";
 
 export interface message {
   userId: string;
@@ -170,7 +169,8 @@ const Chatroom = () => {
         </FlexWrapper>
       </ChatroomWindow>
       {cardList && (
-        <Dialog
+        <CardSelectDialog
+          cardList={cardList}
           userID={userRef.current?.value}
           selfID={selfIdRef.current}
           dialogDisplay={dialogDisplay}
@@ -179,7 +179,7 @@ const Chatroom = () => {
           setDialogDisplay={setDialogDisplay}
           setCardListDisplay={setCardListDisplay}
           setMenuSelect={setMenuSelect}
-        ></Dialog>
+        ></CardSelectDialog>
       )}
     </>
   );
