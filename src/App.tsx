@@ -6,6 +6,7 @@ import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Chatroom from "./components/Chatroom/Chatroom";
 import Header from "./components/Header/Header";
+import SideBarWrapper from "./components/SideBar/SideBarWrapper";
 import { auth, firebase } from "./utils/firebase";
 import { UserInfoActions } from "./actions/userInfoActions";
 
@@ -39,13 +40,18 @@ function UserLogInObserver() {
 }
 
 function App() {
+  const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
   return (
     <>
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver />
-        <Header></Header>
+        <Header
+          sideBarDisplay={sideBarDisplay}
+          setSideBarDisplay={setSideBarDisplay}
+        ></Header>
+        {sideBarDisplay && <SideBarWrapper />}
         <Outlet />
         <Chatroom />
       </Provider>

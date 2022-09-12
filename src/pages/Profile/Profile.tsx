@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams, useNavigate } from "react-router-dom";
-import { auth } from "../../utils/firebase";
+import { useParams } from "react-router-dom";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import CardsGrid from "./cards/CardsGrid";
@@ -22,12 +21,6 @@ const MainWrapper = styled.div`
   flex-direction: column;
   margin-top: 20px;
 `;
-const SideBar = styled.div`
-  border-left: 1px solid black;
-  margin-left: 10px;
-  padding-left: 5px;
-  height: 400px;
-`;
 
 const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -41,19 +34,17 @@ const Profile = () => {
 
   useEffect(() => {
     if (id === userInfo.userId) setIsSelf(true);
-  }, []);
+    else setIsSelf(false);
+  }, [id]);
   return (
     <Wrapper>
       <MainWrapper>
         <UserInfoSection id={id} isSelf={isSelf} />
         <ProfileMenu setTabDisplay={setTabDisplay} />
         {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
-        {tabDisplay.Calendar && <CalendarApp />}
+        {tabDisplay.Calendar && <CalendarApp id={id!} />}
         {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
       </MainWrapper>
-      <SideBar>
-        <h3>SideBar Here</h3>
-      </SideBar>
     </Wrapper>
   );
 };

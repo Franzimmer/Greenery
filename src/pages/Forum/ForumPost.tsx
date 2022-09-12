@@ -120,12 +120,15 @@ const ForumPost = () => {
         setAuthorInfo(userInfo.data());
         if (postData.data()?.cardIds?.length !== 0) {
           let cardsData: PlantCard[] = [];
-          let cardIds = postData.data()?.cardIds!;
+          let cardIds = postData.data()?.cardIds;
+          if (!cardIds) return;
           let cards = await firebase.getCards(cardIds);
-          cards.forEach((card) => {
-            cardsData.push(card.data());
-          });
-          setCards(cardsData);
+          if (!cards?.empty) {
+            cards?.forEach((card) => {
+              cardsData.push(card.data());
+            });
+            setCards(cardsData);
+          }
         }
       }
     }

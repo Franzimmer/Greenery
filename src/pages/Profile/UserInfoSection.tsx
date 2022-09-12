@@ -19,7 +19,7 @@ const UserInfoWrapper = styled.div`
 interface UserPhotoProps {
   path: string | undefined;
 }
-const UserPhoto = styled.div<UserPhotoProps>`
+export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -116,24 +116,24 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
       if (id && !isSelf) {
         let result = await firebase.getUserInfo(id);
         setUserData(result.data());
-      } else if (id && isSelf) {
-        setUserData(userInfo);
         userInfo.followList?.includes(id)
           ? setIsFollowed(true)
           : setIsFollowed(false);
+      } else if (id && isSelf) {
+        setUserData(userInfo);
       } else {
         alert("此頁面不存在！");
         navigate("/");
       }
     }
     getUserInfo();
-  }, []);
+  }, [id, isSelf]);
 
   useEffect(() => {
     if (isSelf) {
       setUserData(userInfo);
     }
-  }, [userInfo]);
+  }, [userInfo, isSelf]);
   return (
     <UserInfoWrapper>
       <UserPhoto path={userData?.photoUrl} />

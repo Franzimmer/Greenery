@@ -132,6 +132,7 @@ const firebase = {
     return docSnapshot;
   },
   async getCards(cardIds: string[]) {
+    if (cardIds.length === 0) return;
     const q = query(cards, where("cardId", "in", cardIds));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
@@ -154,6 +155,12 @@ const firebase = {
   async removeFollowList(selfId: string, followId: string) {
     let docRef = doc(users, selfId);
     await updateDoc(docRef, { followList: arrayRemove(followId) });
+  },
+  async getUsers(idList: string[]) {
+    if (!idList || idList.length === 0) return;
+    const q = query(users, where("userId", "in", idList));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
   },
 };
 

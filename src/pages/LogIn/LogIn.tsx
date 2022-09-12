@@ -46,6 +46,7 @@ const LogIn = () => {
           userName: "user",
           photoUrl: "",
           gallery: [],
+          followList: [],
         };
         setDoc(docRef, data);
         return data.userId;
