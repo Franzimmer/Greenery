@@ -12,14 +12,17 @@ import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
 import { UserInfo } from "../../types/userInfoType";
-
+import { Comment } from "../../pages/Forum/ForumPost";
 interface TiptapProps {
   editorMode: string;
   initContent?: string;
   initTitle?: string;
   post?: Post;
+  comments?: Comment[];
+  editTargetComment?: Comment;
   setEditorMode?: React.Dispatch<React.SetStateAction<string>>;
   setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
+  setComments?: React.Dispatch<React.SetStateAction<Comment[] | undefined>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const Tiptap = ({
@@ -27,7 +30,11 @@ const Tiptap = ({
   initContent,
   initTitle,
   post,
+  comments,
+  editTargetComment,
+  setEditorMode,
   setPost,
+  setComments,
   setTextEditorDisplay,
 }: TiptapProps) => {
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
@@ -54,7 +61,8 @@ const Tiptap = ({
       ...html,
       authorId,
     };
-    await firebase.addPostData(data);
+    await firebase.addPost(data);
+    //update state
     alert("文章發表成功！");
   }
   async function editPost() {
@@ -76,7 +84,27 @@ const Tiptap = ({
     };
     await firebase.saveComment(post!.postId, comment);
   }
-
+  async function saveEditComment() {
+    if (!comments || !setComments) return;
+    let postId = post!.postId;
+    let newComment = {
+      authorId: editTargetComment!.authorId,
+      content: getPostHTML()?.content || "",
+      createdTime: Date.now(),
+    };
+    let targetId = comments!.findIndex(
+      (comment) =>
+        comment.authorId === editTargetComment?.authorId &&
+        comment.createdTime === editTargetComment.createdTime
+    );
+    let newComments = [...comments];
+    newComments[targetId] = newComment;
+    console.log(newComments);
+    await firebase.saveEditComment(postId, newComments);
+    alert("編輯留言成功！");
+    setComments(newComments);
+    setTextEditorDisplay(false);
+  }
   return (
     <>
       <label htmlFor="title">輸入文章標題</label>
@@ -108,6 +136,20 @@ const Tiptap = ({
         }}
       >
         Save Comment
+      </OperationBtn>
+      <OperationBtn
+        onClick={() => {
+          saveEditComment();
+        }}
+      >
+        Save Edit Comment
+      </OperationBtn>
+      <OperationBtn
+        onClick={() => {
+          setTextEditorDisplay(false);
+        }}
+      >
+        Cancel
       </OperationBtn>
     </>
   );

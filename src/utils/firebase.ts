@@ -20,7 +20,7 @@ import { getAuth } from "firebase/auth";
 import { PlantCard } from "../types/plantCardType";
 import { UserInfo } from "../types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
-import { Post } from "../pages/Forum/ForumPost";
+import { Comment, Post } from "../pages/Forum/ForumPost";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -78,7 +78,7 @@ const firebase = {
     let docRef = doc(cards, cardId);
     await updateDoc(docRef, { ownerId: newOwnerId });
   },
-  async addPostData(postData: {
+  async addPost(postData: {
     title: string;
     content: string;
     authorId: string;
@@ -121,6 +121,10 @@ const firebase = {
     let data = { ...comment, createdTime: Date.now() };
     let docRef = doc(posts, postId);
     await updateDoc(docRef, { comments: arrayUnion(data) });
+  },
+  async saveEditComment(postId: string, comments: Comment[]) {
+    let docRef = doc(posts, postId);
+    await updateDoc(docRef, { comments: comments });
   },
 };
 

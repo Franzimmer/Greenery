@@ -57,7 +57,7 @@ export interface Post {
   content: string;
   comments?: Comment[];
 }
-interface Comment {
+export interface Comment {
   authorId: string;
   createdTime: number;
   content: string;
@@ -76,27 +76,33 @@ const ForumPost = () => {
   const [initTitle, setInitTitle] = useState<string>("");
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
   const [editorMode, setEditorMode] = useState<string>("");
+  const [editTargetComment, setEditTargetComment] = useState<Comment>();
 
   function addComment() {
     setEditorMode("Comment");
     setTextEditorDisplay(true);
     setInitContent("");
   }
-  function sliceCommens(begin: number, end: number) {
+  function sliceComments(begin: number, end: number) {
     if (!comments) return;
     return comments.slice(begin, end);
+  }
+  function editComment(comment: Comment) {
+    setEditTargetComment(comment);
+    setInitContent(comment.content);
+    setEditorMode("Comment");
+    setTextEditorDisplay(true);
   }
   useEffect(() => {
     async function getPost() {
       if (id) {
         let postData = await firebase.getPostData(id);
         let userInfo = await firebase.getUserInfo(postData.data()!.authorId);
-        await Promise.all([postData, userInfo]);
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
         setComments(postData.data()!.comments); //all comments
-        setPageComments(comments?.slice(0, 10));
+        setPageComments(postData.data()?.comments?.slice(0, 10));
         setAuthorInfo(userInfo.data());
       }
     }
@@ -124,6 +130,9 @@ const ForumPost = () => {
     }
     getCommentAuthorInfo();
   }, [pageComments]);
+  useEffect(() => {
+    setPageComments(sliceComments(0, 10));
+  }, [comments]);
   return (
     <>
       {post?.title && parse(post.title)}
@@ -159,7 +168,7 @@ const ForumPost = () => {
               <Content>{post?.content && parse(comment.content)}</Content>
               {userInfo.userId === comment.authorId && (
                 <BtnWrapper>
-                  <OperationBtn onClick={() => setTextEditorDisplay(true)}>
+                  <OperationBtn onClick={() => editComment(comment)}>
                     Edit
                   </OperationBtn>
                   <OperationBtn>Delete</OperationBtn>
@@ -175,9 +184,12 @@ const ForumPost = () => {
           initContent={initContent}
           initTitle={initTitle}
           post={post}
+          comments={comments}
+          editTargetComment={editTargetComment}
           setPost={setPost}
           setEditorMode={setEditorMode}
           setTextEditorDisplay={setTextEditorDisplay}
+          setComments={setComments}
         />
       )}
     </>
