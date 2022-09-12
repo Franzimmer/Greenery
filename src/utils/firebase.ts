@@ -82,11 +82,11 @@ const firebase = {
     title: string;
     content: string;
     authorId: string;
+    type: string;
   }) {
     let post = doc(posts);
     await setDoc(post, {
       ...postData,
-      type: "discussion",
       postId: post.id,
       createdTime: serverTimestamp(),
     });

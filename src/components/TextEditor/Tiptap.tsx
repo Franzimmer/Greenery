@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
@@ -38,6 +39,7 @@ const Tiptap = ({
   setTextEditorDisplay,
 }: TiptapProps) => {
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
+  const typeRef = useRef<HTMLSelectElement>(null);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
     content: initTitle || "<h1>Title</h1>",
@@ -46,7 +48,6 @@ const Tiptap = ({
     extensions: [StarterKit],
     content: initContent || "<h1>Hello World!</h1>",
   });
-
   function getPostHTML() {
     if (!titleEditor || !editor) return;
     const title = titleEditor!.getHTML();
@@ -55,15 +56,18 @@ const Tiptap = ({
     return postHtml;
   }
   async function savePost() {
+    if (!typeRef.current) return;
+    const postType = typeRef.current!.value;
     const html = getPostHTML()!;
     const authorId = userInfo.userId;
     const data = {
       ...html,
       authorId,
+      type: postType,
     };
-    await firebase.addPost(data);
+    // await firebase.addPost(data);
     //update state
-    alert("文章發表成功！");
+    // alert("文章發表成功！");
   }
   async function editPost() {
     const html = getPostHTML()!;
@@ -105,7 +109,6 @@ const Tiptap = ({
     );
     let newComments = [...comments];
     newComments[targetId] = newComment;
-    console.log(newComments);
     await firebase.saveEditComment(postId, newComments);
     alert("編輯留言成功！");
     setComments(newComments);
@@ -113,7 +116,20 @@ const Tiptap = ({
   }
   return (
     <>
-      <label htmlFor="title">輸入文章標題</label>
+      {editorMode !== "Comment" && (
+        <>
+          <label style={{ display: "inline-block", marginTop: "10px" }}>
+            選擇文章類型
+          </label>
+          <select name="type" ref={typeRef}>
+            <option value="discussion">討論</option>
+            <option value="trade">交易</option>
+          </select>
+        </>
+      )}
+      <label htmlFor="title" style={{ display: "block", marginTop: "10px" }}>
+        輸入文章標題
+      </label>
       {editorMode !== "Comment" && (
         <EditorContent editor={titleEditor} id="title" />
       )}
