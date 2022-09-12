@@ -28,6 +28,8 @@ interface TiptapProps {
   setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
   setComments?: React.Dispatch<React.SetStateAction<Comment[] | undefined>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  postList?: Post[];
+  setPostList?: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 const TextEditor = ({
   editorMode,
@@ -36,6 +38,8 @@ const TextEditor = ({
   post,
   comments,
   editTargetComment,
+  postList,
+  setPostList,
   setEditorMode,
   setPost,
   setComments,
@@ -63,7 +67,7 @@ const TextEditor = ({
   }
   async function savePost() {
     let cardIds: string[] = [];
-    if (!typeRef.current) return;
+    if (!typeRef.current || !setPostList || !postList) return;
     const postType = typeRef.current!.value;
     const html = getPostHTML()!;
     const authorId = userInfo.userId;
@@ -72,16 +76,18 @@ const TextEditor = ({
       authorId,
       type: postType,
       cardIds,
-    };
+    } as Post;
     if (postType === "trade") {
       Object.keys(menuSelect).forEach((id) => {
         if (menuSelect[id]) cardIds.push(id);
       });
       data["cardIds"] = cardIds;
     }
-
-    await firebase.addPost(data);
-    // //update state
+    let postId = await firebase.addPost(data);
+    data["postId"] = postId;
+    let newPosts = [...postList];
+    newPosts.push(data);
+    setPostList(newPosts);
     alert("文章發表成功！");
   }
   async function editPost() {

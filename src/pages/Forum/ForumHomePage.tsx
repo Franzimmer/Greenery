@@ -80,6 +80,8 @@ const ForumHomePage = () => {
           initTitle={initTitle}
           editorMode={"post"}
           setTextEditorDisplay={setTextEditorDisplay}
+          postList={postList}
+          setPostList={setPostList}
         ></TextEditor>
       )}
     </>

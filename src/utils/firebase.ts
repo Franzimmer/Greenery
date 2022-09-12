@@ -89,6 +89,7 @@ const firebase = {
       postId: post.id,
       createdTime: serverTimestamp(),
     });
+    return post.id;
   },
   async getPostData(postId: string) {
     let docRef = doc(posts, postId);
