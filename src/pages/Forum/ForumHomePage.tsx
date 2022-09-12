@@ -14,13 +14,14 @@ const ForumSectionWrapper = styled.div`
   justify-content: center;
   align-itms: center;
 `;
-const ForumSection = styled.div`
-  margin-right: 10px;
-`;
-const ForumPostPage = styled.div`
+interface ForumPostPageProps {
+  show: boolean;
+}
+const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80%;
   height: 100px;
   border: 1px solid #000;
+  display: ${(props) => (props.show ? "block" : "none")};
 `;
 const ForumPostPageInfo = styled(Link)``;
 
@@ -29,6 +30,7 @@ const ForumHomePage = () => {
   const [initTitle, setInitTitle] = useState<string>("");
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
   const [postList, setPostList] = useState<Post[]>([]);
+  const [filter, setFilter] = useState<"discussion" | "trade" | "any">("any");
 
   function addNewPost() {
     setInitTitle("");
@@ -51,13 +53,19 @@ const ForumHomePage = () => {
     <>
       <h1>Forum Home Page!</h1>
       <ForumSectionWrapper>
-        <ForumSection>討論區</ForumSection>
-        <ForumSection>交易區</ForumSection>
+        <OperationBtn onClick={() => setFilter("any")}>All</OperationBtn>
+        <OperationBtn onClick={() => setFilter("discussion")}>
+          討論區
+        </OperationBtn>
+        <OperationBtn onClick={() => setFilter("trade")}>交易區</OperationBtn>
       </ForumSectionWrapper>
       {postList.length &&
         postList.map((post) => {
           return (
-            <ForumPostPage key={post.postId}>
+            <ForumPostPage
+              key={post.postId}
+              show={post.type === filter || filter === "any"}
+            >
               <ForumPostPageInfo to={post.postId}>
                 {parse(post.title)}
               </ForumPostPageInfo>
