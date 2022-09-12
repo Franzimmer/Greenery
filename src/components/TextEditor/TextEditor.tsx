@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
@@ -14,6 +14,9 @@ import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
 import { UserInfo } from "../../types/userInfoType";
 import { Comment } from "../../pages/Forum/ForumPost";
+import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
+import { PlantCard } from "../../types/plantCardType";
+
 interface TiptapProps {
   editorMode: string;
   initContent?: string;
@@ -26,7 +29,7 @@ interface TiptapProps {
   setComments?: React.Dispatch<React.SetStateAction<Comment[] | undefined>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const Tiptap = ({
+const TextEditor = ({
   editorMode,
   initContent,
   initTitle,
@@ -39,6 +42,7 @@ const Tiptap = ({
   setTextEditorDisplay,
 }: TiptapProps) => {
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
+  const cardList: PlantCard[] = useSelector((state: RootState) => state.cards);
   const typeRef = useRef<HTMLSelectElement>(null);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
@@ -48,6 +52,8 @@ const Tiptap = ({
     extensions: [StarterKit],
     content: initContent || "<h1>Hello World!</h1>",
   });
+  const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
+  const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
   function getPostHTML() {
     if (!titleEditor || !editor) return;
     const title = titleEditor!.getHTML();
@@ -56,6 +62,7 @@ const Tiptap = ({
     return postHtml;
   }
   async function savePost() {
+    let cardIds: string[] = [];
     if (!typeRef.current) return;
     const postType = typeRef.current!.value;
     const html = getPostHTML()!;
@@ -64,10 +71,18 @@ const Tiptap = ({
       ...html,
       authorId,
       type: postType,
+      cardIds,
     };
-    // await firebase.addPost(data);
-    //update state
-    // alert("文章發表成功！");
+    if (postType === "trade") {
+      Object.keys(menuSelect).forEach((id) => {
+        if (menuSelect[id]) cardIds.push(id);
+      });
+      data["cardIds"] = cardIds;
+    }
+
+    await firebase.addPost(data);
+    // //update state
+    alert("文章發表成功！");
   }
   async function editPost() {
     const html = getPostHTML()!;
@@ -114,6 +129,20 @@ const Tiptap = ({
     setComments(newComments);
     setTextEditorDisplay(false);
   }
+  function toggleCardWrapperDisplay() {
+    if (typeRef.current?.value === "trade") setCardWrapperDisplay(true);
+    else setCardWrapperDisplay(false);
+  }
+
+  useEffect(() => {
+    if (cardList.length !== 0) {
+      let checkList = {} as Record<string, boolean>;
+      cardList.forEach((card) => {
+        checkList[card.cardId!] = false;
+      });
+      setMenuSelect(checkList);
+    }
+  }, []);
   return (
     <>
       {editorMode !== "Comment" && (
@@ -121,10 +150,18 @@ const Tiptap = ({
           <label style={{ display: "inline-block", marginTop: "10px" }}>
             選擇文章類型
           </label>
-          <select name="type" ref={typeRef}>
+          <select name="type" ref={typeRef} onClick={toggleCardWrapperDisplay}>
             <option value="discussion">討論</option>
             <option value="trade">交易</option>
           </select>
+          {cardWrapperDisplay && (
+            <CardsWrapper
+              cardListDisplay={true}
+              cardList={cardList}
+              menuSelect={menuSelect}
+              setMenuSelect={setMenuSelect}
+            ></CardsWrapper>
+          )}
         </>
       )}
       <label htmlFor="title" style={{ display: "block", marginTop: "10px" }}>
@@ -177,4 +214,4 @@ const Tiptap = ({
   );
 };
 
-export default Tiptap;
+export default TextEditor;

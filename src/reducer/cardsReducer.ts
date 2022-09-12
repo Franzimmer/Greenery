@@ -30,7 +30,7 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       let currentCards = [...state];
       let result = currentCards.filter(
         (card: PlantCard) =>
-          action.payload.cardIds.includes(card.cardId) === false
+          action.payload.cardIds.includes(card.cardId!) === false
       );
       return result;
     }

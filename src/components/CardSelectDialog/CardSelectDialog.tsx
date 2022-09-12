@@ -54,7 +54,7 @@ const CardSelectDialog = ({
   function confirmTradeItems() {
     if (!userID) return;
     setCardListDisplay(false);
-    let selected = cardList.filter((card) => menuSelect[card.cardId] === true);
+    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
     let nameList = selected.map((card) => {
       return card.plantName;
     });
@@ -63,7 +63,7 @@ const CardSelectDialog = ({
   }
   async function tradePlants() {
     if (!userID || !selfID) return;
-    let selected = cardList.filter((card) => menuSelect[card.cardId] === true);
+    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
     let idList = selected.map((card) => {
       return card.cardId;
     });
@@ -72,7 +72,7 @@ const CardSelectDialog = ({
     });
     const newOwnerId = userID;
     let promises = idList.map((cardId) => {
-      return firebase.changePlantOwner(cardId, newOwnerId);
+      return firebase.changePlantOwner(cardId!, newOwnerId);
     });
     await Promise.all(promises);
     dispatch({

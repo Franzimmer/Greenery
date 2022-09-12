@@ -42,9 +42,9 @@ const GridWrapper = styled.div`
   margin-top: 20px;
 `;
 interface CardProps {
-  show: boolean;
+  show?: boolean;
 }
-const Card = styled.div<CardProps>`
+export const Card = styled.div<CardProps>`
   display: flex;
   flex-direction: column;
   border: 1px solid black;
@@ -54,7 +54,7 @@ const Card = styled.div<CardProps>`
 interface PlantImgProps {
   path: string | undefined;
 }
-const PlantImg = styled.div<PlantImgProps>`
+export const PlantImg = styled.div<PlantImgProps>`
   border-radius: 10px;
   margin: 8px;
   background-image: url(${(props) => (props.path ? props.path : defaultImg)});
@@ -64,10 +64,10 @@ const PlantImg = styled.div<PlantImgProps>`
   width: 150px;
   height: 100px;
 `;
-const Text = styled.p`
+export const Text = styled.p`
   margin-bottom: 10px;
 `;
-const Tag = styled.p`
+export const Tag = styled.p`
   background: #eee;
   font-size: 14px;
   border: 1px solid #000;
@@ -78,7 +78,7 @@ const Tag = styled.p`
     color: #fff;
   }
 `;
-const TagsWrapper = styled.div`
+export const TagsWrapper = styled.div`
   display: flex;
   margin-top: 5px;
   padding: 2px;
@@ -92,6 +92,7 @@ interface CardsGridProps {
 }
 const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   const cardList = useSelector((state: RootState) => state.cards);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
@@ -125,7 +126,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
       setFilter("");
       let checkboxes = {} as CheckList;
       cardList.forEach((card) => {
-        checkboxes[card.cardId] = false;
+        checkboxes[card.cardId!] = false;
       });
       setCheckList(checkboxes);
     } else setFilterOptionsOpen(true);
@@ -137,7 +138,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     let filtered = cardList.filter((card) => card.tags?.includes(filter));
     let checkboxes = {} as CheckList;
     filtered.forEach((card) => {
-      checkboxes[card.cardId] = false;
+      checkboxes[card.cardId!] = false;
     });
     setCheckList(checkboxes);
   }
@@ -168,7 +169,12 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   }
   async function addEventToDB(type: "water" | "fertilize", plantIds: string[]) {
     let docName = unixTimeToString(Date.now());
-    const activitiesRef = collection(db, "users", "test", "activities");
+    const activitiesRef = collection(
+      db,
+      "users",
+      userInfo.userId,
+      "activities"
+    );
     let docRef = doc(activitiesRef, docName);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
@@ -189,7 +195,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     let nameList: string[] = [];
     eventIds.forEach((eventId) => {
       let targetCard = cardList.find((card) => card.cardId === eventId);
-      idList.push(targetCard!.cardId);
+      idList.push(targetCard!.cardId!);
       nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
@@ -228,7 +234,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
       }
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
-        checkboxes[doc.data().cardId] = false;
+        checkboxes[doc.data().cardId!] = false;
       });
       setCheckList(checkboxes);
       if (results) {
@@ -253,7 +259,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   useEffect(() => {
     let checkboxes = {} as CheckList;
     cardList.forEach((card) => {
-      checkboxes[card.cardId] = false;
+      checkboxes[card.cardId!] = false;
     });
     setCheckList(checkboxes);
   }, [cardList]);
@@ -306,7 +312,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
             return (
               <Card
                 key={card.cardId}
-                id={card.cardId}
+                id={card.cardId!}
                 show={filterCard(card.tags || [])}
                 onClick={(e) => {
                   detailToggle();
@@ -316,8 +322,8 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                 {isSelf && (
                   <CheckBox
                     type="checkbox"
-                    checked={checkList[card.cardId]}
-                    onClick={(event) => switchOneCheck(event, card.cardId)}
+                    checked={checkList[card.cardId!]}
+                    onClick={(event) => switchOneCheck(event, card.cardId!)}
                   />
                 )}
                 <PlantImg path={card.plantPhoto || defaultImg} />
@@ -349,12 +355,13 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                     Edit
                   </OperationBtn>
                 )}
-                <OperationBtn>favorite</OperationBtn>
+                <OperationBtn>Favorite</OperationBtn>
               </Card>
             );
           })}
       </GridWrapper>
       <CardEditor
+        userId={userInfo.userId}
         editorDisplay={editorDisplay}
         editorToggle={editorToggle}
         editCardId={editCardId}

@@ -113,7 +113,7 @@ const Chatroom = () => {
     });
     let menuCheck = {} as Record<string, boolean>;
     cardList.forEach((card) => {
-      menuCheck[card.cardId] = false;
+      menuCheck[card.cardId!] = false;
     });
     setMenuSelect(menuCheck);
   }, []);

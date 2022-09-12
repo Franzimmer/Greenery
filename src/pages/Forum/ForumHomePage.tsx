@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Tiptap from "../../components/TextEditor/Tiptap";
+import TextEditor from "../../components/TextEditor/TextEditor";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
 import { Link } from "react-router-dom";
 import { firebase } from "../../utils/firebase";
@@ -67,10 +67,12 @@ const ForumHomePage = () => {
         })}
       <OperationBtn onClick={addNewPost}>Add Post</OperationBtn>
       {textEditorDisplay && (
-        <Tiptap
+        <TextEditor
+          initContent={initContent}
+          initTitle={initTitle}
           editorMode={"post"}
           setTextEditorDisplay={setTextEditorDisplay}
-        ></Tiptap>
+        ></TextEditor>
       )}
     </>
   );

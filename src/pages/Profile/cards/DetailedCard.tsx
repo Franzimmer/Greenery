@@ -99,7 +99,7 @@ const DetailedCard = ({
         tradeDisplay={tradeDisplay}
         detailToggle={detailToggle}
         setTradeDisplay={setTradeDisplay}
-        tradeId={detailData?.cardId}
+        tradeId={detailData?.cardId!}
       />
       <PropagationMenu
         propagateDisplay={propagateDisplay}

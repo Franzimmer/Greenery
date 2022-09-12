@@ -5,11 +5,17 @@ import { useParams } from "react-router-dom";
 import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
-import Tiptap from "../../components/TextEditor/Tiptap";
+import TextEditor from "../../components/TextEditor/TextEditor";
 import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
-import { User } from "firebase/auth";
-
+import { PlantCard } from "../../types/plantCardType";
+import {
+  Card,
+  PlantImg,
+  Text,
+  Tag,
+  TagsWrapper,
+} from "../../pages/Profile/cards/CardsGrid";
 const PostWrapper = styled.div`
   display: flex;
   border: 1px solid #000;
@@ -56,6 +62,7 @@ export interface Post {
   title: string;
   content: string;
   comments?: Comment[];
+  cardIds?: string[];
 }
 export interface Comment {
   authorId: string;
@@ -77,7 +84,7 @@ const ForumPost = () => {
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
   const [editorMode, setEditorMode] = useState<string>("");
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
-
+  const [cards, setCards] = useState<PlantCard[]>([]);
   function addComment() {
     setEditorMode("Comment");
     setTextEditorDisplay(true);
@@ -110,6 +117,15 @@ const ForumPost = () => {
         setComments(postData.data()!.comments); //all comments
         setPageComments(postData.data()?.comments?.slice(0, 10));
         setAuthorInfo(userInfo.data());
+        if (postData.data()?.cardIds?.length !== 0) {
+          let cardsData: PlantCard[] = [];
+          let cardIds = postData.data()?.cardIds!;
+          let cards = await firebase.getCards(cardIds);
+          cards.forEach((card) => {
+            cardsData.push(card.data());
+          });
+          setCards(cardsData);
+        }
       }
     }
     getPost();
@@ -145,10 +161,29 @@ const ForumPost = () => {
       <p>{post?.type}</p>
       <PostWrapper>
         <AuthorInfo>
-          <AuthorPhoto src={authorInfo?.photoUrl} />
+          <AuthorPhoto src={authorInfo?.photoUrl}/>
           <AuthorName>{authorInfo?.userName}</AuthorName>
+          {userInfo.userId !== authorInfo?.userId &&<OperationBtn>Open Chatroom</OperationBtn>}
         </AuthorInfo>
         <Content>{post?.content && parse(post.content)}</Content>
+        {cards &&
+          cards.map((card) => {
+            return (
+              <Card key={card.cardId} show={true}>
+                <PlantImg path={card.plantPhoto} />
+                <Text>名字: {card.plantName}</Text>
+                <Text>品種: {card.species}</Text>
+                <TagsWrapper>
+                  {card?.tags?.length !== 0 &&
+                    card.tags?.map((tag) => {
+                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                    })}
+                </TagsWrapper>
+                <OperationBtn>Diary</OperationBtn>
+                <OperationBtn>Favorite</OperationBtn>
+              </Card>
+            );
+          })}
         {userInfo.userId === post?.authorId && (
           <BtnWrapper>
             <OperationBtn onClick={() => setTextEditorDisplay(true)}>
@@ -170,6 +205,7 @@ const ForumPost = () => {
                 <AuthorName>
                   {commentAuthorInfos[comment.authorId]?.userName}
                 </AuthorName>
+                {userInfo.userId !== comment.authorId &&<OperationBtn>Open Chatroom</OperationBtn>}
               </AuthorInfo>
               <Content>{post?.content && parse(comment.content)}</Content>
               {userInfo.userId === comment.authorId && (
@@ -187,7 +223,7 @@ const ForumPost = () => {
         })}
       <OperationBtn onClick={addComment}>Comment</OperationBtn>
       {textEditorDisplay && (
-        <Tiptap
+        <TextEditor
           editorMode={editorMode}
           initContent={initContent}
           initTitle={initTitle}

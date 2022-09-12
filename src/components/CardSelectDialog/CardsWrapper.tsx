@@ -57,9 +57,9 @@ const CardsWrapper = ({
             <CardCheck
               type="checkbox"
               id={`${card.cardId}_check`}
-              checked={menuSelect[card.cardId]}
+              checked={menuSelect[card.cardId!]}
               onClick={() => {
-                switchOneCheck(card.cardId);
+                switchOneCheck(card.cardId!);
               }}
             ></CardCheck>
           </CardWrapper>

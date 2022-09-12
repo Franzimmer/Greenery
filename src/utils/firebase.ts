@@ -19,6 +19,7 @@ import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
+import { PlantCard } from "../types/plantCardType";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -34,7 +35,7 @@ const storage = getStorage(app);
 const auth = getAuth();
 const db = getFirestore(app);
 const users = collection(db, "users") as CollectionReference<UserInfo>;
-const cards = collection(db, "cards");
+const cards = collection(db, "cards") as CollectionReference<PlantCard>;
 const posts = collection(db, "posts") as CollectionReference<Post>;
 const species = collection(db, "species");
 const chatrooms = collection(db, "chatrooms");
@@ -122,6 +123,27 @@ const firebase = {
   async saveEditComment(postId: string, comments: Comment[]) {
     let docRef = doc(posts, postId);
     await updateDoc(docRef, { comments: comments });
+  },
+  async getCardData(cardId: string) {
+    let docRef = doc(cards, cardId);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
+  async getCards(cardIds: string[]) {
+    const q = query(cards, where("cardId", "in", cardIds));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async addCard(data: PlantCard) {
+    const newCard = doc(cards);
+    await setDoc(newCard, {
+      ...data,
+      cardId: newCard.id,
+    });
+  },
+  async editCard(cardId: string, data: PlantCard) {
+    const docRef = doc(cards, cardId);
+    await setDoc(docRef, data);
   },
 };
 
