@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
+import { UserInfo } from "../../types/userInfoType";
 
 interface TiptapProps {
   editorMode: string;
@@ -29,8 +30,7 @@ const Tiptap = ({
   setPost,
   setTextEditorDisplay,
 }: TiptapProps) => {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-
+  const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
     content: initTitle || "<h1>Title</h1>",
@@ -76,6 +76,7 @@ const Tiptap = ({
     };
     await firebase.saveComment(post!.postId, comment);
   }
+
   return (
     <>
       <label htmlFor="title">輸入文章標題</label>

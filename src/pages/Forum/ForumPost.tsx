@@ -6,6 +6,9 @@ import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
 import Tiptap from "../../components/TextEditor/Tiptap";
+import { useSelector } from "react-redux";
+import { RootState } from "../../reducer";
+import { User } from "firebase/auth";
 
 const PostWrapper = styled.div`
   display: flex;
@@ -13,7 +16,6 @@ const PostWrapper = styled.div`
   width: 80vw;
 `;
 const AuthorInfo = styled.div`
-  width: 20%;
   border-right: 2px solid red;
   font-size: 10px;
 `;
@@ -23,12 +25,10 @@ const AuthorPhoto = styled.img`
   width: 100px;
 `;
 const AuthorName = styled.p`
-  width: 100%;
   text-align: center;
 `;
 const Content = styled.div`
   padding: 8px;
-
   & > * + * {
     margin-top: 0.75em;
   }
@@ -64,8 +64,14 @@ interface Comment {
 }
 const ForumPost = () => {
   const { id } = useParams();
+  const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [post, setPost] = useState<Post>();
+  const [comments, setComments] = useState<Comment[] | undefined>();
+  const [pageComments, setPageComments] = useState<Comment[] | undefined>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
+  const [commentAuthorInfos, setCommentAuthorInfos] = useState<
+    Record<string, UserInfo>
+  >({});
   const [initContent, setInitContent] = useState<string>("");
   const [initTitle, setInitTitle] = useState<string>("");
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
@@ -76,20 +82,48 @@ const ForumPost = () => {
     setTextEditorDisplay(true);
     setInitContent("");
   }
-
+  function sliceCommens(begin: number, end: number) {
+    if (!comments) return;
+    return comments.slice(begin, end);
+  }
   useEffect(() => {
     async function getPost() {
       if (id) {
         let postData = await firebase.getPostData(id);
         let userInfo = await firebase.getUserInfo(postData.data()!.authorId);
+        await Promise.all([postData, userInfo]);
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
+        setComments(postData.data()!.comments); //all comments
+        setPageComments(comments?.slice(0, 10));
         setAuthorInfo(userInfo.data());
       }
     }
     getPost();
   }, []);
+  useEffect(() => {
+    async function getCommentAuthorInfo() {
+      let authorInfos: Record<string, UserInfo> = {};
+      if (pageComments) {
+        let authorIdList: string[] = [];
+        pageComments.forEach((comment) => {
+          if (!authorIdList.includes(comment.authorId))
+            authorIdList.push(comment.authorId);
+        });
+        let promises = authorIdList.map(async (id) => {
+          return firebase.getUserInfo(id);
+        });
+        let data = await Promise.all(promises);
+        data.forEach((promise) => {
+          let userData = promise.data() as UserInfo;
+          authorInfos[userData.userId] = userData;
+        });
+      }
+      setCommentAuthorInfos(authorInfos);
+    }
+    getCommentAuthorInfo();
+  }, [pageComments]);
   return (
     <>
       {post?.title && parse(post.title)}
@@ -100,13 +134,40 @@ const ForumPost = () => {
           <AuthorName>{authorInfo?.userName}</AuthorName>
         </AuthorInfo>
         <Content>{post?.content && parse(post.content)}</Content>
-        <BtnWrapper>
-          <OperationBtn onClick={() => setTextEditorDisplay(true)}>
-            Edit
-          </OperationBtn>
-          <OperationBtn>Delete</OperationBtn>
-        </BtnWrapper>
+        {userInfo.userId === post?.authorId && (
+          <BtnWrapper>
+            <OperationBtn onClick={() => setTextEditorDisplay(true)}>
+              Edit
+            </OperationBtn>
+            <OperationBtn>Delete</OperationBtn>
+          </BtnWrapper>
+        )}
       </PostWrapper>
+      {pageComments &&
+        pageComments.length !== 0 &&
+        pageComments.map((comment) => {
+          return (
+            <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
+              <AuthorInfo>
+                <AuthorPhoto
+                  src={commentAuthorInfos[comment.authorId]?.photoUrl}
+                />
+                <AuthorName>
+                  {commentAuthorInfos[comment.authorId]?.userName}
+                </AuthorName>
+              </AuthorInfo>
+              <Content>{post?.content && parse(comment.content)}</Content>
+              {userInfo.userId === comment.authorId && (
+                <BtnWrapper>
+                  <OperationBtn onClick={() => setTextEditorDisplay(true)}>
+                    Edit
+                  </OperationBtn>
+                  <OperationBtn>Delete</OperationBtn>
+                </BtnWrapper>
+              )}
+            </PostWrapper>
+          );
+        })}
       <OperationBtn onClick={addComment}>Comment</OperationBtn>
       {textEditorDisplay && (
         <Tiptap
