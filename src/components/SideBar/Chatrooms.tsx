@@ -22,7 +22,7 @@ const Chatrooms = () => {
   function toggleChatroom(targetId: string) {
     let newChatDisplay = { ...chatroomDisplay };
     if (newChatDisplay[targetId]) newChatDisplay[targetId] = false;
-    if (!newChatDisplay[targetId]) newChatDisplay[targetId] = true;
+    else if (!newChatDisplay[targetId]) newChatDisplay[targetId] = true;
     setChatroomDisplay(newChatDisplay);
   }
   useEffect(() => {
