@@ -12,6 +12,7 @@ interface DialogWrapperProps {
 const DialogWrapper = styled.div<DialogWrapperProps>`
   padding: 15px 10px;
   position: relative;
+  left: -500px;
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: column;
   background: #f5a263;
@@ -30,6 +31,7 @@ const ConfirmPanel = styled.div`
 interface DialogProps {
   cardList: PlantCard[];
   userID: string | undefined;
+  userName: string;
   selfID: string | null;
   dialogDisplay: boolean;
   cardListDisplay: boolean;
@@ -41,6 +43,7 @@ interface DialogProps {
 const CardSelectDialog = ({
   cardList,
   userID,
+  userName,
   selfID,
   dialogDisplay,
   cardListDisplay,
@@ -58,7 +61,7 @@ const CardSelectDialog = ({
     let nameList = selected.map((card) => {
       return card.plantName;
     });
-    let msg = `要將${nameList.join(" & ")}送給新主人${userID}嗎?`;
+    let msg = `要將 ${nameList.join(" & ")} 送給新主人 ${userName} 嗎?`;
     setConfirm(msg);
   }
   async function tradePlants() {

@@ -164,6 +164,7 @@ const Chatroom = ({
         <CardSelectDialog
           cardList={cardList}
           userID={targetInfo.userId}
+          userName={targetInfo.userName}
           selfID={selfId}
           dialogDisplay={dialogDisplay}
           cardListDisplay={cardListDisplay}
