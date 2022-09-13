@@ -26,7 +26,7 @@ interface TiptapProps {
   editTargetComment?: Comment;
   setEditorMode?: React.Dispatch<React.SetStateAction<string>>;
   setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
-  setComments?: React.Dispatch<React.SetStateAction<Comment[] | undefined>>;
+  setComments?: React.Dispatch<React.SetStateAction<Comment[]>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   postList?: Post[];
   setPostList?: React.Dispatch<React.SetStateAction<Post[]>>;
@@ -101,7 +101,7 @@ const TextEditor = ({
     alert("編輯成功！");
   }
   async function addComment() {
-    if (!comments || !setComments) return;
+    if (!setComments) return;
     const { content } = getPostHTML()!;
     const authorId = userInfo.userId;
     const comment = {
@@ -110,10 +110,12 @@ const TextEditor = ({
       createdTime: Date.now(),
     } as Comment;
     await firebase.saveComment(post!.postId, comment);
-    let newComments = [...comments];
+    let newComments: Comment[] = [];
+    if (comments?.length) {
+      newComments = [...comments];
+    } else newComments = [];
     newComments.push(comment);
     setComments(newComments);
-    console.log(newComments);
   }
   async function saveEditComment() {
     if (!comments || !setComments) return;

@@ -74,7 +74,7 @@ const ForumPost = () => {
   const navigate = useNavigate();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [post, setPost] = useState<Post>();
-  const [comments, setComments] = useState<Comment[] | undefined>();
+  const [comments, setComments] = useState<Comment[]>([]);
   const [pageComments, setPageComments] = useState<Comment[] | undefined>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
   const [commentAuthorInfos, setCommentAuthorInfos] = useState<
@@ -86,6 +86,11 @@ const ForumPost = () => {
   const [editorMode, setEditorMode] = useState<string>("");
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
   const [cards, setCards] = useState<PlantCard[]>([]);
+  async function deletePost(postId: string) {
+    await firebase.deletePost(postId);
+    alert("刪除成功");
+    navigate("/forum");
+  }
   function addComment() {
     setEditorMode("Comment");
     setTextEditorDisplay(true);
@@ -115,7 +120,7 @@ const ForumPost = () => {
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
-        setComments(postData.data()!.comments); //all comments
+        setComments(postData.data()!.comments!); //all comments
         setPageComments(postData.data()?.comments?.slice(0, 10));
         setAuthorInfo(userInfo.data());
         if (postData.data()?.cardIds?.length !== 0) {
@@ -198,7 +203,9 @@ const ForumPost = () => {
             <OperationBtn onClick={() => setTextEditorDisplay(true)}>
               Edit
             </OperationBtn>
-            <OperationBtn>Delete</OperationBtn>
+            <OperationBtn onClick={() => deletePost(post.postId)}>
+              Delete
+            </OperationBtn>
           </BtnWrapper>
         )}
       </PostWrapper>
