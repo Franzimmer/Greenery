@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { auth, firebase, chatrooms } from "../../utils/firebase";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { firebase, chatrooms } from "../../../utils/firebase";
+import { OperationBtn } from "../../../pages/Profile/cards/CardsGrid";
 import {
   onSnapshot,
   query,
@@ -11,8 +11,9 @@ import {
   doc,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { RootState } from "../../reducer/index";
-import CardSelectDialog from "../CardSelectDialog/CardSelectDialog";
+import { RootState } from "../../../reducer/index";
+import CardSelectDialog from "../../CardSelectDialog/CardSelectDialog";
+import { UserInfo } from "../../../types/userInfoType";
 
 export interface message {
   userId: string;
@@ -25,6 +26,9 @@ const ChatroomWindow = styled.div<ChatroomWindowProps>`
   border: 1px solid #000;
   width: 250px;
   height: 300px;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
   display: ${(props) => (props.show ? "block" : "none")};
 `;
 const LeftText = styled.div`
@@ -45,57 +49,59 @@ const MsgWindow = styled.div`
   flex-direction: column;
   overflow-y: auto;
 `;
-const ChatInput = styled.input`
+const InfoText = styled.p`
   width: 100%;
   height: 30px;
+`;
+const ChatInput = styled.input`
+  width: 100%;
 `;
 const FlexWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-const Chatroom = () => {
+const Chatroom = ({
+  targetInfo,
+  chatroomDisplay,
+  toggleChatroom,
+}: {
+  targetInfo: UserInfo;
+  chatroomDisplay: boolean;
+  toggleChatroom: (targetId: string) => void;
+}) => {
   const cardList = useSelector((state: RootState) => state.cards);
-  let selfIdRef = useRef<string | null>(null);
-  const userRef = useRef<HTMLInputElement>(null);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const selfId = userInfo.userId;
   const inputRef = useRef<HTMLInputElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
-  const [chatroomDisplay, setChatroomDisplay] = useState<boolean>(false);
   const [dialogDisplay, setDialogDisplay] = useState<boolean>(false);
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
-  const userId = userRef.current?.value;
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
 
   function writeMsg() {
-    if (!userId) return;
-    if (!selfIdRef.current) return;
-    const usersTarget = [userId, selfIdRef.current];
+    const usersTarget = [targetInfo.userId, selfId];
     const data = {
-      userId: selfIdRef.current,
+      userId: selfId,
       msg: inputRef.current?.value || "",
     };
     firebase.storeChatroomData(usersTarget, data);
     inputRef.current!.value = "";
   }
   async function listenToChatroom() {
-    if (!userRef.current?.value) return;
-    if (!selfIdRef.current) return;
-    const usersTarget = [userRef.current?.value, selfIdRef.current];
-    const usersTargetFlip = [selfIdRef.current, userRef.current?.value];
-    console.log(usersTarget);
+    const usersTarget = [targetInfo.userId, selfId];
+    const usersTargetFlip = [selfId, targetInfo.userId];
     const q = query(
       chatrooms,
       where("users", "in", [usersTarget, usersTargetFlip])
     );
     const querySnapshot = await getDocs(q);
-    console.log("test");
     if (querySnapshot.empty) {
       console.log("fail");
       return;
     } else {
       querySnapshot.forEach((docData) => {
         let docRef = doc(chatrooms, docData.id);
-        console.log(docData.data().msgs);
         setMsgs(docData.data().msgs);
         onSnapshot(docRef, async (doc: DocumentData) => {
           let msgs = doc.data().msgs;
@@ -106,11 +112,7 @@ const Chatroom = () => {
   }
 
   useEffect(() => {
-    auth.onAuthStateChanged(async function(user) {
-      if (user) {
-        selfIdRef.current = user.uid;
-      }
-    });
+    listenToChatroom();
     let menuCheck = {} as Record<string, boolean>;
     cardList.forEach((card) => {
       menuCheck[card.cardId!] = false;
@@ -122,19 +124,10 @@ const Chatroom = () => {
     <>
       <ChatroomWindow show={chatroomDisplay}>
         <FlexWrapper>
-          <ChatInput
-            type="string"
-            placeholder="搜尋使用者id開始聊天"
-            ref={userRef}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                listenToChatroom();
-              }
-            }}
-          ></ChatInput>
+          <InfoText>{targetInfo.userName}</InfoText>
           <OperationBtn
             onClick={() => {
-              setChatroomDisplay(false);
+              toggleChatroom(targetInfo.userId);
             }}
           >
             x
@@ -143,8 +136,7 @@ const Chatroom = () => {
         <MsgWindow>
           {msgs.length !== 0 &&
             msgs.map((msg) => {
-              if (msg.userId !== selfIdRef.current)
-                return <LeftText>{msg.msg}</LeftText>;
+              if (msg.userId !== selfId) return <LeftText>{msg.msg}</LeftText>;
               else return <RightText>{msg.msg}</RightText>;
             })}
         </MsgWindow>
@@ -171,8 +163,8 @@ const Chatroom = () => {
       {cardList && (
         <CardSelectDialog
           cardList={cardList}
-          userID={userRef.current?.value}
-          selfID={selfIdRef.current}
+          userID={targetInfo.userId}
+          selfID={selfId}
           dialogDisplay={dialogDisplay}
           cardListDisplay={cardListDisplay}
           menuSelect={menuSelect}

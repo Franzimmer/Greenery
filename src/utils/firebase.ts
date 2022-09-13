@@ -18,7 +18,7 @@ import {
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
-import { message } from "../components/Chatroom/Chatroom";
+import { message } from "../components/SideBar/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
 
@@ -157,8 +157,12 @@ const firebase = {
     await updateDoc(docRef, { followList: arrayRemove(followId) });
   },
   async getUsers(idList: string[]) {
-    if (!idList || idList.length === 0) return;
     const q = query(users, where("userId", "in", idList));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async getChatrooms(userId: string) {
+    const q = query(chatrooms, where("users", "array-contains", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },

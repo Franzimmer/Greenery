@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
-import Chatroom from "./components/Chatroom/Chatroom";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
 import { auth, firebase } from "./utils/firebase";
@@ -53,7 +52,6 @@ function App() {
         ></Header>
         {sideBarDisplay && <SideBarWrapper />}
         <Outlet />
-        <Chatroom />
       </Provider>
     </>
   );

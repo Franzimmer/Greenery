@@ -11,16 +11,17 @@ const ListWrapper = styled.div`
   overflow-y: auto;
   padding: 8px;
 `;
-const Person = styled.div`
+export const Person = styled.div`
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
-const PersonPhoto = styled(UserPhoto)`
+export const PersonPhoto = styled(UserPhoto)`
   width: 60px;
   height: 60px;
   margin-right: 8px;
 `;
-const PersonText = styled.p``;
+export const PersonText = styled.p``;
 const FollowList = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [followInfos, setFollowInfos] = useState<UserInfo[]>();
@@ -45,7 +46,10 @@ const FollowList = () => {
       {userInfo.followList?.length !== 0 &&
         followInfos?.map((user) => {
           return (
-            <Person onClick={() => navigate(`/profile/${user.userId}`)}>
+            <Person
+              onClick={() => navigate(`/profile/${user.userId}`)}
+              key={`${user.userId}`}
+            >
               <PersonPhoto path={user.photoUrl} />
               <PersonText>{user.userName}</PersonText>
             </Person>

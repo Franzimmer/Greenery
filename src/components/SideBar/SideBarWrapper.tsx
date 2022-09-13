@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import FollowList from "./FollowList";
-
+import Notifications from "./Notifications";
+import Chatrooms from "./Chatrooms";
 const Wrapper = styled.div`
   width: 20vw;
-  height: 100vw;
+  height: calc(100vh - 42px);
   position: fixed;
   right: 0;
   border: 1px solid #000;
@@ -50,6 +51,8 @@ const SidebarWrapper = () => {
         <Tab onClick={() => tabSwitch("Chatrooms")}>Chatrooms</Tab>
       </Tabs>
       {tab.FollowList && <FollowList></FollowList>}
+      {tab.Notifications && <Notifications></Notifications>}
+      {tab.Chatrooms && <Chatrooms></Chatrooms>}
     </Wrapper>
   );
 };
