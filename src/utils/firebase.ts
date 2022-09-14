@@ -216,8 +216,12 @@ const firebase = {
     } else return;
   },
   async deleteNotice(userId: string, noticeId: string) {
-    let docRef = doc(users, userId, "notices", noticeId);
+    let docRef = doc(db, "users", userId, "notices", noticeId);
     await deleteDoc(docRef);
+  },
+  async updateReadStatus(userId: string, noticeId: string) {
+    let docRef = doc(db, "users", userId, "notices", noticeId);
+    await updateDoc(docRef, { read: true });
   },
 };
 
