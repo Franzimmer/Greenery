@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { firebase } from "../../utils/firebase";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
@@ -71,9 +71,10 @@ export interface Comment {
 }
 const ForumPost = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [post, setPost] = useState<Post>();
-  const [comments, setComments] = useState<Comment[] | undefined>();
+  const [comments, setComments] = useState<Comment[]>([]);
   const [pageComments, setPageComments] = useState<Comment[] | undefined>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
   const [commentAuthorInfos, setCommentAuthorInfos] = useState<
@@ -85,6 +86,11 @@ const ForumPost = () => {
   const [editorMode, setEditorMode] = useState<string>("");
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
   const [cards, setCards] = useState<PlantCard[]>([]);
+  async function deletePost(postId: string) {
+    await firebase.deletePost(postId);
+    alert("刪除成功");
+    navigate("/forum");
+  }
   function addComment() {
     setEditorMode("Comment");
     setTextEditorDisplay(true);
@@ -114,17 +120,20 @@ const ForumPost = () => {
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
-        setComments(postData.data()!.comments); //all comments
+        setComments(postData.data()!.comments!); //all comments
         setPageComments(postData.data()?.comments?.slice(0, 10));
         setAuthorInfo(userInfo.data());
         if (postData.data()?.cardIds?.length !== 0) {
           let cardsData: PlantCard[] = [];
-          let cardIds = postData.data()?.cardIds!;
+          let cardIds = postData.data()?.cardIds;
+          if (!cardIds) return;
           let cards = await firebase.getCards(cardIds);
-          cards.forEach((card) => {
-            cardsData.push(card.data());
-          });
-          setCards(cardsData);
+          if (!cards?.empty) {
+            cards?.forEach((card) => {
+              cardsData.push(card.data());
+            });
+            setCards(cardsData);
+          }
         }
       }
     }
@@ -161,9 +170,14 @@ const ForumPost = () => {
       <p>{post?.type}</p>
       <PostWrapper>
         <AuthorInfo>
-          <AuthorPhoto src={authorInfo?.photoUrl}/>
+          <AuthorPhoto
+            src={authorInfo?.photoUrl}
+            onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
+          />
           <AuthorName>{authorInfo?.userName}</AuthorName>
-          {userInfo.userId !== authorInfo?.userId &&<OperationBtn>Open Chatroom</OperationBtn>}
+          {userInfo.userId !== authorInfo?.userId && (
+            <OperationBtn>Open Chatroom</OperationBtn>
+          )}
         </AuthorInfo>
         <Content>{post?.content && parse(post.content)}</Content>
         {cards &&
@@ -189,7 +203,9 @@ const ForumPost = () => {
             <OperationBtn onClick={() => setTextEditorDisplay(true)}>
               Edit
             </OperationBtn>
-            <OperationBtn>Delete</OperationBtn>
+            <OperationBtn onClick={() => deletePost(post.postId)}>
+              Delete
+            </OperationBtn>
           </BtnWrapper>
         )}
       </PostWrapper>
@@ -201,11 +217,14 @@ const ForumPost = () => {
               <AuthorInfo>
                 <AuthorPhoto
                   src={commentAuthorInfos[comment.authorId]?.photoUrl}
+                  onClick={() => navigate(`/profile/${comment.authorId}`)}
                 />
                 <AuthorName>
                   {commentAuthorInfos[comment.authorId]?.userName}
                 </AuthorName>
-                {userInfo.userId !== comment.authorId &&<OperationBtn>Open Chatroom</OperationBtn>}
+                {userInfo.userId !== comment.authorId && (
+                  <OperationBtn>Open Chatroom</OperationBtn>
+                )}
               </AuthorInfo>
               <Content>{post?.content && parse(comment.content)}</Content>
               {userInfo.userId === comment.authorId && (

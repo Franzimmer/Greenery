@@ -8,6 +8,8 @@ const initialUserInfo: UserInfo = {
   userName: "",
   photoUrl: "",
   gallery: [],
+  followList: [],
+  followers: [],
 };
 
 const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
@@ -25,6 +27,23 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       return {
         ...state,
         photoUrl: action.payload.photoUrl,
+      };
+    }
+    case UserInfoActions.ADD_FOLLOW_LIST: {
+      let currentFollowList = state.followList;
+      currentFollowList?.push(action.payload.targetId);
+      return {
+        ...state,
+        followList: currentFollowList,
+      };
+    }
+    case UserInfoActions.REMOVE_FOLLOW_LIST: {
+      let newFollowList = state.followList?.filter(
+        (id) => id !== action.payload.targetId
+      );
+      return {
+        ...state,
+        followList: newFollowList,
       };
     }
     default:

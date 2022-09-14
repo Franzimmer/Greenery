@@ -13,13 +13,15 @@ import {
   setDoc,
   serverTimestamp,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
-import { message } from "../components/Chatroom/Chatroom";
+import { message } from "../components/SideBar/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
+import { Note } from "../types/notificationType";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -131,6 +133,7 @@ const firebase = {
     return docSnapshot;
   },
   async getCards(cardIds: string[]) {
+    if (cardIds.length === 0) return;
     const q = query(cards, where("cardId", "in", cardIds));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
@@ -145,6 +148,80 @@ const firebase = {
   async editCard(cardId: string, data: PlantCard) {
     const docRef = doc(cards, cardId);
     await setDoc(docRef, data);
+  },
+  async addFollowList(selfId: string, followId: string) {
+    let docRef = doc(users, selfId);
+    let followerDocRef = doc(users, followId, "notices", "followers");
+    let updateFollowList = updateDoc(docRef, {
+      followList: arrayUnion(followId),
+    });
+    let appendFollower = updateDoc(followerDocRef, {
+      followers: arrayUnion(selfId),
+    });
+    Promise.all([updateFollowList, appendFollower]);
+  },
+  async removeFollowList(selfId: string, followId: string) {
+    let docRef = doc(users, selfId);
+    let followerDocRef = doc(users, followId, "notices", "followers");
+    let updateFollowList = updateDoc(docRef, {
+      followList: arrayRemove(followId),
+    });
+    let removeFollower = updateDoc(followerDocRef, {
+      followers: arrayRemove(selfId),
+    });
+    Promise.all([updateFollowList, removeFollower]);
+  },
+  async getUsers(idList: string[]) {
+    if (!idList.length) return;
+    const q = query(users, where("userId", "in", idList));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async getChatrooms(userId: string) {
+    const q = query(chatrooms, where("users", "array-contains", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async emitNotice(
+    userId: string,
+    targetId: string,
+    type: string,
+    postId?: string
+  ) {
+    let noticesCol = collection(db, "users", targetId, "notices");
+    let notice = doc(noticesCol);
+    let data = {
+      userId,
+      type,
+      noticeId: notice.id,
+      read: false,
+      time: serverTimestamp(),
+    } as Note;
+    if (postId) {
+      data["postId"] = postId;
+    }
+    await setDoc(notice, data);
+  },
+  async emitNotices(
+    userId: string,
+    followersId: string[],
+    type: string,
+    postId?: string
+  ) {
+    if (followersId.length) {
+      let promises = followersId.map((targetId) => {
+        return this.emitNotice(userId, targetId, type, postId);
+      });
+      Promise.all(promises);
+    } else return;
+  },
+  async deleteNotice(userId: string, noticeId: string) {
+    let docRef = doc(db, "users", userId, "notices", noticeId);
+    await deleteDoc(docRef);
+  },
+  async updateReadStatus(userId: string, noticeId: string) {
+    let docRef = doc(db, "users", userId, "notices", noticeId);
+    await updateDoc(docRef, { read: true });
   },
 };
 

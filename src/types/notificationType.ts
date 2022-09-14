@@ -1,9 +1,10 @@
-export interface notification {
-  msgId: string;
-  type: number;
+import { FieldValue } from "firebase/firestore";
+
+export interface Note {
+  time: FieldValue;
+  type: string;
   userId: string;
-  userName: string;
-  cardId?: string;
-  articleId?: string;
+  postId?: string;
   read: boolean;
+  noticeId: string;
 }

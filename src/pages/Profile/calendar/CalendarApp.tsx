@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { PlantCard } from "../../../types/plantCardType";
 
-const CalendarApp = () => {
+const CalendarApp = ({ id }: { id: string }) => {
   let defaultState = {
     watering: [],
     fertilizing: [],
@@ -27,7 +27,7 @@ const CalendarApp = () => {
     async function getEventData() {
       let eventRef;
       let docName = unixTimeToString(value.getTime());
-      const activitiesRef = collection(db, "users", "test", "activities");
+      const activitiesRef = collection(db, "users", id, "activities");
       let docRef = doc(activitiesRef, docName);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {

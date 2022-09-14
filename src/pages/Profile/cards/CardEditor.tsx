@@ -96,6 +96,7 @@ const CardEditor = ({
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const cardList = useSelector((state: RootState) => state.cards);
+  const followers = useSelector((state: RootState) => state.myFollowers);
   const dispatch = useDispatch();
 
   function createPreviewLink() {
@@ -179,6 +180,8 @@ const CardEditor = ({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
+    await firebase.emitNotices(userId, followers, "1");
+    alert("Emit Success");
     editorToggle();
   }
   async function editCard() {

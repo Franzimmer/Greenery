@@ -245,7 +245,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
       }
     }
     getCards();
-  }, []);
+  }, [id, isSelf]);
   useEffect(() => {
     let tags: string[] = [];
     cardList.forEach((card) => {

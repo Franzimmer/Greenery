@@ -38,6 +38,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   }
 
   async function saveGalleryData() {
+    console.log("test");
     if (mediaRef.current!.value === "") alert("請選擇檔案!");
     const link = await uploadFile();
     if (!link) return;
