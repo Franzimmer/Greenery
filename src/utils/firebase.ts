@@ -215,6 +215,10 @@ const firebase = {
       Promise.all(promises);
     } else return;
   },
+  async deleteNotice(userId: string, noticeId: string) {
+    let docRef = doc(users, userId, "notices", noticeId);
+    await deleteDoc(docRef);
+  },
 };
 
 export {
