@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { PlantCard } from "../../../types/plantCardType";
 import { unixTimeToString } from "./CardEditor";
 import { OperationBtn } from "./CardsGrid";
-import Dialog from "./Dialog";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "./default.jpg";
 interface DetailedCardWrapperProps {
@@ -37,7 +36,6 @@ const DetailedCard = ({
   detailData,
   detailToggle,
 }: DetailedCardProps) => {
-  const [tradeDisplay, setTradeDisplay] = useState(false);
   const [propagateDisplay, setPropagateDisplay] = useState(false);
   return (
     <>
@@ -84,23 +82,12 @@ const DetailedCard = ({
           </>
         )}
         {isSelf && (
-          <OperationBtn onClick={() => setTradeDisplay(true)}>
-            trade
-          </OperationBtn>
-        )}
-        {isSelf && (
           <OperationBtn onClick={() => setPropagateDisplay(true)}>
             propagate
           </OperationBtn>
         )}
         <OperationBtn onClick={detailToggle}>close</OperationBtn>
       </DetailedCardWrapper>
-      <Dialog
-        tradeDisplay={tradeDisplay}
-        detailToggle={detailToggle}
-        setTradeDisplay={setTradeDisplay}
-        tradeId={detailData?.cardId!}
-      />
       <PropagationMenu
         propagateDisplay={propagateDisplay}
         setPropagateDisplay={setPropagateDisplay}

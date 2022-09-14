@@ -1,12 +1,19 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { DialogWrapper } from "./Dialog";
 import { OperationBtn } from "./CardsGrid";
 import { PlantCard } from "../../../types/plantCardType";
 import { cards } from "../../../utils/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { CardsActions } from "../../../actions/cardsActions";
+
+interface DialogWrapperProps {
+  $display: boolean;
+}
+const DialogWrapper = styled.div<DialogWrapperProps>`
+  display: ${(props) => (props.$display ? "flex" : "none")};
+  flex-direction: column;
+`;
 
 const Text = styled.p``;
 const Input = styled.input`

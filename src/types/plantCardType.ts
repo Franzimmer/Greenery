@@ -9,4 +9,5 @@ export interface PlantCard {
   tags?: string[];
   birthday?: number;
   parents?: string[];
+  followers: number;
 }

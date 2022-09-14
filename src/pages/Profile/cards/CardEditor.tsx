@@ -171,6 +171,7 @@ const CardEditor = ({
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
+      followers: 0,
     };
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
@@ -191,7 +192,8 @@ const CardEditor = ({
     const data = {
       cardId: editCardId!,
       parents:
-        cardList.find((card) => card.cardId === editCardId)?.parents || [],
+        cardList.find((card) => card.cardId === editCardId)!.parents || [],
+      followers: cardList.find((card) => card.cardId === editCardId)!.followers,
       ownerId: userId,
       plantName: nameRef.current?.value!,
       plantPhoto: imgLink,

@@ -91,9 +91,9 @@ interface CardsGridProps {
   isSelf: boolean;
 }
 const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
+  const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const dispatch = useDispatch();
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
