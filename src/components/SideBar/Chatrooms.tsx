@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../reducer";
-import { chatrooms, firebase } from "../../utils/firebase";
+import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto, PersonText } from "./FollowList";
 import { UserInfo } from "../../types/userInfoType";
 import Chatroom from "./Chatroom/Chatroom";
@@ -50,7 +50,6 @@ const Chatrooms = () => {
     }
     getChatTargets();
   }, []);
-  console.log(chatroomDisplay);
   return (
     <>
       <ChatroomsWrapper>

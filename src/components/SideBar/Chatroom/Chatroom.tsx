@@ -97,10 +97,9 @@ const Chatroom = ({
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
-      console.log("fail");
       return;
     } else {
-      querySnapshot.forEach((docData) => {
+      querySnapshot.forEach((docData: DocumentData) => {
         let docRef = doc(chatrooms, docData.id);
         setMsgs(docData.data().msgs);
         onSnapshot(docRef, async (doc: DocumentData) => {

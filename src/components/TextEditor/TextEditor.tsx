@@ -47,6 +47,9 @@ const TextEditor = ({
 }: TiptapProps) => {
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const cardList: PlantCard[] = useSelector((state: RootState) => state.cards);
+  const followers: string[] = useSelector(
+    (state: RootState) => state.myFollowers
+  );
   const typeRef = useRef<HTMLSelectElement>(null);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
@@ -88,6 +91,7 @@ const TextEditor = ({
     let newPosts = [...postList];
     newPosts.push(data);
     setPostList(newPosts);
+    await firebase.emitNotices(userInfo.userId, followers, "2", postId);
     alert("文章發表成功！");
   }
   async function editPost() {

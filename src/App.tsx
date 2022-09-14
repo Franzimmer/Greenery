@@ -22,7 +22,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 function UserLogInObserver() {
   const dispatch = useDispatch();
-
   useEffect(() => {
     auth.onAuthStateChanged(async function(user) {
       if (user) {
@@ -50,7 +49,7 @@ function App() {
           sideBarDisplay={sideBarDisplay}
           setSideBarDisplay={setSideBarDisplay}
         ></Header>
-        {sideBarDisplay && <SideBarWrapper />}
+        {<SideBarWrapper sideBarDisplay={sideBarDisplay} />}
         <Outlet />
       </Provider>
     </>

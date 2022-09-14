@@ -1,9 +1,9 @@
-import { notification } from "../types/notificationType";
+import { Note } from "../types/notificationType";
 import {
   NotificationActions,
   NotificationActionTypes,
 } from "../actions/notificationActions";
-const initialNotifications: notification[] = [];
+const initialNotifications: Note[] = [];
 
 const notifications = (
   state = initialNotifications,
@@ -16,15 +16,15 @@ const notifications = (
     case NotificationActions.UPDATE_READ_STATUS: {
       let currentNotifications = [...state];
       let editTarget = currentNotifications.find(
-        (notice: notification) => notice?.msgId === action.paylaod?.msgId
-      ) as notification;
+        (notice: Note) => notice?.noticeId === action.paylaod?.noticeId
+      ) as Note;
       if (editTarget) editTarget["read"] = true;
       return currentNotifications;
     }
     case NotificationActions.DELETE_NOTIFICATION: {
       let currentNotifications = [...state];
       let result = currentNotifications.filter(
-        (notice: notification) => notice.msgId !== action.paylaod?.msgId
+        (notice: Note) => notice.noticeId !== action.paylaod?.noticeId
       );
       return result;
     }

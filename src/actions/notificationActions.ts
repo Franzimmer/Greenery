@@ -1,4 +1,4 @@
-import { notification } from "../types/notificationType";
+import { Note } from "../types/notificationType";
 export enum NotificationActions {
   SET_NOTIFICATIONS = "SET_NOTIFICATIONS",
   UPDATE_READ_STATUS = "UPDATE_READ_STATUS",
@@ -7,19 +7,19 @@ export enum NotificationActions {
 interface setNotifications {
   type: NotificationActions.SET_NOTIFICATIONS;
   payload: {
-    data: notification[];
+    data: Note[];
   };
 }
 interface updateReadStatus {
   type: NotificationActions.UPDATE_READ_STATUS;
   paylaod: {
-    msgId: string;
+    noticeId: string;
   };
 }
 interface deleteNotification {
   type: NotificationActions.DELETE_NOTIFICATION;
   paylaod: {
-    msgId: string;
+    noticeId: string;
   };
 }
 export type NotificationActionTypes =

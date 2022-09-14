@@ -21,26 +21,12 @@ export const PersonPhoto = styled(UserPhoto)`
   height: 60px;
   margin-right: 8px;
 `;
+
 export const PersonText = styled.p``;
-const FollowList = () => {
+const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [followInfos, setFollowInfos] = useState<UserInfo[]>();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function getUsersData() {
-      let followData: UserInfo[] = [];
-      if (!userInfo.followList) return;
-      let queryData = await firebase.getUsers(userInfo.followList);
-      if (!queryData?.empty) {
-        queryData?.forEach((doc) => {
-          followData.push(doc.data());
-        });
-        setFollowInfos(followData);
-      }
-    }
-    getUsersData();
-  }, [userInfo]);
   return (
     <ListWrapper>
       {userInfo.followList?.length !== 0 &&

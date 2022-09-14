@@ -9,6 +9,7 @@ const initialUserInfo: UserInfo = {
   photoUrl: "",
   gallery: [],
   followList: [],
+  followers: [],
 };
 
 const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
