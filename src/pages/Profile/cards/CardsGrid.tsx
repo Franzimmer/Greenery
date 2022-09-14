@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { CardsActions } from "../../../actions/cardsActions";
-import { db, cards } from "../../../utils/firebase";
+import { db, cards, firebase } from "../../../utils/firebase";
 import CardEditor, { unixTimeToString } from "./CardEditor";
 import DiaryEditor from "./DiaryEditor";
 import DetailedCard from "./DetailedCard";
@@ -22,6 +22,7 @@ import {
   deleteDoc,
   CollectionReference,
 } from "firebase/firestore";
+import { UserInfoActions } from "../../../actions/userInfoActions";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -29,11 +30,19 @@ export const OperationBtn = styled.button`
   margin: 0px 5px 0px 0px;
   padding: px;
   cursor: pointer;
-
   &:hover {
     background: #000;
     color: #fff;
   }
+`;
+interface FavoriteButtonProps {
+  show?: boolean;
+}
+const FavoriteButton = styled.button<FavoriteButtonProps>`
+  margin: 0px 5px 0px 0px;
+  padding: px;
+  cursor: pointer;
+  background: ${(props) => (props.show ? "#f54825" : "FFF")};
 `;
 const GridWrapper = styled.div`
   display: grid;
@@ -220,6 +229,24 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     let promises = targets.map((target) => deleteCard(target));
     Promise.all(promises).then(() => alert("刪除成功！"));
   }
+  async function favoriteToggle(cardId: string) {
+    let userId = userInfo.userId;
+    if (userInfo.favoriteCards.includes(cardId)) {
+      dispatch({
+        type: UserInfoActions.DELETE_FAVORITE_PLANT,
+        payload: { cardId },
+      });
+      await firebase.removeFavCard(userId, cardId);
+      alert("已取消收藏！");
+    } else {
+      dispatch({
+        type: UserInfoActions.ADD_FAVORITE_PLANT,
+        payload: { cardId },
+      });
+      await firebase.addFavCard(userId, cardId);
+      alert("已加入收藏！");
+    }
+  }
   useEffect(() => {
     async function getCards() {
       let results: PlantCard[] = [];
@@ -355,7 +382,15 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                     Edit
                   </OperationBtn>
                 )}
-                <OperationBtn>Favorite</OperationBtn>
+                <FavoriteButton
+                  show={userInfo.favoriteCards.includes(card.cardId!)}
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    favoriteToggle(card.cardId!);
+                    e.stopPropagation();
+                  }}
+                >
+                  Favorite
+                </FavoriteButton>
               </Card>
             );
           })}

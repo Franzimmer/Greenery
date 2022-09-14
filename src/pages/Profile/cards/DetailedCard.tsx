@@ -5,6 +5,8 @@ import { unixTimeToString } from "./CardEditor";
 import { OperationBtn } from "./CardsGrid";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "./default.jpg";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../reducer";
 interface DetailedCardWrapperProps {
   $display: boolean;
 }
