@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { unixTimeToString } from "../cards/CardEditor";
@@ -13,7 +12,6 @@ import {
   query,
   DocumentData,
 } from "firebase/firestore";
-import { PlantCard } from "../../../types/plantCardType";
 
 const CalendarApp = ({ id }: { id: string }) => {
   let defaultState = {

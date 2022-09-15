@@ -17,13 +17,13 @@ const ForumSectionWrapper = styled.div`
 interface ForumPostPageProps {
   show: boolean;
 }
-const ForumPostPage = styled.div<ForumPostPageProps>`
+export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80%;
   height: 100px;
   border: 1px solid #000;
   display: ${(props) => (props.show ? "block" : "none")};
 `;
-const ForumPostPageInfo = styled(Link)``;
+export const ForumPostPageInfo = styled(Link)``;
 
 const ForumHomePage = () => {
   const [initContent, setInitContent] = useState<string>("");
