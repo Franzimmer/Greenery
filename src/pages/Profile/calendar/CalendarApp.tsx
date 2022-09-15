@@ -56,7 +56,7 @@ const CalendarApp = ({ id }: { id: string }) => {
       } else setEvents(defaultState);
     }
     getEventData();
-  }, [value]);
+  }, [id, value]);
   return (
     <div>
       <Calendar onChange={onChange} value={value} />
