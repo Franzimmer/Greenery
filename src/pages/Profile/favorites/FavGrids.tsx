@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
@@ -16,7 +16,7 @@ import {
   FavoriteButton,
 } from "../cards/Cards";
 import { defaultState } from "../Profile";
-import defaultImg from "./default.jpg";
+import defaultImg from "../../../assets/default.jpg";
 
 interface FavGridsProps {
   isSelf: boolean;

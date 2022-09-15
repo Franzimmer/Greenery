@@ -4,7 +4,7 @@ import { PlantCard } from "../../types/plantCardType";
 import { unixTimeToString } from "../../utils/helpers";
 import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import PropagationMenu from "./PropagationMenu";
-import defaultImg from "./default.jpg";
+import defaultImg from "../../assets/default.jpg";
 interface DetailedCardWrapperProps {
   $display: boolean;
 }
