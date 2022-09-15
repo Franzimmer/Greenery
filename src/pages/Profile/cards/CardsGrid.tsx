@@ -99,6 +99,7 @@ interface CardsGridProps {
   id: string | undefined;
   isSelf: boolean;
 }
+
 const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);

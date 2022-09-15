@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import defaultImg from "./default.jpg";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
+import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
 import { Link } from "react-router-dom";
 import { defaultState } from "../Profile";
@@ -27,6 +28,7 @@ interface FavoritesProps {
 const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const { favoriteCards } = useSelector((state: RootState) => state.userInfo);
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const dispatch = useDispatch();
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
@@ -34,6 +36,15 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   function findOwnerName(ownerId: string) {
     let target = ownerData.find((owner) => owner.userId === ownerId);
     return target?.userName;
+  }
+  async function removeFavorite(cardId: string) {
+    let userId = userInfo.userId;
+    dispatch({
+      type: UserInfoActions.DELETE_FAVORITE_PLANT,
+      payload: { cardId },
+    });
+    await firebase.removeFavCard(userId, cardId);
+    alert("已取消收藏！");
   }
   useEffect(() => {
     async function getFavCards() {
@@ -70,7 +81,7 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
       }
     }
     getFavCards();
-  }, [id]);
+  }, [id, favoriteCards, favCards]);
   return (
     <>
       <GridWrapper>
@@ -114,7 +125,15 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
                   Diary
                 </OperationBtn>
                 {isSelf && (
-                  <FavoriteButton show={true}>Favorite</FavoriteButton>
+                  <FavoriteButton
+                    show={true}
+                    onClick={(e) => {
+                      removeFavorite(card.cardId!);
+                      e.stopPropagation();
+                    }}
+                  >
+                    Favorite
+                  </FavoriteButton>
                 )}
               </Card>
             );
