@@ -15,6 +15,8 @@ import {
   arrayUnion,
   arrayRemove,
   increment,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -113,7 +115,12 @@ const firebase = {
     return docSnapshot;
   },
   async getPosts() {
-    const q = query(posts);
+    const q = query(posts, orderBy("createdTime", "desc"));
+    const querySnapshot = getDocs(q);
+    return querySnapshot;
+  },
+  async getLatestPosts() {
+    const q = query(posts, orderBy("createdTime", "asc"), limit(5));
     const querySnapshot = getDocs(q);
     return querySnapshot;
   },
@@ -136,6 +143,11 @@ const firebase = {
   async getCards(cardIds: string[]) {
     if (cardIds.length === 0) return;
     const q = query(cards, where("cardId", "in", cardIds));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async getFavCards() {
+    const q = query(cards, orderBy("followers"), limit(10));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },

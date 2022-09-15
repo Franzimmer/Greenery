@@ -27,8 +27,8 @@ interface FavoritesProps {
   setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
-  const { favoriteCards } = useSelector((state: RootState) => state.userInfo);
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const favoriteCards = userInfo.favoriteCards;
   const dispatch = useDispatch();
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
