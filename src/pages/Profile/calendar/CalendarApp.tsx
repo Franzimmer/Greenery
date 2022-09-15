@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { unixTimeToString } from "../cards/CardEditor";
-import { db, cards } from "../../../utils/firebase";
-import {
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  where,
-  query,
-  DocumentData,
-} from "firebase/firestore";
+import { unixTimeToString } from "../../../utils/helpers";
+import { firebase } from "../../../utils/firebase";
+import { PlantCard } from "../../../types/plantCardType";
 
+let defaultState = {
+  watering: [],
+  fertilizing: [],
+};
 const CalendarApp = ({ id }: { id: string }) => {
-  let defaultState = {
-    watering: [],
-    fertilizing: [],
-  };
   const [events, setEvents] = useState<Record<string, string[]>>(defaultState);
   const [value, onChange] = useState(new Date());
 
@@ -25,22 +17,20 @@ const CalendarApp = ({ id }: { id: string }) => {
     async function getEventData() {
       let eventRef;
       let docName = unixTimeToString(value.getTime());
-      const activitiesRef = collection(db, "users", id, "activities");
-      let docRef = doc(activitiesRef, docName);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        eventRef = docSnap.data();
-        let cardList: DocumentData[] = [];
-        let waterEvents = docSnap.data().watering;
-        let fertilizeEvents = docSnap.data().fertilizing;
+      const docSnapshot = await firebase.getEvent(docName, id);
+      if (docSnapshot.exists()) {
+        eventRef = docSnapshot.data();
+        let cardList: PlantCard[] = [];
+        let waterEvents = docSnapshot.data().watering;
+        let fertilizeEvents = docSnapshot.data().fertilizing;
         let eventIds = waterEvents.concat(
           fertilizeEvents.filter(
             (item: string) => waterEvents.indexOf(item) < 0
           )
         );
-        const q = query(cards, where("cardId", "in", eventIds));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
+        const querySnapshot = await firebase.getCards(eventIds);
+        if (querySnapshot?.empty) return;
+        querySnapshot!.forEach((doc) => {
           cardList.push(doc.data());
         });
         let waterRef = eventRef.watering.map((id: string) => {

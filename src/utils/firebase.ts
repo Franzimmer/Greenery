@@ -18,6 +18,7 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
+import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
@@ -25,6 +26,7 @@ import { message } from "../components/SideBar/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
 import { Note } from "../types/notificationType";
+import { unixTimeToString } from "./helpers";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -47,6 +49,10 @@ const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
 const firebase = {
+  async initUserInfo(uid: string, data: UserInfo) {
+    const docRef = doc(users, uid);
+    await setDoc(docRef, data);
+  },
   async getUserInfo(id: string) {
     let docRef = doc(users, id);
     let docSnapshot = await getDoc(docRef);
@@ -146,6 +152,11 @@ const firebase = {
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
+  async getUserCards(ownerId: string) {
+    const q = query(cards, where("ownerId", "==", ownerId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
   async getFavCards() {
     const q = query(cards, orderBy("followers"), limit(10));
     const querySnapshot = await getDocs(q);
@@ -157,6 +168,7 @@ const firebase = {
       ...data,
       cardId: newCard.id,
     });
+    return newCard.id;
   },
   async editCard(cardId: string, data: PlantCard) {
     const docRef = doc(cards, cardId);
@@ -254,6 +266,69 @@ const firebase = {
     let docRef = doc(diaries, diaryId);
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
+  },
+  async saveDiary(diaryId: string, page: string) {
+    let docRef = doc(diaries, diaryId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { pages: [] });
+    }
+    await updateDoc(docRef, { pages: arrayUnion(page) });
+  },
+  async saveEditDiary(diaryId: string, currentDiaries: string[]) {
+    let docRef = doc(diaries, diaryId);
+    await setDoc(docRef, { pages: currentDiaries });
+  },
+  async getEvent(docName: string, id: string) {
+    const activitiesRef = collection(db, "users", id, "activities");
+    let docRef = doc(activitiesRef, docName);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
+  async addEvents(
+    type: "water" | "fertilize",
+    cardIds: string[],
+    userId: string
+  ) {
+    let docName = unixTimeToString(Date.now());
+    const activitiesRef = collection(db, "users", userId, "activities");
+    let docRef = doc(activitiesRef, docName);
+    const docSnapshot = await getDoc(docRef);
+    if (!docSnapshot.exists()) {
+      await setDoc(docRef, { watering: [], fertilizing: [] });
+    }
+    if (type === "water") {
+      await updateDoc(docRef, { watering: arrayUnion(...cardIds) });
+    } else if (type === "fertilize") {
+      await updateDoc(docRef, { fertilizing: arrayUnion(...cardIds) });
+    }
+  },
+  async deleteCard(cardId: string) {
+    await deleteDoc(doc(db, "cards", cardId));
+  },
+  async getGallery(userId: string) {
+    const docRef = doc(users, userId);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
+  async addGallery(userId: string, link: string) {
+    const docRef = doc(users, userId);
+    await updateDoc(docRef, { gallery: arrayUnion(link) });
+  },
+  async deleteGallery(userId: string, link: string) {
+    const docRef = doc(users, userId);
+    await updateDoc(docRef, { gallery: arrayRemove(link) });
+  },
+  async searchSpecies(input: string) {
+    const q = query(species, where("speciesName", "==", input));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
+  async uploadFile(file: File) {
+    const storageRef = ref(storage, `${file.name}`);
+    await uploadBytes(storageRef, file);
+    const dowloadLink = await getDownloadURL(storageRef);
+    return dowloadLink;
   },
 };
 

@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import defaultImg from "./default.jpg";
-import DiaryEditor from "../../../components/Diary/DiaryEditor";
-import DetailedCard from "../../../components/DetailCard/DetailedCard";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
-import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
-import { Link } from "react-router-dom";
-import { defaultState } from "../Profile";
-import {
-  GridWrapper,
-  Card,
-  PlantImg,
-  Text,
-  Tag,
-  TagsWrapper,
-  OperationBtn,
-  FavoriteButton,
-} from "../cards/CardsGrid";
+import DiaryEditor from "../../../components/Diary/DiaryEditor";
+import DetailedCard from "../../../components/DetailCard/DetailedCard";
+import FavGrids from "./FavGrids";
 
 interface FavoritesProps {
   id: string | undefined;
@@ -29,25 +16,16 @@ interface FavoritesProps {
 const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const favoriteCards = userInfo.favoriteCards;
-  const dispatch = useDispatch();
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+
   function findOwnerName(ownerId: string) {
     let target = ownerData.find((owner) => owner.userId === ownerId);
     return target?.userName;
-  }
-  async function removeFavorite(cardId: string) {
-    let userId = userInfo.userId;
-    dispatch({
-      type: UserInfoActions.DELETE_FAVORITE_PLANT,
-      payload: { cardId },
-    });
-    await firebase.removeFavCard(userId, cardId);
-    alert("已取消收藏！");
   }
   useEffect(() => {
     async function getFavCards() {
@@ -74,7 +52,6 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
           usersQueryData?.forEach((doc) => {
             ownerInfo.push(doc.data());
           });
-          console.log(docData);
           setFavCards(docData);
           setOwnerData(ownerInfo);
         }
@@ -84,65 +61,19 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
       }
     }
     getFavCards();
-  }, [id, favoriteCards, favCards]);
+  }, [id, userInfo.userId, favoriteCards, favCards]);
   return (
     <>
-      <GridWrapper>
-        {favCards &&
-          favCards.map((card) => {
-            return (
-              <Card
-                key={card.cardId}
-                id={card.cardId!}
-                show={true}
-                onClick={(e) => {
-                  setDetailDisplay(true);
-                  setDetailData(card);
-                }}
-              >
-                <PlantImg path={card.plantPhoto || defaultImg} />
-                <Text>
-                  <Link
-                    to={`/profile/${card.ownerId}`}
-                    onClick={() => {
-                      setTabDisplay(defaultState);
-                    }}
-                  >
-                    {findOwnerName(card.ownerId)}
-                  </Link>
-                  的{card.plantName}
-                </Text>
-                <Text>品種: {card.species}</Text>
-                <TagsWrapper>
-                  {card?.tags?.length !== 0 &&
-                    card.tags?.map((tag) => {
-                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                    })}
-                </TagsWrapper>
-                <OperationBtn
-                  onClick={(e) => {
-                    setDiaryDisplay(true);
-                    setDiaryId(card.cardId);
-                    e.stopPropagation();
-                  }}
-                >
-                  Diary
-                </OperationBtn>
-                {isSelf && (
-                  <FavoriteButton
-                    show={true}
-                    onClick={(e) => {
-                      removeFavorite(card.cardId!);
-                      e.stopPropagation();
-                    }}
-                  >
-                    Favorite
-                  </FavoriteButton>
-                )}
-              </Card>
-            );
-          })}
-      </GridWrapper>
+      <FavGrids
+        isSelf={isSelf}
+        favCards={favCards}
+        setDetailData={setDetailData}
+        setDetailDisplay={setDetailDisplay}
+        setDiaryDisplay={setDiaryDisplay}
+        setDiaryId={setDiaryId}
+        setTabDisplay={setTabDisplay}
+        findOwnerName={findOwnerName}
+      />
       <DetailedCard
         isSelf={isSelf}
         detailDisplay={detailDisplay}

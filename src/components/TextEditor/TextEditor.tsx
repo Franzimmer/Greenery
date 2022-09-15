@@ -4,7 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
 import "./tiptap.css";
 import MenuBar from "./MenuBar";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";

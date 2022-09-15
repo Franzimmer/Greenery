@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
-import styled from "styled-components";
-import defaultImg from "./default.jpg";
+import { UserInfoActions } from "../../actions/userInfoActions";
 import { PlantCard } from "../../types/plantCardType";
-import { firebase } from "../../utils/firebase";
 import { Post } from "../Forum/ForumPost";
 import parse from "html-react-parser";
 import {
@@ -15,11 +15,11 @@ import {
   TagsWrapper,
   OperationBtn,
   FavoriteButton,
-} from "../Profile/cards/CardsGrid";
+} from "../Profile/cards/Cards";
 import { ForumPostPage, ForumPostPageInfo } from "../Forum/ForumHomePage";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
 import DetailedCard from "../../components/DetailCard/DetailedCard";
-import { UserInfoActions } from "../../actions/userInfoActions";
+import defaultImg from "../../assets/default.jpg";
 
 const CardsFlexWrpper = styled.div`
   display: flex;
@@ -35,6 +35,7 @@ const Home = () => {
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+
   async function favoriteToggle(cardId: string) {
     let userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {

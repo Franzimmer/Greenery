@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { OperationBtn } from "./CardsGrid";
-import preview from "./previewDefault.png";
-import { storage, species, firebase } from "../../../utils/firebase";
-import { getDocs, query, where } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { CardsActions } from "../../../actions/cardsActions";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { PlantCard } from "../../../types/plantCardType";
+import { CardsActions } from "../../../actions/cardsActions";
+import { firebase } from "../../../utils/firebase";
+import { unixTimeToString } from "../../../utils/helpers";
+import { OperationBtn } from "./Cards";
+import defaultImg from "../../../assets/default.jpg";
+
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -32,7 +32,7 @@ interface PhotoPreviewProps {
 const PhotoPreview = styled.div<PhotoPreviewProps>`
   width: 80%;
   height: 100px;
-  background-image: url(${(props) => (props.path ? props.path : preview)});
+  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;
@@ -65,25 +65,14 @@ interface FCProps {
   editorDisplay: boolean;
   editorToggle: () => void;
   editCardId: string | null;
-  tagList: string[];
-  setTagList: React.Dispatch<React.SetStateAction<string[]>>;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
 }
-export function unixTimeToString(unixTime: number) {
-  let date = new Date(unixTime);
-  let year = date.getFullYear();
-  let month = String(date.getMonth() + 1).padStart(2, "0");
-  let day = String(date.getDate()).padStart(2, "0");
-  const formatedDate = `${year}-${month}-${day}`;
-  return formatedDate;
-}
+
 const CardEditor = ({
   userId,
   editorDisplay,
   editorToggle,
   editCardId,
-  tagList,
-  setTagList,
   setEditCardId,
 }: FCProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
@@ -111,8 +100,7 @@ const CardEditor = ({
   }
   async function searchPlantSpecies(input: string) {
     if (!waterRef.current || !lightRef.current) return;
-    const q = query(species, where("speciesName", "==", input));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await firebase.searchSpecies(input);
     if (querySnapshot.empty) {
       alert("Species not existed!");
       waterRef.current!.value = "";
@@ -144,9 +132,7 @@ const CardEditor = ({
   async function uploadFile() {
     if (!imageRef.current) return;
     let file = imageRef.current!.files![0];
-    const storageRef = ref(storage, `${file.name}`);
-    await uploadBytes(storageRef, file);
-    const dowloadLink = await getDownloadURL(storageRef);
+    let dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
   }
   function resetEditor() {
@@ -277,6 +263,7 @@ const CardEditor = ({
           onKeyPress={(e) => {
             if (e.key === "Enter") {
               addTag();
+              tagRef.current!.value = "";
             }
           }}
         />
@@ -293,8 +280,8 @@ const CardEditor = ({
       <InputWrapper>
         {editCardId ? (
           <OperationBtn
-            onClick={async () => {
-              await editCard();
+            onClick={() => {
+              editCard();
               resetEditor();
               setEditCardId(null);
             }}
@@ -303,8 +290,8 @@ const CardEditor = ({
           </OperationBtn>
         ) : (
           <OperationBtn
-            onClick={async () => {
-              await addCard();
+            onClick={() => {
+              addCard();
               resetEditor();
             }}
           >

@@ -1,6 +1,6 @@
 import React from "react";
 import { Editor } from "@tiptap/core";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 
 interface MenuBarProps {
   editor: Editor | null;

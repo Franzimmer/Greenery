@@ -47,6 +47,23 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
         followList: newFollowList,
       };
     }
+    case UserInfoActions.ADD_GALLERY: {
+      let currentGallery = state.gallery;
+      currentGallery?.push(action.payload.link);
+      return {
+        ...state,
+        gallery: currentGallery,
+      };
+    }
+    case UserInfoActions.REMOVE_GALLERY: {
+      let newGallery = state.gallery?.filter(
+        (asset) => asset !== action.payload.link
+      );
+      return {
+        ...state,
+        gallery: newGallery,
+      };
+    }
     case UserInfoActions.ADD_FAVORITE_PLANT: {
       let newFavPlants = [...state.favoriteCards];
       newFavPlants.push(action.payload.cardId);
