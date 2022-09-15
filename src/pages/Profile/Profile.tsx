@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../reducer";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
-import { useSelector } from "react-redux";
-import { RootState } from "../../reducer";
 
 const Wrapper = styled.div`
   display: flex;

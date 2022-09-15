@@ -49,6 +49,10 @@ const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
 const firebase = {
+  async initUserInfo(uid: string, data: UserInfo) {
+    const docRef = doc(users, uid);
+    await setDoc(docRef, data);
+  },
   async getUserInfo(id: string) {
     let docRef = doc(users, id);
     let docSnapshot = await getDoc(docRef);
@@ -164,6 +168,7 @@ const firebase = {
       ...data,
       cardId: newCard.id,
     });
+    return newCard.id;
   },
   async editCard(cardId: string, data: PlantCard) {
     const docRef = doc(cards, cardId);
@@ -262,6 +267,24 @@ const firebase = {
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
+  async saveDiary(diaryId: string, page: string) {
+    let docRef = doc(diaries, diaryId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { pages: [] });
+    }
+    await updateDoc(docRef, { pages: arrayUnion(page) });
+  },
+  async saveEditDiary(diaryId: string, currentDiaries: string[]) {
+    let docRef = doc(diaries, diaryId);
+    await setDoc(docRef, { pages: currentDiaries });
+  },
+  async getEvent(docName: string, id: string) {
+    const activitiesRef = collection(db, "users", id, "activities");
+    let docRef = doc(activitiesRef, docName);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
   async addEvents(
     type: "water" | "fertilize",
     cardIds: string[],
@@ -295,6 +318,11 @@ const firebase = {
   async deleteGallery(userId: string, link: string) {
     const docRef = doc(users, userId);
     await updateDoc(docRef, { gallery: arrayRemove(link) });
+  },
+  async searchSpecies(input: string) {
+    const q = query(species, where("speciesName", "==", input));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
   },
   async uploadFile(file: File) {
     const storageRef = ref(storage, `${file.name}`);

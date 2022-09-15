@@ -11,7 +11,7 @@ import CardsGrid from "./CardsGrid";
 import CardEditor from "./CardEditor";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
-import defaultImg from "./default.jpg";
+import defaultImg from "../../../assets/default.jpg";
 
 export const OperationBtn = styled.button`
   margin: 0px 5px 0px 0px;
@@ -280,8 +280,6 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
         editorDisplay={editorDisplay}
         editorToggle={editorToggle}
         editCardId={editCardId}
-        tagList={tagList}
-        setTagList={setTagList}
         setEditCardId={setEditCardId}
       />
       <DetailedCard

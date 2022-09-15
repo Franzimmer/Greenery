@@ -3,10 +3,7 @@ import { fabric } from "fabric";
 import styled from "styled-components";
 import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import Canvas from "./Canvas";
-import { storage, diaries, firebase } from "../../utils/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-
+import { firebase } from "../../utils/firebase";
 const BtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -85,19 +82,11 @@ const DiaryEditor = ({
     else if (target.fontWeight === "bold") target.set("fontWeight", "normal");
     canvas?.renderAll();
   }
-  async function uploadFile() {
+  async function addImage() {
     if (!fileRef.current) return;
     if (!fileRef.current.files!.length) return;
     let file = fileRef.current!.files![0];
-    const storageRef = ref(storage, `${file.name}`);
-    await uploadBytes(storageRef, file);
-    const dowloadLink = await getDownloadURL(storageRef);
-    fileRef.current.value = "";
-    return dowloadLink;
-  }
-  async function addImage() {
-    let fileLink = await uploadFile();
-
+    let fileLink = await firebase.uploadFile(file);
     fabric.Image.fromURL(fileLink!, function(oImg) {
       oImg.set({ left: 20, top: 50 });
       oImg.scaleToWidth(200, false);
@@ -114,28 +103,22 @@ const DiaryEditor = ({
   }
   async function save() {
     setAllObjDeactive();
-    let record = JSON.stringify(canvas);
-    let docRef = doc(diaries, diaryId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      await setDoc(docRef, { pages: [] });
-    }
-    await updateDoc(docRef, { pages: arrayUnion(record) });
+    let page = JSON.stringify(canvas);
     let currentDiaries = [...diariesData];
-    currentDiaries.push(record);
+    currentDiaries.push(page);
     setDiariesData(currentDiaries);
     pageRef.current = currentDiaries.length - 1;
     load(pageRef.current);
     switchToViewMode();
+    await firebase.saveDiary(diaryId, page);
   }
   async function saveEdit() {
     setAllObjDeactive();
     let index = pageRef.current;
-    let record = JSON.stringify(canvas);
+    let page = JSON.stringify(canvas);
     let currentDiaries = [...diariesData];
-    currentDiaries[index] = record;
-    let docRef = doc(diaries, diaryId);
-    await setDoc(docRef, { pages: currentDiaries });
+    currentDiaries[index] = page;
+    await firebase.saveEditDiary(diaryId, currentDiaries);
     alert("成功更新資料！");
     setDiariesData(currentDiaries);
     switchToViewMode();

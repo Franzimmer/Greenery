@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { firebase } from "../../../utils/firebase";
-import { OperationBtn } from "../cards/Cards";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
-import { useDispatch } from "react-redux";
 import { UserInfoActions } from "../../../actions/userInfoActions";
-
+import { OperationBtn } from "../cards/Cards";
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;

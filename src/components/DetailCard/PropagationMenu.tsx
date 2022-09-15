@@ -1,12 +1,10 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { OperationBtn } from "../../pages/Profile/cards/Cards";
-import { PlantCard } from "../../types/plantCardType";
-import { cards } from "../../utils/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
 import { CardsActions } from "../../actions/cardsActions";
-
+import { PlantCard } from "../../types/plantCardType";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 interface DialogWrapperProps {
   $display: boolean;
 }
@@ -40,13 +38,12 @@ const PropagationMenu = ({
   const dispatch = useDispatch();
 
   async function addDocPromise(data: PlantCard) {
-    const document = doc(cards);
-    const uploadData = { ...data, cardId: document.id };
+    let cardId = await firebase.addCard(data);
+    const uploadData = { ...data, cardId };
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: uploadData },
     });
-    await setDoc(document, uploadData);
   }
 
   function propagate() {

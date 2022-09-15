@@ -13,7 +13,8 @@ import {
   OperationBtn,
   FavoriteButton,
 } from "./Cards";
-import defaultImg from "./default.jpg";
+import defaultImg from "../../../assets/default.jpg";
+
 const CheckBox = styled.input``;
 type CheckList = Record<string, boolean>;
 

@@ -1,13 +1,12 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { OperationBtn } from "../Profile/cards/Cards";
-import { auth, users } from "../../utils/firebase";
+import { auth, firebase } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 
 const LogInPanel = styled.div`
   display: flex;
@@ -39,7 +38,6 @@ const LogIn = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        const docRef = doc(users, user.uid);
         const data = {
           userId: user.uid,
           userName: "user",
@@ -49,7 +47,7 @@ const LogIn = () => {
           followers: [],
           favoriteCards: [],
         };
-        setDoc(docRef, data);
+        firebase.initUserInfo(user.uid, data);
         return data.userId;
       })
       .then((id) => {
