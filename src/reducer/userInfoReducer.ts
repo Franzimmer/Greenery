@@ -64,6 +64,9 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
         favoriteCards: newFavPlants,
       };
     }
+    case UserInfoActions.CLEAR_USER_INFO: {
+      return initialUserInfo;
+    }
     default:
       return state;
   }

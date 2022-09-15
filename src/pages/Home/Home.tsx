@@ -123,7 +123,7 @@ const Home = () => {
           })}
       </CardsFlexWrpper>
       <h1>最新文章</h1>
-      {newPosts.length &&
+      {newPosts.length !== 0 &&
         newPosts.map((post) => {
           return (
             <ForumPostPage key={post.postId} show={true}>

@@ -3,12 +3,17 @@ import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
+import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
+import { db } from "./utils/firebase";
+import { Note } from "./types/notificationType";
 import store from "./store";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
 import { auth, firebase } from "./utils/firebase";
 import { UserInfoActions } from "./actions/userInfoActions";
-
+import { CardsActions } from "./actions/cardsActions";
+import { myFollowersActions } from "./reducer/myFollowersReducer";
+import { NotificationActions } from "./actions/notificationActions";
 const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -20,6 +25,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
 `;
+
 function UserLogInObserver() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -31,6 +37,18 @@ function UserLogInObserver() {
           payload: { userData: userInfo.data() },
         });
       } else {
+        dispatch({
+          type: CardsActions.CLEAR_CARDS_DATA,
+        });
+        dispatch({
+          type: UserInfoActions.CLEAR_USER_INFO,
+        });
+        dispatch({
+          type: myFollowersActions.CLEAR_FOLLOWERS,
+        });
+        dispatch({
+          type: NotificationActions.CLEAR_NOTIFICATION,
+        });
       }
     });
   }, []);
