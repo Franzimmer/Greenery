@@ -116,18 +116,10 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
-  function detailToggle() {
-    detailDisplay ? setDetailDisplay(false) : setDetailDisplay(true);
-  }
   function diaryToggle(e: React.MouseEvent<HTMLElement>) {
     const target = e.target as HTMLDivElement;
     setDiaryId(target.parentElement!.id);
     diaryDisplay ? setDiaryDisplay(false) : setDiaryDisplay(true);
-  }
-  function selectDetailData(e: React.MouseEvent<HTMLElement>) {
-    const target = e.currentTarget as HTMLDivElement;
-    let selectedData = cardList.find((card) => target.id === card.cardId);
-    setDetailData(selectedData);
   }
   function filterToggle() {
     if (filterOptions) {
@@ -342,8 +334,8 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                 id={card.cardId!}
                 show={filterCard(card.tags || [])}
                 onClick={(e) => {
-                  detailToggle();
-                  selectDetailData(e);
+                  setDetailDisplay(true);
+                  setDetailData(card);
                 }}
               >
                 {isSelf && (
@@ -407,7 +399,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
       <DetailedCard
         isSelf={isSelf}
         detailDisplay={detailDisplay}
-        detailToggle={detailToggle}
+        setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
     </div>

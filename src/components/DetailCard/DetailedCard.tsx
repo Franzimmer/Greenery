@@ -28,13 +28,13 @@ interface DetailedCardProps {
   isSelf: boolean;
   detailDisplay: boolean;
   detailData: PlantCard;
-  detailToggle: () => void;
+  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const DetailedCard = ({
   isSelf,
   detailDisplay,
   detailData,
-  detailToggle,
+  setDetailDisplay,
 }: DetailedCardProps) => {
   const [propagateDisplay, setPropagateDisplay] = useState(false);
   return (
@@ -86,7 +86,9 @@ const DetailedCard = ({
             propagate
           </OperationBtn>
         )}
-        <OperationBtn onClick={detailToggle}>close</OperationBtn>
+        <OperationBtn onClick={() => setDetailDisplay(false)}>
+          close
+        </OperationBtn>
       </DetailedCardWrapper>
       <PropagationMenu
         propagateDisplay={propagateDisplay}

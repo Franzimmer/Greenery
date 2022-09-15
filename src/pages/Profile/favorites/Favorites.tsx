@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import defaultImg from "./default.jpg";
-import styled from "styled-components";
+import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
@@ -29,6 +29,8 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
+  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
+  const [detailData, setDetailData] = useState<PlantCard>();
   function findOwnerName(ownerId: string) {
     let target = ownerData.find((owner) => owner.userId === ownerId);
     return target?.userName;
@@ -70,51 +72,61 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
     getFavCards();
   }, [id]);
   return (
-    <GridWrapper>
-      {favCards &&
-        favCards.map((card) => {
-          return (
-            <Card
-              key={card.cardId}
-              id={card.cardId!}
-              show={true}
-              // onClick={(e) => {
-              //   detailToggle();
-              //   selectDetailData(e);
-              // }}
-            >
-              <PlantImg path={card.plantPhoto || defaultImg} />
-              <Text>
-                <Link
-                  to={`/profile/${card.ownerId}`}
-                  onClick={() => {
-                    setTabDisplay(defaultState);
-                  }}
-                >
-                  {findOwnerName(card.ownerId)}
-                </Link>
-                的{card.plantName}
-              </Text>
-              <Text>品種: {card.species}</Text>
-              <TagsWrapper>
-                {card?.tags?.length !== 0 &&
-                  card.tags?.map((tag) => {
-                    return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                  })}
-              </TagsWrapper>
-              <OperationBtn
-              // onClick={(e) => {
-              // diaryToggle(e);
-              //   e.stopPropagation();
-              // }}
+    <>
+      <GridWrapper>
+        {favCards &&
+          favCards.map((card) => {
+            return (
+              <Card
+                key={card.cardId}
+                id={card.cardId!}
+                show={true}
+                onClick={(e) => {
+                  setDetailDisplay(true);
+                  setDetailData(card);
+                }}
               >
-                Diary
-              </OperationBtn>
-              <FavoriteButton show={true}>Favorite</FavoriteButton>
-            </Card>
-          );
-        })}
-    </GridWrapper>
+                <PlantImg path={card.plantPhoto || defaultImg} />
+                <Text>
+                  <Link
+                    to={`/profile/${card.ownerId}`}
+                    onClick={() => {
+                      setTabDisplay(defaultState);
+                    }}
+                  >
+                    {findOwnerName(card.ownerId)}
+                  </Link>
+                  的{card.plantName}
+                </Text>
+                <Text>品種: {card.species}</Text>
+                <TagsWrapper>
+                  {card?.tags?.length !== 0 &&
+                    card.tags?.map((tag) => {
+                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                    })}
+                </TagsWrapper>
+                <OperationBtn
+                // onClick={(e) => {
+                // diaryToggle(e);
+                //   e.stopPropagation();
+                // }}
+                >
+                  Diary
+                </OperationBtn>
+                {isSelf && (
+                  <FavoriteButton show={true}>Favorite</FavoriteButton>
+                )}
+              </Card>
+            );
+          })}
+      </GridWrapper>
+      <DetailedCard
+        isSelf={isSelf}
+        detailDisplay={detailDisplay}
+        setDetailDisplay={setDetailDisplay}
+        detailData={detailData!}
+      />
+    </>
   );
 };
 
