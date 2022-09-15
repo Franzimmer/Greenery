@@ -238,6 +238,11 @@ const firebase = {
     let updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
     await Promise.all([updateUser, updateCard]);
   },
+  async getDiary(diaryId: string) {
+    let docRef = doc(diaries, diaryId);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
 };
 
 export {

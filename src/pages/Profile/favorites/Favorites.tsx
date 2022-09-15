@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import defaultImg from "./default.jpg";
+import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
@@ -33,6 +34,8 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
+  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
+  const [diaryId, setDiaryId] = useState<string | null>(null);
   function findOwnerName(ownerId: string) {
     let target = ownerData.find((owner) => owner.userId === ownerId);
     return target?.userName;
@@ -117,10 +120,11 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
                     })}
                 </TagsWrapper>
                 <OperationBtn
-                // onClick={(e) => {
-                // diaryToggle(e);
-                //   e.stopPropagation();
-                // }}
+                  onClick={(e) => {
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
+                    e.stopPropagation();
+                  }}
                 >
                   Diary
                 </OperationBtn>
@@ -144,6 +148,13 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
         detailDisplay={detailDisplay}
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
+      />
+      <DiaryEditor
+        isSelf={isSelf}
+        diaryDisplay={diaryDisplay}
+        setDiaryDisplay={setDiaryDisplay}
+        diaryId={diaryId!}
+        setDiaryId={setDiaryId}
       />
     </>
   );

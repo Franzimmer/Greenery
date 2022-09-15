@@ -117,11 +117,6 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
-  function diaryToggle(e: React.MouseEvent<HTMLElement>) {
-    const target = e.target as HTMLDivElement;
-    setDiaryId(target.parentElement!.id);
-    diaryDisplay ? setDiaryDisplay(false) : setDiaryDisplay(true);
-  }
   function filterToggle() {
     if (filterOptions) {
       setFilterOptionsOpen(false);
@@ -357,7 +352,8 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                 </TagsWrapper>
                 <OperationBtn
                   onClick={(e) => {
-                    diaryToggle(e);
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
                     e.stopPropagation();
                   }}
                 >
