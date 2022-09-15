@@ -5,6 +5,8 @@ export enum UserInfoActions {
   EDIT_USER_PHOTO = "EDIT_USER_PHOTO",
   ADD_FOLLOW_LIST = "ADD_FOLLOW_LIST",
   REMOVE_FOLLOW_LIST = "REMOVE_FOLLOW_LIST",
+  ADD_GALLERY = "ADD_GALLERY",
+  REMOVE_GALLERY = "REMOVE_GALLERY",
   ADD_FAVORITE_PLANT = "ADD_FAVORITE_PLANT",
   DELETE_FAVORITE_PLANT = "DELETE_FAVORITE_PLANT",
   CLEAR_USER_INFO = "CLEAR_USER_INFO",
@@ -31,6 +33,14 @@ interface removeFollow {
   type: UserInfoActions.REMOVE_FOLLOW_LIST;
   payload: { targetId: string };
 }
+interface addGallery {
+  type: UserInfoActions.ADD_GALLERY;
+  payload: { link: string };
+}
+interface removeGallery {
+  type: UserInfoActions.REMOVE_GALLERY;
+  payload: { link: string };
+}
 interface addFavoritePlant {
   type: UserInfoActions.ADD_FAVORITE_PLANT;
   payload: {
@@ -52,6 +62,8 @@ export type userInfoActionsTypes =
   | editUserPhoto
   | addFollow
   | removeFollow
+  | addGallery
+  | removeGallery
   | addFavoritePlant
   | deleteFavoritePlant
   | clearUserInfo;

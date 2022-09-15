@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
-import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
@@ -17,13 +16,13 @@ interface FavoritesProps {
 const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const favoriteCards = userInfo.favoriteCards;
-  const dispatch = useDispatch();
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+
   function findOwnerName(ownerId: string) {
     let target = ownerData.find((owner) => owner.userId === ownerId);
     return target?.userName;

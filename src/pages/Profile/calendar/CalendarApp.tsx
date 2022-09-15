@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { unixTimeToString } from "../cards/CardEditor";
+import { unixTimeToString } from "../../../utils/helpers";
 import { db, cards } from "../../../utils/firebase";
 import {
   doc,

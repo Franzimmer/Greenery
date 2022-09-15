@@ -9,6 +9,7 @@ import { CardsActions } from "../../../actions/cardsActions";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { PlantCard } from "../../../types/plantCardType";
+import { unixTimeToString } from "../../../utils/helpers";
 interface CardEditorWrapperProps {
   $display: boolean;
 }
@@ -69,14 +70,7 @@ interface FCProps {
   setTagList: React.Dispatch<React.SetStateAction<string[]>>;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
 }
-export function unixTimeToString(unixTime: number) {
-  let date = new Date(unixTime);
-  let year = date.getFullYear();
-  let month = String(date.getMonth() + 1).padStart(2, "0");
-  let day = String(date.getDate()).padStart(2, "0");
-  const formatedDate = `${year}-${month}-${day}`;
-  return formatedDate;
-}
+
 const CardEditor = ({
   userId,
   editorDisplay,

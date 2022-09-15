@@ -18,6 +18,7 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
+import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
@@ -25,7 +26,7 @@ import { message } from "../components/SideBar/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
 import { Note } from "../types/notificationType";
-import { unixTimeToString } from "../pages/Profile/cards/CardEditor";
+import { unixTimeToString } from "./helpers";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -281,6 +282,25 @@ const firebase = {
   },
   async deleteCard(cardId: string) {
     await deleteDoc(doc(db, "cards", cardId));
+  },
+  async getGallery(userId: string) {
+    const docRef = doc(users, userId);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
+  },
+  async addGallery(userId: string, link: string) {
+    const docRef = doc(users, userId);
+    await updateDoc(docRef, { gallery: arrayUnion(link) });
+  },
+  async deleteGallery(userId: string, link: string) {
+    const docRef = doc(users, userId);
+    await updateDoc(docRef, { gallery: arrayRemove(link) });
+  },
+  async uploadFile(file: File) {
+    const storageRef = ref(storage, `${file.name}`);
+    await uploadBytes(storageRef, file);
+    const dowloadLink = await getDownloadURL(storageRef);
+    return dowloadLink;
   },
 };
 

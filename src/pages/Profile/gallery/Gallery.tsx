@@ -1,61 +1,52 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
-import { storage, users } from "../../../utils/firebase";
-import {
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  getDoc,
-} from "firebase/firestore";
+import { firebase } from "../../../utils/firebase";
 import { OperationBtn } from "../cards/Cards";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../reducer";
+import { useDispatch } from "react-redux";
+import { UserInfoActions } from "../../../actions/userInfoActions";
 
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;
 }
 const Gallery = ({ id, isSelf }: GalleryProps) => {
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const dispatch = useDispatch();
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
-  const docRef = doc(users, id);
-
-  async function getMediaData() {
-    const docData = await getDoc(docRef);
-    setMedia(docData.data()!.gallery);
-  }
-  async function uploadFile() {
-    if (!mediaRef.current) return;
-    if (!mediaRef.current.files?.length) return;
-    let file = mediaRef.current!.files![0];
-    const storageRef = ref(storage, `${file.name}`);
-    await uploadBytes(storageRef, file);
-    const dowloadLink = await getDownloadURL(storageRef);
-    mediaRef.current.value = "";
-    return dowloadLink;
-  }
 
   async function saveGalleryData() {
     if (mediaRef.current!.value === "") alert("請選擇檔案!");
-    const link = await uploadFile();
-    if (!link) return;
-    await updateDoc(docRef, { gallery: arrayUnion(link) });
-    const docData = await getDoc(docRef);
-    setMedia(docData.data()!.gallery);
+    let file = mediaRef.current!.files![0];
+    let link = await firebase.uploadFile(file);
+    dispatch({
+      type: UserInfoActions.ADD_GALLERY,
+      payload: { link },
+    });
+    await firebase.addGallery(id!, link);
   }
 
-  async function deleteMedia(e: React.MouseEvent<HTMLElement>) {
-    let target = e.target as HTMLButtonElement;
-    let link = target.id;
-    await updateDoc(docRef, { gallery: arrayRemove(link) });
-    let index = media.findIndex((item) => item === link);
-    let newMedia = [...media];
-    newMedia.splice(index, 1);
-    setMedia(newMedia);
+  async function deleteMedia(link: string) {
+    dispatch({
+      type: UserInfoActions.REMOVE_GALLERY,
+      payload: { link },
+    });
+    await firebase.deleteGallery(id!, link);
   }
 
   useEffect(() => {
+    async function getMediaData() {
+      if (!isSelf) {
+        const docData = await firebase.getGallery(id!);
+        setMedia(docData.data()!.gallery);
+      } else {
+        const galleryData = userInfo.gallery;
+        setMedia(galleryData);
+      }
+    }
     getMediaData();
-  }, [id]);
+  }, [id, isSelf]);
   return (
     <>
       {isSelf && (
@@ -75,9 +66,8 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
               ></img>
               <OperationBtn
                 key={asset}
-                id={asset}
-                onClick={(e) => {
-                  deleteMedia(e);
+                onClick={() => {
+                  deleteMedia(asset);
                 }}
               >
                 Delete
