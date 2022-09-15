@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import styled from "styled-components";
-import { OperationBtn } from "./CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
 import Canvas from "./Canvas";
-import { storage, diaries } from "../../../utils/firebase";
+import { storage, diaries } from "../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 

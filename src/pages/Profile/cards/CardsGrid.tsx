@@ -5,8 +5,8 @@ import { RootState } from "../../../reducer/index";
 import { CardsActions } from "../../../actions/cardsActions";
 import { db, cards, firebase } from "../../../utils/firebase";
 import CardEditor, { unixTimeToString } from "./CardEditor";
-import DiaryEditor from "./DiaryEditor";
-import DetailedCard from "./DetailedCard";
+import DiaryEditor from "../../../components/Diary/DiaryEditor";
+import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import defaultImg from "./default.jpg";
 import { PlantCard } from "../../../types/plantCardType";
 import {
@@ -38,7 +38,7 @@ export const OperationBtn = styled.button`
 interface FavoriteButtonProps {
   show?: boolean;
 }
-const FavoriteButton = styled.button<FavoriteButtonProps>`
+export const FavoriteButton = styled.button<FavoriteButtonProps>`
   margin: 0px 5px 0px 0px;
   padding: px;
   cursor: pointer;

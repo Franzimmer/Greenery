@@ -46,7 +46,7 @@ const Profile = () => {
         {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
         {tabDisplay.Calendar && <CalendarApp id={id!} />}
         {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
-        {tabDisplay.Favorites && <Favorites isSelf={isSelf} />}
+        {tabDisplay.Favorites && <Favorites id={id} isSelf={isSelf} />}
       </MainWrapper>
     </Wrapper>
   );

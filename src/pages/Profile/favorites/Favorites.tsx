@@ -15,10 +15,18 @@ import {
   Tag,
   TagsWrapper,
   OperationBtn,
+  FavoriteButton,
 } from "../cards/CardsGrid";
 
-const Favorites = ({ isSelf }: { isSelf: boolean }) => {
+const Favorites = ({
+  id,
+  isSelf,
+}: {
+  id: string | undefined;
+  isSelf: boolean;
+}) => {
   const { favoriteCards } = useSelector((state: RootState) => state.userInfo);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
   function findOwnerName(ownerId: string) {
@@ -27,8 +35,16 @@ const Favorites = ({ isSelf }: { isSelf: boolean }) => {
   }
   useEffect(() => {
     async function getFavCards() {
-      if (favoriteCards.length !== 0) {
-        let queryData = await firebase.getCards(favoriteCards);
+      if (!id) return;
+      let favorites: string[];
+      if (userInfo.userId === id) {
+        favorites = favoriteCards;
+      } else {
+        let docSnapshot = await firebase.getUserInfo(id);
+        favorites = docSnapshot.data()?.favoriteCards!;
+      }
+      if (favorites.length !== 0) {
+        let queryData = await firebase.getCards(favorites);
         if (!queryData?.empty) {
           let docData: PlantCard[] = [];
           let ownerIds: string[] = [];
@@ -42,13 +58,17 @@ const Favorites = ({ isSelf }: { isSelf: boolean }) => {
           usersQueryData?.forEach((doc) => {
             ownerInfo.push(doc.data());
           });
+          console.log(docData);
           setFavCards(docData);
           setOwnerData(ownerInfo);
         }
+      } else {
+        setFavCards([]);
+        setOwnerData([]);
       }
     }
     getFavCards();
-  }, []);
+  }, [id]);
   return (
     <GridWrapper>
       {favCards &&
@@ -65,7 +85,7 @@ const Favorites = ({ isSelf }: { isSelf: boolean }) => {
             >
               <PlantImg path={card.plantPhoto || defaultImg} />
               <Text>
-                <Link to={`./profile/${card.ownerId}`}>
+                <Link to={`/profile/${card.ownerId}`}>
                   {findOwnerName(card.ownerId)}
                 </Link>
                 的{card.plantName}
@@ -85,15 +105,7 @@ const Favorites = ({ isSelf }: { isSelf: boolean }) => {
               >
                 Diary
               </OperationBtn>
-              {/* <FavoriteButton
-                show={userInfo.favoriteCards.includes(card.cardId!)}
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  favoriteToggle(card.cardId!);
-                  e.stopPropagation();
-                }}
-              >
-                Favorite
-              </FavoriteButton> */}
+              <FavoriteButton show={true}>Favorite</FavoriteButton>
             </Card>
           );
         })}

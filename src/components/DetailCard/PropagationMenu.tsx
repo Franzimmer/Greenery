@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { OperationBtn } from "./CardsGrid";
-import { PlantCard } from "../../../types/plantCardType";
-import { cards } from "../../../utils/firebase";
+import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { PlantCard } from "../../types/plantCardType";
+import { cards } from "../../utils/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { CardsActions } from "../../../actions/cardsActions";
+import { CardsActions } from "../../actions/cardsActions";
 
 interface DialogWrapperProps {
   $display: boolean;
@@ -88,7 +88,7 @@ const PropagationMenu = ({
       {type === "Seedling" && (
         <>
           <Text>親本</Text>
-          <Text>{propagateParentData.plantName} & </Text>
+          <Text>{propagateParentData.plantName} and </Text>
           <Input ref={inputRef} />
         </>
       )}
