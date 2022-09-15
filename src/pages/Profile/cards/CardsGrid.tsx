@@ -44,7 +44,7 @@ const FavoriteButton = styled.button<FavoriteButtonProps>`
   cursor: pointer;
   background: ${(props) => (props.show ? "#f54825" : "FFF")};
 `;
-const GridWrapper = styled.div`
+export const GridWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;

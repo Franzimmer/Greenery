@@ -6,6 +6,7 @@ import ProfileMenu from "./ProfileMenu";
 import CardsGrid from "./cards/CardsGrid";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
+import Favorites from "./favorites/Favorites";
 import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
 
@@ -28,6 +29,7 @@ const Profile = () => {
     Cards: true,
     Calendar: false,
     Gallery: false,
+    Favorites: false,
   });
   const { id } = useParams();
   const [isSelf, setIsSelf] = useState<boolean>(false);
@@ -44,6 +46,7 @@ const Profile = () => {
         {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
         {tabDisplay.Calendar && <CalendarApp id={id!} />}
         {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
+        {tabDisplay.Favorites && <Favorites isSelf={isSelf} />}
       </MainWrapper>
     </Wrapper>
   );
