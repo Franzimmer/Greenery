@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import styled from "styled-components";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import Canvas from "./Canvas";
 import { storage, diaries, firebase } from "../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";

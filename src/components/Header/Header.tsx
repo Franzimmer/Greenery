@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 
 const HeaderWrapper = styled.div`
   display: flex;

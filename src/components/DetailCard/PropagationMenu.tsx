@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import { PlantCard } from "../../types/plantCardType";
 import { cards } from "../../utils/firebase";
 import { doc, setDoc } from "firebase/firestore";

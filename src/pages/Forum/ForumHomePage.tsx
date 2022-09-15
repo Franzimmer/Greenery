@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TextEditor from "../../components/TextEditor/TextEditor";
-import { OperationBtn } from "../Profile/cards/CardsGrid";
+import { OperationBtn } from "../Profile/cards/Cards";
 import { Link } from "react-router-dom";
 import { firebase } from "../../utils/firebase";
 import { Post } from "./ForumPost";

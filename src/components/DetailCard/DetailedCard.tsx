@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { PlantCard } from "../../types/plantCardType";
 import { unixTimeToString } from "../../pages/Profile/cards/CardEditor";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "./default.jpg";
 interface DetailedCardWrapperProps {

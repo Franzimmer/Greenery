@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
-import CardsGrid from "./cards/CardsGrid";
+import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
@@ -45,7 +45,7 @@ const Profile = () => {
       <MainWrapper>
         <UserInfoSection id={id} isSelf={isSelf} />
         <ProfileMenu setTabDisplay={setTabDisplay} />
-        {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
+        {tabDisplay.Cards && <Cards id={id} isSelf={isSelf} />}
         {tabDisplay.Calendar && <CalendarApp id={id!} />}
         {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
         {tabDisplay.Favorites && (

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { firebase } from "../../utils/firebase";
 import { CardsActions } from "../../actions/cardsActions";
-import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/Cards";
 import { PlantCard } from "../../types/plantCardType";
 import CardsWrapper from "./CardsWrapper";
 interface DialogWrapperProps {

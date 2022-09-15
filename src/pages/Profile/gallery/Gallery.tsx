@@ -8,7 +8,7 @@ import {
   arrayRemove,
   getDoc,
 } from "firebase/firestore";
-import { OperationBtn } from "../cards/CardsGrid";
+import { OperationBtn } from "../cards/Cards";
 
 interface GalleryProps {
   id: string | undefined;

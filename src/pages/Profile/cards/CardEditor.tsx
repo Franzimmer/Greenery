@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { OperationBtn } from "./CardsGrid";
+import { OperationBtn } from "./Cards";
 import preview from "./previewDefault.png";
 import { storage, species, firebase } from "../../../utils/firebase";
 import { getDocs, query, where } from "firebase/firestore";

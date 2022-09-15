@@ -4,18 +4,12 @@ import { firebase } from "../../utils/firebase";
 import { useParams, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
 import { UserInfo } from "../../types/userInfoType";
-import { OperationBtn } from "../Profile/cards/CardsGrid";
+import { OperationBtn } from "../Profile/cards/Cards";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
 import { PlantCard } from "../../types/plantCardType";
-import {
-  Card,
-  PlantImg,
-  Text,
-  Tag,
-  TagsWrapper,
-} from "../../pages/Profile/cards/CardsGrid";
+import { Card, PlantImg, Text, Tag, TagsWrapper } from "../Profile/cards/Cards";
 const PostWrapper = styled.div`
   display: flex;
   border: 1px solid #000;

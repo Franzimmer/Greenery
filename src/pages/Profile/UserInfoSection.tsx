@@ -4,7 +4,7 @@ import { signOut } from "firebase/auth";
 import { UserInfo } from "../../types/userInfoType";
 import { auth, firebase, storage } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { OperationBtn } from "./cards/CardsGrid";
+import { OperationBtn } from "./cards/Cards";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";

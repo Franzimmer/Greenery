@@ -19,7 +19,7 @@ import {
   TagsWrapper,
   OperationBtn,
   FavoriteButton,
-} from "../cards/CardsGrid";
+} from "../cards/Cards";
 
 interface FavoritesProps {
   id: string | undefined;

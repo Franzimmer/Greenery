@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { firebase, chatrooms } from "../../../utils/firebase";
-import { OperationBtn } from "../../../pages/Profile/cards/CardsGrid";
+import { OperationBtn } from "../../../pages/Profile/cards/Cards";
 import {
   onSnapshot,
   query,

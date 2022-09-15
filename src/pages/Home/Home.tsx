@@ -15,7 +15,7 @@ import {
   TagsWrapper,
   OperationBtn,
   FavoriteButton,
-} from "../Profile/cards/CardsGrid";
+} from "../Profile/cards/Cards";
 import { ForumPostPage, ForumPostPageInfo } from "../Forum/ForumHomePage";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
 import DetailedCard from "../../components/DetailCard/DetailedCard";
