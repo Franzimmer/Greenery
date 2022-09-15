@@ -13,11 +13,11 @@ import {
   DocumentData,
 } from "firebase/firestore";
 
+let defaultState = {
+  watering: [],
+  fertilizing: [],
+};
 const CalendarApp = ({ id }: { id: string }) => {
-  let defaultState = {
-    watering: [],
-    fertilizing: [],
-  };
   const [events, setEvents] = useState<Record<string, string[]>>(defaultState);
   const [value, onChange] = useState(new Date());
 

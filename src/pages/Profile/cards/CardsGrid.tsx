@@ -53,7 +53,6 @@ const CardsGrid = ({
           return (
             <Card
               key={card.cardId}
-              id={card.cardId!}
               show={filterCard(card.tags || [])}
               onClick={(e) => {
                 setDetailDisplay(true);
