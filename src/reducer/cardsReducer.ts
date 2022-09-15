@@ -34,6 +34,9 @@ const cards = (state = initialCards, action: CardsActionTypes) => {
       );
       return result;
     }
+    case CardsActions.CLEAR_CARDS_DATA: {
+      return initialCards;
+    }
     default:
       return state;
   }

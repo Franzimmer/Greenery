@@ -28,6 +28,9 @@ const notifications = (
       );
       return result;
     }
+    case NotificationActions.CLEAR_NOTIFICATION: {
+      return initialNotifications;
+    }
     default:
       return state;
   }

@@ -7,6 +7,7 @@ export enum UserInfoActions {
   REMOVE_FOLLOW_LIST = "REMOVE_FOLLOW_LIST",
   ADD_FAVORITE_PLANT = "ADD_FAVORITE_PLANT",
   DELETE_FAVORITE_PLANT = "DELETE_FAVORITE_PLANT",
+  CLEAR_USER_INFO = "CLEAR_USER_INFO",
 }
 interface setUserInfo {
   type: UserInfoActions.SET_USER_INFO;
@@ -42,6 +43,9 @@ interface deleteFavoritePlant {
     cardId: string;
   };
 }
+interface clearUserInfo {
+  type: UserInfoActions.CLEAR_USER_INFO;
+}
 export type userInfoActionsTypes =
   | setUserInfo
   | editUserName
@@ -49,4 +53,5 @@ export type userInfoActionsTypes =
   | addFollow
   | removeFollow
   | addFavoritePlant
-  | deleteFavoritePlant;
+  | deleteFavoritePlant
+  | clearUserInfo;
