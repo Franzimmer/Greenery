@@ -5,4 +5,5 @@ export interface UserInfo {
   gallery: string[];
   followList: string[];
   followers: string[];
+  favoriteCards: string[];
 }

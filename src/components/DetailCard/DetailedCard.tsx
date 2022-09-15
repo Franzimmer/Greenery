@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { PlantCard } from "../../../types/plantCardType";
-import { unixTimeToString } from "./CardEditor";
-import { OperationBtn } from "./CardsGrid";
-import Dialog from "./Dialog";
+import { PlantCard } from "../../types/plantCardType";
+import { unixTimeToString } from "../../pages/Profile/cards/CardEditor";
+import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "./default.jpg";
 interface DetailedCardWrapperProps {
@@ -29,15 +28,14 @@ interface DetailedCardProps {
   isSelf: boolean;
   detailDisplay: boolean;
   detailData: PlantCard;
-  detailToggle: () => void;
+  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const DetailedCard = ({
   isSelf,
   detailDisplay,
   detailData,
-  detailToggle,
+  setDetailDisplay,
 }: DetailedCardProps) => {
-  const [tradeDisplay, setTradeDisplay] = useState(false);
   const [propagateDisplay, setPropagateDisplay] = useState(false);
   return (
     <>
@@ -84,23 +82,14 @@ const DetailedCard = ({
           </>
         )}
         {isSelf && (
-          <OperationBtn onClick={() => setTradeDisplay(true)}>
-            trade
-          </OperationBtn>
-        )}
-        {isSelf && (
           <OperationBtn onClick={() => setPropagateDisplay(true)}>
             propagate
           </OperationBtn>
         )}
-        <OperationBtn onClick={detailToggle}>close</OperationBtn>
+        <OperationBtn onClick={() => setDetailDisplay(false)}>
+          close
+        </OperationBtn>
       </DetailedCardWrapper>
-      <Dialog
-        tradeDisplay={tradeDisplay}
-        detailToggle={detailToggle}
-        setTradeDisplay={setTradeDisplay}
-        tradeId={detailData?.cardId!}
-      />
       <PropagationMenu
         propagateDisplay={propagateDisplay}
         setPropagateDisplay={setPropagateDisplay}

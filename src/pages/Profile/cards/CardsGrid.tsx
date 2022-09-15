@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { CardsActions } from "../../../actions/cardsActions";
-import { db, cards } from "../../../utils/firebase";
+import { db, cards, firebase } from "../../../utils/firebase";
 import CardEditor, { unixTimeToString } from "./CardEditor";
-import DiaryEditor from "./DiaryEditor";
-import DetailedCard from "./DetailedCard";
+import DiaryEditor from "../../../components/Diary/DiaryEditor";
+import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import defaultImg from "./default.jpg";
 import { PlantCard } from "../../../types/plantCardType";
 import {
@@ -22,6 +22,7 @@ import {
   deleteDoc,
   CollectionReference,
 } from "firebase/firestore";
+import { UserInfoActions } from "../../../actions/userInfoActions";
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -29,13 +30,21 @@ export const OperationBtn = styled.button`
   margin: 0px 5px 0px 0px;
   padding: px;
   cursor: pointer;
-
   &:hover {
     background: #000;
     color: #fff;
   }
 `;
-const GridWrapper = styled.div`
+interface FavoriteButtonProps {
+  show?: boolean;
+}
+export const FavoriteButton = styled.button<FavoriteButtonProps>`
+  margin: 0px 5px 0px 0px;
+  padding: px;
+  cursor: pointer;
+  background: ${(props) => (props.show ? "#f54825" : "FFF")};
+`;
+export const GridWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
@@ -90,10 +99,11 @@ interface CardsGridProps {
   id: string | undefined;
   isSelf: boolean;
 }
+
 const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
+  const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const dispatch = useDispatch();
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
@@ -106,19 +116,6 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
-  }
-  function detailToggle() {
-    detailDisplay ? setDetailDisplay(false) : setDetailDisplay(true);
-  }
-  function diaryToggle(e: React.MouseEvent<HTMLElement>) {
-    const target = e.target as HTMLDivElement;
-    setDiaryId(target.parentElement!.id);
-    diaryDisplay ? setDiaryDisplay(false) : setDiaryDisplay(true);
-  }
-  function selectDetailData(e: React.MouseEvent<HTMLElement>) {
-    const target = e.currentTarget as HTMLDivElement;
-    let selectedData = cardList.find((card) => target.id === card.cardId);
-    setDetailData(selectedData);
   }
   function filterToggle() {
     if (filterOptions) {
@@ -220,6 +217,24 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     let promises = targets.map((target) => deleteCard(target));
     Promise.all(promises).then(() => alert("刪除成功！"));
   }
+  async function favoriteToggle(cardId: string) {
+    let userId = userInfo.userId;
+    if (userInfo.favoriteCards.includes(cardId)) {
+      dispatch({
+        type: UserInfoActions.DELETE_FAVORITE_PLANT,
+        payload: { cardId },
+      });
+      await firebase.removeFavCard(userId, cardId);
+      alert("已取消收藏！");
+    } else {
+      dispatch({
+        type: UserInfoActions.ADD_FAVORITE_PLANT,
+        payload: { cardId },
+      });
+      await firebase.addFavCard(userId, cardId);
+      alert("已加入收藏！");
+    }
+  }
   useEffect(() => {
     async function getCards() {
       let results: PlantCard[] = [];
@@ -315,8 +330,8 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                 id={card.cardId!}
                 show={filterCard(card.tags || [])}
                 onClick={(e) => {
-                  detailToggle();
-                  selectDetailData(e);
+                  setDetailDisplay(true);
+                  setDetailData(card);
                 }}
               >
                 {isSelf && (
@@ -337,7 +352,8 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                 </TagsWrapper>
                 <OperationBtn
                   onClick={(e) => {
-                    diaryToggle(e);
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
                     e.stopPropagation();
                   }}
                 >
@@ -355,7 +371,15 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                     Edit
                   </OperationBtn>
                 )}
-                <OperationBtn>Favorite</OperationBtn>
+                <FavoriteButton
+                  show={userInfo.favoriteCards.includes(card.cardId!)}
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    favoriteToggle(card.cardId!);
+                    e.stopPropagation();
+                  }}
+                >
+                  Favorite
+                </FavoriteButton>
               </Card>
             );
           })}
@@ -372,7 +396,7 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
       <DetailedCard
         isSelf={isSelf}
         detailDisplay={detailDisplay}
-        detailToggle={detailToggle}
+        setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
     </div>

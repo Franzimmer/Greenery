@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { OperationBtn } from "../Profile/cards/CardsGrid";
 import { auth, users } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -48,6 +47,7 @@ const LogIn = () => {
           gallery: [],
           followList: [],
           followers: [],
+          favoriteCards: [],
         };
         setDoc(docRef, data);
         return data.userId;

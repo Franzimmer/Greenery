@@ -24,9 +24,14 @@ const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
       Cards: false,
       Calendar: false,
       Gallery: false,
+      Favorites: false,
     };
     let target = event.target as HTMLButtonElement;
-    let key = target.textContent as "Cards" | "Calendar" | "Gallery";
+    let key = target.textContent as
+      | "Cards"
+      | "Calendar"
+      | "Gallery"
+      | "Favorites";
     defaultState[key] = true;
     setTabDisplay(defaultState);
   }
@@ -35,7 +40,7 @@ const ProfileMenu = ({ setTabDisplay }: ProfileMenuProps) => {
       <MenuItem onClick={(e) => tabSwitcher(e)}>Cards</MenuItem>
       <MenuItem onClick={(e) => tabSwitcher(e)}>Calendar</MenuItem>
       <MenuItem onClick={(e) => tabSwitcher(e)}>Gallery</MenuItem>
-      <MenuItem>Favorites</MenuItem>
+      <MenuItem onClick={(e) => tabSwitcher(e)}>Favorites</MenuItem>
     </MenuWrapper>
   );
 };

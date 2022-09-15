@@ -10,6 +10,7 @@ const initialUserInfo: UserInfo = {
   gallery: [],
   followList: [],
   followers: [],
+  favoriteCards: [],
 };
 
 const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
@@ -44,6 +45,23 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       return {
         ...state,
         followList: newFollowList,
+      };
+    }
+    case UserInfoActions.ADD_FAVORITE_PLANT: {
+      let newFavPlants = [...state.favoriteCards];
+      newFavPlants.push(action.payload.cardId);
+      return {
+        ...state,
+        favoriteCards: newFavPlants,
+      };
+    }
+    case UserInfoActions.DELETE_FAVORITE_PLANT: {
+      let newFavPlants = state.favoriteCards?.filter(
+        (id) => id !== action.payload.cardId
+      );
+      return {
+        ...state,
+        favoriteCards: newFavPlants,
       };
     }
     default:

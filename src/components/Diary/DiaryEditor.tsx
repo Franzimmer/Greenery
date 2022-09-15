@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import styled from "styled-components";
-import { OperationBtn } from "./CardsGrid";
+import { OperationBtn } from "../../pages/Profile/cards/CardsGrid";
 import Canvas from "./Canvas";
-import { storage, diaries } from "../../../utils/firebase";
+import { storage, diaries, firebase } from "../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
@@ -33,11 +33,13 @@ const DiaryEditor = ({
   diaryId,
   setDiaryId,
 }: DiaryEditorProps) => {
+  //Fix Me: Ref or State?
   const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
+  //Fix Me: need to organize and re-check mode logic again
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(
     "saveAdd"
@@ -138,25 +140,7 @@ const DiaryEditor = ({
     setDiariesData(currentDiaries);
     switchToViewMode();
   }
-  async function getDiary() {
-    let docRef = doc(diaries, diaryId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      resetCanvas();
-      switchToEditMode();
-    } else {
-      setDiariesData(docSnap.data().pages);
-      switchToViewMode();
-      canvas?.loadFromJSON(docSnap.data().pages[0], () => {
-        canvas.renderAll();
-        canvas.selection = false;
-        canvas.getObjects().forEach((obj) => {
-          obj.set({ selectable: false, hoverCursor: "text" });
-        });
-      });
-      pageRef.current = 0;
-    }
-  }
+
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
       canvas!.selection = false;
@@ -177,7 +161,25 @@ const DiaryEditor = ({
     switchToViewMode();
   }
   useEffect(() => {
-    if (diaryId) getDiary();
+    async function getDiary(diaryId: string) {
+      let docSnap = await firebase.getDiary(diaryId);
+      if (!docSnap.exists()) {
+        resetCanvas();
+        switchToEditMode();
+      } else {
+        setDiariesData(docSnap.data().pages);
+        switchToViewMode();
+        canvas?.loadFromJSON(docSnap.data().pages[0], () => {
+          canvas.renderAll();
+          canvas.selection = false;
+          canvas.getObjects().forEach((obj) => {
+            obj.set({ selectable: false, hoverCursor: "text" });
+          });
+        });
+        pageRef.current = 0;
+      }
+    }
+    if (diaryId) getDiary(diaryId);
   }, [diaryId]);
   return (
     <Wrapper $display={diaryDisplay}>

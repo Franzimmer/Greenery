@@ -14,6 +14,7 @@ import {
   serverTimestamp,
   arrayUnion,
   arrayRemove,
+  increment,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -212,7 +213,7 @@ const firebase = {
       let promises = followersId.map((targetId) => {
         return this.emitNotice(userId, targetId, type, postId);
       });
-      Promise.all(promises);
+      await Promise.all(promises);
     } else return;
   },
   async deleteNotice(userId: string, noticeId: string) {
@@ -222,6 +223,25 @@ const firebase = {
   async updateReadStatus(userId: string, noticeId: string) {
     let docRef = doc(db, "users", userId, "notices", noticeId);
     await updateDoc(docRef, { read: true });
+  },
+  async addFavCard(userId: string, cardId: string) {
+    let docRef = doc(users, userId);
+    let cardDocRef = doc(users, userId);
+    let updateUser = updateDoc(docRef, { favoriteCards: arrayUnion(cardId) });
+    let updateCard = updateDoc(cardDocRef, { followers: increment(1) });
+    await Promise.all([updateUser, updateCard]);
+  },
+  async removeFavCard(userId: string, cardId: string) {
+    let docRef = doc(users, userId);
+    let cardDocRef = doc(users, userId);
+    let updateUser = updateDoc(docRef, { favoriteCards: arrayRemove(cardId) });
+    let updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
+    await Promise.all([updateUser, updateCard]);
+  },
+  async getDiary(diaryId: string) {
+    let docRef = doc(diaries, diaryId);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot;
   },
 };
 
