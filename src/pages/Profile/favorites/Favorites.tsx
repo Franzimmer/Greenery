@@ -7,6 +7,7 @@ import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
 import { firebase } from "../../../utils/firebase";
 import { Link } from "react-router-dom";
+import { defaultState } from "../Profile";
 import {
   GridWrapper,
   Card,
@@ -18,13 +19,12 @@ import {
   FavoriteButton,
 } from "../cards/CardsGrid";
 
-const Favorites = ({
-  id,
-  isSelf,
-}: {
+interface FavoritesProps {
   id: string | undefined;
   isSelf: boolean;
-}) => {
+  setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+}
+const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const { favoriteCards } = useSelector((state: RootState) => state.userInfo);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
@@ -85,7 +85,12 @@ const Favorites = ({
             >
               <PlantImg path={card.plantPhoto || defaultImg} />
               <Text>
-                <Link to={`/profile/${card.ownerId}`}>
+                <Link
+                  to={`/profile/${card.ownerId}`}
+                  onClick={() => {
+                    setTabDisplay(defaultState);
+                  }}
+                >
                   {findOwnerName(card.ownerId)}
                 </Link>
                 的{card.plantName}

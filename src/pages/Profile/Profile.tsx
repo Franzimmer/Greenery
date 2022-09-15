@@ -22,15 +22,17 @@ const MainWrapper = styled.div`
   flex-direction: column;
   margin-top: 20px;
 `;
-
+export const defaultState = {
+  Cards: true,
+  Calendar: false,
+  Gallery: false,
+  Favorites: false,
+};
 const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>({
-    Cards: true,
-    Calendar: false,
-    Gallery: false,
-    Favorites: false,
-  });
+  const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>(
+    defaultState
+  );
   const { id } = useParams();
   const [isSelf, setIsSelf] = useState<boolean>(false);
 
@@ -46,7 +48,9 @@ const Profile = () => {
         {tabDisplay.Cards && <CardsGrid id={id} isSelf={isSelf} />}
         {tabDisplay.Calendar && <CalendarApp id={id!} />}
         {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
-        {tabDisplay.Favorites && <Favorites id={id} isSelf={isSelf} />}
+        {tabDisplay.Favorites && (
+          <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
+        )}
       </MainWrapper>
     </Wrapper>
   );
