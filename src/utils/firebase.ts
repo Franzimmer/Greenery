@@ -25,6 +25,7 @@ import { message } from "../components/SideBar/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
 import { Note } from "../types/notificationType";
+import { unixTimeToString } from "../pages/Profile/cards/CardEditor";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -146,6 +147,11 @@ const firebase = {
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
+  async getUserCards(ownerId: string) {
+    const q = query(cards, where("ownerId", "==", ownerId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
   async getFavCards() {
     const q = query(cards, orderBy("followers"), limit(10));
     const querySnapshot = await getDocs(q);
@@ -254,6 +260,27 @@ const firebase = {
     let docRef = doc(diaries, diaryId);
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
+  },
+  async addEvents(
+    type: "water" | "fertilize",
+    cardIds: string[],
+    userId: string
+  ) {
+    let docName = unixTimeToString(Date.now());
+    const activitiesRef = collection(db, "users", userId, "activities");
+    let docRef = doc(activitiesRef, docName);
+    const docSnapshot = await getDoc(docRef);
+    if (!docSnapshot.exists()) {
+      await setDoc(docRef, { watering: [], fertilizing: [] });
+    }
+    if (type === "water") {
+      await updateDoc(docRef, { watering: arrayUnion(...cardIds) });
+    } else if (type === "fertilize") {
+      await updateDoc(docRef, { fertilizing: arrayUnion(...cardIds) });
+    }
+  },
+  async deleteCard(cardId: string) {
+    await deleteDoc(doc(db, "cards", cardId));
   },
 };
 

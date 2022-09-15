@@ -1,28 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { CardsActions } from "../../../actions/cardsActions";
-import { db, cards, firebase } from "../../../utils/firebase";
-import CardEditor, { unixTimeToString } from "./CardEditor";
+import { UserInfoActions } from "../../../actions/userInfoActions";
+import { PlantCard } from "../../../types/plantCardType";
+import CardEditor from "./CardEditor";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import defaultImg from "./default.jpg";
-import { PlantCard } from "../../../types/plantCardType";
-import {
-  getDoc,
-  getDocs,
-  query,
-  where,
-  collection,
-  doc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  deleteDoc,
-  CollectionReference,
-} from "firebase/firestore";
-import { UserInfoActions } from "../../../actions/userInfoActions";
+
 const OperationMenu = styled.div`
   display: flex;
 `;
@@ -155,35 +143,12 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     );
     setCheckList(newObj);
   }
-  function switchOneCheck(
-    event: React.MouseEvent<HTMLElement>,
-    cardId: string
-  ) {
+  function switchOneCheck(cardId: string) {
     let newObj = { ...checkList };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setCheckList(newObj);
-    event?.stopPropagation();
   }
-  async function addEventToDB(type: "water" | "fertilize", plantIds: string[]) {
-    let docName = unixTimeToString(Date.now());
-    const activitiesRef = collection(
-      db,
-      "users",
-      userInfo.userId,
-      "activities"
-    );
-    let docRef = doc(activitiesRef, docName);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      await setDoc(docRef, { watering: [], fertilizing: [] });
-    }
-    if (type === "water") {
-      await updateDoc(docRef, { watering: arrayUnion(...plantIds) });
-    } else if (type === "fertilize") {
-      await updateDoc(docRef, { fertilizing: arrayUnion(...plantIds) });
-    }
-  }
-  function addEvents(type: "water" | "fertilize") {
+  async function addEvents(type: "water" | "fertilize") {
     const eventIds = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
@@ -200,22 +165,22 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     }
     if (type === "fertilize") alert(`已爲 ${nameList.join(" & ")} 施肥！`);
     clearAllCheck();
-    addEventToDB(type, idList);
+    await firebase.addEvents(type, idList, userInfo.userId);
   }
-  async function deleteCard(cardId: string) {
-    dispatch({
-      type: CardsActions.DELETE_PLANT_CARD,
-      payload: { cardId: cardId },
-    });
-    await deleteDoc(doc(db, "cards", cardId));
-  }
-  function deleteCards() {
+  async function deleteCards() {
     const targets = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
     if (!targets.length) return;
-    let promises = targets.map((target) => deleteCard(target));
-    Promise.all(promises).then(() => alert("刪除成功！"));
+    let promises = targets.map((target) => {
+      return firebase.deleteCard(target);
+    });
+    await Promise.all(promises);
+    dispatch({
+      type: CardsActions.DELETE_PLANT_CARDS,
+      payload: { cardIds: targets },
+    });
+    alert("刪除成功！");
   }
   async function favoriteToggle(cardId: string) {
     let userId = userInfo.userId;
@@ -239,12 +204,9 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
     async function getCards() {
       let results: PlantCard[] = [];
       let checkboxes = {} as CheckList;
-      const q = query(cards, where("ownerId", "==", id)) as CollectionReference<
-        PlantCard
-      >;
-      const querySnapshot = await getDocs(q);
+      let querySnapshot = await firebase.getUserCards(id!);
       if (querySnapshot.empty) {
-        alert("No Cards Data");
+        alert("User Has No Cards Data");
         return;
       }
       querySnapshot.forEach((doc) => {
@@ -263,19 +225,15 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
   }, [id, isSelf]);
   useEffect(() => {
     let tags: string[] = [];
+    let checkboxes = {} as CheckList;
     cardList.forEach((card) => {
       let searchTargets = card.tags;
+      checkboxes[card.cardId!] = false;
       searchTargets?.forEach((tag) => {
         if (!tags.includes(tag)) tags.push(tag);
       });
     });
     setTagList(tags);
-  }, [cardList]);
-  useEffect(() => {
-    let checkboxes = {} as CheckList;
-    cardList.forEach((card) => {
-      checkboxes[card.cardId!] = false;
-    });
     setCheckList(checkboxes);
   }, [cardList]);
   return (
@@ -338,7 +296,10 @@ const CardsGrid = ({ id, isSelf }: CardsGridProps) => {
                   <CheckBox
                     type="checkbox"
                     checked={checkList[card.cardId!]}
-                    onClick={(event) => switchOneCheck(event, card.cardId!)}
+                    onClick={(event) => {
+                      switchOneCheck(card.cardId!);
+                      event.stopPropagation();
+                    }}
                   />
                 )}
                 <PlantImg path={card.plantPhoto || defaultImg} />
