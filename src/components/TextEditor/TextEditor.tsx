@@ -162,18 +162,16 @@ const TextEditor = ({
           <label style={{ display: "inline-block", marginTop: "10px" }}>
             選擇文章類型
           </label>
-          <select name="type" ref={typeRef} onClick={toggleCardWrapperDisplay}>
+          <select name="type" ref={typeRef} onChange={toggleCardWrapperDisplay}>
             <option value="discussion">討論</option>
             <option value="trade">交易</option>
           </select>
-          {cardWrapperDisplay && (
-            <CardsWrapper
-              cardListDisplay={true}
-              cardList={cardList}
-              menuSelect={menuSelect}
-              setMenuSelect={setMenuSelect}
-            ></CardsWrapper>
-          )}
+          <CardsWrapper
+            cardListDisplay={cardWrapperDisplay}
+            cardList={cardList}
+            menuSelect={menuSelect}
+            setMenuSelect={setMenuSelect}
+          ></CardsWrapper>
         </>
       )}
       <label htmlFor="title" style={{ display: "block", marginTop: "10px" }}>
