@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { storage, users } from "../../../utils/firebase";
 import {
@@ -10,8 +9,6 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { OperationBtn } from "../cards/CardsGrid";
-
-const MediaWrapper = styled.div``;
 
 interface GalleryProps {
   id: string | undefined;
@@ -38,7 +35,6 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   }
 
   async function saveGalleryData() {
-    console.log("test");
     if (mediaRef.current!.value === "") alert("請選擇檔案!");
     const link = await uploadFile();
     if (!link) return;
@@ -59,7 +55,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
 
   useEffect(() => {
     getMediaData();
-  }, []);
+  }, [id]);
   return (
     <>
       {isSelf && (
