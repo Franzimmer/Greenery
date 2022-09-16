@@ -3,9 +3,6 @@ import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
-import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
-import { db } from "./utils/firebase";
-import { Note } from "./types/notificationType";
 import store from "./store";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
@@ -14,11 +11,36 @@ import { UserInfoActions } from "./actions/userInfoActions";
 import { CardsActions } from "./actions/cardsActions";
 import { myFollowersActions } from "./reducer/myFollowersReducer";
 import { NotificationActions } from "./actions/notificationActions";
+import MontserratBlack from "./assets/fonts/Montserrat-Black.ttf";
+import MontserratBold from "./assets/fonts/Montserrat-Bold.ttf";
+import MontserratRegular from "./assets/fonts/Montserrat-Regular.ttf";
+import MontserratRegularItalic from "./assets/fonts/Montserrat-Italic.ttf";
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratBlack}) format('truetype');
+    font-weight: 900;
+  }
+  @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratBold}) format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratRegular}) format('truetype');
+    font-weight: 400;
+  }
+   @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratRegularItalic}) format('truetype');
+    font-weight: 400;
+  }
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Montserrat;
   }
   body {
     width: 100%;
