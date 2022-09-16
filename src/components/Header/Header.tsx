@@ -7,12 +7,40 @@ import { OperationBtn } from "../../pages/Profile/cards/Cards";
 
 const HeaderWrapper = styled.div`
   display: flex;
-  width: 100vw;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  width: 100vw;
+  padding: 10px;
+  margin-bottom: 50px;
 `;
+const LinkWrapper = styled.div``;
 const HeaderLink = styled(Link)`
   margin: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: #6a5125;
+  position: relative;
+  &:hover {
+    color: #5c836f;
+    &::after {
+      width: 100%;
+    }
+  }
+  &::after {
+    content: "";
+    height: 4px;
+    background: #5c836f;
+
+    position: absolute;
+    bottom: -4px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 0%;
+    transition: 0.5s;
+  }
 `;
 const Header = ({
   setSideBarDisplay,
@@ -28,13 +56,19 @@ const Header = ({
     if (!sideBarDisplay) setSideBarDisplay(true);
   }
   return (
-    <HeaderWrapper>
-      <HeaderLink to="/">Home</HeaderLink>
-      <HeaderLink to="/forum">Forum</HeaderLink>
-      <HeaderLink to="/login">LogIn</HeaderLink>
-      <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
-      <OperationBtn onClick={sideBarToggle}>Sidebar</OperationBtn>
-    </HeaderWrapper>
+    <>
+      <HeaderWrapper>
+        <LinkWrapper>
+          <HeaderLink to="/">Home Logo</HeaderLink>
+        </LinkWrapper>
+        <LinkWrapper>
+          <HeaderLink to="/forum">Forum</HeaderLink>
+          <HeaderLink to="/login">LogIn</HeaderLink>
+          <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
+          <OperationBtn onClick={sideBarToggle}>Sidebar</OperationBtn>
+        </LinkWrapper>
+      </HeaderWrapper>
+    </>
   );
 };
 

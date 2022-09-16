@@ -35,10 +35,12 @@ const GlobalStyle = createGlobalStyle`
     font-family: Montserrat;
     src: url(${MontserratRegularItalic}) format('truetype');
     font-weight: 400;
+    font-style: italic;
   }
   * {
     margin: 0;
     padding: 0;
+    background: #F5F0EC;
     box-sizing: border-box;
     font-family: Montserrat;
   }
