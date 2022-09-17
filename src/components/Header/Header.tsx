@@ -46,7 +46,7 @@ const HeaderLink = styled(Link)`
 `;
 const SideBarBtn = styled.div`
   cursor: pointer;
-  background: linear-gradient(45deg, #7bc09a, #e4e783);
+  background: linear-gradient(90deg, #7bc09a, #e4e783);
   width: 80px;
   height: 80px;
   display: flex;
@@ -124,9 +124,6 @@ const Header = ({
         {isLoggedIn && (
           <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
         )}
-        {/* {isLoggedIn && (
-          <OperationBtn onClick={sideBarToggle}>Sidebar</OperationBtn>
-        )} */}
         <SideBarBtn onClick={sideBarToggle}>
           <SideBarBtnDiv sideBarDisplay={sideBarDisplay}></SideBarBtnDiv>
         </SideBarBtn>

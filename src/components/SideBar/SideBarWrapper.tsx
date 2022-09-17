@@ -40,7 +40,6 @@ const Tabs = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin: 5px 0px 10px 0px;
   border-radius: 20px 20px 0 0;
   position: relative;
   border-bottom: 1px solid #5c836f;
@@ -49,23 +48,25 @@ const Tab = styled(Tabs)`
   width: 50px;
   height: 50px;
   cursor: pointer;
+  margin: 8px 0px;
   border-radius: 50%;
   border: 1px solid #5c836f;
   &:hover {
+    border: 1px solid #7bc09a;
     box-shadow: 0 0 10px #ddd;
   }
 `;
 interface StyledFontAwesomeIconProps {
-  tab: boolean;
+  $tab: boolean;
 }
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<
   StyledFontAwesomeIconProps
 >`
   background: none;
   ${Tab}:hover & {
-    color: #5c836f;
+    color: #7bc09a;
   }
-  color: ${(props) => (props.tab ? "#7BC09A" : "#aaa")};
+  color: ${(props) => (props.$tab ? "#5c836f" : "#aaa")};
   height: 25px;
 `;
 const SidebarWrapper = ({ sideBarDisplay }: { sideBarDisplay: boolean }) => {
@@ -128,13 +129,13 @@ const SidebarWrapper = ({ sideBarDisplay }: { sideBarDisplay: boolean }) => {
     <Wrapper show={sideBarDisplay}>
       <Tabs>
         <Tab onClick={() => tabSwitch("FollowList")}>
-          <StyledFontAwesomeIcon icon={faUser} tab={tab["FollowList"]} />
+          <StyledFontAwesomeIcon icon={faUser} $tab={tab["FollowList"]} />
         </Tab>
         <Tab onClick={() => tabSwitch("Notifications")}>
-          <StyledFontAwesomeIcon icon={faBell} tab={tab["Notifications"]} />
+          <StyledFontAwesomeIcon icon={faBell} $tab={tab["Notifications"]} />
         </Tab>
         <Tab onClick={() => tabSwitch("Chatrooms")}>
-          <StyledFontAwesomeIcon icon={faCommentDots} tab={tab["Chatrooms"]} />
+          <StyledFontAwesomeIcon icon={faCommentDots} $tab={tab["Chatrooms"]} />
         </Tab>
       </Tabs>
       {tab.FollowList && <FollowList followInfos={followInfos!}></FollowList>}

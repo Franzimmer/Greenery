@@ -27,7 +27,7 @@ export const PersonPhoto = styled(UserPhoto)`
   margin: 0px 8px 0px 14px;
   transition: 0.25s;
   ${Person}:hover & {
-    margin-left: 40px;
+    margin-left: 30px;
     transition: 0.25s;
   }
 `;
