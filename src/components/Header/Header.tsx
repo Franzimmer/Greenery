@@ -3,23 +3,25 @@ import styled from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { OperationBtn } from "../../pages/Profile/cards/Cards";
-
+import { OperationBtn } from "../../components/GlobalStyles/button";
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100vw;
   padding: 10px;
-  margin-bottom: 50px;
+  margin: 20px 0px 50px 0px;
 `;
-const LinkWrapper = styled.div``;
+const LinkWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
 const HeaderLink = styled(Link)`
   margin: 10px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 26px;
-  letter-spacing: 2px;
+  font-size: 16px;
+  letter-spacing: 1px;
   color: #6a5125;
   position: relative;
   &:hover {
@@ -30,7 +32,7 @@ const HeaderLink = styled(Link)`
   }
   &::after {
     content: "";
-    height: 4px;
+    height: 3px;
     background: #5c836f;
 
     position: absolute;
@@ -43,9 +45,11 @@ const HeaderLink = styled(Link)`
   }
 `;
 const Header = ({
+  isLoggedIn,
   setSideBarDisplay,
   sideBarDisplay,
 }: {
+  isLoggedIn: boolean;
   setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarDisplay: boolean;
 }) => {
@@ -56,19 +60,21 @@ const Header = ({
     if (!sideBarDisplay) setSideBarDisplay(true);
   }
   return (
-    <>
-      <HeaderWrapper>
-        <LinkWrapper>
-          <HeaderLink to="/">Home Logo</HeaderLink>
-        </LinkWrapper>
-        <LinkWrapper>
-          <HeaderLink to="/forum">Forum</HeaderLink>
-          <HeaderLink to="/login">LogIn</HeaderLink>
+    <HeaderWrapper>
+      <LinkWrapper>
+        <HeaderLink to="/">GREENERY</HeaderLink>
+      </LinkWrapper>
+      <LinkWrapper>
+        <HeaderLink to="/forum">Forum</HeaderLink>
+        {!isLoggedIn && <HeaderLink to="/login">LogIn</HeaderLink>}
+        {isLoggedIn && (
           <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
+        )}
+        {isLoggedIn && (
           <OperationBtn onClick={sideBarToggle}>Sidebar</OperationBtn>
-        </LinkWrapper>
-      </HeaderWrapper>
-    </>
+        )}
+      </LinkWrapper>
+    </HeaderWrapper>
   );
 };
 

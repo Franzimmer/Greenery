@@ -50,7 +50,11 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function UserLogInObserver() {
+function UserLogInObserver({
+  setIsLoggedIn,
+}: {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged(async function(user) {
@@ -60,6 +64,7 @@ function UserLogInObserver() {
           type: UserInfoActions.SET_USER_INFO,
           payload: { userData: userInfo.data() },
         });
+        setIsLoggedIn(true);
       } else {
         dispatch({
           type: CardsActions.CLEAR_CARDS_DATA,
@@ -73,6 +78,7 @@ function UserLogInObserver() {
         dispatch({
           type: NotificationActions.CLEAR_NOTIFICATION,
         });
+        setIsLoggedIn(false);
       }
     });
   }, []);
@@ -81,13 +87,15 @@ function UserLogInObserver() {
 
 function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   return (
     <>
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
-        <UserLogInObserver />
+        <UserLogInObserver setIsLoggedIn={setIsLoggedIn} />
         <Header
+          isLoggedIn={isLoggedIn}
           sideBarDisplay={sideBarDisplay}
           setSideBarDisplay={setSideBarDisplay}
         ></Header>
