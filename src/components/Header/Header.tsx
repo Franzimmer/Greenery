@@ -3,14 +3,12 @@ import styled, { keyframes } from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { OperationBtn } from "../../components/GlobalStyles/button";
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100vw;
   height: 100px;
-  margin: 0px 0px 150px 0px;
   position: fixed;
   z-index: 99;
 `;
@@ -48,7 +46,7 @@ const HeaderLink = styled(Link)`
 `;
 const SideBarBtn = styled.div`
   cursor: pointer;
-  background: linear-gradient(90deg, #7bc09a, #e4e783);
+  background: linear-gradient(45deg, #7bc09a, #e4e783);
   width: 80px;
   height: 80px;
   display: flex;

@@ -1,42 +1,72 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBell,
+  faUser,
+  faCommentDots,
+} from "@fortawesome/free-solid-svg-icons";
 import { firebase, db } from "../../utils/firebase";
 import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
-import FollowList from "./FollowList";
-import Notifications from "./Notifications";
-import Chatrooms from "./Chatrooms";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
 import { UserInfo } from "../../types/userInfoType";
 import { Note } from "../../types/notificationType";
 import { NotificationActions } from "../../actions/notificationActions";
 import { myFollowersActions } from "../../reducer/myFollowersReducer";
+import FollowList from "./FollowList";
+import Notifications from "./Notifications";
+import Chatrooms from "./Chatrooms";
+
 interface WrapperProps {
   show: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
-  width: 20vw;
-  height: calc(100vh - 42px);
+  width: ${(props) => (props.show ? "300px" : "0px")};
+  max-height: ${(props) => (props.show ? "calc(100vh -42px)" : 0)};
+  background: rgba(255, 255, 255);
+  border: 1px solid #5c836f;
+  border-radius: 20px;
   position: fixed;
-  right: 0;
-  border: 1px solid #000;
-  display: ${(props) => (props.show ? "blocks" : "none")};
+  right: 10px;
+  margin-top: 100px;
+  transition: 0.5s max-height ease-in;
+  & * {
+    background-color: rgba(255, 255, 255);
+  }
 `;
 const Tabs = styled.div`
+  width: auto;
   display: flex;
-  algn-items: center;
+  align-items: center;
+  justify-content: space-around;
+  margin: 5px 0px 10px 0px;
+  border-radius: 20px 20px 0 0;
+  position: relative;
+  border-bottom: 1px solid #5c836f;
 `;
-const Tab = styled.div`
-  font-weight: 700;
-  font-size: 14px;
-  margin-right: 8px;
-  border-bottom: 2px solid #000;
+const Tab = styled(Tabs)`
+  width: 50px;
+  height: 50px;
   cursor: pointer;
-  background: #eee;
+  border-radius: 50%;
+  border: 1px solid #5c836f;
   &:hover {
-    background: #000;
-    color: #fff;
+    box-shadow: 0 0 10px #ddd;
   }
+`;
+interface StyledFontAwesomeIconProps {
+  tab: boolean;
+}
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<
+  StyledFontAwesomeIconProps
+>`
+  background: none;
+  ${Tab}:hover & {
+    color: #5c836f;
+  }
+  color: ${(props) => (props.tab ? "#7BC09A" : "#aaa")};
+  height: 25px;
 `;
 const SidebarWrapper = ({ sideBarDisplay }: { sideBarDisplay: boolean }) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -97,9 +127,15 @@ const SidebarWrapper = ({ sideBarDisplay }: { sideBarDisplay: boolean }) => {
   return (
     <Wrapper show={sideBarDisplay}>
       <Tabs>
-        <Tab onClick={() => tabSwitch("FollowList")}>Follow List</Tab>
-        <Tab onClick={() => tabSwitch("Notifications")}>Notifications</Tab>
-        <Tab onClick={() => tabSwitch("Chatrooms")}>Chatrooms</Tab>
+        <Tab onClick={() => tabSwitch("FollowList")}>
+          <StyledFontAwesomeIcon icon={faUser} tab={tab["FollowList"]} />
+        </Tab>
+        <Tab onClick={() => tabSwitch("Notifications")}>
+          <StyledFontAwesomeIcon icon={faBell} tab={tab["Notifications"]} />
+        </Tab>
+        <Tab onClick={() => tabSwitch("Chatrooms")}>
+          <StyledFontAwesomeIcon icon={faCommentDots} tab={tab["Chatrooms"]} />
+        </Tab>
       </Tabs>
       {tab.FollowList && <FollowList followInfos={followInfos!}></FollowList>}
       {tab.Notifications && (
