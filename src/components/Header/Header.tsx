@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import styled, { keyframes } from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -9,8 +9,10 @@ const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100vw;
-  padding: 10px;
-  margin: 20px 0px 50px 0px;
+  height: 100px;
+  margin: 0px 0px 150px 0px;
+  position: fixed;
+  z-index: 99;
 `;
 const LinkWrapper = styled.div`
   display: flex;
@@ -20,12 +22,12 @@ const HeaderLink = styled(Link)`
   margin: 10px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 26px;
   letter-spacing: 1px;
   color: #6a5125;
   position: relative;
   &:hover {
-    color: #5c836f;
+    color: #7bc09a;
     &::after {
       width: 100%;
     }
@@ -33,7 +35,7 @@ const HeaderLink = styled(Link)`
   &::after {
     content: "";
     height: 3px;
-    background: #5c836f;
+    background: #7bc09a;
 
     position: absolute;
     bottom: -4px;
@@ -44,17 +46,71 @@ const HeaderLink = styled(Link)`
     transition: 0.5s;
   }
 `;
+const SideBarBtn = styled.div`
+  cursor: pointer;
+  background: linear-gradient(90deg, #7bc09a, #e4e783);
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s;
+`;
+const hoverEffect = keyframes`
+  0% {
+     width: 20px;
+  }
+  100% {
+     width: width;
+  }
+`;
+interface SideBarBtnDivProps {
+  sideBarDisplay: boolean;
+}
+const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
+  width: ${(props) => (props.sideBarDisplay ? "0px" : "70px")};
+  height: 1px;
+  transform: ${(props) =>
+    props.sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s;
+  ${SideBarBtn}:hover & {
+    animation: 0.5s ${hoverEffect} ease-out;
+  }
+  &::before,
+  ::after {
+    content: "";
+    width: ${(props) => (props.sideBarDisplay ? "70px" : "50px")};
+    height: 1px;
+    background: #fff;
+    position: absolute;
+    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "10px")};
+    ${SideBarBtn}:hover & {
+      animation: 1s ${hoverEffect} ease-out;
+    }
+  }
+  &::after {
+    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "-10px")};
+    transform: ${(props) =>
+      props.sideBarDisplay ? "rotate(90deg)" : "rotate(0deg)"};
+  }
+`;
+
+interface HeaderProps {
+  isLoggedIn: boolean;
+  setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  sideBarDisplay: boolean;
+}
 const Header = ({
   isLoggedIn,
   setSideBarDisplay,
   sideBarDisplay,
-}: {
-  isLoggedIn: boolean;
-  setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  sideBarDisplay: boolean;
-}) => {
+}: HeaderProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-
+  // const [isClicked, setIsClicked] = useState<boolean>(false);
   function sideBarToggle() {
     if (sideBarDisplay) setSideBarDisplay(false);
     if (!sideBarDisplay) setSideBarDisplay(true);
@@ -70,9 +126,12 @@ const Header = ({
         {isLoggedIn && (
           <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
         )}
-        {isLoggedIn && (
+        {/* {isLoggedIn && (
           <OperationBtn onClick={sideBarToggle}>Sidebar</OperationBtn>
-        )}
+        )} */}
+        <SideBarBtn onClick={sideBarToggle}>
+          <SideBarBtnDiv sideBarDisplay={sideBarDisplay}></SideBarBtnDiv>
+        </SideBarBtn>
       </LinkWrapper>
     </HeaderWrapper>
   );
