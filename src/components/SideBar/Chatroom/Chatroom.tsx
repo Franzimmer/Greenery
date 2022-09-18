@@ -37,7 +37,7 @@ const FlexWrapper = styled.div`
   width: 100%;
   height: 48px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   background-color: #5c836f;
   padding: 8px;
@@ -48,7 +48,7 @@ const FlexInputWrapper = styled(FlexWrapper)`
   align-items: center;
 `;
 const InfoText = styled.span`
-  width: 100%;
+  width: 90%;
   color: #fff;
   font-weight: normal;
   font-size: 16px;
@@ -95,10 +95,12 @@ const ChatInput = styled.input`
 const ChatBtn = styled(CloseBtn)`
   background-color: #fff;
   color: #5c836f;
+  transition: 0.25s;
   &:hover {
     background-color: #fff;
-    border: 1px solid #fddba9;
-    color: #fddba9;
+    border: 1px solid #5c836f;
+    color: #5c836f;
+    transform: scale(1.3);
   }
 `;
 const Chatroom = ({
@@ -172,7 +174,7 @@ const Chatroom = ({
               toggleChatroom(targetInfo.userId);
             }}
           >
-            x
+            &#215;
           </ChatBtn>
         </FlexWrapper>
         <MsgWindow ref={scrollRef}>
