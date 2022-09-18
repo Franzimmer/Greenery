@@ -3,15 +3,27 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
-import { Person, PersonPhoto, PersonText } from "./FollowList";
+import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../types/userInfoType";
 import Chatroom from "./Chatroom/Chatroom";
 const ChatroomsWrapper = styled.div`
   width: 100%;
+  max-height: calc(100vh - 42px);
   overflow-y: auto;
   padding: 8px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: flex-start;
+  background-color: #fff;
+  & * {
+    background-color: #fff;
+  }
 `;
-
+const ChatroomText = styled.p`
+  font-size: normal;
+  color: #6a5125;
+  background: none;
+`;
 const Chatrooms = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [chatInfos, setChatInfos] = useState<UserInfo[]>([]);
@@ -62,7 +74,7 @@ const Chatrooms = () => {
                 onClick={() => toggleChatroom(chat.userId)}
               >
                 <PersonPhoto path={chat.photoUrl} />
-                <PersonText>{chat.userName}的聊天室</PersonText>
+                <ChatroomText>Chatroom with {chat.userName}</ChatroomText>
               </Person>
             );
           })}

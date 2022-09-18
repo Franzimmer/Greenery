@@ -23,7 +23,6 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  border: 1px solid black;
   background-image: url(${(props) => (props.path ? props.path : "")});
   background-size: contain;
   background-repeat: no-repeat;

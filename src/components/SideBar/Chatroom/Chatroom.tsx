@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../reducer/index";
+import { UserInfo } from "../../../types/userInfoType";
 import { firebase, chatrooms } from "../../../utils/firebase";
-import { OperationBtn } from "../../../pages/Profile/cards/Cards";
 import {
   onSnapshot,
   query,
@@ -10,10 +12,8 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../reducer/index";
 import CardSelectDialog from "../../CardSelectDialog/CardSelectDialog";
-import { UserInfo } from "../../../types/userInfoType";
+import { CloseBtn } from "../../../components/GlobalStyles/button";
 
 export interface message {
   userId: string;
@@ -23,44 +23,84 @@ interface ChatroomWindowProps {
   show: boolean;
 }
 const ChatroomWindow = styled.div<ChatroomWindowProps>`
-  border: 1px solid #000;
-  width: 250px;
-  height: 300px;
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
+  border: 1px solid #5c836f;
+  width: 328px;
+  height: 445px;
+  position: fixed;
+  bottom: 1px;
+  right: 80px;
+  background-color: #fff;
+  box-shadow: 5px 2px 10px #aaa;
   display: ${(props) => (props.show ? "block" : "none")};
 `;
+const FlexWrapper = styled.div`
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #5c836f;
+  padding: 8px;
+`;
+const FlexInputWrapper = styled(FlexWrapper)`
+  padding: 12px 8px;
+  justify-content: flex-start;
+  align-items: center;
+`;
+const InfoText = styled.span`
+  width: 100%;
+  color: #fff;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 2px;
+  background-color: #5c836f;
+  padding-left: 8px;
+`;
 const LeftText = styled.div`
+  font-size: 14px;
   max-width: 60%;
   align-self: flex-start;
-  border: 1px solid #000;
-  padding: 2px;
-  background: #fff;
+  border: 1px solid #5c836f;
+  background-color: #fff;
+  color: #5c836f;
+  border-radius: 16px;
+  padding: 2px 10px;
+  margin-bottom: 3px;
 `;
 const RightText = styled(LeftText)`
   align-self: flex-end;
+  border: 1px solid #fddba9;
+  color: #6a5125;
+  background-color: #fddba9;
 `;
 const MsgWindow = styled.div`
   width: 100%;
-  height: 240px;
-  background: #eee;
+  height: 347px;
+  padding: 5px;
+  background: linear-gradient(#ddd 1%, #fff 15%);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 `;
-const InfoText = styled.p`
-  width: 100%;
-  height: 30px;
-`;
 const ChatInput = styled.input`
-  width: 100%;
+  width: 90%;
+  height: 36px;
+  border: 1px solid #5c836f;
+  border-radius: 18px;
+  margin-left: 8px;
+  background-color: #fff;
+  padding-left: 18px;
 `;
-const FlexWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
+const ChatBtn = styled(CloseBtn)`
+  background-color: #fff;
+  color: #5c836f;
+  &:hover {
+    background-color: #fff;
+    border: 1px solid #fddba9;
+    color: #fddba9;
+  }
 `;
-
 const Chatroom = ({
   targetInfo,
   chatroomDisplay,
@@ -78,7 +118,7 @@ const Chatroom = ({
   const [dialogDisplay, setDialogDisplay] = useState<boolean>(false);
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
-
+  const scrollRef = useRef<HTMLDivElement>(null);
   function writeMsg() {
     const usersTarget = [targetInfo.userId, selfId];
     const data = {
@@ -109,6 +149,14 @@ const Chatroom = ({
       });
     }
   }
+  function scrollToBottom() {
+    if (!scrollRef?.current) return;
+    scrollRef!.current.scrollTo({
+      top: scrollRef!.current.scrollHeight,
+      left: 0,
+      behavior: "smooth",
+    });
+  }
 
   useEffect(() => {
     listenToChatroom();
@@ -118,36 +166,46 @@ const Chatroom = ({
     });
     setMenuSelect(menuCheck);
   }, []);
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [msgs, chatroomDisplay]);
   return (
     <>
       <ChatroomWindow show={chatroomDisplay}>
         <FlexWrapper>
           <InfoText>{targetInfo.userName}</InfoText>
-          <OperationBtn
+          <ChatBtn
             onClick={() => {
               toggleChatroom(targetInfo.userId);
             }}
           >
             x
-          </OperationBtn>
+          </ChatBtn>
         </FlexWrapper>
-        <MsgWindow>
+        <MsgWindow ref={scrollRef}>
           {msgs.length !== 0 &&
-            msgs.map((msg) => {
-              if (msg.userId !== selfId) return <LeftText>{msg.msg}</LeftText>;
-              else return <RightText>{msg.msg}</RightText>;
+            msgs.map((msg, index) => {
+              if (msg.userId !== selfId)
+                return (
+                  <LeftText key={`${msg.userId}_${index}`}>{msg.msg}</LeftText>
+                );
+              else
+                return (
+                  <RightText key={`${msg.userId}_${index}`}>
+                    {msg.msg}
+                  </RightText>
+                );
             })}
         </MsgWindow>
-        <FlexWrapper>
-          <OperationBtn
+        <FlexInputWrapper>
+          <ChatBtn
             onClick={() => {
               setDialogDisplay(true);
               setCardListDisplay(true);
             }}
           >
             +
-          </OperationBtn>
+          </ChatBtn>
           <ChatInput
             type="text"
             ref={inputRef}
@@ -157,7 +215,7 @@ const Chatroom = ({
               }
             }}
           ></ChatInput>
-        </FlexWrapper>
+        </FlexInputWrapper>
       </ChatroomWindow>
       {cardList && (
         <CardSelectDialog
