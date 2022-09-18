@@ -4,6 +4,7 @@ import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfo } from "../../../types/userInfoType";
 import { firebase } from "../../../utils/firebase";
+import { TabDisplayType } from "../Profile";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import FavGrids from "./FavGrids";
@@ -11,7 +12,7 @@ import FavGrids from "./FavGrids";
 interface FavoritesProps {
   id: string | undefined;
   isSelf: boolean;
-  setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
 }
 const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);

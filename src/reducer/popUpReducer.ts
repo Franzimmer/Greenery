@@ -1,4 +1,4 @@
-type PopUpDisplay = {
+export interface PopUpDisplayType {
   mask: boolean;
   cardSelect: boolean;
   cardEditor: boolean;
@@ -9,7 +9,7 @@ type PopUpDisplay = {
     id: string;
     name: string;
   };
-};
+}
 
 export enum popUpActions {
   SHOW_CARD_SELECT_TRADE = "SHOW_CARD_SELECT_TRADE",
@@ -27,7 +27,7 @@ interface hideAll {
 }
 type PopUpDisplayActionTypes = showCardSelectTrade | hideAll;
 
-const initialState = {
+const initialState: PopUpDisplayType = {
   mask: false,
   cardSelect: false,
   cardEditor: false,
@@ -40,7 +40,7 @@ const initialState = {
   },
 };
 const popUp = (
-  state: PopUpDisplay = initialState,
+  state: PopUpDisplayType = initialState,
   action: PopUpDisplayActionTypes
 ) => {
   switch (action.type) {

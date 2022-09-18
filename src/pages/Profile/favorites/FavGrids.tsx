@@ -15,7 +15,7 @@ import {
   OperationBtn,
   FavoriteButton,
 } from "../cards/Cards";
-import { defaultState } from "../Profile";
+import { defaultState, TabDisplayType } from "../Profile";
 import defaultImg from "../../../assets/default.jpg";
 
 interface FavGridsProps {
@@ -25,7 +25,7 @@ interface FavGridsProps {
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({

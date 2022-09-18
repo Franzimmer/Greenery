@@ -10,18 +10,20 @@ import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
 
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  margin-top: 20px;
-`;
 const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  justify-content: center;
+  margin: 100px auto 50px;
+  width: 80vw;
+  height: 100%;
 `;
+export interface TabDisplayType {
+  Cards: boolean;
+  Calendar: boolean;
+  Gallery: boolean;
+  Favorites: boolean;
+}
 export const defaultState = {
   Cards: true,
   Calendar: false,
@@ -30,9 +32,7 @@ export const defaultState = {
 };
 const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [tabDisplay, setTabDisplay] = useState<Record<string, boolean>>(
-    defaultState
-  );
+  const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const { id } = useParams();
   const [isSelf, setIsSelf] = useState<boolean>(false);
 
@@ -41,18 +41,16 @@ const Profile = () => {
     else setIsSelf(false);
   }, [id]);
   return (
-    <Wrapper>
-      <MainWrapper>
-        <UserInfoSection id={id} isSelf={isSelf} />
-        <ProfileMenu setTabDisplay={setTabDisplay} />
-        {tabDisplay.Cards && <Cards id={id} isSelf={isSelf} />}
-        {tabDisplay.Calendar && <CalendarApp id={id!} />}
-        {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
-        {tabDisplay.Favorites && (
-          <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
-        )}
-      </MainWrapper>
-    </Wrapper>
+    <MainWrapper>
+      <UserInfoSection id={id} isSelf={isSelf} />
+      <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
+      {tabDisplay.Cards && <Cards id={id} isSelf={isSelf} />}
+      {tabDisplay.Calendar && <CalendarApp id={id!} />}
+      {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
+      {tabDisplay.Favorites && (
+        <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
+      )}
+    </MainWrapper>
   );
 };
 

@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { firebase } from "../../utils/firebase";
 import { CardsActions } from "../../actions/cardsActions";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions, PopUpDisplayType } from "../../reducer/popUpReducer";
 import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 import CardsWrapper from "./CardsWrapper";
 import { RootState } from "../../reducer";
@@ -104,11 +104,14 @@ const CardSelectDialog = () => {
   const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const popUpDisplay = useSelector((state: RootState) => state.popUp);
+  const popUpDisplay: PopUpDisplayType = useSelector(
+    (state: RootState) => state.popUp
+  );
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
   const [alertDisplay, setAlertDisplay] = useState<boolean>(false);
+  const [btnWrapperDisplay, setBtnWrapperDisplay] = useState<boolean>(true);
   const selfId = userInfo.userId;
   const targetId = popUpDisplay.target.id;
   const targetName = popUpDisplay.target.name;
@@ -152,6 +155,7 @@ const CardSelectDialog = () => {
     };
     await firebase.storeChatroomData(usersTarget, data);
     setConfirm("Send out Success!");
+    setBtnWrapperDisplay(false);
     setTimeout(() => {
       dispatch({
         type: popUpActions.HIDE_ALL,
@@ -160,12 +164,15 @@ const CardSelectDialog = () => {
     }, 1000);
     return;
   }
-  useEffect(() => {
+  function resetCheck() {
     let menuCheck = {} as Record<string, boolean>;
     cardList.forEach((card) => {
       menuCheck[card.cardId!] = false;
     });
     setMenuSelect(menuCheck);
+  }
+  useEffect(() => {
+    resetCheck();
   }, [cardList]);
   return (
     <>
@@ -173,6 +180,8 @@ const CardSelectDialog = () => {
         {alertDisplay && <Alert>Please select at least one plant!</Alert>}
         <DialogCloseBtn
           onClick={() => {
+            resetCheck();
+            setCardListDisplay(true);
             dispatch({
               type: popUpActions.HIDE_ALL,
             });
@@ -189,12 +198,14 @@ const CardSelectDialog = () => {
         {!cardListDisplay && (
           <ConfirmWrapper>
             <ConfirmPanel>{confirm}</ConfirmPanel>
-            <BtnWrapper>
-              <CardSelectBtn onClick={() => setCardListDisplay(true)}>
-                Back
-              </CardSelectBtn>
-              <CardSelectBtn onClick={tradePlants}>Next</CardSelectBtn>
-            </BtnWrapper>
+            {btnWrapperDisplay && (
+              <BtnWrapper>
+                <CardSelectBtn onClick={() => setCardListDisplay(true)}>
+                  Back
+                </CardSelectBtn>
+                <CardSelectBtn onClick={tradePlants}>Next</CardSelectBtn>
+              </BtnWrapper>
+            )}
           </ConfirmWrapper>
         )}
         {cardListDisplay && (
