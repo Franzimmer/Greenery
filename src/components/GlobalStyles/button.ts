@@ -14,16 +14,19 @@ export const OperationBtn = styled.button`
 `;
 
 export const CloseBtn = styled.div`
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
+  border: 1px solid #5c836f;
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
   border-radius: 50%;
   font-weight: 700;
-  background: #5c836f;
+  background-color: #5c836f;
   color: #fff;
   &:hover {
-    background: #7bc09a;
+    background-color: #7bc09a;
+    border: 1px solid #7bc09a;
   }
 `;

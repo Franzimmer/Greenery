@@ -31,9 +31,6 @@ const Wrapper = styled.div<WrapperProps>`
   right: 10px;
   margin-top: 100px;
   transition: 0.5s max-height ease-in;
-  & * {
-    background-color: rgba(255, 255, 255);
-  }
 `;
 const Tabs = styled.div`
   width: auto;
@@ -43,6 +40,10 @@ const Tabs = styled.div`
   border-radius: 20px 20px 0 0;
   position: relative;
   border-bottom: 1px solid #5c836f;
+  background-color: #fff;
+  & * {
+    background-color: #fff;
+  }
 `;
 const Tab = styled(Tabs)`
   width: 50px;

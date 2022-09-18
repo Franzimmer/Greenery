@@ -31,7 +31,7 @@ export const PersonPhoto = styled(UserPhoto)`
     transition: 0.25s;
   }
 `;
-export const PersonText = styled.p`
+const PersonText = styled.p`
   font-size: normal;
   letter-spacing: 1px;
   color: #6a5125;

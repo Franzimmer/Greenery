@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,6 +15,10 @@ const NoticeWrapper = styled.div`
   overflow-y: auto;
   padding: 8px;
   border-radius: 20px;
+  background-color: #fff;
+  & :not(button) {
+    background-color: #fff;
+  }
 `;
 interface NoticeProps {
   show: boolean;
@@ -22,14 +26,6 @@ interface NoticeProps {
 const StyleWrapper = styled.div`
   display: flex;
   align-items: center;
-`;
-const hoverEffect = keyframes`
-  0% {
-    margin-left: margin-left;
-  }
-  100% {
-    margin-left: 20px;
-  }
 `;
 const Notice = styled.div<NoticeProps>`
   padding: 5px;
@@ -60,6 +56,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: block;
   color: #5c836f;
   height: 16px;
+  background: none;
 `;
 interface NotificationsProps {
   notices: Note[];
