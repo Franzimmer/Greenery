@@ -37,7 +37,7 @@ const FlexWrapper = styled.div`
   width: 100%;
   height: 48px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   background-color: #5c836f;
   padding: 8px;
@@ -90,14 +90,15 @@ const ChatInput = styled.input`
   border-radius: 18px;
   margin-left: 8px;
   background-color: #fff;
+  padding-left: 18px;
 `;
 const ChatBtn = styled(CloseBtn)`
   background-color: #fff;
   color: #5c836f;
   &:hover {
     background-color: #fff;
-    border: 1px solid #7bc09a;
-    color: #7bc09a;
+    border: 1px solid #fddba9;
+    color: #fddba9;
   }
 `;
 const Chatroom = ({
@@ -117,7 +118,7 @@ const Chatroom = ({
   const [dialogDisplay, setDialogDisplay] = useState<boolean>(false);
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
-
+  const scrollRef = useRef<HTMLDivElement>(null);
   function writeMsg() {
     const usersTarget = [targetInfo.userId, selfId];
     const data = {
@@ -148,6 +149,14 @@ const Chatroom = ({
       });
     }
   }
+  function scrollToBottom() {
+    if (!scrollRef?.current) return;
+    scrollRef!.current.scrollTo({
+      top: scrollRef!.current.scrollHeight,
+      left: 0,
+      behavior: "smooth",
+    });
+  }
 
   useEffect(() => {
     listenToChatroom();
@@ -157,7 +166,9 @@ const Chatroom = ({
     });
     setMenuSelect(menuCheck);
   }, []);
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [msgs, chatroomDisplay]);
   return (
     <>
       <ChatroomWindow show={chatroomDisplay}>
@@ -171,7 +182,7 @@ const Chatroom = ({
             x
           </ChatBtn>
         </FlexWrapper>
-        <MsgWindow>
+        <MsgWindow ref={scrollRef}>
           {msgs.length !== 0 &&
             msgs.map((msg, index) => {
               if (msg.userId !== selfId)

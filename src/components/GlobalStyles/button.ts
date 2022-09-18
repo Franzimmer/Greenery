@@ -16,9 +16,9 @@ export const OperationBtn = styled.button`
 export const CloseBtn = styled.div`
   border: 1px solid #5c836f;
   cursor: pointer;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
   text-align: center;
   font-size: 16px;
   border-radius: 50%;
