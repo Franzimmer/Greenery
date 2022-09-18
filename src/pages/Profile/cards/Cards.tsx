@@ -58,6 +58,7 @@ export const PlantImg = styled.div<PlantImgProps>`
   background-position: center center;
   width: 250px;
   height: 150px;
+  box-shadow: 0px 0px 10px #aaa;
 `;
 export const Text = styled.p`
   margin-bottom: 10px;
@@ -68,6 +69,7 @@ export const Tag = styled.p`
   height: 20px;
   border-radius: 8px;
   font-size: 14px;
+  font-weight: 700;
   border: 1px solid #5c836f;
   margin-right: 5px;
   cursor: pointer;

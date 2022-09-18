@@ -30,6 +30,7 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   background-position: center;
 `;
 const UserInfoText = styled.div`
+  color: #6a5125;
   padding: 0px 10px;
   font-size: 26px;
   font-weight: 700;

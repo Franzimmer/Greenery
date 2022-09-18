@@ -5,11 +5,12 @@ import {
   faBook,
   faPenToSquare,
   faBookBookmark,
+  faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../reducer";
 import { PlantCard } from "../../../types/plantCardType";
-import { PlantImg, Tag, TagsWrapper, FavoriteButton } from "./Cards";
+import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
 import defaultImg from "../../../assets/default.jpg";
@@ -36,22 +37,9 @@ const Card = styled.div<CardProps>`
   align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
   border: 1.5px solid #5c836f;
   border-radius: 15px;
-  padding: 15px;
+  padding: 30px 15px 15px;
   cursor: pointer;
   position: relative;
-`;
-const CardMask = styled.div`
-  display: none;
-  position: absolute;
-  border-radius: 13px;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  ${Card}:hover & {
-    display: block;
-  }
 `;
 const NameText = styled(LabelText)`
   font-size: 20px;
@@ -63,50 +51,94 @@ const SpeciesText = styled.div`
   font-style: italic;
   color: #999;
 `;
-const EditIconBtn = styled(IconButton)`
-  display: none;
-  position: absolute;
-  right: 10px;
-  bottom: 150px;
+interface MaskAndIconBtnProps {
+  show?: boolean;
+  fav?: boolean;
+}
+const EditIconBtn = styled(IconButton)<MaskAndIconBtnProps>`
+  display: ${(props) => (props.show ? "block" : "none")};
   background: rgba(0, 0, 0, 0);
   margin: 5px;
   transition: 0.25s;
-  ${Card}:hover & {
-    display: block;
-  }
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
   }
 `;
-const DiaryIconBtn = styled(EditIconBtn)`
-  bottom: 90px;
-  right: 12px;
-`;
-interface BookMarkIconBtnProps {
-  show?: boolean;
-}
-const BookMarkIconBtn = styled(EditIconBtn)<BookMarkIconBtnProps>`
-  bottom: 30px;
-  right: 12px;
+const DiaryIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>``;
+const BookMarkIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>`
   & * {
-    color: ${(props) => (props.show ? "#FDDBA9" : "#fff")};
+    color: ${(props) => (props.fav ? "#FDDBA9" : "#fff")};
   }
 `;
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0);
+  box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+`;
+const CardMask = styled.div<MaskAndIconBtnProps>`
+  position: absolute;
+  display: ${(props) => (props.show ? "block" : "none")};
+  border-radius: 13px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+const StyledMenuIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
+  background: rgba(0, 0, 0, 0);
+  color: ${(props) => (props.show ? "#fff" : "#5c836f")};
+  width: 30px;
+  height: 30px;
+  transition: 0.25s;
+  ${CardMenuIcon}:hover & {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
+  display: ${(props) => props.show && "block"};
   background: rgba(0, 0, 0, 0);
   z-index: 1;
-  display: none;
   color: #fff;
   width: 30px;
   height: 30px;
-  ${Card}:hover & {
-    display: block;
+  transition: height 0.25s;
+`;
+const CardCheck = styled.input`
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  &:checked {
+    accent-color: #6a5125;
   }
 `;
-const CheckBox = styled.input``;
+const IconWrapper = styled.div<MaskAndIconBtnProps>`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 40px;
+  height: ${(props) => (props.show ? "60%" : "30px")};
+  padding: 5px;
+  border-radius: 15px;
+  position: absolute;
+  bottom: ${(props) => (props.show ? "15px" : "65px")};
+  right: 20px;
+  background: rgba(0, 0, 0, 0);
+  box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+  transition: 0.25s height;
+`;
 type CheckList = Record<string, boolean>;
-
 interface CardsGridProps {
   isSelf: boolean;
   viewMode: "grid" | "list";
@@ -138,6 +170,12 @@ const CardsGrid = ({
   favoriteToggle,
 }: CardsGridProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [cardMaskDisplay, setCardMaskDisplay] = useState<boolean>(false);
+
+  function toggleMask() {
+    if (cardMaskDisplay) setCardMaskDisplay(false);
+    else if (!cardMaskDisplay) setCardMaskDisplay(true);
+  }
   return (
     <GridWrapper mode={viewMode}>
       {cardList &&
@@ -153,7 +191,7 @@ const CardsGrid = ({
               }}
             >
               {isSelf && (
-                <CheckBox
+                <CardCheck
                   type="checkbox"
                   checked={checkList[card.cardId!]}
                   onClick={(event) => {
@@ -162,7 +200,7 @@ const CardsGrid = ({
                   }}
                 />
               )}
-              <CardMask />
+              <CardMask show={cardMaskDisplay} />
               <PlantImg path={card.plantPhoto || defaultImg} />
               <NameText>{card.plantName}</NameText>
               <SpeciesText>{card.species}</SpeciesText>
@@ -172,35 +210,49 @@ const CardsGrid = ({
                     return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                   })}
               </TagsWrapper>
-              {isSelf && (
-                <EditIconBtn
+              <IconWrapper show={cardMaskDisplay}>
+                <DiaryIconBtn
+                  show={cardMaskDisplay}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    setEditCardId(card.cardId);
-                    editorToggle();
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
                     e.stopPropagation();
                   }}
                 >
-                  <StyledFontAwesomeIcon icon={faPenToSquare} />
-                </EditIconBtn>
-              )}
-              <DiaryIconBtn
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  setDiaryDisplay(true);
-                  setDiaryId(card.cardId);
-                  e.stopPropagation();
-                }}
-              >
-                <StyledFontAwesomeIcon icon={faBook} />
-              </DiaryIconBtn>
-              <BookMarkIconBtn
-                show={userInfo.favoriteCards.includes(card.cardId!)}
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  favoriteToggle(card.cardId!);
-                  e.stopPropagation();
-                }}
-              >
-                <StyledFontAwesomeIcon icon={faBookBookmark} />
-              </BookMarkIconBtn>
+                  <StyledFontAwesomeIcon icon={faBook} />
+                </DiaryIconBtn>
+                <BookMarkIconBtn
+                  show={cardMaskDisplay}
+                  fav={userInfo.favoriteCards.includes(card.cardId!)}
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    favoriteToggle(card.cardId!);
+                    e.stopPropagation();
+                  }}
+                >
+                  <StyledFontAwesomeIcon icon={faBookBookmark} />
+                </BookMarkIconBtn>
+                <CardMenuIcon
+                  show={cardMaskDisplay}
+                  onClick={(e) => {
+                    toggleMask();
+                    e.stopPropagation();
+                  }}
+                >
+                  <StyledMenuIcon icon={faEllipsis} show={cardMaskDisplay} />
+                </CardMenuIcon>
+                {isSelf && (
+                  <EditIconBtn
+                    show={cardMaskDisplay}
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
+                      setEditCardId(card.cardId);
+                      editorToggle();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <StyledFontAwesomeIcon icon={faPenToSquare} />
+                  </EditIconBtn>
+                )}
+              </IconWrapper>
             </Card>
           );
         })}

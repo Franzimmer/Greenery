@@ -96,7 +96,7 @@ const Alert = styled.div`
   line-height: 30px;
   text-align: center;
   color: #6a5125;
-  background: #fddba9;
+  background: #f5f0ec;
   border-radius: 15px;
   animation: 0.5s ${scale};
 `;
