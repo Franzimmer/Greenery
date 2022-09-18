@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
 import { UserInfo } from "../../types/userInfoType";
-import { auth, firebase, storage } from "../../utils/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
@@ -43,6 +42,11 @@ const IconButtonLabel = styled(IconButton)`
   position: relative;
   top: 50px;
   left: -30px;
+
+  &:hover {
+    transform: translateY(5px);
+    transition: 0.25s;
+  }
 `;
 const NameButtonLabel = styled(IconButtonLabel)`
   padding: 10px;
@@ -69,12 +73,6 @@ interface UserInfoProps {
   id: string | undefined;
   isSelf: boolean;
 }
-async function uploadFile(file: File) {
-  const storageRef = ref(storage, `${file.name}`);
-  await uploadBytes(storageRef, file);
-  const dowloadLink = await getDownloadURL(storageRef);
-  return dowloadLink;
-}
 const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -96,7 +94,7 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
   async function editUserPhoto() {
     if (!photoRef.current) return;
     if (photoRef.current.files!.length === 0) return;
-    let link = await uploadFile(photoRef.current.files![0]);
+    let link = await firebase.uploadFile(photoRef.current.files![0]);
     photoRef.current.value = "";
     dispatch({
       type: UserInfoActions.EDIT_USER_PHOTO,
