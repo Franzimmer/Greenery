@@ -41,42 +41,47 @@ interface CardProps {
   show?: boolean;
 }
 export const Card = styled.div<CardProps>`
-  display: flex;
   flex-direction: column;
   border: 1px solid black;
-  padding: 10px;
-  display: ${(props) => (props.show ? "block" : "none")};
+  padding: 15px;
+  display: ${(props) => (props.show ? "flex" : "none")};
 `;
 interface PlantImgProps {
   path: string | undefined;
 }
 export const PlantImg = styled.div<PlantImgProps>`
   border-radius: 10px;
-  margin: 8px;
+  margin: 8px auto;
   background-image: url(${(props) => (props.path ? props.path : defaultImg)});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
-  width: 150px;
-  height: 100px;
+  width: 250px;
+  height: 150px;
 `;
 export const Text = styled.p`
   margin-bottom: 10px;
 `;
 export const Tag = styled.p`
-  background: #eee;
+  color: #5c836f;
+  padding: 0px 3px;
+  height: 20px;
+  border-radius: 8px;
   font-size: 14px;
-  border: 1px solid #000;
+  border: 1px solid #5c836f;
   margin-right: 5px;
-
+  cursor: pointer;
+  transition: 0.25s;
   &:hover {
-    background: #000;
-    color: #fff;
+    background: #5c836f;
+    color: #f5f0ec;
+    transform: translateY(5px);
+    transition: 0.25s;
   }
 `;
 export const TagsWrapper = styled.div`
   display: flex;
-  margin-top: 5px;
+  margin: 10px 5px 0px 0px;
   padding: 2px;
 `;
 
@@ -99,6 +104,7 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
   const [checkList, setCheckList] = useState<CheckList>({});
   const [filter, setFilter] = useState<string>("");
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -244,6 +250,9 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
       />
       <OperationMenu
         isSelf={isSelf}
+        viewMode={viewMode}
+        checkList={checkList}
+        setViewMode={setViewMode}
         setEditCardId={setEditCardId}
         editorToggle={editorToggle}
         filterToggle={filterToggle}
@@ -263,6 +272,7 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
       )}
       <CardsGrid
         isSelf={isSelf}
+        viewMode={viewMode}
         cardList={cardList}
         checkList={checkList}
         filterCard={filterCard}

@@ -1,9 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import {
-  IconButton,
-  OperationBtn,
-} from "../../../components/GlobalStyles/button";
+import { IconButton } from "../../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -41,6 +38,16 @@ const MenuBtnActive = styled(MenuBtn)`
     color: #fff;
   }
 `;
+const MenuBtnDisabled = styled(MenuBtn)`
+  border-color: #ddd;
+  cursor: not-allowed;
+  & * {
+    color: #ddd;
+  }
+  &:hover {
+    transform: scale(1);
+  }
+`;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
   color: #5c836f;
@@ -53,6 +60,9 @@ const SmallFontAwesomeIcon = styled(StyledFontAwesomeIcon)`
 `;
 interface OperationMenuProps {
   isSelf: boolean;
+  viewMode: "grid" | "list";
+  checkList: Record<string, boolean>;
+  setViewMode: React.Dispatch<React.SetStateAction<"grid" | "list">>;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
   editorToggle: () => void;
   filterToggle: () => void;
@@ -63,6 +73,9 @@ interface OperationMenuProps {
 }
 const OperationMenu = ({
   isSelf,
+  viewMode,
+  checkList,
+  setViewMode,
   setEditCardId,
   editorToggle,
   filterToggle,
@@ -72,7 +85,12 @@ const OperationMenu = ({
   deleteCards,
 }: OperationMenuProps) => {
   const [allCheckStatus, setAllCheckStatus] = useState<boolean>(false);
-
+  const [checkStatus, setCheckStatus] = useState<boolean>(
+    Object.values(checkList).some((check) => check === true)
+  );
+  useEffect(() => {
+    setCheckStatus(Object.values(checkList).some((check) => check === true));
+  }, [checkList]);
   return (
     <OperationMenuWrapper>
       {isSelf && (
@@ -88,9 +106,16 @@ const OperationMenu = ({
       <MenuBtn onClick={filterToggle}>
         <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
       </MenuBtn>
-      <MenuBtn>
-        <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
-      </MenuBtn>
+      {viewMode === "grid" && (
+        <MenuBtn onClick={() => setViewMode("list")}>
+          <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
+        </MenuBtn>
+      )}
+      {viewMode === "list" && (
+        <MenuBtn onClick={() => setViewMode("grid")}>
+          <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
+        </MenuBtn>
+      )}
       {isSelf && (
         <>
           {allCheckStatus && (
@@ -113,15 +138,36 @@ const OperationMenu = ({
               <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
             </MenuBtn>
           )}
-          <MenuBtn onClick={() => addEvents("water")}>
-            <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
-          </MenuBtn>
-          <MenuBtn onClick={() => addEvents("fertilize")}>
-            <SmallFontAwesomeIcon icon={faPersonDigging}></SmallFontAwesomeIcon>
-          </MenuBtn>
-          <MenuBtn onClick={deleteCards}>
-            <SmallFontAwesomeIcon icon={faTrashCan}></SmallFontAwesomeIcon>
-          </MenuBtn>
+          {checkStatus && (
+            <>
+              <MenuBtn onClick={() => addEvents("water")}>
+                <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
+              </MenuBtn>
+              <MenuBtn onClick={() => addEvents("fertilize")}>
+                <SmallFontAwesomeIcon
+                  icon={faPersonDigging}
+                ></SmallFontAwesomeIcon>
+              </MenuBtn>
+              <MenuBtn onClick={deleteCards}>
+                <SmallFontAwesomeIcon icon={faTrashCan}></SmallFontAwesomeIcon>
+              </MenuBtn>
+            </>
+          )}
+          {!checkStatus && (
+            <>
+              <MenuBtnDisabled onClick={() => addEvents("water")}>
+                <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
+              </MenuBtnDisabled>
+              <MenuBtnDisabled onClick={() => addEvents("fertilize")}>
+                <SmallFontAwesomeIcon
+                  icon={faPersonDigging}
+                ></SmallFontAwesomeIcon>
+              </MenuBtnDisabled>
+              <MenuBtnDisabled onClick={deleteCards}>
+                <SmallFontAwesomeIcon icon={faTrashCan}></SmallFontAwesomeIcon>
+              </MenuBtnDisabled>
+            </>
+          )}
         </>
       )}
     </OperationMenuWrapper>
