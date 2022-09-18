@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +13,7 @@ import {
   faPersonDigging,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
 
 const OperationMenuWrapper = styled.div`
   display: flex;
@@ -84,6 +86,7 @@ const OperationMenu = ({
   addEvents,
   deleteCards,
 }: OperationMenuProps) => {
+  const dispatch = useDispatch();
   const [allCheckStatus, setAllCheckStatus] = useState<boolean>(false);
   const [checkStatus, setCheckStatus] = useState<boolean>(
     Object.values(checkList).some((check) => check === true)
@@ -98,6 +101,9 @@ const OperationMenu = ({
           onClick={() => {
             setEditCardId(null);
             editorToggle();
+            dispatch({
+              type: popUpActions.SHOW_MASK,
+            });
           }}
         >
           <StyledFontAwesomeIcon icon={faPlus}></StyledFontAwesomeIcon>

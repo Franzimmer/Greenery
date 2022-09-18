@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
   faPenToSquare,
-  faBookBookmark,
+  faBookmark,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
@@ -229,7 +229,7 @@ const CardsGrid = ({
                     e.stopPropagation();
                   }}
                 >
-                  <StyledFontAwesomeIcon icon={faBookBookmark} />
+                  <StyledFontAwesomeIcon icon={faBookmark} />
                 </BookMarkIconBtn>
                 <CardMenuIcon
                   show={cardMaskDisplay}

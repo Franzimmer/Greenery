@@ -242,7 +242,7 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
     setCheckList(checkboxes);
   }, [cardList]);
   return (
-    <div>
+    <>
       <DiaryEditor
         isSelf={isSelf}
         diaryDisplay={diaryDisplay}
@@ -300,7 +300,7 @@ const Cards = ({ id, isSelf }: CardsGridProps) => {
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
-    </div>
+    </>
   );
 };
 

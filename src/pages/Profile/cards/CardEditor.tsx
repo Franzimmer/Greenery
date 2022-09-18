@@ -3,49 +3,66 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { PlantCard } from "../../../types/plantCardType";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { CardsActions } from "../../../actions/cardsActions";
 import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
-import { OperationBtn } from "./Cards";
+import {
+  OperationBtn,
+  CloseBtn,
+} from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";
 
 interface CardEditorWrapperProps {
   $display: boolean;
 }
 const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
+  position: absolute;
+  z-index: 101;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
   border-radius: 15px;
-  border: 1px solid #000;
+  border: 1px solid #6a5125;
   width: 360px;
   height: auto;
-  display: flex;
+  display: ${(props) => (props.$display ? "flex" : "none")};
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  padding: 10px;
-  display: ${(props) => (props.$display ? "block" : "none")};
+  padding: 30px;
 `;
-const InputLabel = styled.p``;
+const InputLabel = styled.span`
+  color: #6a5125;
+  font-weight: 700;
+  margin-right: 8px;
+`;
 
 interface PhotoPreviewProps {
   path: string | null;
 }
 const PhotoPreview = styled.div<PhotoPreviewProps>`
-  width: 80%;
-  height: 100px;
+  width: 280px;
+  height: 150px;
   background-image: url(${(props) => (props.path ? props.path : defaultImg)});
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;
-  background-color: #ddd;
+  background-color: #eee;
 `;
 const PhotoInput = styled.input``;
 const Input = styled.input`
-  width: 80%;
+  width: 200px;
   height: 30px;
+  border-radius: 15px;
+  border: 1px solid #6a5125;
+  padding: 0px 15px;
 `;
 const TextArea = styled.textarea`
-  width: 80%;
-  height: 100px;
+  width: 280px;
+  height: 80px;
+  border: 1px solid #6a5125;
+  padding: 5px;
 `;
 const InputWrapper = styled.div`
   margin-bottom: 10px;
@@ -53,12 +70,49 @@ const InputWrapper = styled.div`
 `;
 const Tag = styled.div`
   display: flex;
-  border: 1px solid #000;
+  border: 1px solid #6a5125;
+  background-color: #6a5125;
+  padding: 0px 2px;
+  border-radius: 7px;
+  height: 20px;
 `;
-const TagText = styled.div``;
-const RemoveTagBtn = styled.div`
-  background: #ddd;
-  font-weight: 700;
+const TagText = styled.div`
+  color: #fff;
+  font-size: 14px;
+  background-color: #6a5125;
+  border-radius: 7px;
+`;
+const TagsWrpper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+const BtnWrpper = styled.div`
+  width: 280px;
+  display: flex;
+  justify-content: space-between;
+`;
+const EditorBtn = styled(OperationBtn)`
+  width: 100px;
+  margin-top: 12px;
+  border: 1px solid #6a5125;
+  background: #6a5125;
+  transition: 0.25s;
+  &:hover {
+    color: #6a5125;
+    background-color: #fddba9;
+    border: 1px solid #fddba9;
+    transform: translateY(5px);
+    transition: 0.25s;
+  }
+`;
+const RemoveTagBtn = styled(CloseBtn)`
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  line-height: 14px;
+  margin-left 5px;
+  background-color: rgba(0,0,0,0);
+  border: none;
 `;
 interface FCProps {
   userId: string;
@@ -170,6 +224,9 @@ const CardEditor = ({
     await firebase.emitNotices(userId, followers, "1");
     alert("Emit Success");
     editorToggle();
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
   }
   async function editCard() {
     let imgLink;
@@ -195,6 +252,9 @@ const CardEditor = ({
       payload: { editCard: data },
     });
     editorToggle();
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
   }
   useEffect(() => {
     async function getEditCardData() {
@@ -227,11 +287,11 @@ const CardEditor = ({
         />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>幫你的植物取個名字！</InputLabel>
+        <InputLabel>Name</InputLabel>
         <Input type="text" ref={nameRef} />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>品種</InputLabel>
+        <InputLabel>Species</InputLabel>
         <Input
           type="text"
           ref={speciesRef}
@@ -244,19 +304,19 @@ const CardEditor = ({
         />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>水分需求</InputLabel>
-        <TextArea ref={waterRef} placeholder="搜尋品種可自動帶入資訊" />
+        <InputLabel>Water Preference</InputLabel>
+        <TextArea ref={waterRef} placeholder="search species..." />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>光線需求</InputLabel>
-        <TextArea ref={lightRef} placeholder="搜尋品種可自動帶入資訊" />
+        <InputLabel>Light Preference</InputLabel>
+        <TextArea ref={lightRef} placeholder="search species..." />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>生日</InputLabel>
+        <InputLabel>Birthday</InputLabel>
         <Input type="date" ref={birthdayRef} />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>標籤</InputLabel>
+        <InputLabel>Tags</InputLabel>
         <Input
           type="text"
           ref={tagRef}
@@ -268,18 +328,20 @@ const CardEditor = ({
           }}
         />
       </InputWrapper>
-      {tags &&
-        tags.map((tag) => {
-          return (
-            <Tag key={tag} id={tag}>
-              <TagText>{tag}</TagText>
-              <RemoveTagBtn onClick={(e) => RemoveTag(e)}>X</RemoveTagBtn>
-            </Tag>
-          );
-        })}
-      <InputWrapper>
+      <TagsWrpper>
+        {tags &&
+          tags.map((tag) => {
+            return (
+              <Tag key={tag} id={tag}>
+                <TagText>{tag}</TagText>
+                <RemoveTagBtn onClick={(e) => RemoveTag(e)}>X</RemoveTagBtn>
+              </Tag>
+            );
+          })}
+      </TagsWrpper>
+      <BtnWrpper>
         {editCardId ? (
-          <OperationBtn
+          <EditorBtn
             onClick={() => {
               editCard();
               resetEditor();
@@ -287,27 +349,30 @@ const CardEditor = ({
             }}
           >
             Save
-          </OperationBtn>
+          </EditorBtn>
         ) : (
-          <OperationBtn
+          <EditorBtn
             onClick={() => {
               addCard();
               resetEditor();
             }}
           >
             Add
-          </OperationBtn>
+          </EditorBtn>
         )}
-        <OperationBtn
+        <EditorBtn
           onClick={() => {
             editorToggle();
             resetEditor();
             setEditCardId(null);
+            dispatch({
+              type: popUpActions.HIDE_ALL,
+            });
           }}
         >
           Cancel
-        </OperationBtn>
-      </InputWrapper>
+        </EditorBtn>
+      </BtnWrpper>
     </CardEditorWrapper>
   );
 };
