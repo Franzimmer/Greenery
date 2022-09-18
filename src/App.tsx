@@ -4,6 +4,8 @@ import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
+import Mask from "./components/Mask/Mask";
+import CardSelectDialog from "./components/CardSelectDialog/CardSelectDialog"
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
 import { auth, firebase } from "./utils/firebase";
@@ -84,7 +86,8 @@ function UserLogInObserver({
   }, []);
   return null;
 }
-
+// userID={targetInfo.userId}
+// userName={targetInfo.userName}
 function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -94,6 +97,9 @@ function App() {
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver setIsLoggedIn={setIsLoggedIn} />
+        <Mask />
+        <CardSelectDialog
+        ></CardSelectDialog>
         <Header
           isLoggedIn={isLoggedIn}
           sideBarDisplay={sideBarDisplay}
