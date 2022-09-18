@@ -13,7 +13,7 @@ export const OperationBtn = styled.button`
   }
 `;
 
-export const CloseBtn = styled.div`
+export const CloseBtn = styled.button`
   border: 1px solid #5c836f;
   cursor: pointer;
   width: 24px;

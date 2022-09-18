@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { UserInfo } from "../../../types/userInfoType";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { firebase, chatrooms } from "../../../utils/firebase";
 import {
   onSnapshot,
@@ -12,7 +13,6 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
-import CardSelectDialog from "../../CardSelectDialog/CardSelectDialog";
 import { CloseBtn } from "../../../components/GlobalStyles/button";
 
 export interface message {
@@ -110,14 +110,12 @@ const Chatroom = ({
   chatroomDisplay: boolean;
   toggleChatroom: (targetId: string) => void;
 }) => {
-  const cardList = useSelector((state: RootState) => state.cards);
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const selfId = userInfo.userId;
   const inputRef = useRef<HTMLInputElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
-  const [dialogDisplay, setDialogDisplay] = useState<boolean>(false);
-  const [cardListDisplay, setCardListDisplay] = useState<boolean>(false);
-  const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
+
   const scrollRef = useRef<HTMLDivElement>(null);
   function writeMsg() {
     const usersTarget = [targetInfo.userId, selfId];
@@ -154,17 +152,12 @@ const Chatroom = ({
     scrollRef!.current.scrollTo({
       top: scrollRef!.current.scrollHeight,
       left: 0,
-      behavior: "smooth",
+      behavior: "auto",
     });
   }
 
   useEffect(() => {
     listenToChatroom();
-    let menuCheck = {} as Record<string, boolean>;
-    cardList.forEach((card) => {
-      menuCheck[card.cardId!] = false;
-    });
-    setMenuSelect(menuCheck);
   }, []);
   useEffect(() => {
     scrollToBottom();
@@ -200,8 +193,13 @@ const Chatroom = ({
         <FlexInputWrapper>
           <ChatBtn
             onClick={() => {
-              setDialogDisplay(true);
-              setCardListDisplay(true);
+              dispatch({
+                type: popUpActions.SHOW_CARD_SELECT_TRADE,
+                payload: {
+                  targetId: targetInfo.userId,
+                  targetName: targetInfo.userName,
+                },
+              });
             }}
           >
             +
@@ -217,20 +215,6 @@ const Chatroom = ({
           ></ChatInput>
         </FlexInputWrapper>
       </ChatroomWindow>
-      {cardList && (
-        <CardSelectDialog
-          cardList={cardList}
-          userID={targetInfo.userId}
-          userName={targetInfo.userName}
-          selfID={selfId}
-          dialogDisplay={dialogDisplay}
-          cardListDisplay={cardListDisplay}
-          menuSelect={menuSelect}
-          setDialogDisplay={setDialogDisplay}
-          setCardListDisplay={setCardListDisplay}
-          setMenuSelect={setMenuSelect}
-        ></CardSelectDialog>
-      )}
     </>
   );
 };

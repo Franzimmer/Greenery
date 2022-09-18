@@ -10,6 +10,7 @@ const HeaderWrapper = styled.div`
   width: 100vw;
   height: 100px;
   position: fixed;
+  top:0;
   z-index: 99;
 `;
 const LinkWrapper = styled.div`

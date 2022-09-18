@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { firebase } from "../../utils/firebase";
 import { CardsActions } from "../../actions/cardsActions";
+import { popUpActions } from "../../reducer/popUpReducer";
 import { OperationBtn } from "../../pages/Profile/cards/Cards";
-import { PlantCard } from "../../types/plantCardType";
 import CardsWrapper from "./CardsWrapper";
+import { RootState } from "../../reducer";
 interface DialogWrapperProps {
   show: boolean;
 }
 const DialogWrapper = styled.div<DialogWrapperProps>`
   padding: 15px 10px;
-  position: relative;
-  left: -500px;
+  position: absolute;
+  z-index: 101;
+  left: 30vw;
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: column;
   background: #f5a263;
@@ -29,43 +31,34 @@ const ConfirmPanel = styled.div`
   padding: 8px;
 `;
 interface DialogProps {
-  cardList: PlantCard[];
-  userID: string | undefined;
-  userName: string;
-  selfID: string | null;
   dialogDisplay: boolean;
   cardListDisplay: boolean;
-  menuSelect: Record<string, boolean>;
   setDialogDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setCardListDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setMenuSelect: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
-const CardSelectDialog = ({
-  cardList,
-  userID,
-  userName,
-  selfID,
-  dialogDisplay,
-  cardListDisplay,
-  menuSelect,
-  setDialogDisplay,
-  setCardListDisplay,
-  setMenuSelect,
-}: DialogProps) => {
-  const [confirm, setConfirm] = useState<string>();
+const CardSelectDialog = () => {
   const dispatch = useDispatch();
+  const cardList = useSelector((state: RootState) => state.cards);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const popUpDisplay = useSelector((state: RootState) => state.popUp);
+  const [confirm, setConfirm] = useState<string>();
+  const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
+  const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
+  const selfId = userInfo.userId;
+  const targetId = popUpDisplay.target.id;
+  const targetName = popUpDisplay.target.name;
   function confirmTradeItems() {
-    if (!userID) return;
+    if (!targetId) return;
     setCardListDisplay(false);
     let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
     let nameList = selected.map((card) => {
       return card.plantName;
     });
-    let msg = `要將 ${nameList.join(" & ")} 送給新主人 ${userName} 嗎?`;
+    let msg = `要將 ${nameList.join(" & ")} 送給新主人 ${targetName} 嗎?`;
     setConfirm(msg);
   }
   async function tradePlants() {
-    if (!userID || !selfID) return;
+    if (!targetId || !selfId) return;
     let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
     let idList = selected.map((card) => {
       return card.cardId;
@@ -73,7 +66,7 @@ const CardSelectDialog = ({
     let nameList = selected.map((card) => {
       return card.plantName;
     });
-    const newOwnerId = userID;
+    const newOwnerId = targetId;
     let promises = idList.map((cardId) => {
       return firebase.changePlantOwner(cardId!, newOwnerId);
     });
@@ -82,19 +75,27 @@ const CardSelectDialog = ({
       type: CardsActions.DELETE_PLANT_CARDS,
       payload: { cardIds: idList },
     });
-    const usersTarget = [userID!, selfID!];
+    const usersTarget = [targetId!, selfId!];
     const data = {
-      userId: selfID,
+      userId: selfId,
       msg: `已經將${nameList.join(" & ")}交給你了，要好好照顧喔！`,
     };
     firebase.storeChatroomData(usersTarget, data);
   }
-
+  useEffect(() => {
+    let menuCheck = {} as Record<string, boolean>;
+    cardList.forEach((card) => {
+      menuCheck[card.cardId!] = false;
+    });
+    setMenuSelect(menuCheck);
+  }, []);
   return (
-    <DialogWrapper show={dialogDisplay}>
+    <DialogWrapper show={popUpDisplay.cardSelect}>
       <DialogCloseBtn
         onClick={() => {
-          setDialogDisplay(false);
+          dispatch({
+            type: popUpActions.HIDE_ALL,
+          });
         }}
       >
         x
