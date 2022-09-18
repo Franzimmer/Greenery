@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { signOut } from "firebase/auth";
-import { UserInfo } from "../../types/userInfoType";
-import { auth, firebase, storage } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { OperationBtn } from "./cards/Cards";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
+import { UserInfo } from "../../types/userInfoType";
+import { auth, firebase, storage } from "../../utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
+
 const UserInfoWrapper = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   padding-bottom: 10px;
-  border-bottom: 1px solid black;
   margin-bottom: 20px;
 `;
 interface UserPhotoProps {
@@ -28,36 +30,57 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   background-repeat: no-repeat;
   background-position: center;
 `;
-const UserInfoText = styled.p``;
-const LabelForHiddenInput = styled.label`
-  background: #eee;
-  border: 1px solid #000;
-  padding: 5px;
-  &:hover {
-    background: #000;
-    color: #fff;
-    cursor: pointer;
+const UserInfoText = styled.div`
+  padding: 0px 10px;
+  font-size: 26px;
+  font-weight: 700;
+  &:focus {
+    background: #fff;
   }
 `;
-
+const IconButtonLabel = styled(IconButton)`
+  cursor: pointer;
+  position: relative;
+  top: 50px;
+  left: -30px;
+`;
+const NameButtonLabel = styled(IconButtonLabel)`
+  padding: 10px;
+  top: 0px;
+  left: 5px;
+`;
+const UserInfoBtn = styled(OperationBtn)`
+  margin-left: 40px;
+  transition: 0.5s;
+  &:hover {
+    border: 1px solid #fddba9;
+    background: #fddba9;
+    color: #6a5125;
+    transform: translateY(5px);
+    transition: 0.5s;
+  }
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+  background-color: rgba(0, 0, 0, 0);
+  color: #5c836f;
+  height: 25px;
+`;
 interface UserInfoProps {
   id: string | undefined;
   isSelf: boolean;
 }
-
 async function uploadFile(file: File) {
   const storageRef = ref(storage, `${file.name}`);
   await uploadBytes(storageRef, file);
   const dowloadLink = await getDownloadURL(storageRef);
   return dowloadLink;
 }
-
 const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [userData, setUserData] = useState<UserInfo>();
-  const [showNameInput, setShowNameInput] = useState<string>("none");
+  const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -82,15 +105,14 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
     await firebase.updateUserPhoto(id!, link);
   }
   async function editUserName() {
-    setShowNameInput("none");
+    setShowNameInput(false);
     if (!nameRef.current) return;
-    if (!nameRef.current.value) return;
+    if (!nameRef.current.textContent) return;
     dispatch({
       type: UserInfoActions.EDIT_USER_NAME,
-      payload: { userName: nameRef.current.value },
+      payload: { userName: nameRef.current.textContent },
     });
-    await firebase.updateUserName(id!, nameRef.current.value);
-    nameRef.current.value = "";
+    await firebase.updateUserName(id!, nameRef.current.textContent);
   }
   async function followStatusToggle() {
     if (isFollowed) {
@@ -137,8 +159,10 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
     <UserInfoWrapper>
       <UserPhoto path={userData?.photoUrl} />
       {isSelf && (
-        <LabelForHiddenInput htmlFor="upload">
-          編輯相片
+        <>
+          <IconButtonLabel htmlFor="upload">
+            <StyledFontAwesomeIcon icon={faPenToSquare} />
+          </IconButtonLabel>
           <input
             id="upload"
             type="file"
@@ -147,33 +171,36 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
             onChange={editUserPhoto}
             hidden
           />
-        </LabelForHiddenInput>
+        </>
       )}
-      <UserInfoText>{userData?.userName}</UserInfoText>
+      <UserInfoText
+        contentEditable={showNameInput}
+        ref={nameRef}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") editUserName();
+        }}
+        onBlur={() => setShowNameInput(false)}
+      >
+        {userData?.userName}
+      </UserInfoText>
       {isSelf && (
-        <LabelForHiddenInput
+        <NameButtonLabel
           htmlFor="nameInput"
-          onClick={() => setShowNameInput("block")}
+          onClick={() => {
+            setShowNameInput(true);
+            nameRef.current?.focus();
+          }}
         >
-          編輯姓名
-          <input
-            id="nameInput"
-            type="text"
-            ref={nameRef}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") editUserName();
-            }}
-            style={{ display: showNameInput }}
-          />
-        </LabelForHiddenInput>
+          <StyledFontAwesomeIcon icon={faPenToSquare} />
+        </NameButtonLabel>
       )}
       {!isSelf && !isFollowed && (
-        <OperationBtn onClick={followStatusToggle}>Follow</OperationBtn>
+        <UserInfoBtn onClick={followStatusToggle}>Follow</UserInfoBtn>
       )}
       {!isSelf && isFollowed && (
-        <OperationBtn onClick={followStatusToggle}>Unfollow</OperationBtn>
+        <UserInfoBtn onClick={followStatusToggle}>Unfollow</UserInfoBtn>
       )}
-      {isSelf && <OperationBtn onClick={userSignOut}>登出</OperationBtn>}
+      {isSelf && <UserInfoBtn onClick={userSignOut}>Log Out</UserInfoBtn>}
     </UserInfoWrapper>
   );
 };

@@ -4,6 +4,7 @@ import { LabelText } from "../../components/GlobalStyles/text";
 import { TabDisplayType } from "./Profile";
 const MenuWrapper = styled.div`
   display: flex;
+  align-items: baseline;
   padding-bottom: 20px;
   margin-bottom 10px;
 `;
@@ -11,7 +12,7 @@ interface MenuItemProps {
   show: boolean;
 }
 const MenuItem = styled(LabelText)<MenuItemProps>`
-  font-size: 16px;
+  font-size: ${(props) => (props.show ? "20px" : "16px")};
   margin-right: 20px;
   padding: 5px;
   cursor: pointer;
@@ -19,7 +20,7 @@ const MenuItem = styled(LabelText)<MenuItemProps>`
   transition: 0.5s;
   &:hover {
     color: #5c836f;
-    transform: scale(1.2) translateY(-5px);
+    transform: translateY(-5px);
     transition: 0.5s;
   }
 `;

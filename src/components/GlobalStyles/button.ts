@@ -7,10 +7,9 @@ export const OperationBtn = styled.button`
   height: 30px;
   padding: 10px;
   border-radius: 15px;
-  &:hover {
-    background: #fddba9;
-    color: #6a5125;
-  }
+  border: 1px solid #5c836f;
+  background: #5c836f;
+  color: #fff;
 `;
 
 export const CloseBtn = styled.button`
@@ -29,4 +28,15 @@ export const CloseBtn = styled.button`
     background-color: #7bc09a;
     border: 1px solid #7bc09a;
   }
+`;
+
+export const IconButton = styled.label`
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
