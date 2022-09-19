@@ -54,7 +54,7 @@ const PinMask = styled.div`
 `;
 const PinsWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
+  grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: 10px;
   width: 80vw;
 `;
