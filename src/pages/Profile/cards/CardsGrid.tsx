@@ -22,8 +22,8 @@ interface GridWrapperProps {
 }
 const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.mode === "grid" ? "grid" : "flex")};
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, 280px);
+  gap: 20px;
   margin-top: 20px;
   flex-direction: column;
 `;

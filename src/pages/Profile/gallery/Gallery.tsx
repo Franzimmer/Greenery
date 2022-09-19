@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
@@ -78,6 +78,28 @@ const StyledFontAwesome = styled(FontAwesomeIcon)`
   height: 30px;
   color: #fff;
 `;
+const LabelBtn = styled(IconButton)`
+  width: 100px;
+  color: #fff;
+`;
+const FlexWrapper = styled.div`
+  align-self: flex-end;
+  margin-right: 40px;
+  cursor: pointer;
+  width: 200px;
+  height: 40px;
+  border-radius: 20px;
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #5c836f;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+`;
 const Gallery = ({ id, isSelf }: GalleryProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
@@ -85,7 +107,10 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   const [media, setMedia] = useState<string[]>([]);
 
   async function saveGalleryData() {
-    if (mediaRef.current!.value === "") alert("請選擇檔案!");
+    if (mediaRef.current!.value === "") {
+      alert("請選擇檔案!");
+      return;
+    }
     let file = mediaRef.current!.files![0];
     let link = await firebase.uploadFile(file);
     dispatch({
@@ -95,7 +120,6 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
     mediaRef.current!.value = "";
     await firebase.addGallery(id!, link);
   }
-
   async function deleteMedia(link: string) {
     await firebase.deleteGallery(id!, link);
     alert("Delete Success!");
@@ -104,7 +128,6 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
       payload: { link },
     });
   }
-
   useEffect(() => {
     async function getMediaData() {
       if (!isSelf) {
@@ -120,10 +143,20 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   return (
     <>
       {isSelf && (
-        <>
-          <input type="file" accept="image/*" ref={mediaRef} />
-          <OperationBtn onClick={saveGalleryData}>上傳</OperationBtn>
-        </>
+        <FlexWrapper>
+          <IconButton htmlFor="image">
+            <StyledFontAwesome icon={faPlus} />
+          </IconButton>
+          <LabelBtn htmlFor="image">Add Galery</LabelBtn>
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            ref={mediaRef}
+            onChange={saveGalleryData}
+            hidden
+          />
+        </FlexWrapper>
       )}
       <PinsWrapper>
         {media &&
