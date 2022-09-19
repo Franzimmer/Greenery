@@ -243,6 +243,7 @@ const CardEditor = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
+    resetEditor();
   }
   async function editCard() {
     let imgLink;
@@ -372,7 +373,6 @@ const CardEditor = ({
           <EditorBtn
             onClick={() => {
               addCard();
-              resetEditor();
             }}
           >
             Add
