@@ -98,10 +98,10 @@ const DetailedCard = ({
             <SpeciesText>{detailData.species}</SpeciesText>
           )}
         </FlexWrapper>
-        {detailData?.parents?.length !== 0 && (
+        {detailData?.parents && detailData?.parents?.length !== 0 && (
           <>
             <Text>Family</Text>
-            <Text>{detailData?.parents?.join(" & ")}的寶寶</Text>
+            <Text>{detailData?.parents?.join(" & ")}'s Baby</Text>
           </>
         )}
         {detailData?.waterPref && (

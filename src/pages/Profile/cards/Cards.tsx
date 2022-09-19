@@ -83,7 +83,7 @@ export const Tag = styled.p`
 `;
 export const TagsWrapper = styled.div`
   display: flex;
-  margin: 10px 5px 0px 0px;
+  margin: 15px 5px 0px 0px;
   padding: 2px;
 `;
 

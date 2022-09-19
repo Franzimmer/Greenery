@@ -6,10 +6,7 @@ import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { UserInfoActions } from "../../../actions/userInfoActions";
-import {
-  IconButton,
-  OperationBtn,
-} from "../../../components/GlobalStyles/button";
+import { IconButton } from "../../../components/GlobalStyles/button";
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;
@@ -18,6 +15,7 @@ interface PinProps {
   path: string;
 }
 const Pin = styled.div<PinProps>`
+  cursor: pointer;
   position: relative;
   margin: 20px 15px;
   background-image: url(${(props) => props.path});

@@ -35,7 +35,6 @@ const HeaderLink = styled(Link)`
     content: "";
     height: 3px;
     background: #7bc09a;
-
     position: absolute;
     bottom: -4px;
     margin: 0 auto;

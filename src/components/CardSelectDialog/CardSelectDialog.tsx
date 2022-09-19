@@ -33,10 +33,13 @@ const DialogCloseBtn = styled(CloseBtn)`
   color: #fddba9;
   background-color: #6a5125;
   border: 1px solid #6a5125;
+  transition: 0.25s;
   &:hover {
-    color: #fff;
-    background-color: #5c836f;
-    border: 1px solid #5c836f;
+    color: #fddba9;
+    background-color: #6a5125;
+    border: 1px solid #6a5125;
+    transform: scale(1.1);
+    transition: 0.25s;
   }
 `;
 const BtnWrapper = styled.div`

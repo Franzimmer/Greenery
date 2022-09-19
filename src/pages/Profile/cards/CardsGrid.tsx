@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 interface GridWrapperProps {
   mode: "grid" | "list";
 }
-const GridWrapper = styled.div<GridWrapperProps>`
+export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
   gap: 20px;
@@ -31,7 +31,7 @@ interface CardProps {
   show?: boolean;
   mode: "grid" | "list";
 }
-const Card = styled.div<CardProps>`
+export const Card = styled.div<CardProps>`
   width: ${(props) => (props.mode === "grid" ? "280px" : "80vw")};
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: ${(props) => (props.mode === "grid" ? "column" : "row")};
@@ -48,11 +48,11 @@ const Card = styled.div<CardProps>`
     transform: translateX(5px) translateY(5px);
   }
 `;
-const NameText = styled(LabelText)`
+export const NameText = styled(LabelText)`
   font-size: 20px;
   color: #5c836f;
 `;
-const SpeciesText = styled.div`
+export const SpeciesText = styled.div`
   font-size: 14px;
   letter-spacing: 1px;
   font-style: italic;
