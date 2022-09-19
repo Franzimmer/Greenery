@@ -81,9 +81,13 @@ export const Tag = styled.p`
     transition: 0.25s;
   }
 `;
-export const TagsWrapper = styled.div`
+interface TagsWrapper {
+  viewMode?: "grid" | "list";
+}
+export const TagsWrapper = styled.div<TagsWrapper>`
   display: flex;
-  margin: 15px 5px 0px 0px;
+  margin: ${(props) =>
+    props.viewMode === "list" ? "0px 5px" : "15px 5px 0px 0px"};
   padding: 2px;
 `;
 

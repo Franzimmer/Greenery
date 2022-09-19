@@ -32,14 +32,15 @@ interface CardProps {
   mode: "grid" | "list";
 }
 export const Card = styled.div<CardProps>`
-  width: ${(props) => (props.mode === "grid" ? "280px" : "80vw")};
+  width: ${(props) => (props.mode === "grid" ? "280px" : "60vw")};
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: ${(props) => (props.mode === "grid" ? "column" : "row")};
-  justify-content: center;
+  justify-content: ${(props) =>
+    props.mode === "grid" ? "center" : "flex-start"};
   align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
   border: 1.5px solid #5c836f;
   border-radius: 15px;
-  padding: 30px 15px 15px;
+  padding: ${(props) => (props.mode === "list" ? "15px" : "30px 15px 15px")};
   cursor: pointer;
   position: relative;
   transition: 0.25s;
@@ -48,19 +49,23 @@ export const Card = styled.div<CardProps>`
     transform: translateX(5px) translateY(5px);
   }
 `;
-export const NameText = styled(LabelText)`
+export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
   font-size: 20px;
   color: #5c836f;
+  margin-right: 5px;
+  margin-left: ${(props) => props.mode === "list" && "25px"};
 `;
 export const SpeciesText = styled.div`
   font-size: 14px;
   letter-spacing: 1px;
   font-style: italic;
   color: #999;
+  margin-right: 10px;
 `;
 interface MaskAndIconBtnProps {
   show?: boolean;
   fav?: boolean;
+  mode?: "grid" | "list";
 }
 const EditIconBtn = styled(IconButton)<MaskAndIconBtnProps>`
   display: ${(props) => (props.show ? "block" : "none")};
@@ -86,7 +91,7 @@ const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
   align-items: center;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0);
-  box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+  // box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
 `;
 const CardMask = styled.div<MaskAndIconBtnProps>`
   position: absolute;
@@ -118,10 +123,10 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
   height: 30px;
   transition: height 0.25s;
 `;
-const CardCheck = styled.input`
+const CardCheck = styled.input<MaskAndIconBtnProps>`
   position: absolute;
-  top: 8px;
-  right: 15px;
+  top: ${(props) => (props.mode === "list" ? "18px" : "8px")};
+  left: 15px;
   cursor: pointer;
   height: 20px;
   width: 20px;
@@ -131,16 +136,19 @@ const CardCheck = styled.input`
 `;
 const IconWrapper = styled.div<MaskAndIconBtnProps>`
   display: flex;
-  flex-direction: column;
+  flex-direction: ${(props) => (props.mode === "list" ? "row" : "column")};
   justify-content: space-around;
   align-items: center;
-  width: 40px;
+  width: ${(props) => (props.mode === "list" ? "200px" : "40px")};
   height: ${(props) => (props.show ? "60%" : "30px")};
   padding: 5px;
   border-radius: 15px;
   position: absolute;
-  bottom: ${(props) => (props.show ? "15px" : "65px")};
+  bottom: ${(props) =>
+    props.mode === "list" ? "15px" : !props.show ? "65px" : "15px"};
   right: 20px;
+  ${(props) =>
+    props.mode === "grid" ? "20px" : !props.show ? "-50px" : "65px"};
   background: rgba(0, 0, 0, 0);
   box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
   transition: 0.25s height;
@@ -204,6 +212,7 @@ const CardsGrid = ({
               {isSelf && (
                 <CardCheck
                   type="checkbox"
+                  mode={viewMode}
                   checked={checkList[card.cardId!]}
                   onClick={(event) => {
                     switchOneCheck(card.cardId!);
@@ -212,16 +221,18 @@ const CardsGrid = ({
                 />
               )}
               <CardMask show={cardMaskDisplay} />
-              <PlantImg path={card.plantPhoto || defaultImg} />
-              <NameText>{card.plantName}</NameText>
+              {viewMode === "grid" && (
+                <PlantImg path={card.plantPhoto || defaultImg} />
+              )}
+              <NameText mode={viewMode}>{card.plantName}</NameText>
               <SpeciesText>{card.species}</SpeciesText>
-              <TagsWrapper>
+              <TagsWrapper viewMode={viewMode}>
                 {card?.tags?.length !== 0 &&
                   card.tags?.map((tag: string) => {
                     return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                   })}
               </TagsWrapper>
-              <IconWrapper show={cardMaskDisplay}>
+              <IconWrapper show={cardMaskDisplay} mode={viewMode}>
                 <DiaryIconBtn
                   show={cardMaskDisplay}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
