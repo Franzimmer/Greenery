@@ -225,7 +225,6 @@ const DiaryEditor = ({
     }
     if (diaryId) getDiary(diaryId);
   }, [diaryId]);
-  console.log(mode);
   return (
     <Wrapper $display={diaryDisplay}>
       <BtnWrapper>
