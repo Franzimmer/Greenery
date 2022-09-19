@@ -113,7 +113,7 @@ const TextEditor = ({
     let postId = await firebase.addPost(data);
     data["postId"] = postId;
     let newPosts = [...postList];
-    newPosts.push(data);
+    newPosts.unshift(data);
     setPostList(newPosts);
     await firebase.emitNotices(userInfo.userId, followers, "2", postId);
     alert("文章發表成功！");

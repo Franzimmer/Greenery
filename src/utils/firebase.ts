@@ -345,6 +345,13 @@ const firebase = {
     const dowloadLink = await getDownloadURL(storageRef);
     return dowloadLink;
   },
+  async checkOwner(cardId: string) {
+    let docRef = doc(cards, cardId);
+    let docSnapshot = await getDoc(docRef);
+    if (docSnapshot.exists()) {
+      return docSnapshot.data().ownerId;
+    }
+  },
 };
 
 export {

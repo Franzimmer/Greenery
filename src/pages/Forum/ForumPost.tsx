@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrashCan,
+  faPenToSquare,
+  faBook,
+} from "@fortawesome/free-solid-svg-icons";
 import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
@@ -13,11 +17,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import Chatroom from "../../components/Chatroom/Chatroom";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
-import { Card, PlantImg, Text, Tag, TagsWrapper } from "../Profile/cards/Cards";
+import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
+import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
+import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { TypeText } from "./ForumHomePage";
+import DiaryEditor from "../../components/Diary/DiaryEditor";
 const Wrapper = styled.div`
   width: 80vw;
-  margin: 120px auto 0px;
+  margin: 120px auto 50px;
 `;
 const PostWrapper = styled.div`
   margin-top: 12px;
@@ -111,6 +118,11 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   width: 18px;
   height: 18px;
 `;
+const BookFontAwesomeIcon = styled(FontAwesomeIcon)`
+  color: #5c836f;
+  width: 26px;
+  height: 26px;
+`;
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -146,6 +158,9 @@ const OpenChatRoomBtn = styled(OperationBtn)`
     transform: scale(1.1);
     transition: 0.25s;
   }
+`;
+const TradeCard = styled(Card)`
+  margin: 12px;
 `;
 export interface Post {
   postId: string;
@@ -186,6 +201,9 @@ const ForumPost = () => {
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
   const [targetUser, setTargetUser] = useState<UserInfo>();
   const [cards, setCards] = useState<PlantCard[]>([]);
+  const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
   function toggleChatroom(targetId: string) {
     let newChatDisplay = { ...chatroomDisplay };
     if (newChatDisplay[targetId]) newChatDisplay[targetId] = false;
@@ -226,14 +244,16 @@ const ForumPost = () => {
   }
   async function openChatroom(targetId: string) {
     let users = [userInfo.userId, targetId];
-    //if chatroom existed?
     let getUserInfo = firebase.getUserInfo(targetId);
     let checkRoom = firebase.checkChatroom(users);
     let result = await Promise.all([getUserInfo, checkRoom]);
     setTargetUser(result[0].data());
     toggleChatroom(targetId);
-    //if yes -> set Open
-    //if not -> build chat room -> set open & listen
+  }
+  async function checkOwner(diaryId: string) {
+    let ownerId = await firebase.checkOwner(diaryId);
+    let result = ownerId === userInfo.userId;
+    setIsOwner(result);
   }
   useEffect(() => {
     async function getPost() {
@@ -320,19 +340,30 @@ const ForumPost = () => {
           {cards &&
             cards.map((card) => {
               return (
-                <Card key={card.cardId} show={true}>
+                <TradeCard key={card.cardId} show={true} mode={"grid"}>
                   <PlantImg path={card.plantPhoto} />
-                  <Text>{card.plantName}</Text>
-                  <Text>{card.species}</Text>
+                  <NameText>{card.plantName}</NameText>
+                  <SpeciesText>{card.species}</SpeciesText>
                   <TagsWrapper>
                     {card?.tags?.length !== 0 &&
                       card.tags?.map((tag) => {
                         return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                       })}
                   </TagsWrapper>
-                  <OperationBtn>Diary</OperationBtn>
-                  <OperationBtn>Favorite</OperationBtn>
-                </Card>
+                  <DiaryIconBtn
+                    onClick={async (e) => {
+                      await checkOwner(card.cardId!);
+                      setDiaryDisplay(true);
+                      setDiaryId(card.cardId!);
+                      dispatch({
+                        type: popUpActions.SHOW_MASK,
+                      });
+                      e.stopPropagation();
+                    }}
+                  >
+                    <BookFontAwesomeIcon icon={faBook} />
+                  </DiaryIconBtn>
+                </TradeCard>
               );
             })}
           {userInfo.userId === post?.authorId && (
@@ -411,6 +442,15 @@ const ForumPost = () => {
           targetInfo={targetUser!}
           chatroomDisplay={chatroomDisplay[targetUser!.userId]}
           toggleChatroom={toggleChatroom}
+        />
+      )}
+      {diaryDisplay && (
+        <DiaryEditor
+          isSelf={isOwner}
+          diaryDisplay={diaryDisplay}
+          setDiaryDisplay={setDiaryDisplay}
+          diaryId={diaryId!}
+          setDiaryId={setDiaryId}
         />
       )}
     </>

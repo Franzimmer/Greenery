@@ -13,12 +13,15 @@ import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";
+const Wrapper = styled.div`
+  margin: 150px auto 50px;
+`;
 const ForumSectionWrapper = styled.div`
   width: 78vw;
   display: flex;
   justify-content: center;
   align-itms: center;
-  margin: 150px auto 50px;
+  margin: 0px auto 50px;
 `;
 interface ForumPostPageProps {
   show: boolean;
@@ -26,7 +29,7 @@ interface ForumPostPageProps {
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 78vw;
   height: 100px;
-  border: 1px solid #5c836f;
+  border: 1px solid #6a5125;
   display: ${(props) => (props.show ? "flex" : "none")};
   align-items: center;
   justify-content: space-between;
@@ -147,7 +150,7 @@ const ForumHomePage = () => {
     getPosts();
   }, []);
   return (
-    <>
+    <Wrapper>
       <ForumSectionWrapper>
         <PostTypeBtn
           style={{ backgroundImage: `url(${all})` }}
@@ -199,7 +202,7 @@ const ForumHomePage = () => {
           setPostList={setPostList}
         ></TextEditor>
       )}
-    </>
+    </Wrapper>
   );
 };
 
