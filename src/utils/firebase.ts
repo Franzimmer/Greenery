@@ -17,12 +17,13 @@ import {
   increment,
   orderBy,
   limit,
+  addDoc,
 } from "firebase/firestore";
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { UserInfo } from "../types/userInfoType";
-import { message } from "../components/SideBar/Chatroom/Chatroom";
+import { message } from "../components/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../types/plantCardType";
 import { Note } from "../types/notificationType";
@@ -65,6 +66,20 @@ const firebase = {
   async updateUserName(id: string, name: string) {
     let docRef = doc(users, id);
     await updateDoc(docRef, { userName: name });
+  },
+  async checkChatroom(users: string[]) {
+    let usersCopy = [...users];
+    const q = query(
+      chatrooms,
+      where("users", "in", [users, usersCopy.reverse()])
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      await addDoc(chatrooms, {
+        users: users,
+        msgs: [],
+      });
+    }
   },
   async storeChatroomData(users: string[], msg: message) {
     let usersCopy = [...users];

@@ -11,6 +11,7 @@ import { PlantCard } from "../../types/plantCardType";
 import { UserInfo } from "../../types/userInfoType";
 import { useParams, useNavigate } from "react-router-dom";
 import TextEditor from "../../components/TextEditor/TextEditor";
+import Chatroom from "../../components/Chatroom/Chatroom";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import { Card, PlantImg, Text, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { TypeText } from "./ForumHomePage";
@@ -166,6 +167,9 @@ const ForumPost = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
+  const [chatroomDisplay, setChatroomDisplay] = useState<
+    Record<string, boolean>
+  >({});
   const [post, setPost] = useState<Post>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [pageComments, setPageComments] = useState<Comment[] | undefined>();
@@ -180,7 +184,14 @@ const ForumPost = () => {
     "AddPost" | "EditPost" | "AddComment" | "EditComment"
   >("EditPost");
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
+  const [targetUser, setTargetUser] = useState<UserInfo>();
   const [cards, setCards] = useState<PlantCard[]>([]);
+  function toggleChatroom(targetId: string) {
+    let newChatDisplay = { ...chatroomDisplay };
+    if (newChatDisplay[targetId]) newChatDisplay[targetId] = false;
+    else if (!newChatDisplay[targetId]) newChatDisplay[targetId] = true;
+    setChatroomDisplay(newChatDisplay);
+  }
   async function deletePost(postId: string) {
     await firebase.deletePost(postId);
     alert("刪除成功");
@@ -212,6 +223,17 @@ const ForumPost = () => {
       type: popUpActions.SHOW_MASK,
     });
     setTextEditorDisplay(true);
+  }
+  async function openChatroom(targetId: string) {
+    let users = [userInfo.userId, targetId];
+    //if chatroom existed?
+    let getUserInfo = firebase.getUserInfo(targetId);
+    let checkRoom = firebase.checkChatroom(users);
+    let result = await Promise.all([getUserInfo, checkRoom]);
+    setTargetUser(result[0].data());
+    toggleChatroom(targetId);
+    //if yes -> set Open
+    //if not -> build chat room -> set open & listen
   }
   useEffect(() => {
     async function getPost() {
@@ -266,110 +288,132 @@ const ForumPost = () => {
     setPageComments(sliceComments(0, 10));
   }, [comments]);
   return (
-    <Wrapper>
-      <TitleWrapper>
-        <TypeText>{post?.type}</TypeText>
-        <PostTitle>{post?.title && parse(post.title)}</PostTitle>
-      </TitleWrapper>
-      <CommentBtn onClick={addComment}>Comment</CommentBtn>
-      <PostWrapper>
-        <AuthorInfo>
-          <AuthorPhoto
-            path={authorInfo?.photoUrl}
-            onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-          />
-          <AuthorName
-            onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-          >
-            {authorInfo?.userName}
-          </AuthorName>
-          {userInfo.userId !== authorInfo?.userId && (
-            <OpenChatRoomBtn>Open Chatroom</OpenChatRoomBtn>
+    <>
+      <Wrapper>
+        <TitleWrapper>
+          <TypeText>{post?.type}</TypeText>
+          <PostTitle>{post?.title && parse(post.title)}</PostTitle>
+        </TitleWrapper>
+        <CommentBtn onClick={addComment}>Comment</CommentBtn>
+        <PostWrapper>
+          <AuthorInfo>
+            <AuthorPhoto
+              path={authorInfo?.photoUrl}
+              onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
+            />
+            <AuthorName
+              onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
+            >
+              {authorInfo?.userName}
+            </AuthorName>
+            {userInfo.userId !== authorInfo?.userId && (
+              <OpenChatRoomBtn
+                onClick={() => {
+                  openChatroom(authorInfo!.userId);
+                }}
+              >
+                Open Chatroom
+              </OpenChatRoomBtn>
+            )}
+          </AuthorInfo>
+          <Content>{post?.content && parse(post.content)}</Content>
+          {cards &&
+            cards.map((card) => {
+              return (
+                <Card key={card.cardId} show={true}>
+                  <PlantImg path={card.plantPhoto} />
+                  <Text>{card.plantName}</Text>
+                  <Text>{card.species}</Text>
+                  <TagsWrapper>
+                    {card?.tags?.length !== 0 &&
+                      card.tags?.map((tag) => {
+                        return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                      })}
+                  </TagsWrapper>
+                  <OperationBtn>Diary</OperationBtn>
+                  <OperationBtn>Favorite</OperationBtn>
+                </Card>
+              );
+            })}
+          {userInfo.userId === post?.authorId && (
+            <BtnWrapper>
+              <EditIconBtn
+                onClick={() => {
+                  setEditorMode("EditPost");
+                  setTextEditorDisplay(true);
+                  dispatch({
+                    type: popUpActions.SHOW_MASK,
+                  });
+                }}
+              >
+                <StyledFontAwesomeIcon icon={faPenToSquare} />
+              </EditIconBtn>
+              <EditIconBtn onClick={() => deletePost(post.postId)}>
+                <StyledFontAwesomeIcon icon={faTrashCan} />
+              </EditIconBtn>
+            </BtnWrapper>
           )}
-        </AuthorInfo>
-        <Content>{post?.content && parse(post.content)}</Content>
-        {cards &&
-          cards.map((card) => {
+        </PostWrapper>
+        {pageComments &&
+          pageComments.length !== 0 &&
+          pageComments.map((comment) => {
             return (
-              <Card key={card.cardId} show={true}>
-                <PlantImg path={card.plantPhoto} />
-                <Text>{card.plantName}</Text>
-                <Text>{card.species}</Text>
-                <TagsWrapper>
-                  {card?.tags?.length !== 0 &&
-                    card.tags?.map((tag) => {
-                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                    })}
-                </TagsWrapper>
-                <OperationBtn>Diary</OperationBtn>
-                <OperationBtn>Favorite</OperationBtn>
-              </Card>
+              <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
+                <AuthorInfo>
+                  <AuthorPhoto
+                    path={commentAuthorInfos[comment.authorId]?.photoUrl}
+                    onClick={() => navigate(`/profile/${comment.authorId}`)}
+                  />
+                  <AuthorName>
+                    {commentAuthorInfos[comment.authorId]?.userName}
+                  </AuthorName>
+                  {userInfo.userId !== comment.authorId && (
+                    <OpenChatRoomBtn
+                      onClick={() => {
+                        openChatroom(authorInfo!.userId);
+                      }}
+                    >
+                      Open Chatroom
+                    </OpenChatRoomBtn>
+                  )}
+                </AuthorInfo>
+                <Content>{post?.content && parse(comment.content)}</Content>
+                {userInfo.userId === comment.authorId && (
+                  <BtnWrapper>
+                    <EditIconBtn onClick={() => editComment(comment)}>
+                      <StyledFontAwesomeIcon icon={faPenToSquare} />
+                    </EditIconBtn>
+                    <EditIconBtn onClick={() => deleteComment(comment)}>
+                      <StyledFontAwesomeIcon icon={faTrashCan} />
+                    </EditIconBtn>
+                  </BtnWrapper>
+                )}
+              </PostWrapper>
             );
           })}
-        {userInfo.userId === post?.authorId && (
-          <BtnWrapper>
-            <EditIconBtn
-              onClick={() => {
-                setEditorMode("EditPost");
-                setTextEditorDisplay(true);
-                dispatch({
-                  type: popUpActions.SHOW_MASK,
-                });
-              }}
-            >
-              <StyledFontAwesomeIcon icon={faPenToSquare} />
-            </EditIconBtn>
-            <EditIconBtn onClick={() => deletePost(post.postId)}>
-              <StyledFontAwesomeIcon icon={faTrashCan} />
-            </EditIconBtn>
-          </BtnWrapper>
+        {textEditorDisplay && (
+          <TextEditor
+            editorMode={editorMode}
+            initContent={initContent}
+            initTitle={initTitle}
+            post={post}
+            comments={comments}
+            editTargetComment={editTargetComment}
+            setPost={setPost}
+            setTextEditorDisplay={setTextEditorDisplay}
+            setComments={setComments}
+          />
         )}
-      </PostWrapper>
-      {pageComments &&
-        pageComments.length !== 0 &&
-        pageComments.map((comment) => {
-          return (
-            <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
-              <AuthorInfo>
-                <AuthorPhoto
-                  path={commentAuthorInfos[comment.authorId]?.photoUrl}
-                  onClick={() => navigate(`/profile/${comment.authorId}`)}
-                />
-                <AuthorName>
-                  {commentAuthorInfos[comment.authorId]?.userName}
-                </AuthorName>
-                {userInfo.userId !== comment.authorId && (
-                  <OpenChatRoomBtn>Open Chatroom</OpenChatRoomBtn>
-                )}
-              </AuthorInfo>
-              <Content>{post?.content && parse(comment.content)}</Content>
-              {userInfo.userId === comment.authorId && (
-                <BtnWrapper>
-                  <EditIconBtn onClick={() => editComment(comment)}>
-                    <StyledFontAwesomeIcon icon={faPenToSquare} />
-                  </EditIconBtn>
-                  <EditIconBtn onClick={() => deleteComment(comment)}>
-                    <StyledFontAwesomeIcon icon={faTrashCan} />
-                  </EditIconBtn>
-                </BtnWrapper>
-              )}
-            </PostWrapper>
-          );
-        })}
-      {textEditorDisplay && (
-        <TextEditor
-          editorMode={editorMode}
-          initContent={initContent}
-          initTitle={initTitle}
-          post={post}
-          comments={comments}
-          editTargetComment={editTargetComment}
-          setPost={setPost}
-          setTextEditorDisplay={setTextEditorDisplay}
-          setComments={setComments}
+      </Wrapper>
+      {targetUser && chatroomDisplay[targetUser?.userId] && (
+        <Chatroom
+          key={`${targetUser!.userId}_chat`}
+          targetInfo={targetUser!}
+          chatroomDisplay={chatroomDisplay[targetUser!.userId]}
+          toggleChatroom={toggleChatroom}
         />
       )}
-    </Wrapper>
+    </>
   );
 };
 
