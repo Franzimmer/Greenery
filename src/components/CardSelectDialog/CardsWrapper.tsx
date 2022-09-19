@@ -11,6 +11,7 @@ const CardListWrapper = styled.div<CardListWrapperProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 360px;
   overflow-y: auto;
   & * {
     background: #fff;

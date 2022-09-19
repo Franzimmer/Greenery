@@ -1,14 +1,16 @@
 import React, { useRef, useState, useEffect } from "react";
+import styled from "styled-components";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
 import "./tiptap.css";
 import MenuBar from "./MenuBar";
-import { OperationBtn } from "../../pages/Profile/cards/Cards";
+import { popUpActions } from "../../reducer/popUpReducer";
+import { OperationBtn } from "../../components/GlobalStyles/button";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
@@ -16,15 +18,37 @@ import { UserInfo } from "../../types/userInfoType";
 import { Comment } from "../../pages/Forum/ForumPost";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
 import { PlantCard } from "../../types/plantCardType";
-
+const Wrapper = styled.div`
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 101;
+  background: #fff;
+  padding: 15px;
+`;
+const LabelText = styled.label`
+  font-size: 16px;
+  margin: 10px 8px 0 0;
+  display: inline-block;
+`;
+const TextEditorBtn = styled(OperationBtn)`
+  background: #6a5125;
+  border: 1px solid #6a5125;
+  margin: 5px 5px 0px 0px;
+  transtion: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transtion: 0.25s;
+  }
+`;
 interface TiptapProps {
-  editorMode: string;
+  editorMode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
   initContent?: string;
   initTitle?: string;
   post?: Post;
   comments?: Comment[];
   editTargetComment?: Comment;
-  setEditorMode?: React.Dispatch<React.SetStateAction<string>>;
   setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
   setComments?: React.Dispatch<React.SetStateAction<Comment[]>>;
   setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,11 +64,11 @@ const TextEditor = ({
   editTargetComment,
   postList,
   setPostList,
-  setEditorMode,
   setPost,
   setComments,
   setTextEditorDisplay,
 }: TiptapProps) => {
+  const dispatch = useDispatch();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const cardList: PlantCard[] = useSelector((state: RootState) => state.cards);
   const followers: string[] = useSelector(
@@ -53,11 +77,11 @@ const TextEditor = ({
   const typeRef = useRef<HTMLSelectElement>(null);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
-    content: initTitle || "<h1>Title</h1>",
+    content: initTitle || "Title",
   });
   const editor = useEditor({
     extensions: [StarterKit],
-    content: initContent || "<h1>Hello World!</h1>",
+    content: initContent || "",
   });
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
@@ -140,12 +164,14 @@ const TextEditor = ({
     alert("編輯留言成功！");
     setComments(newComments);
     setTextEditorDisplay(false);
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
   }
   function toggleCardWrapperDisplay() {
     if (typeRef.current?.value === "trade") setCardWrapperDisplay(true);
     else setCardWrapperDisplay(false);
   }
-
   useEffect(() => {
     if (cardList.length !== 0) {
       let checkList = {} as Record<string, boolean>;
@@ -156,15 +182,13 @@ const TextEditor = ({
     }
   }, []);
   return (
-    <>
-      {editorMode !== "Comment" && (
+    <Wrapper>
+      {editorMode !== "AddComment" && editorMode !== "EditComment" && (
         <>
-          <label style={{ display: "inline-block", marginTop: "10px" }}>
-            選擇文章類型
-          </label>
+          <LabelText>Post Type:</LabelText>
           <select name="type" ref={typeRef} onChange={toggleCardWrapperDisplay}>
-            <option value="discussion">討論</option>
-            <option value="trade">交易</option>
+            <option value="discussion">Discussion</option>
+            <option value="trade">Trade</option>
           </select>
           <CardsWrapper
             cardListDisplay={cardWrapperDisplay}
@@ -174,53 +198,70 @@ const TextEditor = ({
           ></CardsWrapper>
         </>
       )}
-      <label htmlFor="title" style={{ display: "block", marginTop: "10px" }}>
-        輸入文章標題
-      </label>
-      {editorMode !== "Comment" && (
+      {editorMode !== "AddComment" && editorMode !== "EditComment" && (
         <EditorContent editor={titleEditor} id="title" />
       )}
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
-      <OperationBtn
+      <EditorContent editor={editor} id="content" />
+      {editorMode === "AddPost" && (
+        <TextEditorBtn
+          onClick={() => {
+            savePost();
+            setTextEditorDisplay(false);
+            dispatch({
+              type: popUpActions.HIDE_ALL,
+            });
+          }}
+        >
+          Save
+        </TextEditorBtn>
+      )}
+      {editorMode === "EditPost" && (
+        <TextEditorBtn
+          onClick={() => {
+            editPost();
+            setTextEditorDisplay(false);
+            dispatch({
+              type: popUpActions.HIDE_ALL,
+            });
+          }}
+        >
+          Save Edit
+        </TextEditorBtn>
+      )}
+      {editorMode === "AddComment" && (
+        <TextEditorBtn
+          onClick={async () => {
+            await addComment();
+            setTextEditorDisplay(false);
+            dispatch({
+              type: popUpActions.HIDE_ALL,
+            });
+          }}
+        >
+          Add Comment
+        </TextEditorBtn>
+      )}
+      {editorMode === "EditComment" && (
+        <TextEditorBtn
+          onClick={() => {
+            saveEditComment();
+          }}
+        >
+          Save Edit Comment
+        </TextEditorBtn>
+      )}
+      <TextEditorBtn
         onClick={() => {
-          savePost();
           setTextEditorDisplay(false);
-        }}
-      >
-        Save
-      </OperationBtn>
-      <OperationBtn
-        onClick={() => {
-          editPost();
-          setTextEditorDisplay(false);
-        }}
-      >
-        Save Edit
-      </OperationBtn>
-      <OperationBtn
-        onClick={async () => {
-          await addComment();
-          setTextEditorDisplay(false);
-        }}
-      >
-        Add Comment
-      </OperationBtn>
-      <OperationBtn
-        onClick={() => {
-          saveEditComment();
-        }}
-      >
-        Save Edit Comment
-      </OperationBtn>
-      <OperationBtn
-        onClick={() => {
-          setTextEditorDisplay(false);
+          dispatch({
+            type: popUpActions.HIDE_ALL,
+          });
         }}
       >
         Cancel
-      </OperationBtn>
-    </>
+      </TextEditorBtn>
+    </Wrapper>
   );
 };
 

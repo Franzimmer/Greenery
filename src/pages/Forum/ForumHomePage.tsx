@@ -3,7 +3,9 @@ import styled from "styled-components";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { OperationBtn } from "../Profile/cards/Cards";
+import { useDispatch } from "react-redux";
+import { popUpActions } from "../../reducer/popUpReducer";
+import { OperationBtn } from "../../components/GlobalStyles/button";
 import { Link } from "react-router-dom";
 import { firebase } from "../../utils/firebase";
 import { Post } from "./ForumPost";
@@ -34,19 +36,24 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
 `;
 export const ForumPostPageInfo = styled(Link)`
   text-decoration: none;
-  color: #5c836f;
+  color: #6a5125;
   transition: 0.25s;
+  ${ForumPostPage}:hover & {
+    text-decoration: underline;
+    transition: 0.25s;
+  }
 `;
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
+  transition: 0.25s;
   ${ForumPostPage}:hover & {
     transform: translateX(10px);
     transition: 0.25s;
   }
 `;
-const TypeText = styled.p`
-  color: #5c836f;
+export const TypeText = styled.p`
+  color: #6a5125;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -54,16 +61,20 @@ const TypeText = styled.p`
   height: 20px;
   text-align: center;
   line-height: 20px;
-  border: 1px solid #5c836f;
+  border: 1px solid #6a5125;
   border-radius: 10px;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  display: block;
-  color: #5c836f;
+  display: none;
+  color: #6a5125;
   width: 26px;
   height: 26px;
   background: none;
   margin-left: 12px;
+  ${ForumPostPage}:hover & {
+    display: block;
+    transition: 0.25s;
+  }
 `;
 const PostTypeBtn = styled.div`
   width: 26vw;
@@ -96,7 +107,19 @@ const PostTypeText = styled.p`
   position: relative;
   z-index: 1;
 `;
+const AddPostBtn = styled(OperationBtn)`
+  width: 100px;
+  display: block;
+  margin: 10px 11vw 20px auto;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.2);
+    transition: 0.25s;
+  }
+`;
+
 const ForumHomePage = () => {
+  const dispatch = useDispatch();
   const [initContent, setInitContent] = useState<string>("");
   const [initTitle, setInitTitle] = useState<string>("");
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
@@ -107,6 +130,9 @@ const ForumHomePage = () => {
     setInitTitle("");
     setInitContent("");
     setTextEditorDisplay(true);
+    dispatch({
+      type: popUpActions.SHOW_MASK,
+    });
   }
 
   useEffect(() => {
@@ -145,6 +171,7 @@ const ForumHomePage = () => {
           <PostTypeText>Trade</PostTypeText>
         </PostTypeBtn>
       </ForumSectionWrapper>
+      <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>
       {postList.length &&
         postList.map((post) => {
           return (
@@ -162,12 +189,11 @@ const ForumHomePage = () => {
             </ForumPostPage>
           );
         })}
-      <OperationBtn onClick={addNewPost}>Add Post</OperationBtn>
       {textEditorDisplay && (
         <TextEditor
           initContent={initContent}
           initTitle={initTitle}
-          editorMode={"post"}
+          editorMode={"AddPost"}
           setTextEditorDisplay={setTextEditorDisplay}
           postList={postList}
           setPostList={setPostList}
