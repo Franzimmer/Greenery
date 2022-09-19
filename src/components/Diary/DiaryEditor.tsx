@@ -34,7 +34,7 @@ const Wrapper = styled.div<WrapperProps>`
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
   z-index: 101;
-  background: none;
+  background: #f5f0ec;
 `;
 const AddImgInput = styled.input``;
 const FlexWrapper = styled.div`
@@ -104,7 +104,6 @@ const DiaryEditor = ({
     canvas!.selection = true;
     canvas.getObjects().forEach((obj) => {
       obj.set({ selectable: true, hoverCursor: "move" });
-      console.log(obj);
     });
   }
   function switchToViewMode() {
@@ -200,8 +199,18 @@ const DiaryEditor = ({
       let docSnap = await firebase.getDiary(diaryId);
       if (!docSnap.exists()) {
         resetCanvas();
-        switchToEditMode();
+        alert("No diary");
+        isSelf && switchToEditMode();
+        if (!isSelf) {
+          setDiariesData([]);
+          setDiaryDisplay(false);
+          setDiaryId(null);
+          dispatch({
+            type: popUpActions.HIDE_ALL,
+          });
+        }
       } else {
+        resetCanvas();
         setDiariesData(docSnap.data().pages);
         switchToViewMode();
         canvas?.loadFromJSON(docSnap.data().pages[0], () => {
@@ -216,6 +225,7 @@ const DiaryEditor = ({
     }
     if (diaryId) getDiary(diaryId);
   }, [diaryId]);
+  console.log(mode);
   return (
     <Wrapper $display={diaryDisplay}>
       <BtnWrapper>
@@ -244,19 +254,6 @@ const DiaryEditor = ({
             )}
             <DiaryIconButton onClick={() => load(diariesData.length - 1)}>
               <StyledFontAwesomeIcon icon={faBookmark} />
-            </DiaryIconButton>
-            <DiaryIconButton
-              onClick={() => {
-                resetCanvas();
-                setDiariesData([]);
-                setDiaryDisplay(false);
-                setDiaryId(null);
-                dispatch({
-                  type: popUpActions.HIDE_ALL,
-                });
-              }}
-            >
-              <StyledFontAwesomeIcon icon={faCircleXmark} />
             </DiaryIconButton>
           </>
         )}
@@ -309,6 +306,19 @@ const DiaryEditor = ({
             )}
           </>
         )}
+        <DiaryIconButton
+          onClick={() => {
+            resetCanvas();
+            setDiariesData([]);
+            setDiaryDisplay(false);
+            setDiaryId(null);
+            dispatch({
+              type: popUpActions.HIDE_ALL,
+            });
+          }}
+        >
+          <StyledFontAwesomeIcon icon={faCircleXmark} />
+        </DiaryIconButton>
       </BtnWrapper>
       <FlexWrapper>
         <Canvas setCanvas={setCanvas} />
