@@ -335,7 +335,7 @@ const firebase = {
     await updateDoc(docRef, { gallery: arrayRemove(link) });
   },
   async searchSpecies(input: string) {
-    const q = query(species, where("speciesName", "==", input));
+    const q = query(species, where("NAME", "==", input));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },

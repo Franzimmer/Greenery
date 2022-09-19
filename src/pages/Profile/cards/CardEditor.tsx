@@ -180,11 +180,9 @@ const CardEditor = ({
       return;
     }
     querySnapshot.forEach((doc) => {
-      waterRef.current!.value = doc.data().waterPref;
-      lightRef.current!.value = doc.data().lightPref;
+      waterRef.current!.value = doc.data().WATER;
+      lightRef.current!.value = doc.data().LIGHT;
       let currentTags = [...tags];
-      let newTags = currentTags.concat(doc.data().category);
-      setTags(newTags);
     });
   }
   function addTag() {
