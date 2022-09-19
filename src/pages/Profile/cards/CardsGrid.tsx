@@ -1,4 +1,4 @@
-import React, { ReactHTMLElement, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,11 +9,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../reducer";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
 import defaultImg from "../../../assets/default.jpg";
+import { useDispatch } from "react-redux";
 
 interface GridWrapperProps {
   mode: "grid" | "list";
@@ -40,6 +42,11 @@ const Card = styled.div<CardProps>`
   padding: 30px 15px 15px;
   cursor: pointer;
   position: relative;
+  transition: 0.25s;
+  &:hover {
+    transition: 0.25s;
+    transform: translateX(5px) translateY(5px);
+  }
 `;
 const NameText = styled(LabelText)`
   font-size: 20px;
@@ -169,6 +176,7 @@ const CardsGrid = ({
   editorToggle,
   favoriteToggle,
 }: CardsGridProps) => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [cardMaskDisplay, setCardMaskDisplay] = useState<boolean>(false);
 
@@ -185,7 +193,10 @@ const CardsGrid = ({
               key={card.cardId}
               mode={viewMode}
               show={filterCard(card.tags || [])}
-              onClick={(e) => {
+              onClick={() => {
+                dispatch({
+                  type: popUpActions.SHOW_MASK,
+                });
                 setDetailDisplay(true);
                 setDetailData(card);
               }}
@@ -244,6 +255,9 @@ const CardsGrid = ({
                   <EditIconBtn
                     show={cardMaskDisplay}
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
+                      dispatch({
+                        type: popUpActions.SHOW_MASK,
+                      });
                       setEditCardId(card.cardId);
                       editorToggle();
                       e.stopPropagation();

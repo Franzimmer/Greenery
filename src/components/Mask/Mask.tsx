@@ -10,11 +10,12 @@ const WindowMask = styled.div<WindowMaskProps>`
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.8);
-  position: absolute;
+  position: fixed;
   z-index: 100;
   top: 0;
   right: 0;
   display: ${(props) => (props.show ? "block" : "none")};
+  transition: 0.25s;
 `;
 
 const Mask = () => {

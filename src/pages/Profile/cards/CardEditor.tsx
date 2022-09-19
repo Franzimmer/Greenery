@@ -66,15 +66,22 @@ const TextArea = styled.textarea`
 `;
 const InputWrapper = styled.div`
   margin-bottom: 10px;
-  width: 100%;
+  width: 280px;
+`;
+const InputFlexWrapper = styled(InputWrapper)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 const Tag = styled.div`
   display: flex;
+  align-items: center;
   border: 1px solid #6a5125;
   background-color: #6a5125;
-  padding: 0px 2px;
-  border-radius: 7px;
-  height: 20px;
+  padding: 0px 5px;
+  border-radius: 14px;
+  height: 30px;
+  margin: 8px 8px 0px 0px;
 `;
 const TagText = styled.div`
   color: #fff;
@@ -83,8 +90,11 @@ const TagText = styled.div`
   border-radius: 7px;
 `;
 const TagsWrpper = styled.div`
+  width: 280px;
   display: flex;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 `;
 const BtnWrpper = styled.div`
   width: 280px;
@@ -106,13 +116,20 @@ const EditorBtn = styled(OperationBtn)`
   }
 `;
 const RemoveTagBtn = styled(CloseBtn)`
-  width: 14px;
-  height: 14px;
-  font-size: 14px;
-  line-height: 14px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
   margin-left 5px;
   background-color: rgba(0,0,0,0);
   border: none;
+  transition: 0.25s;
+  &:hover {
+    background-color: #fddba9;
+    border: 1px solid #fddba9;
+    color:#6A5125;
+    transition: 0.25s;
+  }
 `;
 interface FCProps {
   userId: string;
@@ -286,11 +303,11 @@ const CardEditor = ({
           }}
         />
       </InputWrapper>
-      <InputWrapper>
+      <InputFlexWrapper>
         <InputLabel>Name</InputLabel>
         <Input type="text" ref={nameRef} />
-      </InputWrapper>
-      <InputWrapper>
+      </InputFlexWrapper>
+      <InputFlexWrapper>
         <InputLabel>Species</InputLabel>
         <Input
           type="text"
@@ -302,7 +319,7 @@ const CardEditor = ({
             }
           }}
         />
-      </InputWrapper>
+      </InputFlexWrapper>
       <InputWrapper>
         <InputLabel>Water Preference</InputLabel>
         <TextArea ref={waterRef} placeholder="search species..." />
@@ -311,11 +328,11 @@ const CardEditor = ({
         <InputLabel>Light Preference</InputLabel>
         <TextArea ref={lightRef} placeholder="search species..." />
       </InputWrapper>
-      <InputWrapper>
+      <InputFlexWrapper>
         <InputLabel>Birthday</InputLabel>
         <Input type="date" ref={birthdayRef} />
-      </InputWrapper>
-      <InputWrapper>
+      </InputFlexWrapper>
+      <InputFlexWrapper>
         <InputLabel>Tags</InputLabel>
         <Input
           type="text"
@@ -327,14 +344,16 @@ const CardEditor = ({
             }
           }}
         />
-      </InputWrapper>
+      </InputFlexWrapper>
       <TagsWrpper>
         {tags &&
           tags.map((tag) => {
             return (
               <Tag key={tag} id={tag}>
                 <TagText>{tag}</TagText>
-                <RemoveTagBtn onClick={(e) => RemoveTag(e)}>X</RemoveTagBtn>
+                <RemoveTagBtn onClick={(e) => RemoveTag(e)}>
+                  &#215;
+                </RemoveTagBtn>
               </Tag>
             );
           })}
