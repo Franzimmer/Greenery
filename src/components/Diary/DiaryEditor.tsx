@@ -1,21 +1,72 @@
 import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import styled from "styled-components";
-import { OperationBtn } from "../../pages/Profile/cards/Cards";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRight,
+  faArrowLeft,
+  faPlus,
+  faPenToSquare,
+  faBookmark,
+  faFont,
+  faBold,
+  faImage,
+  faPalette,
+  faTrashCan,
+  faFileArrowUp,
+  faCircleXmark,
+  faArrowRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import { popUpActions } from "../../reducer/popUpReducer";
+import { IconButton, OperationBtn } from "../../components/GlobalStyles/button";
 import Canvas from "./Canvas";
 import { firebase } from "../../utils/firebase";
-const BtnWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import { useDispatch } from "react-redux";
+
 interface WrapperProps {
   $display: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
   display: ${(props) => (props.$display ? "flex" : "none")};
+  flex-direction: column;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 101;
+  background: none;
 `;
 const AddImgInput = styled.input``;
-
+const FlexWrapper = styled.div`
+  display: flex;
+`;
+const BtnWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 400px;
+  height: 40px;
+  padding: 0px 10px;
+`;
+const ArrowWrapper = styled(BtnWrapper)`
+  justify-content: center;
+  background: #f5f0ec;
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+  color: #5c836f;
+  width: 20px;
+  height: 20px;
+`;
+const DiaryIconButton = styled(IconButton)`
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  transition: 0.25s;
+  &:hover {
+    transform: translateY(-5px);
+    transition: 0.25s;
+  }
+`;
 interface DiaryEditorProps {
   isSelf: boolean;
   diaryDisplay: boolean;
@@ -30,6 +81,7 @@ const DiaryEditor = ({
   diaryId,
   setDiaryId,
 }: DiaryEditorProps) => {
+  const dispatch = useDispatch();
   //Fix Me: Ref or State?
   const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -52,6 +104,7 @@ const DiaryEditor = ({
     canvas!.selection = true;
     canvas.getObjects().forEach((obj) => {
       obj.set({ selectable: true, hoverCursor: "move" });
+      console.log(obj);
     });
   }
   function switchToViewMode() {
@@ -123,7 +176,6 @@ const DiaryEditor = ({
     setDiariesData(currentDiaries);
     switchToViewMode();
   }
-
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
       canvas!.selection = false;
@@ -166,79 +218,113 @@ const DiaryEditor = ({
   }, [diaryId]);
   return (
     <Wrapper $display={diaryDisplay}>
-      <Canvas setCanvas={setCanvas} />
       <BtnWrapper>
         {mode === "view" && (
           <>
             {isSelf && (
-              <OperationBtn
+              <DiaryIconButton
                 onClick={() => {
                   setSaveMode("saveEdit");
                   switchToEditMode();
                 }}
               >
-                Edit Page
-              </OperationBtn>
+                <StyledFontAwesomeIcon icon={faPenToSquare} />
+              </DiaryIconButton>
             )}
-            <OperationBtn onClick={() => switchPage("-")}>
-              Previous Page
-            </OperationBtn>
-            <OperationBtn onClick={() => switchPage("+")}>
-              Next Page
-            </OperationBtn>
             {isSelf && (
-              <OperationBtn
+              <DiaryIconButton
                 onClick={() => {
                   resetCanvas();
                   setSaveMode("saveAdd");
                   switchToEditMode();
                 }}
               >
-                Add New Page
-              </OperationBtn>
+                <StyledFontAwesomeIcon icon={faPlus} />
+              </DiaryIconButton>
             )}
-            <OperationBtn onClick={() => load(diariesData.length - 1)}>
-              Jump to Last Page
-            </OperationBtn>
+            <DiaryIconButton onClick={() => load(diariesData.length - 1)}>
+              <StyledFontAwesomeIcon icon={faBookmark} />
+            </DiaryIconButton>
+            <DiaryIconButton
+              onClick={() => {
+                resetCanvas();
+                setDiariesData([]);
+                setDiaryDisplay(false);
+                setDiaryId(null);
+                dispatch({
+                  type: popUpActions.HIDE_ALL,
+                });
+              }}
+            >
+              <StyledFontAwesomeIcon icon={faCircleXmark} />
+            </DiaryIconButton>
           </>
         )}
         {mode === "edit" && isSelf && (
           <>
-            <OperationBtn onClick={addText}>Add Text</OperationBtn>
-            <input type="color" ref={colorRef} onChange={changeTextColor} />
-            <OperationBtn onClick={changeTextWeight}>
-              Bold Switcher
-            </OperationBtn>
-            <br />
-            <AddImgInput
-              ref={fileRef}
-              type="file"
-              onChange={async () => {
-                await addImage();
-              }}
-            />
-            <OperationBtn onClick={removeItem}>Remove</OperationBtn>
-            <OperationBtn onClick={resetCanvas}>Reset</OperationBtn>
+            <DiaryIconButton onClick={addText}>
+              <StyledFontAwesomeIcon icon={faFont} />
+            </DiaryIconButton>
+            <DiaryIconButton htmlFor="palette">
+              <StyledFontAwesomeIcon icon={faPalette} />
+              <input
+                type="color"
+                id="palette"
+                ref={colorRef}
+                onChange={changeTextColor}
+                hidden
+              />
+            </DiaryIconButton>
+            <DiaryIconButton onClick={changeTextWeight}>
+              <StyledFontAwesomeIcon icon={faBold} />
+            </DiaryIconButton>
+            <DiaryIconButton htmlFor="image">
+              <StyledFontAwesomeIcon icon={faImage} />
+              <AddImgInput
+                id="image"
+                ref={fileRef}
+                type="file"
+                onChange={async () => {
+                  await addImage();
+                }}
+                hidden
+              />
+            </DiaryIconButton>
+
+            <DiaryIconButton onClick={removeItem}>
+              <StyledFontAwesomeIcon icon={faTrashCan} />
+            </DiaryIconButton>
+            <DiaryIconButton onClick={cancelEdit}>
+              <StyledFontAwesomeIcon icon={faArrowRotateLeft} />
+            </DiaryIconButton>
             {saveMode === "saveAdd" && (
-              <OperationBtn onClick={save}>Save</OperationBtn>
+              <DiaryIconButton onClick={save}>
+                <StyledFontAwesomeIcon icon={faFileArrowUp} />
+              </DiaryIconButton>
             )}
             {saveMode === "saveEdit" && (
-              <OperationBtn onClick={saveEdit}>Save Edit</OperationBtn>
+              <DiaryIconButton onClick={saveEdit}>
+                <StyledFontAwesomeIcon icon={faFileArrowUp} />
+              </DiaryIconButton>
             )}
-            <OperationBtn onClick={cancelEdit}>Cancel</OperationBtn>
           </>
         )}
-        <OperationBtn
-          onClick={() => {
-            resetCanvas();
-            setDiariesData([]);
-            setDiaryDisplay(false);
-            setDiaryId(null);
-          }}
-        >
-          Close
-        </OperationBtn>
       </BtnWrapper>
+      <FlexWrapper>
+        <Canvas setCanvas={setCanvas} />
+      </FlexWrapper>
+      <ArrowWrapper>
+        {mode === "view" && (
+          <>
+            <DiaryIconButton onClick={() => switchPage("-")}>
+              <StyledFontAwesomeIcon icon={faArrowLeft} />
+            </DiaryIconButton>
+            <DiaryIconButton onClick={() => switchPage("+")}>
+              <StyledFontAwesomeIcon icon={faArrowRight} />
+            </DiaryIconButton>
+          </>
+        )}
+      </ArrowWrapper>
     </Wrapper>
   );
 };

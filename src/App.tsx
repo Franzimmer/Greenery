@@ -42,13 +42,13 @@ const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
     padding: 0;
-    background: #F5F0EC;
     box-sizing: border-box;
     font-family: Montserrat;
   }
   body {
     width: 100%;
     height: 100%;
+    background: #F5F0EC;
   }
 `;
 

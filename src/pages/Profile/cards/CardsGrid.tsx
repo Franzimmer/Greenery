@@ -225,8 +225,12 @@ const CardsGrid = ({
                 <DiaryIconBtn
                   show={cardMaskDisplay}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    dispatch({
+                      type: popUpActions.SHOW_MASK,
+                    });
                     setDiaryDisplay(true);
                     setDiaryId(card.cardId);
+                    toggleMask();
                     e.stopPropagation();
                   }}
                 >
@@ -259,6 +263,7 @@ const CardsGrid = ({
                         type: popUpActions.SHOW_MASK,
                       });
                       setEditCardId(card.cardId);
+                      toggleMask();
                       editorToggle();
                       e.stopPropagation();
                     }}

@@ -54,7 +54,7 @@ const Description = styled(Text)`
   border-left: 3px solid #5c836f;
 `;
 const PlantImg = styled.img`
-  width: 100%;
+  width: 280px;
   height: auto;
   margin auto;
 `;
@@ -123,7 +123,12 @@ const DetailedCard = ({
         )}
         <FlexBtnWrapper>
           {isSelf && (
-            <DetailOperationBtn onClick={() => setPropagateDisplay(true)}>
+            <DetailOperationBtn
+              onClick={() => {
+                setPropagateDisplay(true);
+                setDetailDisplay(false);
+              }}
+            >
               propagate
             </DetailOperationBtn>
           )}
