@@ -1,23 +1,47 @@
 import React from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
-import {
-  GridWrapper,
-  Card,
-  PlantImg,
-  Text,
-  Tag,
-  TagsWrapper,
-  OperationBtn,
-  FavoriteButton,
-} from "../cards/Cards";
-import { defaultState } from "../Profile";
+import { PlantImg, Tag, TagsWrapper, FavoriteButton } from "../cards/Cards";
+import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
+import { IconButton } from "../../../components/GlobalStyles/button";
+import { defaultState, TabDisplayType } from "../Profile";
 import defaultImg from "../../../assets/default.jpg";
 
+const UserLink = styled(Link)`
+  text-decoration: none;
+  color: #5c836f;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+const FavIconButton = styled(IconButton)`
+  position: absolute;
+  top: 193px;
+  right: 8px;
+  margin: 5px;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+`;
+const DiaryIconBtn = styled(FavIconButton)`
+  top: 250px;
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+  color: #5c836f;
+  width: 26px;
+  height: 26px;
+  transition: height 0.25s;
+`;
 interface FavGridsProps {
   isSelf: boolean;
   favCards: PlantCard[];
@@ -25,7 +49,7 @@ interface FavGridsProps {
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setTabDisplay: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({
@@ -50,57 +74,63 @@ const FavGrids = ({
     alert("已取消收藏！");
   }
   return (
-    <GridWrapper>
+    <GridWrapper mode={"grid"}>
       {favCards &&
         favCards.map((card: PlantCard) => {
           return (
             <Card
+              mode={"grid"}
               key={card.cardId}
               id={card.cardId!}
               show={true}
-              onClick={(e) => {
+              onClick={() => {
                 setDetailDisplay(true);
                 setDetailData(card);
+                dispatch({
+                  type: popUpActions.SHOW_MASK,
+                });
               }}
             >
               <PlantImg path={card.plantPhoto || defaultImg} />
-              <Text>
-                <Link
+              <NameText>
+                <UserLink
                   to={`/profile/${card.ownerId}`}
                   onClick={() => {
                     setTabDisplay(defaultState);
                   }}
                 >
                   {findOwnerName(card.ownerId)}
-                </Link>
-                的{card.plantName}
-              </Text>
-              <Text>品種: {card.species}</Text>
+                </UserLink>
+                's {card.plantName}
+              </NameText>
+              <SpeciesText>{card.species}</SpeciesText>
               <TagsWrapper>
                 {card?.tags?.length !== 0 &&
                   card.tags?.map((tag) => {
                     return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                   })}
               </TagsWrapper>
-              <OperationBtn
+              <DiaryIconBtn
                 onClick={(e) => {
                   setDiaryDisplay(true);
                   setDiaryId(card.cardId);
+                  dispatch({
+                    type: popUpActions.SHOW_MASK,
+                  });
                   e.stopPropagation();
                 }}
               >
-                Diary
-              </OperationBtn>
+                <StyledFontAwesomeIcon icon={faBook} />
+              </DiaryIconBtn>
               {isSelf && (
-                <FavoriteButton
-                  show={true}
+                <FavIconButton
                   onClick={(e) => {
                     removeFavorite(card.cardId!);
                     e.stopPropagation();
                   }}
                 >
-                  Favorite
-                </FavoriteButton>
+                  <StyledFontAwesomeIcon icon={faBookmark} />
+                </FavIconButton>
               )}
             </Card>
           );

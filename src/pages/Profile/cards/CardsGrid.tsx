@@ -1,25 +1,162 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { RootState } from "../../../reducer";
-import { PlantCard } from "../../../types/plantCardType";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  GridWrapper,
-  Card,
-  PlantImg,
-  Text,
-  Tag,
-  TagsWrapper,
-  OperationBtn,
-  FavoriteButton,
-} from "./Cards";
+  faBook,
+  faPenToSquare,
+  faBookmark,
+  faEllipsis,
+} from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../reducer";
+import { popUpActions } from "../../../reducer/popUpReducer";
+import { PlantCard } from "../../../types/plantCardType";
+import { PlantImg, Tag, TagsWrapper } from "./Cards";
+import { IconButton } from "../../../components/GlobalStyles/button";
+import { LabelText } from "../../../components/GlobalStyles/text";
 import defaultImg from "../../../assets/default.jpg";
+import { useDispatch } from "react-redux";
 
-const CheckBox = styled.input``;
+interface GridWrapperProps {
+  mode: "grid" | "list";
+}
+export const GridWrapper = styled.div<GridWrapperProps>`
+  display: ${(props) => (props.mode === "grid" ? "grid" : "flex")};
+  grid-template-columns: repeat(auto-fill, 280px);
+  gap: 20px;
+  margin-top: 20px;
+  flex-direction: column;
+`;
+interface CardProps {
+  show?: boolean;
+  mode: "grid" | "list";
+}
+export const Card = styled.div<CardProps>`
+  width: ${(props) => (props.mode === "grid" ? "280px" : "60vw")};
+  display: ${(props) => (props.show ? "flex" : "none")};
+  flex-direction: ${(props) => (props.mode === "grid" ? "column" : "row")};
+  justify-content: ${(props) =>
+    props.mode === "grid" ? "center" : "flex-start"};
+  align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
+  border: 1.5px solid #5c836f;
+  border-radius: 15px;
+  padding: ${(props) => (props.mode === "list" ? "15px" : "30px 15px 15px")};
+  cursor: pointer;
+  position: relative;
+  transition: 0.25s;
+  &:hover {
+    transition: 0.25s;
+    transform: translateX(5px) translateY(5px);
+  }
+`;
+export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
+  font-size: 20px;
+  color: #5c836f;
+  margin-right: 5px;
+  margin-left: ${(props) => props.mode === "list" && "25px"};
+`;
+export const SpeciesText = styled.div`
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-style: italic;
+  color: #999;
+  margin-right: 10px;
+`;
+interface MaskAndIconBtnProps {
+  show?: boolean;
+  fav?: boolean;
+  mode?: "grid" | "list";
+}
+const EditIconBtn = styled(IconButton)<MaskAndIconBtnProps>`
+  display: ${(props) => (props.show ? "block" : "none")};
+  background: rgba(0, 0, 0, 0);
+  margin: 5px;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+`;
+const DiaryIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>``;
+const BookMarkIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>`
+  & * {
+    color: ${(props) => (props.fav ? "#FDDBA9" : "#fff")};
+  }
+`;
+const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0);
+  // box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+`;
+const CardMask = styled.div<MaskAndIconBtnProps>`
+  position: absolute;
+  display: ${(props) => (props.show ? "block" : "none")};
+  border-radius: 13px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+const StyledMenuIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
+  background: rgba(0, 0, 0, 0);
+  color: ${(props) => (props.show ? "#fff" : "#5c836f")};
+  width: 30px;
+  height: 30px;
+  transition: 0.25s;
+  ${CardMenuIcon}:hover & {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
+  display: ${(props) => props.show && "block"};
+  background: rgba(0, 0, 0, 0);
+  z-index: 1;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  transition: height 0.25s;
+`;
+const CardCheck = styled.input<MaskAndIconBtnProps>`
+  position: absolute;
+  top: ${(props) => (props.mode === "list" ? "18px" : "8px")};
+  left: 15px;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  &:checked {
+    accent-color: #6a5125;
+  }
+`;
+const IconWrapper = styled.div<MaskAndIconBtnProps>`
+  display: flex;
+  flex-direction: ${(props) => (props.mode === "list" ? "row" : "column")};
+  justify-content: space-around;
+  align-items: center;
+  width: ${(props) => (props.mode === "list" ? "200px" : "40px")};
+  height: ${(props) => (props.show ? "60%" : "30px")};
+  padding: 5px;
+  border-radius: 15px;
+  position: absolute;
+  bottom: ${(props) =>
+    props.mode === "list" ? "15px" : !props.show ? "65px" : "15px"};
+  right: 20px;
+  ${(props) =>
+    props.mode === "grid" ? "20px" : !props.show ? "-50px" : "65px"};
+  background: rgba(0, 0, 0, 0);
+  box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+  transition: 0.25s height;
+`;
 type CheckList = Record<string, boolean>;
-
 interface CardsGridProps {
   isSelf: boolean;
+  viewMode: "grid" | "list";
   cardList: PlantCard[];
   checkList: CheckList;
   filterCard: (tagList: string[]) => boolean;
@@ -34,6 +171,7 @@ interface CardsGridProps {
 }
 const CardsGrid = ({
   isSelf,
+  viewMode,
   cardList,
   checkList,
   filterCard,
@@ -46,23 +184,35 @@ const CardsGrid = ({
   editorToggle,
   favoriteToggle,
 }: CardsGridProps) => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [cardMaskDisplay, setCardMaskDisplay] = useState<boolean>(false);
+
+  function toggleMask() {
+    if (cardMaskDisplay) setCardMaskDisplay(false);
+    else if (!cardMaskDisplay) setCardMaskDisplay(true);
+  }
   return (
-    <GridWrapper>
+    <GridWrapper mode={viewMode}>
       {cardList &&
         cardList.map((card) => {
           return (
             <Card
               key={card.cardId}
+              mode={viewMode}
               show={filterCard(card.tags || [])}
-              onClick={(e) => {
+              onClick={() => {
+                dispatch({
+                  type: popUpActions.SHOW_MASK,
+                });
                 setDetailDisplay(true);
                 setDetailData(card);
               }}
             >
               {isSelf && (
-                <CheckBox
+                <CardCheck
                   type="checkbox"
+                  mode={viewMode}
                   checked={checkList[card.cardId!]}
                   onClick={(event) => {
                     switchOneCheck(card.cardId!);
@@ -70,45 +220,69 @@ const CardsGrid = ({
                   }}
                 />
               )}
-              <PlantImg path={card.plantPhoto || defaultImg} />
-              <Text>名字: {card.plantName}</Text>
-              <Text>品種: {card.species}</Text>
-              <TagsWrapper>
+              <CardMask show={cardMaskDisplay} />
+              {viewMode === "grid" && (
+                <PlantImg path={card.plantPhoto || defaultImg} />
+              )}
+              <NameText mode={viewMode}>{card.plantName}</NameText>
+              <SpeciesText>{card.species}</SpeciesText>
+              <TagsWrapper viewMode={viewMode}>
                 {card?.tags?.length !== 0 &&
                   card.tags?.map((tag: string) => {
                     return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                   })}
               </TagsWrapper>
-              <OperationBtn
-                onClick={(e) => {
-                  setDiaryDisplay(true);
-                  setDiaryId(card.cardId);
-                  e.stopPropagation();
-                }}
-              >
-                Diary
-              </OperationBtn>
-              {isSelf && (
-                <OperationBtn
+              <IconWrapper show={cardMaskDisplay} mode={viewMode}>
+                <DiaryIconBtn
+                  show={cardMaskDisplay}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    let button = e.target as HTMLButtonElement;
-                    setEditCardId(button.parentElement!.id);
-                    editorToggle();
+                    dispatch({
+                      type: popUpActions.SHOW_MASK,
+                    });
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
+                    toggleMask();
                     e.stopPropagation();
                   }}
                 >
-                  Edit
-                </OperationBtn>
-              )}
-              <FavoriteButton
-                show={userInfo.favoriteCards.includes(card.cardId!)}
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  favoriteToggle(card.cardId!);
-                  e.stopPropagation();
-                }}
-              >
-                Favorite
-              </FavoriteButton>
+                  <StyledFontAwesomeIcon icon={faBook} />
+                </DiaryIconBtn>
+                <BookMarkIconBtn
+                  show={cardMaskDisplay}
+                  fav={userInfo.favoriteCards.includes(card.cardId!)}
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    favoriteToggle(card.cardId!);
+                    e.stopPropagation();
+                  }}
+                >
+                  <StyledFontAwesomeIcon icon={faBookmark} />
+                </BookMarkIconBtn>
+                <CardMenuIcon
+                  show={cardMaskDisplay}
+                  onClick={(e) => {
+                    toggleMask();
+                    e.stopPropagation();
+                  }}
+                >
+                  <StyledMenuIcon icon={faEllipsis} show={cardMaskDisplay} />
+                </CardMenuIcon>
+                {isSelf && (
+                  <EditIconBtn
+                    show={cardMaskDisplay}
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
+                      dispatch({
+                        type: popUpActions.SHOW_MASK,
+                      });
+                      setEditCardId(card.cardId);
+                      toggleMask();
+                      editorToggle();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <StyledFontAwesomeIcon icon={faPenToSquare} />
+                  </EditIconBtn>
+                )}
+              </IconWrapper>
             </Card>
           );
         })}

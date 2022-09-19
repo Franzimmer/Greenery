@@ -29,8 +29,10 @@ const Wrapper = styled.div<WrapperProps>`
   border-radius: 20px;
   margin-top: 100px;
   position: fixed;
+  z-index: 2;
+  top: 0px;
   right: 10px;
-  display: ${(props) => (!props.show && "none")};
+  display: ${(props) => !props.show && "none"};
   transition: 0.5s max-height ease-in;
 `;
 const Tabs = styled.div`

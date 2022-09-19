@@ -10,7 +10,7 @@ const HeaderWrapper = styled.div`
   width: 100vw;
   height: 100px;
   position: fixed;
-  top:0;
+  top: 0;
   z-index: 99;
 `;
 const LinkWrapper = styled.div`
@@ -35,7 +35,6 @@ const HeaderLink = styled(Link)`
     content: "";
     height: 3px;
     background: #7bc09a;
-
     position: absolute;
     bottom: -4px;
     margin: 0 auto;
@@ -69,6 +68,7 @@ interface SideBarBtnDivProps {
 const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
   width: ${(props) => (props.sideBarDisplay ? "0px" : "70px")};
   height: 1px;
+  background: #fff;
   transform: ${(props) =>
     props.sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
   position: relative;
