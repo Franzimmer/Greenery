@@ -9,7 +9,7 @@ import { popUpActions } from "../../../reducer/popUpReducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
-import { PlantImg, Tag, TagsWrapper, FavoriteButton } from "../cards/Cards";
+import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
 import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { defaultState, TabDisplayType } from "../Profile";
@@ -33,14 +33,13 @@ const FavIconButton = styled(IconButton)`
     transition: 0.25s;
   }
 `;
-const DiaryIconBtn = styled(FavIconButton)`
+export const DiaryIconBtn = styled(FavIconButton)`
   top: 250px;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   color: #5c836f;
   width: 26px;
   height: 26px;
-  transition: height 0.25s;
 `;
 interface FavGridsProps {
   isSelf: boolean;

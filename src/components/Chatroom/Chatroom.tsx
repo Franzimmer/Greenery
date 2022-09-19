@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../reducer/index";
-import { UserInfo } from "../../../types/userInfoType";
-import { popUpActions } from "../../../reducer/popUpReducer";
-import { firebase, chatrooms } from "../../../utils/firebase";
+import { RootState } from "../../reducer/index";
+import { UserInfo } from "../../types/userInfoType";
+import { popUpActions } from "../../reducer/popUpReducer";
+import { firebase, chatrooms } from "../../utils/firebase";
 import {
   onSnapshot,
   query,
@@ -13,7 +13,7 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
-import { CloseBtn } from "../../../components/GlobalStyles/button";
+import { CloseBtn } from "../GlobalStyles/button";
 
 export interface message {
   userId: string;
@@ -103,15 +103,16 @@ const ChatBtn = styled(CloseBtn)`
     transform: scale(1.3);
   }
 `;
+interface ChatroomProps {
+  targetInfo: UserInfo;
+  chatroomDisplay: boolean;
+  toggleChatroom: (targetId: string) => void;
+}
 const Chatroom = ({
   targetInfo,
   chatroomDisplay,
   toggleChatroom,
-}: {
-  targetInfo: UserInfo;
-  chatroomDisplay: boolean;
-  toggleChatroom: (targetId: string) => void;
-}) => {
+}: ChatroomProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const selfId = userInfo.userId;

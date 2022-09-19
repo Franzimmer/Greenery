@@ -4,6 +4,7 @@ import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 const HeaderWrapper = styled.div`
+  background: #f5f0ec;
   display: flex;
   align-items: center;
   justify-content: space-between;
