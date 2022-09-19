@@ -23,6 +23,7 @@ const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
   flex-direction: column;
   justify-content: space-around;
   padding: 30px;
+  background: #f5f0ec;
   display: ${(props) => (props.$display ? "flex" : "none")};
 `;
 const FlexWrapper = styled.div`

@@ -31,6 +31,7 @@ const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
   justify-content: space-around;
   align-items: center;
   padding: 30px;
+  background: #f5f0ec;
 `;
 const InputLabel = styled.span`
   color: #6a5125;

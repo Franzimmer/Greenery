@@ -69,6 +69,7 @@ interface SideBarBtnDivProps {
 const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
   width: ${(props) => (props.sideBarDisplay ? "0px" : "70px")};
   height: 1px;
+  background: #fff;
   transform: ${(props) =>
     props.sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
   position: relative;
