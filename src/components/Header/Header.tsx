@@ -4,7 +4,6 @@ import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 const HeaderWrapper = styled.div`
-  background: #f5f0ec;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,6 +17,11 @@ const LinkWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
+const LogoLinkWrapper = styled(LinkWrapper)`
+  background: linear-gradient(90deg, #7bc09a, #e4e783);
+  opacity: 0.8;
+  height: 80px;
+`;
 const HeaderLink = styled(Link)`
   margin: 10px;
   text-decoration: none;
@@ -27,7 +31,7 @@ const HeaderLink = styled(Link)`
   color: #6a5125;
   position: relative;
   &:hover {
-    color: #7bc09a;
+    color: #5c836f;
     &::after {
       width: 100%;
     }
@@ -35,7 +39,7 @@ const HeaderLink = styled(Link)`
   &::after {
     content: "";
     height: 3px;
-    background: #7bc09a;
+    background: #5c836f;
     position: absolute;
     bottom: -4px;
     margin: 0 auto;
@@ -110,16 +114,15 @@ const Header = ({
   sideBarDisplay,
 }: HeaderProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  // const [isClicked, setIsClicked] = useState<boolean>(false);
   function sideBarToggle() {
     if (sideBarDisplay) setSideBarDisplay(false);
     if (!sideBarDisplay) setSideBarDisplay(true);
   }
   return (
     <HeaderWrapper>
-      <LinkWrapper>
+      <LogoLinkWrapper>
         <HeaderLink to="/">GREENERY</HeaderLink>
-      </LinkWrapper>
+      </LogoLinkWrapper>
       <LinkWrapper>
         <HeaderLink to="/forum">Forum</HeaderLink>
         {!isLoggedIn && <HeaderLink to="/login">LogIn</HeaderLink>}
