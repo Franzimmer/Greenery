@@ -73,8 +73,9 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 interface UserInfoProps {
   id: string | undefined;
   isSelf: boolean;
+  isLoggedIn: boolean;
 }
-const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
+const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -148,7 +149,6 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
     }
     getUserInfo();
   }, [id, isSelf]);
-
   useEffect(() => {
     if (isSelf) {
       setUserData(userInfo);
@@ -193,10 +193,10 @@ const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
           <StyledFontAwesomeIcon icon={faPenToSquare} />
         </NameButtonLabel>
       )}
-      {!isSelf && !isFollowed && (
+      {isLoggedIn && !isSelf && !isFollowed && (
         <UserInfoBtn onClick={followStatusToggle}>Follow</UserInfoBtn>
       )}
-      {!isSelf && isFollowed && (
+      {isLoggedIn && !isSelf && isFollowed && (
         <UserInfoBtn onClick={followStatusToggle}>Unfollow</UserInfoBtn>
       )}
       {isSelf && <UserInfoBtn onClick={userSignOut}>Log Out</UserInfoBtn>}

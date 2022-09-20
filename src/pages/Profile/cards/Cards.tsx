@@ -95,8 +95,9 @@ type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
   isSelf: boolean;
+  isLoggedIn: boolean;
 }
-const Cards = ({ id, isSelf }: CardsGridProps) => {
+const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
   const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);

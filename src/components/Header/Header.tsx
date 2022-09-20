@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
@@ -115,6 +115,10 @@ const Header = ({
 }: HeaderProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   function sideBarToggle() {
+    if (!isLoggedIn) {
+      alert("Please Log In First");
+      return;
+    }
     if (sideBarDisplay) setSideBarDisplay(false);
     if (!sideBarDisplay) setSideBarDisplay(true);
   }

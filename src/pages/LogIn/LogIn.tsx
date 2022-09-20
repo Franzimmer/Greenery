@@ -41,6 +41,7 @@ const LogInPanel = styled.div`
   flex-direction: column;
   align-items: center;
   width: 300px;
+  height: fit-content;
   border: 1px solid #6a5125;
   border-radius: 8px;
   padding: 24px;
