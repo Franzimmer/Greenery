@@ -102,7 +102,12 @@ function App() {
           sideBarDisplay={sideBarDisplay}
           setSideBarDisplay={setSideBarDisplay}
         ></Header>
-        {<SideBarWrapper sideBarDisplay={sideBarDisplay} />}
+        {
+          <SideBarWrapper
+            isLoggedIn={isLoggedIn}
+            sideBarDisplay={sideBarDisplay}
+          />
+        }
         <Outlet />
       </Provider>
     </>

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
+import { auth } from "../../utils/firebase";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
@@ -35,16 +36,30 @@ const Profile = () => {
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const { id } = useParams();
   const [isSelf, setIsSelf] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     if (id === userInfo.userId) setIsSelf(true);
     else setIsSelf(false);
-  }, [id]);
+  }, [id, userInfo]);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async function(user) {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+  }, []);
+  console.log(isSelf);
   return (
     <MainWrapper>
-      <UserInfoSection id={id} isSelf={isSelf} />
+      <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
       <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-      {tabDisplay.Cards && <Cards id={id} isSelf={isSelf} />}
+      {tabDisplay.Cards && (
+        <Cards id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
+      )}
       {tabDisplay.Calendar && <CalendarApp id={id!} />}
       {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
       {tabDisplay.Favorites && (

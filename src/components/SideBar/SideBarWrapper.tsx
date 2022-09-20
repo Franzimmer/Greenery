@@ -73,7 +73,14 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<
   color: ${(props) => (props.$tab ? "#5c836f" : "#aaa")};
   height: 25px;
 `;
-const SidebarWrapper = ({ sideBarDisplay }: { sideBarDisplay: boolean }) => {
+interface SidebarWrapperProps {
+  sideBarDisplay: boolean;
+  isLoggedIn: boolean;
+}
+const SidebarWrapper = ({
+  sideBarDisplay,
+  isLoggedIn,
+}: SidebarWrapperProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const notices = useSelector((state: RootState) => state.notifications);
   const [followInfos, setFollowInfos] = useState<UserInfo[]>([]);
