@@ -38,7 +38,7 @@ export const Card = styled.div<CardProps>`
   justify-content: ${(props) =>
     props.mode === "grid" ? "center" : "flex-start"};
   align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
-  border: 1.5px solid #5c836f;
+  background: #fff;
   border-radius: 15px;
   padding: ${(props) => (props.mode === "list" ? "15px" : "30px 15px 15px")};
   cursor: pointer;

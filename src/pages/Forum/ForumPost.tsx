@@ -72,6 +72,11 @@ const Content = styled.div`
     margin-top: 0.75em;
   }
 
+  & p {
+    font-size: 16px;
+    line-height: 1.1;
+  }
+
   & h1,
   h2,
   h3 {
@@ -401,7 +406,7 @@ const ForumPost = () => {
                   {userInfo.userId !== comment.authorId && (
                     <OpenChatRoomBtn
                       onClick={() => {
-                        openChatroom(authorInfo!.userId);
+                        openChatroom(comment.authorId);
                       }}
                     >
                       Open Chatroom

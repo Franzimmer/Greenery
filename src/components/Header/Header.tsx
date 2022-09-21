@@ -18,17 +18,17 @@ const LinkWrapper = styled.div`
   align-items: center;
 `;
 const LogoLinkWrapper = styled(LinkWrapper)`
-  background: linear-gradient(90deg, #7bc09a, #e4e783);
+  background: linear-gradient(90deg, #fddba9, #e4e783);
   opacity: 0.8;
   height: 80px;
 `;
 const HeaderLink = styled(Link)`
   margin: 10px;
   text-decoration: none;
-  font-weight: 700;
   font-size: 26px;
   letter-spacing: 1px;
   color: #6a5125;
+  mix-blend-mode: difference;
   position: relative;
   &:hover {
     color: #5c836f;
@@ -124,9 +124,9 @@ const Header = ({
   }
   return (
     <HeaderWrapper>
-      <LogoLinkWrapper>
+      <LinkWrapper>
         <HeaderLink to="/">GREENERY</HeaderLink>
-      </LogoLinkWrapper>
+      </LinkWrapper>
       <LinkWrapper>
         <HeaderLink to="/forum">Forum</HeaderLink>
         {!isLoggedIn && <HeaderLink to="/login">LogIn</HeaderLink>}
