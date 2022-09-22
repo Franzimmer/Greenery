@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
-import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBook,
+  faBookmark,
+  faAnglesDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { UserInfoActions } from "../../actions/userInfoActions";
 import { PlantCard } from "../../types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
+import { popUpActions } from "../../reducer/popUpReducer";
 import {
   FavIconButton,
   DiaryIconBtn,
@@ -33,11 +38,39 @@ const Banner = styled.div`
   top: 0;
   left: 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  height: 95vh;
   padding: 10vh 10vw;
+`;
+const jump = keyframes`
+  0% {
+    transform: translateX(-45vw) translateY(0);
+  }
+  50% {
+    transform: translateX(-45vw) translateY(-8px);
+  }
+  100% {
+    transform: translateX(-45vw) translateY(0);
+  }
+`;
+const ExploreWrapper = styled.div`
+  display: flex;
+  align-self: flex-end;
+  width: 100px;
+  color: #224229;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  animation: 1s ease ${jump} infinite;
+`;
+const ArrowIcon = styled(FontAwesomeIcon)`
+  color: #224229;
+  width: 20px;
+  height: 20px;
+  margin: 0 12px 0 0;
 `;
 const MainStyleWrapper = styled.div`
   display: flex;
@@ -67,9 +100,9 @@ const MainDescription = styled.p`
 `;
 const FeatureWrapper = styled.div`
   width: 100%;
-  margin: 110vh 0 60px 0;
   display: flex;
   justify-content: space-between;
+  margin: 0 0 120px 0;
 `;
 const FeatureTextWrapper = styled(FeatureWrapper)`
   margin: 0 0 0 72px;
@@ -96,7 +129,7 @@ const QuoteSection = styled.div`
   align-items: center;
   border-top: 1px solid #224229;
   border-bottom: 1px solid #224229;
-  margin: 0 0 48px 0;
+  margin: 110vh 0 60px 0;
 `;
 const QuoteText = styled.div`
   font-size: 26px;
@@ -155,12 +188,12 @@ const DecorationTaquila = styled.img`
 const CardsWrapper = styled.div``;
 const CardsFlexWrpper = styled.div`
   width: 80vw;
-  padding: 24px 48px;
+  padding: 24px;
   overflow-x: auto;
   display: flex;
-  border-radius: 10px;
-  box-shadow: inset 25px 0px 30px -25px rgba(0, 0, 0, 0.45),
-    inset -25px 0px 30px -25px rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  box-shadow: inset 25px 0px 20px -30px rgba(0, 0, 0, 0.45),
+    inset -25px 0px 20px -30px rgba(0, 0, 0, 0.45);
   & ${Card} {
     margin-right: 24px;
   }
@@ -174,6 +207,22 @@ const SectionTitle = styled.p`
   font-size: 26px;
   letter-spacing: 2px;
   line-height: 30px;
+`;
+const scrollYellow = keyframes`
+  from {
+    translateY(0px)
+  }
+  to {
+    translateY(-20px)
+  }
+`;
+const scrollMain = keyframes`
+  from {
+    translateY(0px)
+  }
+  to {
+    translateY(-20px)
+  }
 `;
 const Home = () => {
   const dispatch = useDispatch();
@@ -236,7 +285,15 @@ const Home = () => {
         </MainStyleWrapper>
         <DecorationCoco src={coconut}></DecorationCoco>
         <DecorationRubber src={rubber}></DecorationRubber>
+        <ExploreWrapper>
+          <ArrowIcon icon={faAnglesDown} />
+          <MainDescription>Explore</MainDescription>
+        </ExploreWrapper>
       </Banner>
+      <QuoteSection>
+        <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
+        <QuoteAutorText>~ Audrey Hepburn</QuoteAutorText>
+      </QuoteSection>
       <FeatureWrapper>
         <FeatureImg src={feature} />
         <FeatureTextWrapper>
@@ -266,12 +323,8 @@ const Home = () => {
           </MainDescription>
         </FeatureTextWrapper>
       </FeatureWrapper>
-      <QuoteSection>
-        <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
-        <QuoteAutorText>- Audrey Hepburn</QuoteAutorText>
-      </QuoteSection>
       <CardsWrapper>
-        <SectionTitle>Our Most Beloved Ones</SectionTitle>
+        <SectionTitle>Our Most Beloved Plants</SectionTitle>
         <CardsFlexWrpper>
           {favCards.length !== 0 &&
             favCards.map((card) => {
@@ -284,6 +337,9 @@ const Home = () => {
                   onClick={(e) => {
                     setDetailDisplay(true);
                     setDetailData(card);
+                    dispatch({
+                      type: popUpActions.SHOW_MASK,
+                    });
                   }}
                 >
                   <PlantImg path={card.plantPhoto || defaultImg} />
@@ -299,6 +355,9 @@ const Home = () => {
                     onClick={(e) => {
                       setDiaryDisplay(true);
                       setDiaryId(card.cardId);
+                      dispatch({
+                        type: popUpActions.SHOW_MASK,
+                      });
                       e.stopPropagation();
                     }}
                   >
