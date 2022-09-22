@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
@@ -19,6 +21,9 @@ import defaultImg from "../../assets/default.jpg";
 import rubber from "./rubber.png";
 import left from "./left.png";
 import main from "./main.jpeg";
+import feature from "./feature.jpeg";
+import taquila from "./taquila.png";
+import coconut from "./coconut.png";
 const Wrapper = styled.div`
   width: 80vw;
   margin: 150px auto 50px;
@@ -46,6 +51,7 @@ const MainStyle = styled.img`
 const MainDescriptionWrapper = styled.div`
   width: 180px;
   margin: 0 0 0 24px;
+  color: #224229;
 `;
 const MainDescriptionTitle = styled.p`
   font-size: 36px;
@@ -56,6 +62,53 @@ const MainDescription = styled.p`
   font-size: 14px;
   letter-spacing: 1px;
   line-height: 22px;
+  display: flex;
+  align-items: center;
+`;
+const FeatureWrapper = styled.div`
+  width: 100%;
+  margin: 110vh 0 60px 0;
+  display: flex;
+  justify-content: space-between;
+`;
+const FeatureTextWrapper = styled(FeatureWrapper)`
+  margin: 0 0 0 72px;
+  flex-direction: column;
+  justify-content: space-evenly;
+`;
+const FeatureSecondTitle = styled(MainDescription)`
+  font-size: 16px;
+`;
+const CheckIcon = styled(FontAwesomeIcon)`
+  color: #6a5125;
+  width: 22px;
+  height: 22px;
+  margin: 0 16px 0 0;
+`;
+const FeatureImg = styled.img`
+  width: 40%;
+`;
+const QuoteSection = styled.div`
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #224229;
+  border-bottom: 1px solid #224229;
+  margin: 0 0 48px 0;
+`;
+const QuoteText = styled.div`
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: #224229;
+  padding: 8px;
+  font-style: italic;
+`;
+const QuoteAutorText = styled(QuoteText)`
+  font-size: 20px;
+  align-self: flex-end;
+  padding: 8px 72px 0 0;
 `;
 const Container = styled.div`
   width: 400px;
@@ -67,22 +120,39 @@ const Container = styled.div`
   padding: 1px;
   align-self: start;
 `;
-const ContainerRubber = styled(Container)`
-  height: 100px;
-  box-shadow: 20px 50px #f5f0ec inset;
-  background-color: #bedce6;
-  align-self: flex-end;
-  transform: scale(1.6);
-`;
-const Decoration = styled.img`
+const DecorationEucari = styled.img`
   position: absolute;
-  bottom: 1px;
-  right: 0;
-  width: 100%;
+  top: 15vh;
+  left: 8vw;
+  width: 10vw;
+  background: #bedce6;
+  box-shadow: 5vw 80px #f5f0ec inset;
 `;
-const CardsWrapper = styled.div`
-  margin: 100vh 0 0 0;
+const DecorationRubber = styled.img`
+  position: absolute;
+  bottom: 5vh;
+  right: 10vw;
+  width: 15vw;
+  background: #bedce6;
+  box-shadow: 0px 80px #f5f0ec inset;
 `;
+const DecorationCoco = styled.img`
+  position: absolute;
+  top: 8vh;
+  right: 5vw;
+  width: 17vw;
+  background: #fddba9;
+  box-shadow: -10vw 90px #f5f0ec inset;
+`;
+const DecorationTaquila = styled.img`
+  position: absolute;
+  bottom: 11vh;
+  left: 12vw;
+  width: 22vw;
+  background: #fddba9;
+  box-shadow: 0px 30px #f5f0ec inset;
+`;
+const CardsWrapper = styled.div``;
 const CardsFlexWrpper = styled.div`
   width: 80vw;
   padding: 24px 48px;
@@ -148,9 +218,8 @@ const Home = () => {
   return (
     <Wrapper>
       <Banner>
-        <Container>
-          <Decoration src={left}></Decoration>
-        </Container>
+        <DecorationEucari src={left}></DecorationEucari>
+        <DecorationTaquila src={taquila}></DecorationTaquila>
         <MainStyleWrapper>
           <MainStyle src={main} />
           <MainDescriptionWrapper>
@@ -165,10 +234,42 @@ const Home = () => {
             <MainDescription>It’s in our DNA.</MainDescription>
           </MainDescriptionWrapper>
         </MainStyleWrapper>
-        <ContainerRubber>
-          <Decoration src={rubber}></Decoration>
-        </ContainerRubber>
+        <DecorationCoco src={coconut}></DecorationCoco>
+        <DecorationRubber src={rubber}></DecorationRubber>
       </Banner>
+      <FeatureWrapper>
+        <FeatureImg src={feature} />
+        <FeatureTextWrapper>
+          <SectionTitle>A space for plants, A space for Yourself</SectionTitle>
+          <FeatureSecondTitle>
+            Greenery is a social space destined for plant people, here you can:
+          </FeatureSecondTitle>
+          <MainDescription>
+            <CheckIcon icon={faCircleCheck} />
+            Record Your Plant Care Info
+          </MainDescription>
+          <MainDescription>
+            <CheckIcon icon={faCircleCheck} />
+            Write Your Plant Growth Diary
+          </MainDescription>
+          <MainDescription>
+            <CheckIcon icon={faCircleCheck} />
+            Explore People's Amazing Plants
+          </MainDescription>
+          <MainDescription>
+            <CheckIcon icon={faCircleCheck} />
+            Learn Plants Care Tips
+          </MainDescription>
+          <MainDescription>
+            <CheckIcon icon={faCircleCheck} />
+            Exchange Plant With Others
+          </MainDescription>
+        </FeatureTextWrapper>
+      </FeatureWrapper>
+      <QuoteSection>
+        <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
+        <QuoteAutorText>- Audrey Hepburn</QuoteAutorText>
+      </QuoteSection>
       <CardsWrapper>
         <SectionTitle>Our Most Beloved Ones</SectionTitle>
         <CardsFlexWrpper>
