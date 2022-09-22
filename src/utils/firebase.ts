@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { v4 as uuidv4 } from "uuid";
 import {
   getFirestore,
   collection,
@@ -340,7 +341,8 @@ const firebase = {
     return querySnapshot;
   },
   async uploadFile(file: File) {
-    const storageRef = ref(storage, `${file.name}`);
+    const galleryId = uuidv4();
+    const storageRef = ref(storage, `${galleryId}`);
     await uploadBytes(storageRef, file);
     const dowloadLink = await getDownloadURL(storageRef);
     return dowloadLink;
@@ -351,6 +353,19 @@ const firebase = {
     if (docSnapshot.exists()) {
       return docSnapshot.data().ownerId;
     }
+  },
+  async checkDiaryExistence(id: string) {
+    const docRef = doc(diaries, id);
+    let docSnapshot = await getDoc(docRef);
+    if (docSnapshot.exists()) return true;
+    else return false;
+  },
+  async checkDiariesExistence(idList: string[]) {
+    const promises = idList.map((id) => {
+      return this.checkDiaryExistence(id);
+    });
+    let result = await Promise.all(promises);
+    return result;
   },
 };
 

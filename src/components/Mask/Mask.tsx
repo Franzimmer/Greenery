@@ -9,7 +9,7 @@ interface WindowMaskProps {
 const WindowMask = styled.div<WindowMaskProps>`
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   z-index: 100;
   top: 0;

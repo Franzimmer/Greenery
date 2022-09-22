@@ -159,7 +159,20 @@ const CardEditor = ({
   const cardList = useSelector((state: RootState) => state.cards);
   const followers = useSelector((state: RootState) => state.myFollowers);
   const dispatch = useDispatch();
-
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function createPreviewLink() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length !== 0) {
@@ -174,7 +187,7 @@ const CardEditor = ({
     if (!waterRef.current || !lightRef.current) return;
     const querySnapshot = await firebase.searchSpecies(input);
     if (querySnapshot.empty) {
-      alert("Species not existed!");
+      emitAlert("fail", "Species data is not in the database.");
       waterRef.current!.value = "";
       lightRef.current!.value = "";
       return;
@@ -182,7 +195,6 @@ const CardEditor = ({
     querySnapshot.forEach((doc) => {
       waterRef.current!.value = doc.data().WATER;
       lightRef.current!.value = doc.data().LIGHT;
-      let currentTags = [...tags];
     });
   }
   function addTag() {
@@ -233,16 +245,16 @@ const CardEditor = ({
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
     await firebase.addCard(data);
+    await firebase.emitNotices(userId, followers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: data },
     });
-    await firebase.emitNotices(userId, followers, "1");
-    alert("Emit Success");
-    editorToggle();
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
+    emitAlert("success", "You add a new plant card !");
+    editorToggle();
     resetEditor();
   }
   async function editCard() {
@@ -268,10 +280,12 @@ const CardEditor = ({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
-    editorToggle();
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
+    emitAlert("success", "Edit Card Success!");
+    editorToggle();
+    resetEditor();
   }
   useEffect(() => {
     async function getEditCardData() {

@@ -143,16 +143,6 @@ const QuoteAutorText = styled(QuoteText)`
   align-self: flex-end;
   padding: 8px 72px 0 0;
 `;
-const Container = styled.div`
-  width: 400px;
-  height: 200px;
-  position: relative;
-  background-color: #bedce6;
-  box-shadow: 20px 100px #f5f0ec inset;
-  background-clip: content-box;
-  padding: 1px;
-  align-self: start;
-`;
 const DecorationEucari = styled.img`
   position: absolute;
   top: 15vh;
@@ -208,31 +198,30 @@ const SectionTitle = styled.p`
   letter-spacing: 2px;
   line-height: 30px;
 `;
-const scrollYellow = keyframes`
-  from {
-    translateY(0px)
-  }
-  to {
-    translateY(-20px)
-  }
-`;
-const scrollMain = keyframes`
-  from {
-    translateY(0px)
-  }
-  to {
-    translateY(-20px)
-  }
-`;
+
 const Home = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
+  const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
-
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   async function favoriteToggle(cardId: string) {
     let userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {
@@ -241,14 +230,14 @@ const Home = () => {
         payload: { cardId },
       });
       await firebase.removeFavCard(userId, cardId);
-      alert("已取消收藏！");
+      emitAlert("success", "Remove from your Favorites.");
     } else {
       dispatch({
         type: UserInfoActions.ADD_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.addFavCard(userId, cardId);
-      alert("已加入收藏！");
+      emitAlert("success", "Add to Favorites!");
     }
   }
   useEffect(() => {
@@ -256,14 +245,20 @@ const Home = () => {
       let queryData = await firebase.getFavCards();
       if (!queryData.empty) {
         let favCards: PlantCard[] = [];
+        let favCardsIds: string[] = [];
         queryData.forEach((doc) => {
           favCards.push(doc.data());
+          favCardsIds.push(doc.data().cardId!);
         });
+        let result = await firebase.checkDiariesExistence(favCardsIds);
+        setDiariesExist(result);
         setFavCards(favCards);
       }
     }
     getHomePageData();
   }, []);
+
+  console.log(diariesExist);
   return (
     <Wrapper>
       <Banner>
@@ -327,7 +322,7 @@ const Home = () => {
         <SectionTitle>Our Most Beloved Plants</SectionTitle>
         <CardsFlexWrpper>
           {favCards.length !== 0 &&
-            favCards.map((card) => {
+            favCards.map((card, index) => {
               return (
                 <Card
                   key={card.cardId}
@@ -351,18 +346,20 @@ const Home = () => {
                         return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                       })}
                   </TagsWrapper>
-                  <DiaryIconBtn
-                    onClick={(e) => {
-                      setDiaryDisplay(true);
-                      setDiaryId(card.cardId);
-                      dispatch({
-                        type: popUpActions.SHOW_MASK,
-                      });
-                      e.stopPropagation();
-                    }}
-                  >
-                    <StyledFontAwesomeIcon icon={faBook} />
-                  </DiaryIconBtn>
+                  {diariesExist[index] && (
+                    <DiaryIconBtn
+                      onClick={(e) => {
+                        setDiaryDisplay(true);
+                        setDiaryId(card.cardId);
+                        dispatch({
+                          type: popUpActions.SHOW_MASK,
+                        });
+                        e.stopPropagation();
+                      }}
+                    >
+                      <StyledFontAwesomeIcon icon={faBook} />
+                    </DiaryIconBtn>
+                  )}
                   <FavIconButton
                     show={
                       userInfo?.favoriteCards.includes(card.cardId!) || false

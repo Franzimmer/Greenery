@@ -22,6 +22,7 @@ const DialogWrapper = styled.div<DialogWrapperProps>`
   width: 300px;
   height: 300px;
   padding: 15px;
+  background: #f5f0ec;
 `;
 
 const Text = styled.p`
@@ -32,7 +33,7 @@ const Text = styled.p`
 const Input = styled.input`
   width: 180px;
   height: 30px;
-  padding-left: 15px;
+  padding: 15px;
   border-radius: 15px;
   border: 1px solid #6a5125;
 `;
@@ -65,7 +66,7 @@ const PropageOperationBtn = styled(OperationBtn)`
   width: 120px;
   transition: 0.25s;
   &:hover {
-    transform: translateY(5px);
+    transform: scale(1.1);
     transition: 0.25s;
   }
 `;
@@ -88,16 +89,29 @@ const PropagationMenu = ({
       payload: { newCard: uploadData },
     });
   }
-
-  function propagate() {
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
+  async function propagate() {
     if (!numberRef.current?.value) {
-      alert("Please fill the number you want to propagate");
+      emitAlert("fail", "Please fill the number you want to propagate.");
       return;
     } else if (
       typeRef.current?.value === "Seedling" &&
       !inputRef.current?.value
     ) {
-      alert("Please fill the parent info");
+      emitAlert("fail", "Please fill out parent info.");
       return;
     }
     let parents = [propagateParentData.plantName];
@@ -114,8 +128,14 @@ const PropagationMenu = ({
     };
     const targets = Array(Number(numberRef.current.value)).fill(data);
     let promises = targets.map((target) => addDocPromise(target));
-    Promise.all(promises).then(() => alert("Propagate success!"));
+    await Promise.all(promises);
+    setPropagateDisplay(false);
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
+    emitAlert("success", "Propagate success!");
   }
+
   return (
     <DialogWrapper $display={propagateDisplay}>
       <FlexWrapper>

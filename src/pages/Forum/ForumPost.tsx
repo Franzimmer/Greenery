@@ -192,7 +192,6 @@ const ForumPost = () => {
   >({});
   const [post, setPost] = useState<Post>();
   const [comments, setComments] = useState<Comment[]>([]);
-  const [pageComments, setPageComments] = useState<Comment[] | undefined>();
   const [authorInfo, setAuthorInfo] = useState<UserInfo>();
   const [commentAuthorInfos, setCommentAuthorInfos] = useState<
     Record<string, UserInfo>
@@ -209,6 +208,20 @@ const ForumPost = () => {
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function toggleChatroom(targetId: string) {
     let newChatDisplay = { ...chatroomDisplay };
     if (newChatDisplay[targetId]) newChatDisplay[targetId] = false;
@@ -217,8 +230,8 @@ const ForumPost = () => {
   }
   async function deletePost(postId: string) {
     await firebase.deletePost(postId);
-    alert("刪除成功");
     navigate("/forum");
+    emitAlert("success", "Delete Post Success !");
   }
   function addComment() {
     setEditorMode("AddComment");
@@ -228,15 +241,12 @@ const ForumPost = () => {
     setTextEditorDisplay(true);
     setInitContent("");
   }
-  function deleteComment(deleteTarget: Comment) {
+  async function deleteComment(deleteTarget: Comment) {
     let postId = post!.postId;
     let newComments = comments!.filter((comment) => comment !== deleteTarget);
-    firebase.saveEditComment(postId, newComments);
+    await firebase.saveEditComment(postId, newComments);
     setComments(newComments);
-  }
-  function sliceComments(begin: number, end: number) {
-    if (!comments) return;
-    return comments.slice(begin, end);
+    emitAlert("success", "Delete Comment Success !");
   }
   function editComment(comment: Comment) {
     setEditTargetComment(comment);
@@ -268,8 +278,7 @@ const ForumPost = () => {
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
-        setComments(postData.data()!.comments!); //all comments
-        setPageComments(postData.data()?.comments?.slice(0, 10));
+        setComments(postData.data()!.comments!);
         setAuthorInfo(userInfo.data());
         if (postData.data()?.cardIds?.length !== 0) {
           let cardsData: PlantCard[] = [];
@@ -290,9 +299,9 @@ const ForumPost = () => {
   useEffect(() => {
     async function getCommentAuthorInfo() {
       let authorInfos: Record<string, UserInfo> = {};
-      if (pageComments) {
+      if (comments) {
         let authorIdList: string[] = [];
-        pageComments.forEach((comment) => {
+        comments.forEach((comment) => {
           if (!authorIdList.includes(comment.authorId))
             authorIdList.push(comment.authorId);
         });
@@ -308,9 +317,6 @@ const ForumPost = () => {
       setCommentAuthorInfos(authorInfos);
     }
     getCommentAuthorInfo();
-  }, [pageComments]);
-  useEffect(() => {
-    setPageComments(sliceComments(0, 10));
   }, [comments]);
   return (
     <>
@@ -390,9 +396,9 @@ const ForumPost = () => {
             </BtnWrapper>
           )}
         </PostWrapper>
-        {pageComments &&
-          pageComments.length !== 0 &&
-          pageComments.map((comment) => {
+        {comments &&
+          comments.length !== 0 &&
+          comments.map((comment) => {
             return (
               <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
                 <AuthorInfo>

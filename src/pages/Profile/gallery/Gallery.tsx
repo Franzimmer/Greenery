@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { firebase } from "../../../utils/firebase";
@@ -103,10 +104,23 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   const dispatch = useDispatch();
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
-
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   async function saveGalleryData() {
     if (mediaRef.current!.value === "") {
-      alert("請選擇檔案!");
+      emitAlert("fail", "Please choose a file.");
       return;
     }
     let file = mediaRef.current!.files![0];
@@ -117,14 +131,15 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
     });
     mediaRef.current!.value = "";
     await firebase.addGallery(id!, link);
+    emitAlert("success", "Upload Success !");
   }
   async function deleteMedia(link: string) {
     await firebase.deleteGallery(id!, link);
-    alert("Delete Success!");
     dispatch({
       type: UserInfoActions.REMOVE_GALLERY,
       payload: { link },
     });
+    emitAlert("success", "Delete Success !");
   }
   useEffect(() => {
     async function getMediaData() {
@@ -160,9 +175,9 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
         {media &&
           media.map((asset, index) => {
             return (
-              <>
+              <Fragment key={`${asset}-asset`}>
                 {index % 3 === 1 && (
-                  <SmallPin path={asset} key={`${asset}-asset`}>
+                  <SmallPin path={asset}>
                     <PinMask />
                     <DeleteBtn
                       onClick={() => {
@@ -174,7 +189,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
                   </SmallPin>
                 )}
                 {index % 3 === 2 && (
-                  <MediumPin path={asset} key={`${asset}-asset`}>
+                  <MediumPin path={asset}>
                     <PinMask />
                     <DeleteBtn
                       onClick={() => {
@@ -186,7 +201,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
                   </MediumPin>
                 )}
                 {index % 3 === 0 && (
-                  <LargePin path={asset} key={`${asset}-asset`}>
+                  <LargePin path={asset}>
                     <PinMask />
                     <DeleteBtn
                       onClick={() => {
@@ -197,7 +212,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
                     </DeleteBtn>
                   </LargePin>
                 )}
-              </>
+              </Fragment>
             );
           })}
       </PinsWrapper>

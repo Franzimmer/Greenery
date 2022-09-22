@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
+import { popUpActions } from "../../../reducer/popUpReducer";
 import { CardsActions } from "../../../actions/cardsActions";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { PlantCard } from "../../../types/plantCardType";
@@ -112,6 +113,20 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
   const [filter, setFilter] = useState<string>("");
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -171,9 +186,10 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
       nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
-      alert(`已爲 ${nameList.join(" & ")} 澆水！`);
+      emitAlert("success", `Watering ${nameList.join(" & ")} Success!`);
     }
-    if (type === "fertilize") alert(`已爲 ${nameList.join(" & ")} 施肥！`);
+    if (type === "fertilize")
+      emitAlert("success", `Fertilizing ${nameList.join(" & ")} Success!`);
     clearAllCheck();
     await firebase.addEvents(type, idList, userInfo.userId);
   }
@@ -190,7 +206,7 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
       type: CardsActions.DELETE_PLANT_CARDS,
       payload: { cardIds: targets },
     });
-    alert("刪除成功！");
+    emitAlert("success", `Delete Card Success`);
   }
   async function favoriteToggle(cardId: string) {
     let userId = userInfo.userId;
@@ -200,14 +216,14 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
         payload: { cardId },
       });
       await firebase.removeFavCard(userId, cardId);
-      alert("已取消收藏！");
+      emitAlert("success", "Remove from your Favorites.");
     } else {
       dispatch({
         type: UserInfoActions.ADD_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.addFavCard(userId, cardId);
-      alert("已加入收藏！");
+      emitAlert("success", "Add to Favorites!");
     }
   }
   useEffect(() => {
@@ -215,10 +231,7 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
       let results: PlantCard[] = [];
       let checkboxes = {} as CheckList;
       let querySnapshot = await firebase.getUserCards(id!);
-      if (querySnapshot.empty) {
-        alert("User Has No Cards Data");
-        return;
-      }
+      if (querySnapshot.empty) return;
       querySnapshot.forEach((doc) => {
         results.push(doc.data());
         checkboxes[doc.data().cardId!] = false;

@@ -8,6 +8,8 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import login2 from "./login4.jpeg";
+import { useDispatch } from "react-redux";
+import { popUpActions } from "../../reducer/popUpReducer";
 const Wrapper = styled.div`
   display: flex;
 `;
@@ -86,15 +88,30 @@ const LogInBtn = styled(OperationBtn)`
   }
 `;
 const LogIn = () => {
+  const dispatch = useDispatch();
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"login" | "signin">("login");
   const navigate = useNavigate();
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current) return;
     if (emailRef.current.value === "" || passwordRef.current.value === "") {
-      alert("Please fill info completely!");
+      emitAlert("fail", "Please fill info completely !");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -115,17 +132,17 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
+        emitAlert("success", "Sign In Success !");
       })
       .catch((error) => {
-        const errorCode = error.code;
         const errorMessage = error.message;
-        alert(`[${errorCode}] ${errorMessage}`);
+        emitAlert("fail", `${errorMessage}`);
       });
   }
   function userSignIn() {
     if (!emailRef.current || !passwordRef.current) return;
     if (emailRef.current.value === "" || passwordRef.current.value === "") {
-      alert("Please fill info completely!");
+      emitAlert("fail", "Please fill info completely !");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -136,11 +153,11 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
+        emitAlert("success", "Log In Success !");
       })
       .catch((error) => {
-        const errorCode = error.code;
         const errorMessage = error.message;
-        alert(`[${errorCode}] ${errorMessage}`);
+        emitAlert("fail", `${errorMessage}`);
       });
   }
   return (
