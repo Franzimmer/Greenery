@@ -5,7 +5,7 @@ import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../types/userInfoType";
-import Chatroom from "../Chatroom/Chatroom";
+import Chatroom from "../../components/Chatroom/Chatroom";
 const ChatroomsWrapper = styled.div`
   width: 100%;
   max-height: calc(100vh - 42px);
@@ -13,6 +13,7 @@ const ChatroomsWrapper = styled.div`
   padding: 8px;
   border-radius: 20px;
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   background-color: #fff;
   & * {

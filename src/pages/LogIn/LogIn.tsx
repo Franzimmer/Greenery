@@ -7,7 +7,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import login from "./login3.jpeg";
 import login2 from "./login4.jpeg";
 const Wrapper = styled.div`
   display: flex;
@@ -22,15 +21,7 @@ const LogInBanner = styled.div`
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-`;
-const OpacityMask = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50vw;
-  height: 100vh;
-  z-index: 1;
-  background-color: rgba(255, 255, 255, 0.2);
+  filter: sepia(0.4);
 `;
 const FlexItem = styled.div`
   width: 50vw;
@@ -71,20 +62,19 @@ const Input = styled.input`
 const Tab = styled.div`
   cursor: pointer;
   margin: 0px 8px 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 1px;
   color: #6a5125;
   transition: 0.25s;
   &:hover {
-    color: #5c836f;
     transform: scale(1.1);
     transition: 0.25s;
   }
 `;
 const TabActive = styled(Tab)`
-  color: #5c836f;
   font-size: 20px;
+  filter: drop-shadow(1px 4px 3px #aaa);
 `;
 const LogInBtn = styled(OperationBtn)`
   background: #6a5125;
@@ -155,7 +145,6 @@ const LogIn = () => {
   }
   return (
     <Wrapper>
-      {/* <OpacityMask /> */}
       <LogInBanner />
       <FlexItem />
       <LogInPanel>

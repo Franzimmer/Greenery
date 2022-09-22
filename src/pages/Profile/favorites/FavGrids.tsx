@@ -22,7 +22,10 @@ const UserLink = styled(Link)`
     text-decoration: underline;
   }
 `;
-const FavIconButton = styled(IconButton)`
+interface FavIconButtonProps {
+  show: boolean;
+}
+export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
   position: absolute;
   top: 193px;
   right: 8px;
@@ -32,11 +35,22 @@ const FavIconButton = styled(IconButton)`
     transform: scale(1.1);
     transition: 0.25s;
   }
+  & * {
+    color: ${(props) => !props.show && "#ccc"};
+  }
 `;
-export const DiaryIconBtn = styled(FavIconButton)`
+export const DiaryIconBtn = styled(IconButton)`
+  position: absolute;
   top: 250px;
+  right: 8px;
+  margin: 5px;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
 `;
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   color: #5c836f;
   width: 26px;
   height: 26px;
@@ -70,7 +84,7 @@ const FavGrids = ({
       payload: { cardId },
     });
     await firebase.removeFavCard(userId, cardId);
-    alert("已取消收藏！");
+    alert("Remove Success!");
   }
   return (
     <GridWrapper mode={"grid"}>
@@ -123,6 +137,7 @@ const FavGrids = ({
               </DiaryIconBtn>
               {isSelf && (
                 <FavIconButton
+                  show={true}
                   onClick={(e) => {
                     removeFavorite(card.cardId!);
                     e.stopPropagation();
