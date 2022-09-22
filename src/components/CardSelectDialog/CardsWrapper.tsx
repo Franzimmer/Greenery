@@ -11,8 +11,6 @@ const CardListWrapper = styled.div<CardListWrapperProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 360px;
-  overflow-y: auto;
   & * {
     background: #fff;
   }
@@ -39,7 +37,9 @@ const CardPhoto = styled.div<CardPhotoProps>`
   background-repeat: no-repeat;
   margin-right: 12px;
 `;
-const CardTextWrapper = styled.div``;
+const CardTextWrapper = styled.div`
+  width: 100px;
+`;
 const CardText = styled.div`
   font-size: 14px;
   color: #aaa;

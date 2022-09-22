@@ -49,7 +49,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
     }
     case UserInfoActions.ADD_GALLERY: {
       let currentGallery = state.gallery;
-      currentGallery?.push(action.payload.link);
+      currentGallery?.unshift(action.payload.link);
       return {
         ...state,
         gallery: currentGallery,

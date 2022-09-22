@@ -44,10 +44,6 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 0.25s;
-  &:hover {
-    transition: 0.25s;
-    transform: translateX(5px) translateY(5px);
-  }
 `;
 export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
   font-size: 20px;

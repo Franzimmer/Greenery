@@ -77,6 +77,20 @@ const FavGrids = ({
 }: FavGridsProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   async function removeFavorite(cardId: string) {
     let userId = userInfo.userId;
     dispatch({
@@ -84,7 +98,7 @@ const FavGrids = ({
       payload: { cardId },
     });
     await firebase.removeFavCard(userId, cardId);
-    alert("Remove Success!");
+    emitAlert("success", "Remove from your Favorites.");
   }
   return (
     <GridWrapper mode={"grid"}>

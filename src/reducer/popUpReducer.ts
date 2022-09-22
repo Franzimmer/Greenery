@@ -1,13 +1,14 @@
 export interface PopUpDisplayType {
   mask: boolean;
   cardSelect: boolean;
-  cardEditor: boolean;
-  cardDetail: boolean;
-  diary: boolean;
-  textEditor: boolean;
   target: {
     id: string;
     name: string;
+  };
+  alert: boolean;
+  alertInfo: {
+    type: "success" | "fail";
+    msg: string;
   };
 }
 
@@ -15,6 +16,8 @@ export enum popUpActions {
   SHOW_CARD_SELECT_TRADE = "SHOW_CARD_SELECT_TRADE",
   SHOW_MASK = "SHOW_MASK",
   HIDE_ALL = "HIDE_ALL",
+  SHOW_ALERT = "SHOW_ALERT",
+  CLOSE_ALERT = "CLOSE_ALERT",
 }
 interface showCardSelectTrade {
   type: popUpActions.SHOW_CARD_SELECT_TRADE;
@@ -29,18 +32,34 @@ interface showMask {
 interface hideAll {
   type: popUpActions.HIDE_ALL;
 }
-type PopUpDisplayActionTypes = showCardSelectTrade | showMask | hideAll;
+interface showAlert {
+  type: popUpActions.SHOW_ALERT;
+  payload: {
+    type: "success" | "fail";
+    msg: string;
+  };
+}
+interface closeAlert {
+  type: popUpActions.CLOSE_ALERT;
+}
+type PopUpDisplayActionTypes =
+  | showCardSelectTrade
+  | showMask
+  | hideAll
+  | showAlert
+  | closeAlert;
 
 const initialState: PopUpDisplayType = {
   mask: false,
   cardSelect: false,
-  cardEditor: false,
-  cardDetail: false,
-  diary: false,
-  textEditor: false,
   target: {
     id: "",
     name: "",
+  },
+  alert: false,
+  alertInfo: {
+    type: "success",
+    msg: "",
   },
 };
 const popUp = (
@@ -64,6 +83,22 @@ const popUp = (
     }
     case popUpActions.HIDE_ALL: {
       return initialState;
+    }
+    case popUpActions.SHOW_ALERT: {
+      return {
+        ...state,
+        alert: true,
+        alertInfo: {
+          type: action.payload.type,
+          msg: action.payload.msg,
+        },
+      };
+    }
+    case popUpActions.CLOSE_ALERT: {
+      return {
+        ...state,
+        alert: false,
+      };
     }
     default:
       return state;

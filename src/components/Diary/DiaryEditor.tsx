@@ -18,7 +18,7 @@ import {
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { popUpActions } from "../../reducer/popUpReducer";
-import { IconButton, OperationBtn } from "../../components/GlobalStyles/button";
+import { IconButton } from "../../components/GlobalStyles/button";
 import Canvas from "./Canvas";
 import { firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
@@ -63,7 +63,7 @@ const DiaryIconButton = styled(IconButton)`
   margin-right: 10px;
   transition: 0.25s;
   &:hover {
-    transform: translateY(-5px);
+    transform: scale(1.1);
     transition: 0.25s;
   }
 `;
@@ -93,6 +93,20 @@ const DiaryEditor = ({
   const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(
     "saveAdd"
   );
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function setAllObjDeactive() {
     if (!canvas) return;
     canvas!.selection = false;
@@ -105,6 +119,7 @@ const DiaryEditor = ({
     canvas.getObjects().forEach((obj) => {
       obj.set({ selectable: true, hoverCursor: "move" });
     });
+    emitAlert("success", "Switch to Edit Mode.");
   }
   function switchToViewMode() {
     setMode("view");
@@ -139,6 +154,7 @@ const DiaryEditor = ({
     if (!fileRef.current.files!.length) return;
     let file = fileRef.current!.files![0];
     let fileLink = await firebase.uploadFile(file);
+    emitAlert("success", "Upload Image Success.");
     fabric.Image.fromURL(fileLink!, function(oImg) {
       oImg.set({ left: 20, top: 50 });
       oImg.scaleToWidth(200, false);
@@ -163,6 +179,7 @@ const DiaryEditor = ({
     load(pageRef.current);
     switchToViewMode();
     await firebase.saveDiary(diaryId, page);
+    emitAlert("success", "Save Diary Data Successfully.");
   }
   async function saveEdit() {
     setAllObjDeactive();
@@ -171,12 +188,12 @@ const DiaryEditor = ({
     let currentDiaries = [...diariesData];
     currentDiaries[index] = page;
     await firebase.saveEditDiary(diaryId, currentDiaries);
-    alert("成功更新資料！");
+    emitAlert("success", "Update Diary Data Successfully.");
     setDiariesData(currentDiaries);
     switchToViewMode();
   }
-  function load(page: number) {
-    canvas?.loadFromJSON(diariesData[page], () => {
+  async function load(page: number) {
+    canvas?.loadFromJSON(diariesData[page], async () => {
       canvas!.selection = false;
       canvas?.getObjects().forEach((obj) => {
         obj.set({ selectable: false, hoverCursor: "text" });
@@ -199,26 +216,28 @@ const DiaryEditor = ({
       let docSnap = await firebase.getDiary(diaryId);
       if (!docSnap.exists()) {
         resetCanvas();
-        alert("No diary");
+        emitAlert("fail", "No Diary Data Exist.");
         isSelf && switchToEditMode();
         if (!isSelf) {
           setDiariesData([]);
           setDiaryDisplay(false);
           setDiaryId(null);
-          dispatch({
-            type: popUpActions.HIDE_ALL,
-          });
+          emitAlert("fail", "No Diary Data Exist.");
+          // dispatch({
+          //   type: popUpActions.HIDE_ALL,
+          // });
         }
       } else {
         resetCanvas();
         setDiariesData(docSnap.data().pages);
         switchToViewMode();
-        canvas?.loadFromJSON(docSnap.data().pages[0], () => {
-          canvas.renderAll();
+        canvas?.loadFromJSON(docSnap.data().pages[0], async () => {
           canvas.selection = false;
           canvas.getObjects().forEach((obj) => {
             obj.set({ selectable: false, hoverCursor: "text" });
           });
+          canvas.renderAll();
+          emitAlert("success", "Finish Diary Data Loading!");
         });
         pageRef.current = 0;
       }

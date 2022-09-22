@@ -52,7 +52,6 @@ const Profile = () => {
       }
     });
   }, []);
-  console.log(isSelf);
   return (
     <MainWrapper>
       <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />

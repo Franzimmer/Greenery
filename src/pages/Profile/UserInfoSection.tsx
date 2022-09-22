@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
+import { popUpActions } from "../../reducer/popUpReducer";
 import { UserInfo } from "../../types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,9 +44,9 @@ const IconButtonLabel = styled(IconButton)`
   position: relative;
   top: 50px;
   left: -30px;
-
+  transition: 0.25s;
   &:hover {
-    transform: translateY(5px);
+    transform: scale(1.1);
     transition: 0.25s;
   }
 `;
@@ -58,10 +59,7 @@ const UserInfoBtn = styled(OperationBtn)`
   margin-left: 40px;
   transition: 0.5s;
   &:hover {
-    border: 1px solid #fddba9;
-    background: #fddba9;
-    color: #6a5125;
-    transform: translateY(5px);
+    transform: scale(1.1);
     transition: 0.5s;
   }
 `;
@@ -84,13 +82,29 @@ const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function userSignOut() {
     signOut(auth)
       .then(() => {
         navigate("/login");
+        emitAlert("success", "Log Out Success !");
       })
       .catch((error) => {
-        alert("An error happened..");
+        const errorMessage = error.message;
+        emitAlert("fail", `${errorMessage}`);
       });
   }
   async function editUserPhoto() {
@@ -103,6 +117,7 @@ const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
       payload: { photoUrl: link },
     });
     await firebase.updateUserPhoto(id!, link);
+    emitAlert("success", "User Photo Upload Success !");
   }
   async function editUserName() {
     setShowNameInput(false);
@@ -113,11 +128,13 @@ const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
       payload: { userName: nameRef.current.textContent },
     });
     await firebase.updateUserName(id!, nameRef.current.textContent);
+    emitAlert("success", "Edit Success !");
   }
   async function followStatusToggle() {
     if (isFollowed) {
       setIsFollowed(false);
       await firebase.removeFollowList(userInfo.userId, id!);
+      emitAlert("success", "Unfollow Success.");
       dispatch({
         type: UserInfoActions.REMOVE_FOLLOW_LIST,
         payload: { targetId: id },
@@ -126,6 +143,7 @@ const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
     if (!isFollowed) {
       setIsFollowed(true);
       await firebase.addFollowList(userInfo.userId, id!);
+      emitAlert("success", "Follow Success.");
       dispatch({
         type: UserInfoActions.ADD_FOLLOW_LIST,
         payload: { targetId: id },
@@ -143,7 +161,7 @@ const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
       } else if (id && isSelf) {
         setUserData(userInfo);
       } else {
-        alert("此頁面不存在！");
+        emitAlert("fail", "Page Not Exist.");
         navigate("/");
       }
     }

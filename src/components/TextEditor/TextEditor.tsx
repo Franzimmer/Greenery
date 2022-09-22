@@ -24,6 +24,11 @@ const Wrapper = styled.div`
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
   z-index: 101;
+  display: flex;
+`;
+const EditoWrapper = styled.div`
+  width: 500px;
+  height: 450px;
   background: #fff;
   padding: 15px;
 `;
@@ -41,6 +46,17 @@ const TextEditorBtn = styled(OperationBtn)`
     transform: scale(1.1);
     transtion: 0.25s;
   }
+`;
+interface CardPanelWrapperProps {
+  $show: boolean;
+}
+const CardPanelWrapper = styled.div<CardPanelWrapperProps>`
+  width: ${(props) => (props.$show ? "330px" : 0)};
+  height: 450px;
+  overflow-y: auto;
+  padding: 15px;
+  background: #fff;
+  transition: 1s;
 `;
 interface TiptapProps {
   editorMode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
@@ -70,7 +86,7 @@ const TextEditor = ({
 }: TiptapProps) => {
   const dispatch = useDispatch();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
-  const cardList: PlantCard[] = useSelector((state: RootState) => state.cards);
+  const [cardList, setCardList] = useState<PlantCard[]>([]);
   const followers: string[] = useSelector(
     (state: RootState) => state.myFollowers
   );
@@ -85,6 +101,20 @@ const TextEditor = ({
   });
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function getPostHTML() {
     if (!titleEditor || !editor) return;
     const title = titleEditor!.getHTML();
@@ -116,7 +146,7 @@ const TextEditor = ({
     newPosts.unshift(data);
     setPostList(newPosts);
     await firebase.emitNotices(userInfo.userId, followers, "2", postId);
-    alert("文章發表成功！");
+    emitAlert("success", "Add Post Success !");
   }
   async function editPost() {
     const html = getPostHTML()!;
@@ -126,7 +156,7 @@ const TextEditor = ({
     } as Post;
     await firebase.saveEditPost(post!.postId, data);
     if (setPost) setPost(data);
-    alert("編輯成功！");
+    emitAlert("success", "Edit Post Success !");
   }
   async function addComment() {
     if (!setComments) return;
@@ -144,6 +174,7 @@ const TextEditor = ({
     } else newComments = [];
     newComments.push(comment);
     setComments(newComments);
+    emitAlert("success", "Add Comment Success !");
   }
   async function saveEditComment() {
     if (!comments || !setComments) return;
@@ -161,7 +192,7 @@ const TextEditor = ({
     let newComments = [...comments];
     newComments[targetId] = newComment;
     await firebase.saveEditComment(postId, newComments);
-    alert("編輯留言成功！");
+    emitAlert("success", "Edit Comment Success !");
     setComments(newComments);
     setTextEditorDisplay(false);
     dispatch({
@@ -173,94 +204,109 @@ const TextEditor = ({
     else setCardWrapperDisplay(false);
   }
   useEffect(() => {
-    if (cardList.length !== 0) {
-      let checkList = {} as Record<string, boolean>;
-      cardList.forEach((card) => {
-        checkList[card.cardId!] = false;
-      });
-      setMenuSelect(checkList);
+    async function getUserCards() {
+      let querySnapshot = await firebase.getUserCards(userInfo.userId);
+      if (!querySnapshot.empty) {
+        let cards: PlantCard[] = [];
+        let checkList = {} as Record<string, boolean>;
+        querySnapshot.forEach((doc) => {
+          cards.push(doc.data());
+          checkList[doc.data().cardId!] = false;
+        });
+        setCardList(cards);
+        setMenuSelect(checkList);
+      }
     }
+    getUserCards();
   }, []);
   return (
     <Wrapper>
-      {editorMode !== "AddComment" && editorMode !== "EditComment" && (
-        <>
-          <LabelText>Post Type:</LabelText>
-          <select name="type" ref={typeRef} onChange={toggleCardWrapperDisplay}>
-            <option value="discussion">Discussion</option>
-            <option value="trade">Trade</option>
-          </select>
-          <CardsWrapper
-            cardListDisplay={cardWrapperDisplay}
-            cardList={cardList}
-            menuSelect={menuSelect}
-            setMenuSelect={setMenuSelect}
-          ></CardsWrapper>
-        </>
-      )}
-      {editorMode !== "AddComment" && editorMode !== "EditComment" && (
-        <EditorContent editor={titleEditor} id="title" />
-      )}
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} id="content" />
-      {editorMode === "AddPost" && (
+      <EditoWrapper>
+        {editorMode !== "AddComment" && editorMode !== "EditComment" && (
+          <>
+            <LabelText>Post Type:</LabelText>
+            <select
+              name="type"
+              ref={typeRef}
+              onChange={toggleCardWrapperDisplay}
+            >
+              <option value="discussion">Discussion</option>
+              <option value="trade">Trade</option>
+            </select>
+          </>
+        )}
+        {editorMode !== "AddComment" && editorMode !== "EditComment" && (
+          <EditorContent editor={titleEditor} id="title" />
+        )}
+        <MenuBar editor={editor} />
+        <EditorContent editor={editor} id="content" />
+        {editorMode === "AddPost" && (
+          <TextEditorBtn
+            onClick={() => {
+              savePost();
+              setTextEditorDisplay(false);
+              dispatch({
+                type: popUpActions.HIDE_ALL,
+              });
+            }}
+          >
+            Save
+          </TextEditorBtn>
+        )}
+        {editorMode === "EditPost" && (
+          <TextEditorBtn
+            onClick={() => {
+              editPost();
+              setTextEditorDisplay(false);
+              dispatch({
+                type: popUpActions.HIDE_ALL,
+              });
+            }}
+          >
+            Save Edit
+          </TextEditorBtn>
+        )}
+        {editorMode === "AddComment" && (
+          <TextEditorBtn
+            onClick={async () => {
+              await addComment();
+              setTextEditorDisplay(false);
+              dispatch({
+                type: popUpActions.HIDE_ALL,
+              });
+            }}
+          >
+            Add Comment
+          </TextEditorBtn>
+        )}
+        {editorMode === "EditComment" && (
+          <TextEditorBtn
+            onClick={() => {
+              saveEditComment();
+            }}
+          >
+            Save Edit Comment
+          </TextEditorBtn>
+        )}
         <TextEditorBtn
           onClick={() => {
-            savePost();
             setTextEditorDisplay(false);
             dispatch({
               type: popUpActions.HIDE_ALL,
             });
           }}
         >
-          Save
+          Cancel
         </TextEditorBtn>
-      )}
-      {editorMode === "EditPost" && (
-        <TextEditorBtn
-          onClick={() => {
-            editPost();
-            setTextEditorDisplay(false);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          Save Edit
-        </TextEditorBtn>
-      )}
-      {editorMode === "AddComment" && (
-        <TextEditorBtn
-          onClick={async () => {
-            await addComment();
-            setTextEditorDisplay(false);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          Add Comment
-        </TextEditorBtn>
-      )}
-      {editorMode === "EditComment" && (
-        <TextEditorBtn
-          onClick={() => {
-            saveEditComment();
-          }}
-        >
-          Save Edit Comment
-        </TextEditorBtn>
-      )}
-      <TextEditorBtn
-        onClick={() => {
-          setTextEditorDisplay(false);
-          dispatch({
-            type: popUpActions.HIDE_ALL,
-          });
-        }}
-      >
-        Cancel
-      </TextEditorBtn>
+      </EditoWrapper>
+      <CardPanelWrapper $show={cardWrapperDisplay}>
+        <CardsWrapper
+          cardListDisplay={cardWrapperDisplay}
+          cardList={cardList}
+          menuSelect={menuSelect}
+          setMenuSelect={setMenuSelect}
+        ></CardsWrapper>
+      </CardPanelWrapper>
     </Wrapper>
   );
 };

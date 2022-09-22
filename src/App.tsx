@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
+import Alert from "./components/GlobalStyles/Alert";
 import Mask from "./components/Mask/Mask";
 import CardSelectDialog from "./components/CardSelectDialog/CardSelectDialog";
 import Header from "./components/Header/Header";
@@ -49,6 +50,7 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
     height: 100%;
     background: #F5F0EC;
+    overflow-x:hidden;
   }
 `;
 
@@ -95,6 +97,7 @@ function App() {
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver setIsLoggedIn={setIsLoggedIn} />
+        <Alert />
         <Mask />
         <CardSelectDialog />
         <Header

@@ -73,6 +73,7 @@
   "devDependencies": {
     "@types/fabric": "^4.5.12",
     "@types/react-calendar": "^3.5.2",
-    "@types/styled-components": "^5.1.26"
+    "@types/styled-components": "^5.1.26",
+    "@types/uuid": "^8.3.4"
   }
 }

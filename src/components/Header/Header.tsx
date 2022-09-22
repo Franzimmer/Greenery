@@ -2,7 +2,8 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../reducer/index";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { popUpActions } from "../../reducer/popUpReducer";
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -16,11 +17,6 @@ const HeaderWrapper = styled.div`
 const LinkWrapper = styled.div`
   display: flex;
   align-items: center;
-`;
-const LogoLinkWrapper = styled(LinkWrapper)`
-  background: linear-gradient(90deg, #fddba9, #e4e783);
-  opacity: 0.8;
-  height: 80px;
 `;
 const HeaderLink = styled(Link)`
   margin: 10px;
@@ -113,10 +109,25 @@ const Header = ({
   setSideBarDisplay,
   sideBarDisplay,
 }: HeaderProps) => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function sideBarToggle() {
     if (!isLoggedIn) {
-      alert("Please Log In First");
+      emitAlert("success", "Please Log In First");
       return;
     }
     if (sideBarDisplay) setSideBarDisplay(false);

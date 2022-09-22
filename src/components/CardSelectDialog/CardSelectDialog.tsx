@@ -7,6 +7,8 @@ import { popUpActions, PopUpDisplayType } from "../../reducer/popUpReducer";
 import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 import CardsWrapper from "./CardsWrapper";
 import { RootState } from "../../reducer";
+import { PlantCard } from "../../types/plantCardType";
+import { useParams } from "react-router-dom";
 interface DialogWrapperProps {
   show: boolean;
 }
@@ -59,10 +61,11 @@ const CardSelectBtn = styled(OperationBtn)`
   border: 1px solid #6a5125;
   color: #fff;
   background: #6a5125;
+  transition: 0.25s;
   &:hover {
     color: #fff;
-    background-color: #5c836f;
-    border: 1px solid #5c836f;
+    transform: scale(1.1);
+    transition: 0.25s;
   }
 `;
 const ConfirmWrapper = styled.div`
@@ -80,49 +83,48 @@ const ConfirmPanel = styled.div`
   background: none;
   text-align: center;
   padding: 8px;
-`;
-const scale = keyframes`
-  from {
-    transform: scale(0)
-  }
-  to {
-    transform: scale(1)
-  }
-`;
-const Alert = styled.div`
-  position: absolute;
-  top: -50px;
-  left: 100px;
-  width: 300px;
-  height: 30px;
   font-size: 16px;
-  line-height: 30px;
-  text-align: center;
-  color: #6a5125;
-  background: #f5f0ec;
-  border-radius: 15px;
-  animation: 0.5s ${scale};
+  letter-spacing: 1px;
+  line-height: 22px;
+`;
+const OverflowWrapper = styled.div`
+  width: 100%;
+  height: 360px;
+  overflow-y: auto;
 `;
 const CardSelectDialog = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
-  const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const popUpDisplay: PopUpDisplayType = useSelector(
     (state: RootState) => state.popUp
   );
+  const [cardList, setCardList] = useState<PlantCard[]>([]);
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
-  const [alertDisplay, setAlertDisplay] = useState<boolean>(false);
   const [btnWrapperDisplay, setBtnWrapperDisplay] = useState<boolean>(true);
   const selfId = userInfo.userId;
   const targetId = popUpDisplay.target.id;
   const targetName = popUpDisplay.target.name;
+  function emitAlert(type: string, msg: string) {
+    dispatch({
+      type: popUpActions.SHOW_ALERT,
+      payload: {
+        type,
+        msg,
+      },
+    });
+    setTimeout(() => {
+      dispatch({
+        type: popUpActions.CLOSE_ALERT,
+      });
+    }, 2000);
+  }
   function confirmTradeItems() {
     if (!targetId) return;
     if (Object.values(menuSelect).every((select) => select === false)) {
-      setAlertDisplay(true);
-      setTimeout(() => setAlertDisplay(false), 2000);
+      emitAlert("fail", "Choose at least one plant !");
       return;
     }
     setCardListDisplay(false);
@@ -130,9 +132,11 @@ const CardSelectDialog = () => {
     let nameList = selected.map((card) => {
       return card.plantName;
     });
-    let msg = `要將 ${nameList.join(" & ")} 送給新主人 ${targetName} 嗎?`;
+    let msg = `Are you sure to send ${nameList.join(" & ")} to ${targetName}?`;
+    setBtnWrapperDisplay(true);
     setConfirm(msg);
   }
+
   async function tradePlants() {
     if (!targetId || !selfId) return;
     let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
@@ -147,24 +151,24 @@ const CardSelectDialog = () => {
       return firebase.changePlantOwner(cardId!, newOwnerId);
     });
     await Promise.all(promises);
-    dispatch({
-      type: CardsActions.DELETE_PLANT_CARDS,
-      payload: { cardIds: idList },
-    });
+    if (id === selfId) {
+      dispatch({
+        type: CardsActions.DELETE_PLANT_CARDS,
+        payload: { cardIds: idList },
+      });
+    }
     const usersTarget = [targetId!, selfId!];
     const data = {
       userId: selfId,
-      msg: `已經將${nameList.join(" & ")}交給你了，要好好照顧喔！`,
+      msg: `${nameList.join(" & ")} has been sent to your space`,
     };
     await firebase.storeChatroomData(usersTarget, data);
-    setConfirm("Send out Success!");
     setBtnWrapperDisplay(false);
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.HIDE_ALL,
-      });
-      setCardListDisplay(true);
-    }, 1000);
+    setCardListDisplay(true);
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
+    emitAlert("success", "Send out success !");
     return;
   }
   function resetCheck() {
@@ -174,13 +178,26 @@ const CardSelectDialog = () => {
     });
     setMenuSelect(menuCheck);
   }
+  async function getUserCards() {
+    let querySnapshot = await firebase.getUserCards(selfId);
+    if (!querySnapshot.empty) {
+      let cards: PlantCard[] = [];
+      querySnapshot.forEach((doc) => {
+        cards.push(doc.data());
+      });
+      setCardList(cards);
+    }
+  }
+  useEffect(() => {
+    getUserCards();
+  }, [selfId]);
   useEffect(() => {
     resetCheck();
   }, [cardList]);
+  console.log(selfId);
   return (
     <>
       <DialogWrapper show={popUpDisplay.cardSelect}>
-        {alertDisplay && <Alert>Please select at least one plant!</Alert>}
         <DialogCloseBtn
           onClick={() => {
             resetCheck();
@@ -192,12 +209,14 @@ const CardSelectDialog = () => {
         >
           &#215;
         </DialogCloseBtn>
-        <CardsWrapper
-          cardList={cardList}
-          cardListDisplay={cardListDisplay}
-          menuSelect={menuSelect}
-          setMenuSelect={setMenuSelect}
-        ></CardsWrapper>
+        <OverflowWrapper>
+          <CardsWrapper
+            cardList={cardList}
+            cardListDisplay={cardListDisplay}
+            menuSelect={menuSelect}
+            setMenuSelect={setMenuSelect}
+          ></CardsWrapper>
+        </OverflowWrapper>
         {!cardListDisplay && (
           <ConfirmWrapper>
             <ConfirmPanel>{confirm}</ConfirmPanel>
@@ -206,7 +225,7 @@ const CardSelectDialog = () => {
                 <CardSelectBtn onClick={() => setCardListDisplay(true)}>
                   Back
                 </CardSelectBtn>
-                <CardSelectBtn onClick={tradePlants}>Next</CardSelectBtn>
+                <CardSelectBtn onClick={tradePlants}>Sure</CardSelectBtn>
               </BtnWrapper>
             )}
           </ConfirmWrapper>
