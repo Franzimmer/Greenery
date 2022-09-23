@@ -24,10 +24,6 @@ export const CloseBtn = styled.button`
   color: #fff;
   background-color: #5c836f;
   border: 1px solid #5c836f;
-  &:hover {
-    background-color: #7bc09a;
-    border: 1px solid #7bc09a;
-  }
 `;
 
 export const IconButton = styled.label`

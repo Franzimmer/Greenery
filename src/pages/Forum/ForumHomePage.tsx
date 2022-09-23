@@ -114,6 +114,8 @@ const AddPostBtn = styled(OperationBtn)`
   width: 100px;
   display: block;
   margin: 10px 11vw 20px auto;
+  background: #6a5125;
+  border: 1px solid #6a5125;
   transition: 0.25s;
   &:hover {
     transform: scale(1.2);

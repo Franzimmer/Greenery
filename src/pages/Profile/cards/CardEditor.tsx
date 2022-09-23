@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer/index";
 import { PlantCard } from "../../../types/plantCardType";
@@ -9,6 +11,7 @@ import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
 import {
   OperationBtn,
+  IconButton,
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";
@@ -51,6 +54,11 @@ const PhotoPreview = styled.div<PhotoPreviewProps>`
   background-position: center center;
   background-color: #eee;
 `;
+const PhotoInputLabel = styled.label`
+  width: 30px;
+  margin: 0 0 0 260px;
+  cursor: pointer;
+`;
 const PhotoInput = styled.input``;
 const Input = styled.input`
   width: 200px;
@@ -78,16 +86,15 @@ const Tag = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid #6a5125;
-  background-color: #6a5125;
+  background-color: none;
   padding: 0px 5px;
   border-radius: 14px;
   height: 30px;
   margin: 8px 8px 0px 0px;
 `;
 const TagText = styled.div`
-  color: #fff;
+  color: #6a5125;
   font-size: 14px;
-  background-color: #6a5125;
   border-radius: 7px;
 `;
 const TagsWrpper = styled.div`
@@ -103,34 +110,38 @@ const BtnWrpper = styled.div`
   justify-content: space-between;
 `;
 const EditorBtn = styled(OperationBtn)`
+  color: #fff;
   width: 100px;
   margin-top: 12px;
   border: 1px solid #6a5125;
   background: #6a5125;
   transition: 0.25s;
   &:hover {
-    color: #6a5125;
-    background-color: #fddba9;
-    border: 1px solid #fddba9;
-    transform: translateY(5px);
+    transform: scale(1.1);
     transition: 0.25s;
   }
 `;
 const RemoveTagBtn = styled(CloseBtn)`
-  width: 16px;
-  height: 16px;
-  font-size: 16px;
-  line-height: 16px;
+  color: #6a5125;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
   margin-left 5px;
   background-color: rgba(0,0,0,0);
   border: none;
   transition: 0.25s;
   &:hover {
-    background-color: #fddba9;
-    border: 1px solid #fddba9;
-    color:#6A5125;
+    border:none;
+    background-color: rgba(0,0,0,0);
+    transform: scale(1.3);
     transition: 0.25s;
   }
+`;
+const UploadIcon = styled(FontAwesomeIcon)`
+  color: #6a5125;
+  width: 20px;
+  height: 20px;
 `;
 interface FCProps {
   userId: string;
@@ -308,13 +319,18 @@ const CardEditor = ({
     <CardEditorWrapper $display={editorDisplay}>
       <InputWrapper>
         <PhotoPreview path={previewLink} />
+        <PhotoInputLabel htmlFor="img">
+          <UploadIcon icon={faPenToSquare} />
+        </PhotoInputLabel>
         <PhotoInput
+          id="img"
           ref={imageRef}
           type="file"
           accept="image/*"
           onChange={() => {
             createPreviewLink();
           }}
+          hidden
         />
       </InputWrapper>
       <InputFlexWrapper>
