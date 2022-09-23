@@ -300,7 +300,7 @@ const Home = () => {
                 A space for plants, A space for Yourself
               </SectionTitle>
               <FeatureSecondTitle>
-                Greenery is a social space destined for plant people, here you
+                Greenery is a social space designed for plant people, here you
                 can:
               </FeatureSecondTitle>
               <MainDescription>

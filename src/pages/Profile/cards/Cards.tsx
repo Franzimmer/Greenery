@@ -14,39 +14,6 @@ import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import defaultImg from "../../../assets/default.jpg";
 
-export const OperationBtn = styled.button`
-  margin: 0px 5px 0px 0px;
-  padding: px;
-  cursor: pointer;
-  &:hover {
-    background: #000;
-    color: #fff;
-  }
-`;
-interface FavoriteButtonProps {
-  show?: boolean;
-}
-export const FavoriteButton = styled.button<FavoriteButtonProps>`
-  margin: 0px 5px 0px 0px;
-  padding: px;
-  cursor: pointer;
-  background: ${(props) => (props.show ? "#f54825" : "FFF")};
-`;
-export const GridWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 20px;
-  margin-top: 20px;
-`;
-interface CardProps {
-  show?: boolean;
-}
-export const Card = styled.div<CardProps>`
-  flex-direction: column;
-  border: 1px solid black;
-  padding: 15px;
-  display: ${(props) => (props.show ? "flex" : "none")};
-`;
 interface PlantImgProps {
   path: string | undefined;
 }
@@ -248,7 +215,6 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       }
     }
     getCards();
-    setTimeout(() => setIsLoading(false), 1000);
   }, [id, isSelf, dispatch]);
   useEffect(() => {
     let tags: string[] = [];

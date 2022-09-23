@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -22,6 +22,7 @@ import { IconButton } from "../../components/GlobalStyles/button";
 import Canvas from "./Canvas";
 import { firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
+import spinner from "../../assets/spinner.png";
 
 interface WrapperProps {
   $display: boolean;
@@ -67,6 +68,25 @@ const DiaryIconButton = styled(IconButton)`
     transition: 0.25s;
   }
 `;
+const Spin = keyframes`
+  0% {
+    transform: translateX(-50%) translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-50%) rotate(360deg);
+  }
+`;
+const Loading = styled.div<WrapperProps>`
+  display: ${(props) => (props.$display ? "flex" : "none")};
+  width: 100px;
+  height: 100px;
+  background: url(${spinner});
+  position: fixed;
+  z-index: 103;
+  top: 50vh;
+  left: 50vw;
+  animation: 2s ${Spin} linear infinite;
+`;
 interface DiaryEditorProps {
   isSelf: boolean;
   diaryDisplay: boolean;
@@ -82,17 +102,16 @@ const DiaryEditor = ({
   setDiaryId,
 }: DiaryEditorProps) => {
   const dispatch = useDispatch();
-  //Fix Me: Ref or State?
   const pageRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
-  //Fix Me: need to organize and re-check mode logic again
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [saveMode, setSaveMode] = useState<"saveEdit" | "saveAdd" | null>(
     "saveAdd"
   );
+  const [loaderDisplay, setLoaderDisplay] = useState<boolean>(true);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -213,6 +232,7 @@ const DiaryEditor = ({
   }
   useEffect(() => {
     async function getDiary(diaryId: string) {
+      if (!canvas) return;
       let docSnap = await firebase.getDiary(diaryId);
       if (!docSnap.exists()) {
         resetCanvas();
@@ -222,10 +242,10 @@ const DiaryEditor = ({
           setDiariesData([]);
           setDiaryDisplay(false);
           setDiaryId(null);
+          dispatch({
+            type: popUpActions.HIDE_ALL,
+          });
           emitAlert("fail", "No Diary Data Exist.");
-          // dispatch({
-          //   type: popUpActions.HIDE_ALL,
-          // });
         }
       } else {
         resetCanvas();
@@ -240,120 +260,124 @@ const DiaryEditor = ({
           emitAlert("success", "Finish Diary Data Loading!");
         });
         pageRef.current = 0;
+        setLoaderDisplay(false);
       }
     }
     if (diaryId) getDiary(diaryId);
   }, [diaryId]);
   return (
-    <Wrapper $display={diaryDisplay}>
-      <BtnWrapper>
-        {mode === "view" && (
-          <>
-            {isSelf && (
-              <DiaryIconButton
-                onClick={() => {
-                  setSaveMode("saveEdit");
-                  switchToEditMode();
-                }}
-              >
-                <StyledFontAwesomeIcon icon={faPenToSquare} />
+    <>
+      <Loading $display={diaryDisplay && loaderDisplay} />
+      <Wrapper $display={diaryDisplay}>
+        <BtnWrapper>
+          {mode === "view" && (
+            <>
+              {isSelf && (
+                <DiaryIconButton
+                  onClick={() => {
+                    setSaveMode("saveEdit");
+                    switchToEditMode();
+                  }}
+                >
+                  <StyledFontAwesomeIcon icon={faPenToSquare} />
+                </DiaryIconButton>
+              )}
+              {isSelf && (
+                <DiaryIconButton
+                  onClick={() => {
+                    resetCanvas();
+                    setSaveMode("saveAdd");
+                    switchToEditMode();
+                  }}
+                >
+                  <StyledFontAwesomeIcon icon={faPlus} />
+                </DiaryIconButton>
+              )}
+              <DiaryIconButton onClick={() => load(diariesData.length - 1)}>
+                <StyledFontAwesomeIcon icon={faBookmark} />
               </DiaryIconButton>
-            )}
-            {isSelf && (
-              <DiaryIconButton
-                onClick={() => {
-                  resetCanvas();
-                  setSaveMode("saveAdd");
-                  switchToEditMode();
-                }}
-              >
-                <StyledFontAwesomeIcon icon={faPlus} />
+            </>
+          )}
+          {mode === "edit" && isSelf && (
+            <>
+              <DiaryIconButton onClick={addText}>
+                <StyledFontAwesomeIcon icon={faFont} />
               </DiaryIconButton>
-            )}
-            <DiaryIconButton onClick={() => load(diariesData.length - 1)}>
-              <StyledFontAwesomeIcon icon={faBookmark} />
-            </DiaryIconButton>
-          </>
-        )}
-        {mode === "edit" && isSelf && (
-          <>
-            <DiaryIconButton onClick={addText}>
-              <StyledFontAwesomeIcon icon={faFont} />
-            </DiaryIconButton>
-            <DiaryIconButton htmlFor="palette">
-              <StyledFontAwesomeIcon icon={faPalette} />
-              <input
-                type="color"
-                id="palette"
-                ref={colorRef}
-                onChange={changeTextColor}
-                hidden
-              />
-            </DiaryIconButton>
-            <DiaryIconButton onClick={changeTextWeight}>
-              <StyledFontAwesomeIcon icon={faBold} />
-            </DiaryIconButton>
-            <DiaryIconButton htmlFor="image">
-              <StyledFontAwesomeIcon icon={faImage} />
-              <AddImgInput
-                id="image"
-                ref={fileRef}
-                type="file"
-                onChange={async () => {
-                  await addImage();
-                }}
-                hidden
-              />
-            </DiaryIconButton>
-
-            <DiaryIconButton onClick={removeItem}>
-              <StyledFontAwesomeIcon icon={faTrashCan} />
-            </DiaryIconButton>
-            <DiaryIconButton onClick={cancelEdit}>
-              <StyledFontAwesomeIcon icon={faArrowRotateLeft} />
-            </DiaryIconButton>
-            {saveMode === "saveAdd" && (
-              <DiaryIconButton onClick={save}>
-                <StyledFontAwesomeIcon icon={faFileArrowUp} />
+              <DiaryIconButton htmlFor="palette">
+                <StyledFontAwesomeIcon icon={faPalette} />
+                <input
+                  type="color"
+                  id="palette"
+                  ref={colorRef}
+                  onChange={changeTextColor}
+                  hidden
+                />
               </DiaryIconButton>
-            )}
-            {saveMode === "saveEdit" && (
-              <DiaryIconButton onClick={saveEdit}>
-                <StyledFontAwesomeIcon icon={faFileArrowUp} />
+              <DiaryIconButton onClick={changeTextWeight}>
+                <StyledFontAwesomeIcon icon={faBold} />
               </DiaryIconButton>
-            )}
-          </>
-        )}
-        <DiaryIconButton
-          onClick={() => {
-            resetCanvas();
-            setDiariesData([]);
-            setDiaryDisplay(false);
-            setDiaryId(null);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          <StyledFontAwesomeIcon icon={faCircleXmark} />
-        </DiaryIconButton>
-      </BtnWrapper>
-      <FlexWrapper>
-        <Canvas setCanvas={setCanvas} />
-      </FlexWrapper>
-      <ArrowWrapper>
-        {mode === "view" && (
-          <>
-            <DiaryIconButton onClick={() => switchPage("-")}>
-              <StyledFontAwesomeIcon icon={faArrowLeft} />
-            </DiaryIconButton>
-            <DiaryIconButton onClick={() => switchPage("+")}>
-              <StyledFontAwesomeIcon icon={faArrowRight} />
-            </DiaryIconButton>
-          </>
-        )}
-      </ArrowWrapper>
-    </Wrapper>
+              <DiaryIconButton htmlFor="image">
+                <StyledFontAwesomeIcon icon={faImage} />
+                <AddImgInput
+                  id="image"
+                  ref={fileRef}
+                  type="file"
+                  onChange={async () => {
+                    await addImage();
+                  }}
+                  hidden
+                />
+              </DiaryIconButton>
+              <DiaryIconButton onClick={removeItem}>
+                <StyledFontAwesomeIcon icon={faTrashCan} />
+              </DiaryIconButton>
+              <DiaryIconButton onClick={cancelEdit}>
+                <StyledFontAwesomeIcon icon={faArrowRotateLeft} />
+              </DiaryIconButton>
+              {saveMode === "saveAdd" && (
+                <DiaryIconButton onClick={save}>
+                  <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                </DiaryIconButton>
+              )}
+              {saveMode === "saveEdit" && (
+                <DiaryIconButton onClick={saveEdit}>
+                  <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                </DiaryIconButton>
+              )}
+            </>
+          )}
+          <DiaryIconButton
+            onClick={() => {
+              resetCanvas();
+              setDiariesData([]);
+              setDiaryDisplay(false);
+              setDiaryId(null);
+              setLoaderDisplay(true);
+              dispatch({
+                type: popUpActions.HIDE_ALL,
+              });
+            }}
+          >
+            <StyledFontAwesomeIcon icon={faCircleXmark} />
+          </DiaryIconButton>
+        </BtnWrapper>
+        <FlexWrapper>
+          <Canvas setCanvas={setCanvas} />
+        </FlexWrapper>
+        <ArrowWrapper>
+          {mode === "view" && (
+            <>
+              <DiaryIconButton onClick={() => switchPage("-")}>
+                <StyledFontAwesomeIcon icon={faArrowLeft} />
+              </DiaryIconButton>
+              <DiaryIconButton onClick={() => switchPage("+")}>
+                <StyledFontAwesomeIcon icon={faArrowRight} />
+              </DiaryIconButton>
+            </>
+          )}
+        </ArrowWrapper>
+      </Wrapper>
+    </>
   );
 };
 
