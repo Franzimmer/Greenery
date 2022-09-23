@@ -32,10 +32,9 @@ const EditoWrapper = styled.div`
   background: #fff;
   padding: 15px;
 `;
-const LabelText = styled.label`
+const LabelText = styled.div`
   font-size: 16px;
-  margin: 10px 8px 0 0;
-  display: inline-block;
+  margin: 0 8px 0 0;
 `;
 const TextEditorBtn = styled(OperationBtn)`
   background: #6a5125;
@@ -57,6 +56,26 @@ const CardPanelWrapper = styled.div<CardPanelWrapperProps>`
   padding: 15px;
   background: #fff;
   transition: 1s;
+`;
+const TypeBtnWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const TypeBtn = styled.div`
+  cursor: pointer;
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #6a5125;
+  background: #6a5125;
+  color: #fff;
+  margin-right: 8px;
+`;
+const TypeBtnInactive = styled(TypeBtn)`
+  background: #fff;
+  color: #6a5125;
 `;
 interface TiptapProps {
   editorMode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
@@ -87,10 +106,12 @@ const TextEditor = ({
   const dispatch = useDispatch();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [cardList, setCardList] = useState<PlantCard[]>([]);
+  const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
+  const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
+  const [type, setType] = useState<string>("discussion");
   const followers: string[] = useSelector(
     (state: RootState) => state.myFollowers
   );
-  const typeRef = useRef<HTMLSelectElement>(null);
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [1] })],
     content: initTitle || "Title",
@@ -99,8 +120,7 @@ const TextEditor = ({
     extensions: [StarterKit],
     content: initContent || "",
   });
-  const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
-  const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
+
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -124,8 +144,8 @@ const TextEditor = ({
   }
   async function savePost() {
     let cardIds: string[] = [];
-    if (!typeRef.current || !setPostList || !postList) return;
-    const postType = typeRef.current!.value;
+    if (!setPostList || !postList) return;
+    const postType = type;
     const html = getPostHTML()!;
     const authorId = userInfo.userId;
     const data = {
@@ -199,10 +219,7 @@ const TextEditor = ({
       type: popUpActions.HIDE_ALL,
     });
   }
-  function toggleCardWrapperDisplay() {
-    if (typeRef.current?.value === "trade") setCardWrapperDisplay(true);
-    else setCardWrapperDisplay(false);
-  }
+
   useEffect(() => {
     async function getUserCards() {
       let querySnapshot = await firebase.getUserCards(userInfo.userId);
@@ -223,17 +240,57 @@ const TextEditor = ({
     <Wrapper>
       <EditoWrapper>
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (
-          <>
-            <LabelText>Post Type:</LabelText>
-            <select
+          <TypeBtnWrapper>
+            <LabelText>Post Type</LabelText>
+            {type === "discussion" && (
+              <TypeBtnWrapper>
+                <TypeBtn
+                  onClick={() => {
+                    setType("discussion");
+                    setCardWrapperDisplay(false);
+                  }}
+                >
+                  Discussion
+                </TypeBtn>
+                <TypeBtnInactive
+                  onClick={() => {
+                    setType("trade");
+                    setCardWrapperDisplay(true);
+                  }}
+                >
+                  Trade
+                </TypeBtnInactive>
+              </TypeBtnWrapper>
+            )}
+            {type === "trade" && (
+              <TypeBtnWrapper>
+                <TypeBtnInactive
+                  onClick={() => {
+                    setType("discussion");
+                    setCardWrapperDisplay(false);
+                  }}
+                >
+                  Discussion
+                </TypeBtnInactive>
+                <TypeBtn
+                  onClick={() => {
+                    setType("trade");
+                    setCardWrapperDisplay(true);
+                  }}
+                >
+                  Trade
+                </TypeBtn>
+              </TypeBtnWrapper>
+            )}
+            {/* <select
               name="type"
               ref={typeRef}
               onChange={toggleCardWrapperDisplay}
             >
               <option value="discussion">Discussion</option>
               <option value="trade">Trade</option>
-            </select>
-          </>
+            </select> */}
+          </TypeBtnWrapper>
         )}
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (
           <EditorContent editor={titleEditor} id="title" />

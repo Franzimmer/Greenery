@@ -18,10 +18,10 @@ const DialogWrapper = styled.div<DialogWrapperProps>`
   z-index: 101;
   display: ${(props) => (props.$display ? "flex" : "none")};
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   width: 300px;
   height: 300px;
-  padding: 15px;
+  padding: 16px;
   background: #f5f0ec;
 `;
 
@@ -39,15 +39,28 @@ const Input = styled.input`
 `;
 const ParentInput = styled(Input)`
   width: 150px;
+  margin-top: 8px;
 `;
-const DropDown = styled.select`
+const RadioWrapper = styled.div`
+  display: flex;
   width: 180px;
-  height: 30px;
+  justify-content: space-around;
+`;
+const TypeBtn = styled.div`
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  margin: 0 6px;
+  color: #fff;
+  background: #6a5125;
+  padding: 4px 8px;
   border: 1px solid #6a5125;
-  color: #6a5125;
+  border-radius: 4px;
   cursor: pointer;
 `;
-const DropDownOptions = styled.option``;
+const TypeBtnInactive = styled(TypeBtn)`
+  background: none;
+  color: #6a5125;
+`;
 interface PropagationMenuProps {
   propagateDisplay: boolean;
   setPropagateDisplay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -57,12 +70,21 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
+`;
+const FlexColumnWrapper = styled(FlexWrapper)`
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 8px;
 `;
 const ParentPanel = styled.div`
   max-height: auto;
 `;
 const PropageOperationBtn = styled(OperationBtn)`
+  margin-top: 12px;
+  background: #6a5125;
+  border: 1px solid #6a5125;
   width: 120px;
   transition: 0.25s;
   &:hover {
@@ -76,9 +98,9 @@ const PropagationMenu = ({
   propagateParentData,
 }: PropagationMenuProps) => {
   const numberRef = useRef<HTMLInputElement>(null);
-  const typeRef = useRef<HTMLSelectElement>(null);
+  const typeRef = useRef("seedling");
   const inputRef = useRef<HTMLInputElement>(null);
-  const [type, setType] = useState<string>("Asexual");
+  const [type, setType] = useState<string>("asexual");
   const dispatch = useDispatch();
 
   async function addDocPromise(data: PlantCard) {
@@ -107,15 +129,12 @@ const PropagationMenu = ({
     if (!numberRef.current?.value) {
       emitAlert("fail", "Please fill the number you want to propagate.");
       return;
-    } else if (
-      typeRef.current?.value === "Seedling" &&
-      !inputRef.current?.value
-    ) {
+    } else if (typeRef.current === "seedling" && !inputRef.current?.value) {
       emitAlert("fail", "Please fill out parent info.");
       return;
     }
     let parents = [propagateParentData.plantName];
-    if (typeRef.current?.value === "Seedling") {
+    if (typeRef.current === "seedling") {
       parents.push(inputRef.current!.value);
     }
     const data = {
@@ -134,8 +153,10 @@ const PropagationMenu = ({
       type: popUpActions.HIDE_ALL,
     });
     emitAlert("success", "Propagate success!");
+    numberRef.current!.value = "";
+    inputRef.current!.value = "";
   }
-
+  console.log(type);
   return (
     <DialogWrapper $display={propagateDisplay}>
       <FlexWrapper>
@@ -144,27 +165,40 @@ const PropagationMenu = ({
       </FlexWrapper>
       <FlexWrapper>
         <LabelText>Type</LabelText>
-        <DropDown
-          ref={typeRef}
-          onChange={() => setType(typeRef.current!.value)}
-        >
-          <DropDownOptions>Asexual</DropDownOptions>
-          <DropDownOptions>Seedling</DropDownOptions>
-        </DropDown>
+        <RadioWrapper>
+          {type === "asexual" && (
+            <>
+              <TypeBtn onClick={() => setType("asexual")}>Asexual</TypeBtn>
+              <TypeBtnInactive onClick={() => setType("seedling")}>
+                Seedling
+              </TypeBtnInactive>
+            </>
+          )}
+          {type === "seedling" && (
+            <>
+              <TypeBtnInactive onClick={() => setType("asexual")}>
+                Asexual
+              </TypeBtnInactive>
+              <TypeBtn onClick={() => setType("seedling")}>Seedling</TypeBtn>
+            </>
+          )}
+        </RadioWrapper>
       </FlexWrapper>
-      {type === "Seedling" && (
+      {type === "seedling" && (
         <ParentPanel>
           <LabelText>Parents</LabelText>
-          <FlexWrapper>
+          <FlexColumnWrapper>
             <Text>{propagateParentData.plantName} &#38; </Text>
             <ParentInput ref={inputRef} placeholder="Parent Name" />
-          </FlexWrapper>
+          </FlexColumnWrapper>
         </ParentPanel>
       )}
       <FlexWrapper>
         <PropageOperationBtn onClick={propagate}>Propagate</PropageOperationBtn>
         <PropageOperationBtn
           onClick={() => {
+            numberRef.current!.value = "";
+            inputRef.current!.value = "";
             setPropagateDisplay(false);
             dispatch({
               type: popUpActions.HIDE_ALL,
