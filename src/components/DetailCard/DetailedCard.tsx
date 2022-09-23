@@ -26,11 +26,14 @@ const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
   background: #f5f0ec;
   display: ${(props) => (props.$display ? "flex" : "none")};
 `;
-const FlexWrapper = styled.div`
+const FlexColumnWrapper = styled.div`
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
   flex-wrap: wrap;
-  margin-top: 12px;
+  margin-top: 20px;
+`;
+const FlexRowWrapper = styled(FlexColumnWrapper)`
+  flex-direction: row;
 `;
 const NameText = styled(LabelText)`
   font-size: 26px;
@@ -47,26 +50,24 @@ const DetailLabelText = styled(LabelText)`
   color: #5c836f;
   margin-right: 8px;
 `;
-const Text = styled.p`
+const Description = styled.p`
   font-size: 14px;
-  padding-left: 8px;
-`;
-const Description = styled(Text)`
-  border-left: 3px solid #5c836f;
 `;
 const PlantImg = styled.img`
   width: 280px;
   height: auto;
   margin auto;
 `;
-const FlexBtnWrapper = styled(FlexWrapper)`
+const FlexBtnWrapper = styled(FlexRowWrapper)`
   justify-content: space-around;
 `;
 const DetailOperationBtn = styled(OperationBtn)`
+  background: #5c836f;
+  border: 1px solid #5c836f;
   width: 150px;
   transition: 0.25s;
   &:hover {
-    transform: translateY(5px);
+    transform: scale(1.1);
     transition: 0.25s;
   }
 `;
@@ -92,35 +93,35 @@ const DetailedCard = ({
         ) : (
           <PlantImg src={defaultImg} />
         )}
-        <FlexWrapper>
+        <FlexRowWrapper>
           {detailData?.plantName && <NameText>{detailData.plantName}</NameText>}
           {detailData?.species && (
             <SpeciesText>{detailData.species}</SpeciesText>
           )}
-        </FlexWrapper>
+        </FlexRowWrapper>
         {detailData?.parents && detailData?.parents?.length !== 0 && (
-          <>
-            <Text>Family</Text>
-            <Text>{detailData?.parents?.join(" & ")}'s Baby</Text>
-          </>
+          <FlexRowWrapper>
+            <DetailLabelText>Family</DetailLabelText>
+            <Description>{detailData?.parents?.join(" & ")}'s Baby</Description>
+          </FlexRowWrapper>
         )}
         {detailData?.waterPref && (
-          <FlexWrapper>
+          <FlexColumnWrapper>
             <DetailLabelText>Water</DetailLabelText>
             <Description>{detailData.waterPref}</Description>
-          </FlexWrapper>
+          </FlexColumnWrapper>
         )}
         {detailData?.lightPref && (
-          <FlexWrapper>
+          <FlexColumnWrapper>
             <DetailLabelText>Light</DetailLabelText>
             <Description>{detailData.lightPref}</Description>
-          </FlexWrapper>
+          </FlexColumnWrapper>
         )}
         {detailData?.birthday && (
-          <FlexWrapper>
+          <FlexRowWrapper>
             <DetailLabelText>Birthday</DetailLabelText>
-            <Text>{unixTimeToString(detailData.birthday)}</Text>
-          </FlexWrapper>
+            <Description>{unixTimeToString(detailData.birthday)}</Description>
+          </FlexRowWrapper>
         )}
         <FlexBtnWrapper>
           {isSelf && (
@@ -130,7 +131,7 @@ const DetailedCard = ({
                 setDetailDisplay(false);
               }}
             >
-              propagate
+              Propagate
             </DetailOperationBtn>
           )}
           <DetailOperationBtn
@@ -141,7 +142,7 @@ const DetailedCard = ({
               });
             }}
           >
-            close
+            Close
           </DetailOperationBtn>
         </FlexBtnWrapper>
       </DetailedCardWrapper>
