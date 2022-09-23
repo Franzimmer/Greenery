@@ -12,7 +12,7 @@ interface DetailedCardWrapperProps {
   $display: boolean;
 }
 const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
-  position: absolute;
+  position: fixed;
   z-index: 101;
   top: 50vh;
   left: 50vw;

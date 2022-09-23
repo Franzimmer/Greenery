@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../types/userInfoType";
 import Chatroom from "../../components/Chatroom/Chatroom";
+import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;
   max-height: calc(100vh - 42px);
   overflow-y: auto;
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -25,12 +26,32 @@ const ChatroomText = styled.p`
   color: #6a5125;
   background: none;
 `;
+const Spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+interface SpinnerProps {
+  $show: boolean;
+}
+const Spinner = styled.div<SpinnerProps>`
+  display: ${(props) => (props.$show ? "block" : "none")};
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  background: url(${spinner50});
+  animation: 2s ${Spin} linear infinite;
+`;
 const Chatrooms = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [chatInfos, setChatInfos] = useState<UserInfo[]>([]);
   const [chatroomDisplay, setChatroomDisplay] = useState<
     Record<string, boolean>
   >({});
+  const [spinDisplay, setSpinDisplay] = useState<boolean>(true);
 
   function toggleChatroom(targetId: string) {
     let newChatDisplay = { ...chatroomDisplay };
@@ -58,6 +79,7 @@ const Chatrooms = () => {
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });
+      setSpinDisplay(false);
       setChatInfos(chatData);
       setChatroomDisplay(chatDisplay);
     }
@@ -66,6 +88,7 @@ const Chatrooms = () => {
   return (
     <>
       <ChatroomsWrapper>
+        <Spinner $show={spinDisplay} />
         {chatInfos &&
           chatInfos?.length !== 0 &&
           chatInfos?.map((chat) => {
