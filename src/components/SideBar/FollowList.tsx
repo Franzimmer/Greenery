@@ -20,6 +20,7 @@ export const Person = styled.div`
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  margin: 8px 0;
 `;
 export const PersonPhoto = styled(UserPhoto)`
   width: 60px;

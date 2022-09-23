@@ -27,7 +27,7 @@ interface FavIconButtonProps {
 }
 export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
   position: absolute;
-  top: 193px;
+  top: 195px;
   right: 8px;
   margin: 5px;
   transition: 0.25s;
@@ -41,7 +41,7 @@ export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
 `;
 export const DiaryIconBtn = styled(IconButton)`
   position: absolute;
-  top: 250px;
+  bottom: 8px;
   right: 8px;
   margin: 5px;
   transition: 0.25s;

@@ -22,6 +22,7 @@ import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { TypeText } from "./ForumHomePage";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 const Wrapper = styled.div`
   width: 80vw;
   margin: 120px auto 50px;
@@ -208,6 +209,7 @@ const ForumPost = () => {
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -280,6 +282,7 @@ const ForumPost = () => {
         setInitContent(postData.data()!.content);
         setComments(postData.data()!.comments!);
         setAuthorInfo(userInfo.data());
+        setTimeout(() => setIsLoading(false), 1000);
         if (postData.data()?.cardIds?.length !== 0) {
           let cardsData: PlantCard[] = [];
           let cardIds = postData.data()?.cardIds;
@@ -320,133 +323,136 @@ const ForumPost = () => {
   }, [comments]);
   return (
     <>
-      <Wrapper>
-        <TitleWrapper>
-          <TypeText>{post?.type}</TypeText>
-          <PostTitle>{post?.title && parse(post.title)}</PostTitle>
-        </TitleWrapper>
-        <CommentBtn onClick={addComment}>Comment</CommentBtn>
-        <PostWrapper>
-          <AuthorInfo>
-            <AuthorPhoto
-              path={authorInfo?.photoUrl}
-              onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-            />
-            <AuthorName
-              onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-            >
-              {authorInfo?.userName}
-            </AuthorName>
-            {userInfo.userId !== authorInfo?.userId && (
-              <OpenChatRoomBtn
-                onClick={() => {
-                  openChatroom(authorInfo!.userId);
-                }}
+      {isLoading && <PageLoader />}
+      {!isLoading && (
+        <Wrapper>
+          <TitleWrapper>
+            <TypeText>{post?.type}</TypeText>
+            <PostTitle>{post?.title && parse(post.title)}</PostTitle>
+          </TitleWrapper>
+          <CommentBtn onClick={addComment}>Comment</CommentBtn>
+          <PostWrapper>
+            <AuthorInfo>
+              <AuthorPhoto
+                path={authorInfo?.photoUrl}
+                onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
+              />
+              <AuthorName
+                onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
               >
-                Open Chatroom
-              </OpenChatRoomBtn>
-            )}
-          </AuthorInfo>
-          <Content>{post?.content && parse(post.content)}</Content>
-          {cards &&
-            cards.map((card) => {
-              return (
-                <TradeCard key={card.cardId} show={true} mode={"grid"}>
-                  <PlantImg path={card.plantPhoto} />
-                  <NameText>{card.plantName}</NameText>
-                  <SpeciesText>{card.species}</SpeciesText>
-                  <TagsWrapper>
-                    {card?.tags?.length !== 0 &&
-                      card.tags?.map((tag) => {
-                        return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                      })}
-                  </TagsWrapper>
-                  <DiaryIconBtn
-                    onClick={async (e) => {
-                      await checkOwner(card.cardId!);
-                      setDiaryDisplay(true);
-                      setDiaryId(card.cardId!);
-                      dispatch({
-                        type: popUpActions.SHOW_MASK,
-                      });
-                      e.stopPropagation();
-                    }}
-                  >
-                    <BookFontAwesomeIcon icon={faBook} />
-                  </DiaryIconBtn>
-                </TradeCard>
-              );
-            })}
-          {userInfo.userId === post?.authorId && (
-            <BtnWrapper>
-              <EditIconBtn
-                onClick={() => {
-                  setEditorMode("EditPost");
-                  setTextEditorDisplay(true);
-                  dispatch({
-                    type: popUpActions.SHOW_MASK,
-                  });
-                }}
-              >
-                <StyledFontAwesomeIcon icon={faPenToSquare} />
-              </EditIconBtn>
-              <EditIconBtn onClick={() => deletePost(post.postId)}>
-                <StyledFontAwesomeIcon icon={faTrashCan} />
-              </EditIconBtn>
-            </BtnWrapper>
-          )}
-        </PostWrapper>
-        {comments &&
-          comments.length !== 0 &&
-          comments.map((comment) => {
-            return (
-              <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
-                <AuthorInfo>
-                  <AuthorPhoto
-                    path={commentAuthorInfos[comment.authorId]?.photoUrl}
-                    onClick={() => navigate(`/profile/${comment.authorId}`)}
-                  />
-                  <AuthorName>
-                    {commentAuthorInfos[comment.authorId]?.userName}
-                  </AuthorName>
-                  {userInfo.userId !== comment.authorId && (
-                    <OpenChatRoomBtn
-                      onClick={() => {
-                        openChatroom(comment.authorId);
+                {authorInfo?.userName}
+              </AuthorName>
+              {userInfo.userId !== authorInfo?.userId && (
+                <OpenChatRoomBtn
+                  onClick={() => {
+                    openChatroom(authorInfo!.userId);
+                  }}
+                >
+                  Open Chatroom
+                </OpenChatRoomBtn>
+              )}
+            </AuthorInfo>
+            <Content>{post?.content && parse(post.content)}</Content>
+            {cards &&
+              cards.map((card) => {
+                return (
+                  <TradeCard key={card.cardId} show={true} mode={"grid"}>
+                    <PlantImg path={card.plantPhoto} />
+                    <NameText>{card.plantName}</NameText>
+                    <SpeciesText>{card.species}</SpeciesText>
+                    <TagsWrapper>
+                      {card?.tags?.length !== 0 &&
+                        card.tags?.map((tag) => {
+                          return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                        })}
+                    </TagsWrapper>
+                    <DiaryIconBtn
+                      onClick={async (e) => {
+                        await checkOwner(card.cardId!);
+                        setDiaryDisplay(true);
+                        setDiaryId(card.cardId!);
+                        dispatch({
+                          type: popUpActions.SHOW_MASK,
+                        });
+                        e.stopPropagation();
                       }}
                     >
-                      Open Chatroom
-                    </OpenChatRoomBtn>
+                      <BookFontAwesomeIcon icon={faBook} />
+                    </DiaryIconBtn>
+                  </TradeCard>
+                );
+              })}
+            {userInfo.userId === post?.authorId && (
+              <BtnWrapper>
+                <EditIconBtn
+                  onClick={() => {
+                    setEditorMode("EditPost");
+                    setTextEditorDisplay(true);
+                    dispatch({
+                      type: popUpActions.SHOW_MASK,
+                    });
+                  }}
+                >
+                  <StyledFontAwesomeIcon icon={faPenToSquare} />
+                </EditIconBtn>
+                <EditIconBtn onClick={() => deletePost(post.postId)}>
+                  <StyledFontAwesomeIcon icon={faTrashCan} />
+                </EditIconBtn>
+              </BtnWrapper>
+            )}
+          </PostWrapper>
+          {comments &&
+            comments.length !== 0 &&
+            comments.map((comment) => {
+              return (
+                <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
+                  <AuthorInfo>
+                    <AuthorPhoto
+                      path={commentAuthorInfos[comment.authorId]?.photoUrl}
+                      onClick={() => navigate(`/profile/${comment.authorId}`)}
+                    />
+                    <AuthorName>
+                      {commentAuthorInfos[comment.authorId]?.userName}
+                    </AuthorName>
+                    {userInfo.userId !== comment.authorId && (
+                      <OpenChatRoomBtn
+                        onClick={() => {
+                          openChatroom(comment.authorId);
+                        }}
+                      >
+                        Open Chatroom
+                      </OpenChatRoomBtn>
+                    )}
+                  </AuthorInfo>
+                  <Content>{post?.content && parse(comment.content)}</Content>
+                  {userInfo.userId === comment.authorId && (
+                    <BtnWrapper>
+                      <EditIconBtn onClick={() => editComment(comment)}>
+                        <StyledFontAwesomeIcon icon={faPenToSquare} />
+                      </EditIconBtn>
+                      <EditIconBtn onClick={() => deleteComment(comment)}>
+                        <StyledFontAwesomeIcon icon={faTrashCan} />
+                      </EditIconBtn>
+                    </BtnWrapper>
                   )}
-                </AuthorInfo>
-                <Content>{post?.content && parse(comment.content)}</Content>
-                {userInfo.userId === comment.authorId && (
-                  <BtnWrapper>
-                    <EditIconBtn onClick={() => editComment(comment)}>
-                      <StyledFontAwesomeIcon icon={faPenToSquare} />
-                    </EditIconBtn>
-                    <EditIconBtn onClick={() => deleteComment(comment)}>
-                      <StyledFontAwesomeIcon icon={faTrashCan} />
-                    </EditIconBtn>
-                  </BtnWrapper>
-                )}
-              </PostWrapper>
-            );
-          })}
-        {textEditorDisplay && (
-          <TextEditor
-            editorMode={editorMode}
-            initContent={initContent}
-            initTitle={initTitle}
-            post={post}
-            comments={comments}
-            editTargetComment={editTargetComment}
-            setPost={setPost}
-            setTextEditorDisplay={setTextEditorDisplay}
-            setComments={setComments}
-          />
-        )}
-      </Wrapper>
+                </PostWrapper>
+              );
+            })}
+          {textEditorDisplay && (
+            <TextEditor
+              editorMode={editorMode}
+              initContent={initContent}
+              initTitle={initTitle}
+              post={post}
+              comments={comments}
+              editTargetComment={editTargetComment}
+              setPost={setPost}
+              setTextEditorDisplay={setTextEditorDisplay}
+              setComments={setComments}
+            />
+          )}
+        </Wrapper>
+      )}
       {targetUser && chatroomDisplay[targetUser?.userId] && (
         <Chatroom
           key={`${targetUser!.userId}_chat`}

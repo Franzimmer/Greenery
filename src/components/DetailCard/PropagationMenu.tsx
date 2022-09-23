@@ -11,7 +11,7 @@ interface DialogWrapperProps {
   $display: boolean;
 }
 const DialogWrapper = styled.div<DialogWrapperProps>`
-  position: absolute;
+  position: fixed;
   top: 50vh;
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
@@ -156,7 +156,6 @@ const PropagationMenu = ({
     numberRef.current!.value = "";
     inputRef.current!.value = "";
   }
-  console.log(type);
   return (
     <DialogWrapper $display={propagateDisplay}>
       <FlexWrapper>

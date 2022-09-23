@@ -194,7 +194,6 @@ const CardSelectDialog = () => {
   useEffect(() => {
     resetCheck();
   }, [cardList]);
-  console.log(selfId);
   return (
     <>
       <DialogWrapper show={popUpDisplay.cardSelect}>

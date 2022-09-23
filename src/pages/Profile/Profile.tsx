@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
+import { CardsActions } from "../../actions/cardsActions";
 import { auth } from "../../utils/firebase";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
@@ -32,15 +34,21 @@ export const defaultState = {
   Favorites: false,
 };
 const Profile = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
-  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSelf, setIsSelf] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
+    dispatch({
+      type: CardsActions.CLEAR_CARDS_DATA,
+    });
     if (id === userInfo.userId) setIsSelf(true);
     else setIsSelf(false);
+    setTimeout(() => setIsLoading(false), 3000);
   }, [id, userInfo]);
 
   useEffect(() => {
@@ -53,18 +61,23 @@ const Profile = () => {
     });
   }, []);
   return (
-    <MainWrapper>
-      <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
-      <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-      {tabDisplay.Cards && (
-        <Cards id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
+    <>
+      {isLoading && <PageLoader />}
+      {!isLoading && (
+        <MainWrapper>
+          <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
+          <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
+          {tabDisplay.Cards && (
+            <Cards id={id} isSelf={isSelf} setIsLoading={setIsLoading} />
+          )}
+          {tabDisplay.Calendar && <CalendarApp id={id!} />}
+          {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
+          {tabDisplay.Favorites && (
+            <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
+          )}
+        </MainWrapper>
       )}
-      {tabDisplay.Calendar && <CalendarApp id={id!} />}
-      {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
-      {tabDisplay.Favorites && (
-        <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
-      )}
-    </MainWrapper>
+    </>
   );
 };
 

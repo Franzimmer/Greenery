@@ -16,6 +16,7 @@ const WindowMask = styled.div<WindowMaskProps>`
   right: 0;
   display: ${(props) => (props.show ? "block" : "none")};
   transition: 0.25s;
+  overflow-y: scroll;
 `;
 
 const Mask = () => {
