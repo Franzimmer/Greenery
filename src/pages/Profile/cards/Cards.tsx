@@ -67,18 +67,15 @@ export const Text = styled.p`
 export const Tag = styled.p`
   color: #5c836f;
   padding: 0px 3px;
-  height: 20px;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 700;
   border: 1px solid #5c836f;
-  margin-right: 5px;
+  margin: 5px 5px 0 0;
   cursor: pointer;
   transition: 0.25s;
   &:hover {
     background: #5c836f;
-    color: #f5f0ec;
-    transform: translateY(5px);
+    color: #fff;
     transition: 0.25s;
   }
 `;
@@ -86,19 +83,25 @@ interface TagsWrapper {
   viewMode?: "grid" | "list";
 }
 export const TagsWrapper = styled.div<TagsWrapper>`
+  width: 200px;
   display: flex;
+  flex-wrap: wrap;
   margin: ${(props) =>
-    props.viewMode === "list" ? "0px 5px" : "15px 5px 0px 0px"};
+    props.viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
   padding: 2px;
+`;
+const TagsList = styled(TagsWrapper)`
+  width: auto;
+  flex-wrap: nowrap;
 `;
 
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
   isSelf: boolean;
-  isLoggedIn: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
+const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
   const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -245,6 +248,7 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
       }
     }
     getCards();
+    setTimeout(() => setIsLoading(false), 1000);
   }, [id, isSelf, dispatch]);
   useEffect(() => {
     let tags: string[] = [];
@@ -282,13 +286,13 @@ const Cards = ({ id, isSelf, isLoggedIn }: CardsGridProps) => {
         deleteCards={deleteCards}
       />
       {filterOptions && tagList.length && (
-        <TagsWrapper>
+        <TagsList>
           {tagList.map((tag: string) => (
             <Tag key={tag} onClick={selectFilter}>
               {tag}
             </Tag>
           ))}
-        </TagsWrapper>
+        </TagsList>
       )}
       <CardsGrid
         isSelf={isSelf}

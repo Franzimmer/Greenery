@@ -35,8 +35,7 @@ export const Card = styled.div<CardProps>`
   width: ${(props) => (props.mode === "grid" ? "280px" : "60vw")};
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: ${(props) => (props.mode === "grid" ? "column" : "row")};
-  justify-content: ${(props) =>
-    props.mode === "grid" ? "center" : "flex-start"};
+  justify-content: flex-start;
   align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
   background: #fff;
   border-radius: 15px;
@@ -48,8 +47,8 @@ export const Card = styled.div<CardProps>`
 export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
   font-size: 20px;
   color: #5c836f;
-  margin-right: 5px;
-  margin-left: ${(props) => props.mode === "list" && "25px"};
+  margin-right: 8px;
+  margin-left: ${(props) => props.mode === "list" && "32px"};
 `;
 export const SpeciesText = styled.div`
   font-size: 14px;
@@ -80,14 +79,11 @@ const BookMarkIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>`
   }
 `;
 const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
-  width: 40px;
-  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0);
-  // box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
 `;
 const CardMask = styled.div<MaskAndIconBtnProps>`
   position: absolute;
@@ -98,6 +94,7 @@ const CardMask = styled.div<MaskAndIconBtnProps>`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  cursor-pointer: text;
 `;
 const StyledMenuIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
   background: rgba(0, 0, 0, 0);
@@ -121,7 +118,8 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
 `;
 const CardCheck = styled.input<MaskAndIconBtnProps>`
   position: absolute;
-  top: ${(props) => (props.mode === "list" ? "18px" : "8px")};
+  top: ${(props) => (props.mode === "list" ? "50%" : "8px")};
+  transform: ${(props) => props.mode === "list" && "translateY(-50%)"};
   left: 15px;
   cursor: pointer;
   height: 20px;
@@ -136,17 +134,19 @@ const IconWrapper = styled.div<MaskAndIconBtnProps>`
   justify-content: space-around;
   align-items: center;
   width: ${(props) => (props.mode === "list" ? "200px" : "40px")};
-  height: ${(props) => (props.show ? "60%" : "30px")};
+  height: ${(props) => (props.show ? "90%" : "30px")};
   padding: 5px;
   border-radius: 15px;
   position: absolute;
-  bottom: ${(props) =>
-    props.mode === "list" ? "15px" : !props.show ? "65px" : "15px"};
+  top: ${(props) =>
+    props.mode === "grid" && !props.show
+      ? "195px"
+      : props.mode === "grid" && props.show && "15px"};
   right: 20px;
   ${(props) =>
     props.mode === "grid" ? "20px" : !props.show ? "-50px" : "65px"};
   background: rgba(0, 0, 0, 0);
-  box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+  // box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
   transition: 0.25s height;
 `;
 type CheckList = Record<string, boolean>;
@@ -210,13 +210,16 @@ const CardsGrid = ({
                   type="checkbox"
                   mode={viewMode}
                   checked={checkList[card.cardId!]}
-                  onClick={(event) => {
+                  onClick={(e) => {
                     switchOneCheck(card.cardId!);
-                    event.stopPropagation();
+                    e.stopPropagation();
                   }}
                 />
               )}
-              <CardMask show={cardMaskDisplay} />
+              <CardMask
+                show={cardMaskDisplay}
+                onClick={(e) => e.stopPropagation()}
+              />
               {viewMode === "grid" && (
                 <PlantImg path={card.plantPhoto || defaultImg} />
               )}

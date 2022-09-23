@@ -212,10 +212,9 @@ const Text = styled.div`
   color: #224229;
   letter-spacing: 3px;
   font-size: 20px;
-  margin-top: 12px;
+  margin-bottom: 12px;
   animation: ${Jump} 2s ease-in-out infinite;
 `;
-const Letter = styled.span``;
 
 const PageLoader = () => {
   return (

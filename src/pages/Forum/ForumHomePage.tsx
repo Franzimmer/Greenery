@@ -9,6 +9,7 @@ import { OperationBtn } from "../../components/GlobalStyles/button";
 import { Link } from "react-router-dom";
 import { firebase } from "../../utils/firebase";
 import { Post } from "./ForumPost";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
@@ -130,7 +131,7 @@ const ForumHomePage = () => {
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
   const [postList, setPostList] = useState<Post[]>([]);
   const [filter, setFilter] = useState<"discussion" | "trade" | "any">("any");
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   function addNewPost() {
     setInitTitle("");
     setInitContent("");
@@ -139,7 +140,6 @@ const ForumHomePage = () => {
       type: popUpActions.SHOW_MASK,
     });
   }
-
   useEffect(() => {
     async function getPosts() {
       let postList: Post[] = [];
@@ -148,63 +148,67 @@ const ForumHomePage = () => {
         postList.push(post.data());
       });
       setPostList(postList);
+      setTimeout(() => setIsLoading(false), 1000);
     }
     getPosts();
   }, []);
   return (
-    <Wrapper>
-      <ForumSectionWrapper>
-        <PostTypeBtn
-          style={{ backgroundImage: `url(${all})` }}
-          onClick={() => setFilter("any")}
-        >
-          <PostMask />
-          <PostTypeText>All</PostTypeText>
-        </PostTypeBtn>
-        <PostTypeBtn
-          style={{ backgroundImage: `url(${discuss})` }}
-          onClick={() => setFilter("discussion")}
-        >
-          <PostMask />
-          <PostTypeText>Discuss</PostTypeText>
-        </PostTypeBtn>
-        <PostTypeBtn
-          style={{ backgroundImage: `url(${trade})` }}
-          onClick={() => setFilter("trade")}
-        >
-          <PostMask />
-          <PostTypeText>Trade</PostTypeText>
-        </PostTypeBtn>
-      </ForumSectionWrapper>
-      <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>
-      {postList.length &&
-        postList.map((post) => {
-          return (
-            <ForumPostPage
-              key={post.postId}
-              show={post.type === filter || filter === "any"}
-            >
-              <FlexWrapper>
-                <ForumPostPageInfo to={post.postId}>
-                  {parse(post.title)}
-                </ForumPostPageInfo>
-                <StyledFontAwesomeIcon icon={faArrowUpRightFromSquare} />
-              </FlexWrapper>
-              <TypeText>{post.type}</TypeText>
-            </ForumPostPage>
-          );
-        })}
-      {textEditorDisplay && (
-        <TextEditor
-          initContent={initContent}
-          initTitle={initTitle}
-          editorMode={"AddPost"}
-          setTextEditorDisplay={setTextEditorDisplay}
-          postList={postList}
-          setPostList={setPostList}
-        ></TextEditor>
-      )}
-    </Wrapper>
+    <>
+      {isLoading && <PageLoader />}
+      <Wrapper>
+        <ForumSectionWrapper>
+          <PostTypeBtn
+            style={{ backgroundImage: `url(${all})` }}
+            onClick={() => setFilter("any")}
+          >
+            <PostMask />
+            <PostTypeText>All</PostTypeText>
+          </PostTypeBtn>
+          <PostTypeBtn
+            style={{ backgroundImage: `url(${discuss})` }}
+            onClick={() => setFilter("discussion")}
+          >
+            <PostMask />
+            <PostTypeText>Discuss</PostTypeText>
+          </PostTypeBtn>
+          <PostTypeBtn
+            style={{ backgroundImage: `url(${trade})` }}
+            onClick={() => setFilter("trade")}
+          >
+            <PostMask />
+            <PostTypeText>Trade</PostTypeText>
+          </PostTypeBtn>
+        </ForumSectionWrapper>
+        <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>
+        {postList.length &&
+          postList.map((post) => {
+            return (
+              <ForumPostPage
+                key={post.postId}
+                show={post.type === filter || filter === "any"}
+              >
+                <FlexWrapper>
+                  <ForumPostPageInfo to={post.postId}>
+                    {parse(post.title)}
+                  </ForumPostPageInfo>
+                  <StyledFontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                </FlexWrapper>
+                <TypeText>{post.type}</TypeText>
+              </ForumPostPage>
+            );
+          })}
+        {textEditorDisplay && (
+          <TextEditor
+            initContent={initContent}
+            initTitle={initTitle}
+            editorMode={"AddPost"}
+            setTextEditorDisplay={setTextEditorDisplay}
+            postList={postList}
+            setPostList={setPostList}
+          ></TextEditor>
+        )}
+      </Wrapper>
+    </>
   );
 };
 

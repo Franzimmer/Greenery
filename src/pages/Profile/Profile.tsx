@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../reducer";
 import { auth } from "../../utils/firebase";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
@@ -32,9 +33,10 @@ export const defaultState = {
   Favorites: false,
 };
 const Profile = () => {
+  const { id } = useParams();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
-  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSelf, setIsSelf] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -53,18 +55,21 @@ const Profile = () => {
     });
   }, []);
   return (
-    <MainWrapper>
-      <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
-      <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-      {tabDisplay.Cards && (
-        <Cards id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
-      )}
-      {tabDisplay.Calendar && <CalendarApp id={id!} />}
-      {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
-      {tabDisplay.Favorites && (
-        <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
-      )}
-    </MainWrapper>
+    <>
+      {isLoading && <PageLoader />}
+      <MainWrapper>
+        <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
+        <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
+        {tabDisplay.Cards && (
+          <Cards id={id} isSelf={isSelf} setIsLoading={setIsLoading} />
+        )}
+        {tabDisplay.Calendar && <CalendarApp id={id!} />}
+        {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
+        {tabDisplay.Favorites && (
+          <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
+        )}
+      </MainWrapper>
+    </>
   );
 };
 
