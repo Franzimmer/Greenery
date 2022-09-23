@@ -11,7 +11,6 @@ import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
 import {
   OperationBtn,
-  IconButton,
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";

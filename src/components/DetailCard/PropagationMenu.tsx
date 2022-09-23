@@ -156,7 +156,6 @@ const PropagationMenu = ({
     numberRef.current!.value = "";
     inputRef.current!.value = "";
   }
-  console.log(type);
   return (
     <DialogWrapper $display={propagateDisplay}>
       <FlexWrapper>

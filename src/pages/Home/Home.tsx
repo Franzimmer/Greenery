@@ -22,6 +22,7 @@ import {
 } from "../Profile/favorites/FavGrids";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
 import DetailedCard from "../../components/DetailCard/DetailedCard";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 import defaultImg from "../../assets/default.jpg";
 import rubber from "./rubber.png";
 import left from "./left.png";
@@ -257,8 +258,6 @@ const Home = () => {
     }
     getHomePageData();
   }, []);
-
-  console.log(diariesExist);
   return (
     <Wrapper>
       <Banner>
@@ -389,6 +388,7 @@ const Home = () => {
         diaryId={diaryId!}
         setDiaryId={setDiaryId}
       />
+      <PageLoader />
     </Wrapper>
   );
 };
