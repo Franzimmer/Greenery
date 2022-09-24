@@ -174,13 +174,20 @@ const FavGrids = ({
         })}
       {favCards.length === 0 && (
         <NoCardSection>
-          <NoCardText>
-            You haven't add any card into your favorites. Go checkout other's
-            plants !
-          </NoCardText>
-          <NoCardBtn onClick={() => navigate("/")}>
-            Checkout the most beloved plants
-          </NoCardBtn>
+          {isSelf && (
+            <>
+              <NoCardText>
+                You haven't add any card into your favorites. Go checkout
+                other's plants !
+              </NoCardText>
+              <NoCardBtn onClick={() => navigate("/")}>
+                Checkout the most beloved plants
+              </NoCardBtn>
+            </>
+          )}
+          {!isSelf && (
+            <NoCardText>User has not add any plant in to favorites.</NoCardText>
+          )}
         </NoCardSection>
       )}
     </GridWrapper>

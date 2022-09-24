@@ -162,7 +162,7 @@ export const NoCardSection = styled.div`
 export const NoCardText = styled.p`
   letter-spacing: 1px;
 `;
-export const NoCardBtn = styled.div`
+export const NoCardBtn = styled.label`
   margin-top: 12px;
   padding: 8px;
   border-radius: 8px;
@@ -216,7 +216,6 @@ const CardsGrid = ({
     if (cardMaskDisplay) setCardMaskDisplay(false);
     else if (!cardMaskDisplay) setCardMaskDisplay(true);
   }
-  console.log(checkList);
   return (
     <GridWrapper $mode={viewMode}>
       {cardList.length !== 0 &&
@@ -316,20 +315,25 @@ const CardsGrid = ({
         })}
       {cardList.length === 0 && (
         <NoCardSection>
-          <NoCardText>
-            You haven't had a plant card. Write one for your plant!
-          </NoCardText>
-          <NoCardBtn
-            onClick={() => {
-              setEditCardId(null);
-              editorToggle();
-              dispatch({
-                type: popUpActions.SHOW_MASK,
-              });
-            }}
-          >
-            Add a new card
-          </NoCardBtn>
+          {isSelf && (
+            <>
+              <NoCardText>
+                You haven't had a plant card. Write one for your plant!
+              </NoCardText>
+              <NoCardBtn
+                onClick={() => {
+                  setEditCardId(null);
+                  editorToggle();
+                  dispatch({
+                    type: popUpActions.SHOW_MASK,
+                  });
+                }}
+              >
+                Add a new card
+              </NoCardBtn>
+            </>
+          )}
+          {!isSelf && <NoCardText>User has no card.</NoCardText>}
         </NoCardSection>
       )}
     </GridWrapper>

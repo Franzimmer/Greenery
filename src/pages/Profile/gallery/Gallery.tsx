@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { IconButton } from "../../../components/GlobalStyles/button";
+import { NoCardSection, NoCardText, NoCardBtn } from "../cards/CardsGrid";
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;
@@ -83,7 +84,7 @@ const LabelBtn = styled(IconButton)`
 `;
 const FlexWrapper = styled.div`
   align-self: flex-end;
-  margin-right: 40px;
+  margin: 0 40px 20px 0;
   cursor: pointer;
   width: 200px;
   height: 40px;
@@ -153,6 +154,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
     }
     getMediaData();
   }, [id, isSelf, userInfo]);
+  console.log(media);
   return (
     <>
       {isSelf && (
@@ -160,7 +162,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
           <IconButton htmlFor="image">
             <StyledFontAwesome icon={faPlus} />
           </IconButton>
-          <LabelBtn htmlFor="image">Add Galery</LabelBtn>
+          <LabelBtn htmlFor="image">Add Photo</LabelBtn>
           <input
             id="image"
             type="file"
@@ -172,7 +174,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
         </FlexWrapper>
       )}
       <PinsWrapper>
-        {media &&
+        {media.length !== 0 &&
           media.map((asset, index) => {
             return (
               <Fragment key={`${asset}-asset`}>
@@ -216,6 +218,19 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
             );
           })}
       </PinsWrapper>
+      {media.length === 0 && (
+        <NoCardSection>
+          {isSelf && (
+            <>
+              <NoCardText>
+                You haven't upload any photo yet. Share some with everyone !
+              </NoCardText>
+              <NoCardBtn htmlFor="image">Add Photo</NoCardBtn>
+            </>
+          )}
+          {!isSelf && <NoCardText>User has no gallery data.</NoCardText>}
+        </NoCardSection>
+      )}
     </>
   );
 };
