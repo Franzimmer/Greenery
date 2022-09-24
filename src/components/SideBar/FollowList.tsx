@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { UserPhoto } from "../../pages/Profile/UserInfoSection";
 import { RootState } from "../../reducer";
 import { UserInfo } from "../../types/userInfoType";
+import { NoDataText } from "../GlobalStyles/NoDataLayout";
 const ListWrapper = styled.div`
   width: 100%;
   overflow-y: auto;
@@ -74,6 +75,10 @@ const StyleWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
+export const NoSidebarDataText = styled(NoDataText)`
+  padding: 14px 22px;
+  color: #aaa;
+`;
 const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const navigate = useNavigate();
@@ -99,6 +104,9 @@ const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
             </Person>
           );
         })}
+      {userInfo.followList.length === 0 && (
+        <NoSidebarDataText>You haven't follow anyone.</NoSidebarDataText>
+      )}
     </ListWrapper>
   );
 };

@@ -5,6 +5,7 @@ import { RootState } from "../../reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../types/userInfoType";
+import { NoSidebarDataText } from "./FollowList";
 import Chatroom from "../../components/Chatroom/Chatroom";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
@@ -74,7 +75,9 @@ const Chatrooms = () => {
           targetList.push(targetId[0]);
           chatDisplay[targetId[0]] = false;
         });
-      } else return;
+      } else {
+        setSpinDisplay(false);
+      }
       let queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
@@ -98,10 +101,13 @@ const Chatrooms = () => {
                 onClick={() => toggleChatroom(chat.userId)}
               >
                 <PersonPhoto path={chat.photoUrl} />
-                <ChatroomText>Chatroom with {chat.userName}</ChatroomText>
+                <ChatroomText>with {chat.userName}</ChatroomText>
               </Person>
             );
           })}
+        {chatInfos?.length === 0 && (
+          <NoSidebarDataText>No chatroom history</NoSidebarDataText>
+        )}
       </ChatroomsWrapper>
       {chatInfos.map((user) => {
         return (

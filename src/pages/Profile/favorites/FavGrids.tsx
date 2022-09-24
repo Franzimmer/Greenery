@@ -1,7 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
@@ -10,17 +8,16 @@ import { PlantCard } from "../../../types/plantCardType";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
 import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
+import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
 import {
-  GridWrapper,
-  Card,
-  NameText,
-  SpeciesText,
-  NoCardSection,
-  NoCardText,
-  NoCardBtn,
-} from "../cards/CardsGrid";
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../../components/GlobalStyles/NoDataLayout";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { defaultState, TabDisplayType } from "../Profile";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 
 const UserLink = styled(Link)`
@@ -173,22 +170,22 @@ const FavGrids = ({
           );
         })}
       {favCards.length === 0 && (
-        <NoCardSection>
+        <NoDataSection>
           {isSelf && (
             <>
-              <NoCardText>
+              <NoDataText>
                 You haven't add any card into your favorites. Go checkout
                 other's plants !
-              </NoCardText>
-              <NoCardBtn onClick={() => navigate("/")}>
+              </NoDataText>
+              <NoDataBtn onClick={() => navigate("/")}>
                 Checkout the most beloved plants
-              </NoCardBtn>
+              </NoDataBtn>
             </>
           )}
           {!isSelf && (
-            <NoCardText>User has not add any plant in to favorites.</NoCardText>
+            <NoDataText>User has not add any plant in to favorites.</NoDataText>
           )}
-        </NoCardSection>
+        </NoDataSection>
       )}
     </GridWrapper>
   );

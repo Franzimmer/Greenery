@@ -7,15 +7,15 @@ import { popUpActions } from "../../reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { Post } from "./ForumPost";
 import { firebase } from "../../utils/firebase";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import {
-  NoCardSection,
-  NoCardText,
-  NoCardBtn,
-} from "../Profile/cards/CardsGrid";
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../components/GlobalStyles/NoDataLayout";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
@@ -207,28 +207,28 @@ const ForumHomePage = () => {
             );
           })}
         {postList.length === 0 && (
-          <NoCardSection>
+          <NoDataSection>
             {isLoggedIn && (
               <>
-                <NoCardText>
+                <NoDataText>
                   There's no posts in forum now. Share your ideas with everyone
                   !
-                </NoCardText>
-                <NoCardBtn onClick={addNewPost}>Add Post</NoCardBtn>
+                </NoDataText>
+                <NoDataBtn onClick={addNewPost}>Add Post</NoDataBtn>
               </>
             )}
             {!isLoggedIn && (
               <>
-                <NoCardText>
+                <NoDataText>
                   There's no posts in forum now. Log In and share your ideas
                   with everyone !
-                </NoCardText>
-                <NoCardBtn onClick={() => navigate("/login")}>
+                </NoDataText>
+                <NoDataBtn onClick={() => navigate("/login")}>
                   Head to Log In
-                </NoCardBtn>
+                </NoDataBtn>
               </>
             )}
-          </NoCardSection>
+          </NoDataSection>
         )}
         {textEditorDisplay && (
           <TextEditor

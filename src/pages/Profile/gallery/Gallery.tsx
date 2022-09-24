@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
-import { popUpActions } from "../../../reducer/popUpReducer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { UserInfoActions } from "../../../actions/userInfoActions";
+import { popUpActions } from "../../../reducer/popUpReducer";
+import { firebase } from "../../../utils/firebase";
 import { IconButton } from "../../../components/GlobalStyles/button";
-import { NoCardSection, NoCardText, NoCardBtn } from "../cards/CardsGrid";
+import {
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../../components/GlobalStyles/NoDataLayout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;
@@ -218,17 +222,17 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
           })}
       </PinsWrapper>
       {media.length === 0 && (
-        <NoCardSection>
+        <NoDataSection>
           {isSelf && (
             <>
-              <NoCardText>
+              <NoDataText>
                 You haven't upload any photo yet. Share some with everyone !
-              </NoCardText>
-              <NoCardBtn htmlFor="image">Add Photo</NoCardBtn>
+              </NoDataText>
+              <NoDataBtn htmlFor="image">Add Photo</NoDataBtn>
             </>
           )}
-          {!isSelf && <NoCardText>User has no gallery data.</NoCardText>}
-        </NoCardSection>
+          {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}
+        </NoDataSection>
       )}
     </>
   );

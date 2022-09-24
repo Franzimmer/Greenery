@@ -7,15 +7,19 @@ import {
   faBookmark,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { popUpActions } from "../../../reducer/popUpReducer";
 import { PlantCard } from "../../../types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
+import {
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../../components/GlobalStyles/NoDataLayout";
 import defaultImg from "../../../assets/default.jpg";
-import { useDispatch } from "react-redux";
 
 interface GridWrapperProps {
   $mode: "grid" | "list";
@@ -149,34 +153,7 @@ const IconWrapper = styled.div<MaskAndIconBtnProps>`
   background: rgba(0, 0, 0, 0);
   transition: 0.25s height;
 `;
-export const NoCardSection = styled.div`
-  width: 80vw;
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 5px dashed #aaa;
-  color: #aaa;
-`;
-export const NoCardText = styled.p`
-  letter-spacing: 1px;
-`;
-export const NoCardBtn = styled.label`
-  margin-top: 12px;
-  padding: 8px;
-  border-radius: 8px;
-  background: #aaa;
-  border: 1px solid #aaa;
-  color: #fff;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: 0.25s;
-  &:hover {
-    transform: scale(1.1);
-    transition: 0.25s;
-  }
-`;
+
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   isSelf: boolean;
@@ -314,13 +291,13 @@ const CardsGrid = ({
           );
         })}
       {cardList.length === 0 && (
-        <NoCardSection>
+        <NoDataSection>
           {isSelf && (
             <>
-              <NoCardText>
+              <NoDataText>
                 You haven't had a plant card. Write one for your plant!
-              </NoCardText>
-              <NoCardBtn
+              </NoDataText>
+              <NoDataBtn
                 onClick={() => {
                   setEditCardId(null);
                   editorToggle();
@@ -330,11 +307,11 @@ const CardsGrid = ({
                 }}
               >
                 Add a new card
-              </NoCardBtn>
+              </NoDataBtn>
             </>
           )}
-          {!isSelf && <NoCardText>User has no card.</NoCardText>}
-        </NoCardSection>
+          {!isSelf && <NoDataText>User has no card.</NoDataText>}
+        </NoDataSection>
       )}
     </GridWrapper>
   );
