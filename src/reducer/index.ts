@@ -4,6 +4,7 @@ import cards from "./cardsReducer";
 import notifications from "./notificationsReducer";
 import myFollowers from "./myFollowersReducer";
 import popUp from "./popUpReducer";
+import authority from "./authorityReducer";
 
 const allReducers = combineReducers({
   userInfo,
@@ -11,6 +12,7 @@ const allReducers = combineReducers({
   notifications,
   myFollowers,
   popUp,
+  authority,
 });
 
 export type RootState = ReturnType<typeof allReducers>;

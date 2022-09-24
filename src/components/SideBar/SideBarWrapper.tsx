@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducer";
+import { UserInfo } from "../../types/userInfoType";
+import { Note } from "../../types/notificationType";
+import { NotificationActions } from "../../actions/notificationActions";
+import { myFollowersActions } from "../../reducer/myFollowersReducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -8,12 +14,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { firebase, db } from "../../utils/firebase";
 import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
-import { UserInfo } from "../../types/userInfoType";
-import { Note } from "../../types/notificationType";
-import { NotificationActions } from "../../actions/notificationActions";
-import { myFollowersActions } from "../../reducer/myFollowersReducer";
 import FollowList from "./FollowList";
 import Notifications from "./Notifications";
 import Chatrooms from "./Chatrooms";
@@ -75,12 +75,9 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<
 `;
 interface SidebarWrapperProps {
   sideBarDisplay: boolean;
-  isLoggedIn: boolean;
 }
-const SidebarWrapper = ({
-  sideBarDisplay,
-  isLoggedIn,
-}: SidebarWrapperProps) => {
+const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const notices = useSelector((state: RootState) => state.notifications);
   const [followInfos, setFollowInfos] = useState<UserInfo[]>([]);
@@ -137,7 +134,7 @@ const SidebarWrapper = ({
     getUsersData();
   }, [userInfo]);
   return (
-    <Wrapper show={sideBarDisplay}>
+    <Wrapper show={isLoggedIn && sideBarDisplay}>
       <Tabs>
         <Tab onClick={() => tabSwitch("FollowList")}>
           <StyledFontAwesomeIcon icon={faUser} $tab={tab["FollowList"]} />

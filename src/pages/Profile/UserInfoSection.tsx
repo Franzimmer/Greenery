@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
 import { popUpActions } from "../../reducer/popUpReducer";
+import { AuthorityActions } from "../../reducer/authorityReducer";
 import { UserInfo } from "../../types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,17 +73,18 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 interface UserInfoProps {
   id: string | undefined;
   isSelf: boolean;
-  isLoggedIn: boolean;
 }
-const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
+const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,

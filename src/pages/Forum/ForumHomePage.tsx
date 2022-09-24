@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducer/index";
 import { popUpActions } from "../../reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
-import { Link } from "react-router-dom";
-import { firebase } from "../../utils/firebase";
 import { Post } from "./ForumPost";
+import { firebase } from "../../utils/firebase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  NoCardSection,
+  NoCardText,
+  NoCardBtn,
+} from "../Profile/cards/CardsGrid";
+import TextEditor from "../../components/TextEditor/TextEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
@@ -16,6 +22,7 @@ import all from "./all.jpeg";
 import trade from "./trade.jpeg";
 const Wrapper = styled.div`
   margin: 150px auto 50px;
+  width: 80vw;
 `;
 const ForumSectionWrapper = styled.div`
   width: 78vw;
@@ -114,7 +121,7 @@ const PostTypeText = styled.p`
 const AddPostBtn = styled(OperationBtn)`
   width: 100px;
   display: block;
-  margin: 10px 11vw 20px auto;
+  margin: 10px 0 20px auto;
   background: #6a5125;
   border: 1px solid #6a5125;
   transition: 0.25s;
@@ -126,6 +133,8 @@ const AddPostBtn = styled(OperationBtn)`
 
 const ForumHomePage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const [initContent, setInitContent] = useState<string>("");
   const [initTitle, setInitTitle] = useState<string>("");
   const [textEditorDisplay, setTextEditorDisplay] = useState<boolean>(false);
@@ -179,8 +188,8 @@ const ForumHomePage = () => {
             <PostTypeText>Trade</PostTypeText>
           </PostTypeBtn>
         </ForumSectionWrapper>
-        <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>
-        {postList.length &&
+        {isLoggedIn && <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>}
+        {postList.length !== 0 &&
           postList.map((post) => {
             return (
               <ForumPostPage
@@ -197,6 +206,30 @@ const ForumHomePage = () => {
               </ForumPostPage>
             );
           })}
+        {postList.length === 0 && (
+          <NoCardSection>
+            {isLoggedIn && (
+              <>
+                <NoCardText>
+                  There's no posts in forum now. Share your ideas with everyone
+                  !
+                </NoCardText>
+                <NoCardBtn onClick={addNewPost}>Add Post</NoCardBtn>
+              </>
+            )}
+            {!isLoggedIn && (
+              <>
+                <NoCardText>
+                  There's no posts in forum now. Log In and share your ideas
+                  with everyone !
+                </NoCardText>
+                <NoCardBtn onClick={() => navigate("/login")}>
+                  Head to Log In
+                </NoCardBtn>
+              </>
+            )}
+          </NoCardSection>
+        )}
         {textEditorDisplay && (
           <TextEditor
             initContent={initContent}

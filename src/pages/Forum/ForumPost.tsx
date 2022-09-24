@@ -187,6 +187,7 @@ const ForumPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [chatroomDisplay, setChatroomDisplay] = useState<
     Record<string, boolean>
@@ -342,7 +343,7 @@ const ForumPost = () => {
               >
                 {authorInfo?.userName}
               </AuthorName>
-              {userInfo.userId !== authorInfo?.userId && (
+              {userInfo.userId !== authorInfo?.userId && isLoggedIn && (
                 <OpenChatRoomBtn
                   onClick={() => {
                     openChatroom(authorInfo!.userId);

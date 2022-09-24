@@ -154,7 +154,6 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
     }
     getMediaData();
   }, [id, isSelf, userInfo]);
-  console.log(media);
   return (
     <>
       {isSelf && (
