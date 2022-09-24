@@ -18,10 +18,15 @@ import { UserInfo } from "../../types/userInfoType";
 import { Comment } from "../../pages/Forum/ForumPost";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
 import { PlantCard } from "../../types/plantCardType";
-const Wrapper = styled.div`
+interface CardPanelWrapperProps {
+  $show: boolean;
+}
+const Wrapper = styled.div<CardPanelWrapperProps>`
+  width: ${(props) => (props.$show ? "880px" : "auto")};
   position: absolute;
   top: 50vh;
   left: 50vw;
+  transtion: 1s;
   transform: translateX(-50%) translateY(-50%);
   z-index: 101;
   display: flex;
@@ -37,23 +42,21 @@ const LabelText = styled.div`
   margin: 0 8px 0 0;
 `;
 const TextEditorBtn = styled(OperationBtn)`
+  width: 100px;
   background: #6a5125;
   border: 1px solid #6a5125;
-  margin: 5px 5px 0px 0px;
+  margin: 8px 8px 0px 0px;
   transtion: 0.25s;
   &:hover {
     transform: scale(1.1);
     transtion: 0.25s;
   }
 `;
-interface CardPanelWrapperProps {
-  $show: boolean;
-}
 const CardPanelWrapper = styled.div<CardPanelWrapperProps>`
   width: ${(props) => (props.$show ? "330px" : 0)};
   height: 450px;
   overflow-y: auto;
-  padding: 15px;
+  padding: ${(props) => (props.$show ? "15px" : 0)};
   background: #fff;
   transition: 1s;
 `;
@@ -76,6 +79,11 @@ const TypeBtn = styled.div`
 const TypeBtnInactive = styled(TypeBtn)`
   background: #fff;
   color: #6a5125;
+`;
+const TypeBtnDisabled = styled(TypeBtnInactive)`
+  border: 1px solid #aaa;
+  color: #aaa;
+  cursor: not-allowed;
 `;
 interface TiptapProps {
   editorMode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
@@ -113,7 +121,7 @@ const TextEditor = ({
     (state: RootState) => state.myFollowers
   );
   const titleEditor = useEditor({
-    extensions: [Document, Text, Heading.configure({ levels: [1] })],
+    extensions: [Document, Text, Heading.configure({ levels: [3] })],
     content: initTitle || "Title",
   });
   const editor = useEditor({
@@ -237,12 +245,31 @@ const TextEditor = ({
     getUserCards();
   }, []);
   return (
-    <Wrapper>
+    <Wrapper $show={cardWrapperDisplay}>
       <EditoWrapper>
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (
           <TypeBtnWrapper>
             <LabelText>Post Type</LabelText>
-            {type === "discussion" && (
+            {cardList.length === 0 && (
+              <TypeBtnWrapper>
+                <TypeBtn
+                  onClick={() => {
+                    setType("discussion");
+                    setCardWrapperDisplay(false);
+                  }}
+                >
+                  Discussion
+                </TypeBtn>
+                <TypeBtnDisabled
+                  onClick={() =>
+                    emitAlert("fail", "You have no plant to trade.")
+                  }
+                >
+                  Trade
+                </TypeBtnDisabled>
+              </TypeBtnWrapper>
+            )}
+            {cardList.length > 0 && type === "discussion" && (
               <TypeBtnWrapper>
                 <TypeBtn
                   onClick={() => {
@@ -262,7 +289,7 @@ const TextEditor = ({
                 </TypeBtnInactive>
               </TypeBtnWrapper>
             )}
-            {type === "trade" && (
+            {cardList.length > 0 && type === "trade" && (
               <TypeBtnWrapper>
                 <TypeBtnInactive
                   onClick={() => {
@@ -282,14 +309,6 @@ const TextEditor = ({
                 </TypeBtn>
               </TypeBtnWrapper>
             )}
-            {/* <select
-              name="type"
-              ref={typeRef}
-              onChange={toggleCardWrapperDisplay}
-            >
-              <option value="discussion">Discussion</option>
-              <option value="trade">Trade</option>
-            </select> */}
           </TypeBtnWrapper>
         )}
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (

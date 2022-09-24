@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   width: 80vw;
 `;
 const ForumSectionWrapper = styled.div`
-  width: 78vw;
+  width: 80vw;
   display: flex;
   justify-content: center;
   align-itms: center;
@@ -35,7 +35,7 @@ interface ForumPostPageProps {
   show: boolean;
 }
 export const ForumPostPage = styled.div<ForumPostPageProps>`
-  width: 78vw;
+  width: 80vw;
   height: 100px;
   border: 1px solid #6a5125;
   display: ${(props) => (props.show ? "flex" : "none")};
@@ -88,7 +88,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   }
 `;
 const PostTypeBtn = styled.div`
-  width: 26vw;
+  width: calc(80vw / 3);
   height: 125px;
   background-position: center center;
   background-size: cover;
@@ -220,8 +220,8 @@ const ForumHomePage = () => {
             {!isLoggedIn && (
               <>
                 <NoDataText>
-                  There's no posts in forum now. Log In and share your ideas
-                  with everyone !
+                  There's no post in forum now. Log In and share your ideas with
+                  everyone !
                 </NoDataText>
                 <NoDataBtn onClick={() => navigate("/login")}>
                   Head to Log In
