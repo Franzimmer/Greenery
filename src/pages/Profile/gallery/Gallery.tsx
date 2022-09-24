@@ -104,6 +104,9 @@ const FlexWrapper = styled.div`
     transition: 0.25s;
   }
 `;
+const NoGallerySection = styled(NoDataSection)`
+  margin-top: 20px;
+`;
 const Gallery = ({ id, isSelf }: GalleryProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
@@ -160,7 +163,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
   }, [id, isSelf, userInfo]);
   return (
     <>
-      {isSelf && (
+      {isSelf && media.length !== 0 && (
         <FlexWrapper>
           <IconButton htmlFor="image">
             <StyledFontAwesome icon={faPlus} />
@@ -222,7 +225,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
           })}
       </PinsWrapper>
       {media.length === 0 && (
-        <NoDataSection>
+        <NoGallerySection>
           {isSelf && (
             <>
               <NoDataText>
@@ -232,7 +235,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
             </>
           )}
           {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}
-        </NoDataSection>
+        </NoGallerySection>
       )}
     </>
   );

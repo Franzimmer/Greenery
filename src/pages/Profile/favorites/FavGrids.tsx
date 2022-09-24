@@ -107,68 +107,70 @@ const FavGrids = ({
     emitAlert("success", "Remove from your Favorites.");
   }
   return (
-    <GridWrapper $mode={"grid"}>
-      {favCards.length !== 0 &&
-        favCards.map((card: PlantCard) => {
-          return (
-            <Card
-              key={card.cardId}
-              id={card.cardId!}
-              $mode={"grid"}
-              $show={true}
-              onClick={() => {
-                setDetailDisplay(true);
-                setDetailData(card);
-                dispatch({
-                  type: popUpActions.SHOW_MASK,
-                });
-              }}
-            >
-              <PlantImg path={card.plantPhoto || defaultImg} />
-              <NameText>
-                <UserLink
-                  to={`/profile/${card.ownerId}`}
-                  onClick={() => {
-                    setTabDisplay(defaultState);
-                  }}
-                >
-                  {findOwnerName(card.ownerId)}
-                </UserLink>
-                's {card.plantName}
-              </NameText>
-              <SpeciesText>{card.species}</SpeciesText>
-              <TagsWrapper>
-                {card?.tags?.length !== 0 &&
-                  card.tags?.map((tag) => {
-                    return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                  })}
-              </TagsWrapper>
-              <DiaryIconBtn
-                onClick={(e) => {
-                  setDiaryDisplay(true);
-                  setDiaryId(card.cardId);
+    <>
+      <GridWrapper $mode={"grid"}>
+        {favCards.length !== 0 &&
+          favCards.map((card: PlantCard) => {
+            return (
+              <Card
+                key={card.cardId}
+                id={card.cardId!}
+                $mode={"grid"}
+                $show={true}
+                onClick={() => {
+                  setDetailDisplay(true);
+                  setDetailData(card);
                   dispatch({
                     type: popUpActions.SHOW_MASK,
                   });
-                  e.stopPropagation();
                 }}
               >
-                <StyledFontAwesomeIcon icon={faBook} />
-              </DiaryIconBtn>
-              {isSelf && (
-                <FavIconButton
-                  $show={true}
+                <PlantImg path={card.plantPhoto || defaultImg} />
+                <NameText>
+                  <UserLink
+                    to={`/profile/${card.ownerId}`}
+                    onClick={() => {
+                      setTabDisplay(defaultState);
+                    }}
+                  >
+                    {findOwnerName(card.ownerId)}
+                  </UserLink>
+                  's {card.plantName}
+                </NameText>
+                <SpeciesText>{card.species}</SpeciesText>
+                <TagsWrapper>
+                  {card?.tags?.length !== 0 &&
+                    card.tags?.map((tag) => {
+                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                    })}
+                </TagsWrapper>
+                <DiaryIconBtn
                   onClick={(e) => {
-                    removeFavorite(card.cardId!);
+                    setDiaryDisplay(true);
+                    setDiaryId(card.cardId);
+                    dispatch({
+                      type: popUpActions.SHOW_MASK,
+                    });
                     e.stopPropagation();
                   }}
                 >
-                  <StyledFontAwesomeIcon icon={faBookmark} />
-                </FavIconButton>
-              )}
-            </Card>
-          );
-        })}
+                  <StyledFontAwesomeIcon icon={faBook} />
+                </DiaryIconBtn>
+                {isSelf && (
+                  <FavIconButton
+                    $show={true}
+                    onClick={(e) => {
+                      removeFavorite(card.cardId!);
+                      e.stopPropagation();
+                    }}
+                  >
+                    <StyledFontAwesomeIcon icon={faBookmark} />
+                  </FavIconButton>
+                )}
+              </Card>
+            );
+          })}
+      </GridWrapper>
       {favCards.length === 0 && (
         <NoDataSection>
           {isSelf && (
@@ -187,7 +189,7 @@ const FavGrids = ({
           )}
         </NoDataSection>
       )}
-    </GridWrapper>
+    </>
   );
 };
 

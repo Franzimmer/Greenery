@@ -194,102 +194,104 @@ const CardsGrid = ({
     else if (!cardMaskDisplay) setCardMaskDisplay(true);
   }
   return (
-    <GridWrapper $mode={viewMode}>
-      {cardList.length !== 0 &&
-        cardList.map((card) => {
-          return (
-            <Card
-              key={card.cardId}
-              $mode={viewMode}
-              $show={filterCard(card.tags || [])}
-              onClick={() => {
-                dispatch({
-                  type: popUpActions.SHOW_MASK,
-                });
-                setDetailDisplay(true);
-                setDetailData(card);
-              }}
-            >
-              {isSelf && (
-                <CardCheck
-                  type="checkbox"
-                  $mode={viewMode}
-                  checked={checkList[card.cardId!]}
-                  onClick={(e) => {
-                    switchOneCheck(card.cardId!);
-                    e.stopPropagation();
-                  }}
-                />
-              )}
-              <CardMask
-                $show={cardMaskDisplay}
-                onClick={(e) => e.stopPropagation()}
-              />
-              {viewMode === "grid" && (
-                <PlantImg path={card.plantPhoto || defaultImg} />
-              )}
-              <NameText $mode={viewMode}>{card.plantName}</NameText>
-              <SpeciesText>{card.species}</SpeciesText>
-              <TagsWrapper viewMode={viewMode}>
-                {card?.tags?.length !== 0 &&
-                  card.tags?.map((tag: string) => {
-                    return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
-                  })}
-              </TagsWrapper>
-              <IconWrapper $show={cardMaskDisplay} $mode={viewMode}>
-                <DiaryIconBtn
-                  $show={cardMaskDisplay}
-                  onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    dispatch({
-                      type: popUpActions.SHOW_MASK,
-                    });
-                    setDiaryDisplay(true);
-                    setDiaryId(card.cardId);
-                    toggleMask();
-                    e.stopPropagation();
-                  }}
-                >
-                  <StyledFontAwesomeIcon icon={faBook} />
-                </DiaryIconBtn>
-                <BookMarkIconBtn
-                  $show={cardMaskDisplay}
-                  $fav={userInfo.favoriteCards.includes(card.cardId!)}
-                  onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    favoriteToggle(card.cardId!);
-                    e.stopPropagation();
-                  }}
-                >
-                  <StyledFontAwesomeIcon icon={faBookmark} />
-                </BookMarkIconBtn>
-                <CardMenuIcon
-                  $show={cardMaskDisplay}
-                  onClick={(e) => {
-                    toggleMask();
-                    e.stopPropagation();
-                  }}
-                >
-                  <StyledMenuIcon icon={faEllipsis} $show={cardMaskDisplay} />
-                </CardMenuIcon>
+    <>
+      <GridWrapper $mode={viewMode}>
+        {cardList.length !== 0 &&
+          cardList.map((card) => {
+            return (
+              <Card
+                key={card.cardId}
+                $mode={viewMode}
+                $show={filterCard(card.tags || [])}
+                onClick={() => {
+                  dispatch({
+                    type: popUpActions.SHOW_MASK,
+                  });
+                  setDetailDisplay(true);
+                  setDetailData(card);
+                }}
+              >
                 {isSelf && (
-                  <EditIconBtn
+                  <CardCheck
+                    type="checkbox"
+                    $mode={viewMode}
+                    checked={checkList[card.cardId!]}
+                    onClick={(e) => {
+                      switchOneCheck(card.cardId!);
+                      e.stopPropagation();
+                    }}
+                  />
+                )}
+                <CardMask
+                  $show={cardMaskDisplay}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {viewMode === "grid" && (
+                  <PlantImg path={card.plantPhoto || defaultImg} />
+                )}
+                <NameText $mode={viewMode}>{card.plantName}</NameText>
+                <SpeciesText>{card.species}</SpeciesText>
+                <TagsWrapper viewMode={viewMode}>
+                  {card?.tags?.length !== 0 &&
+                    card.tags?.map((tag: string) => {
+                      return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                    })}
+                </TagsWrapper>
+                <IconWrapper $show={cardMaskDisplay} $mode={viewMode}>
+                  <DiaryIconBtn
                     $show={cardMaskDisplay}
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
                       dispatch({
                         type: popUpActions.SHOW_MASK,
                       });
-                      setEditCardId(card.cardId);
+                      setDiaryDisplay(true);
+                      setDiaryId(card.cardId);
                       toggleMask();
-                      editorToggle();
                       e.stopPropagation();
                     }}
                   >
-                    <StyledFontAwesomeIcon icon={faPenToSquare} />
-                  </EditIconBtn>
-                )}
-              </IconWrapper>
-            </Card>
-          );
-        })}
+                    <StyledFontAwesomeIcon icon={faBook} />
+                  </DiaryIconBtn>
+                  <BookMarkIconBtn
+                    $show={cardMaskDisplay}
+                    $fav={userInfo.favoriteCards.includes(card.cardId!)}
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
+                      favoriteToggle(card.cardId!);
+                      e.stopPropagation();
+                    }}
+                  >
+                    <StyledFontAwesomeIcon icon={faBookmark} />
+                  </BookMarkIconBtn>
+                  <CardMenuIcon
+                    $show={cardMaskDisplay}
+                    onClick={(e) => {
+                      toggleMask();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <StyledMenuIcon icon={faEllipsis} $show={cardMaskDisplay} />
+                  </CardMenuIcon>
+                  {isSelf && (
+                    <EditIconBtn
+                      $show={cardMaskDisplay}
+                      onClick={(e: React.MouseEvent<HTMLElement>) => {
+                        dispatch({
+                          type: popUpActions.SHOW_MASK,
+                        });
+                        setEditCardId(card.cardId);
+                        toggleMask();
+                        editorToggle();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <StyledFontAwesomeIcon icon={faPenToSquare} />
+                    </EditIconBtn>
+                  )}
+                </IconWrapper>
+              </Card>
+            );
+          })}
+      </GridWrapper>
       {cardList.length === 0 && (
         <NoDataSection>
           {isSelf && (
@@ -313,7 +315,7 @@ const CardsGrid = ({
           {!isSelf && <NoDataText>User has no card.</NoDataText>}
         </NoDataSection>
       )}
-    </GridWrapper>
+    </>
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../reducer/index";
 import { popUpActions } from "../../../reducer/popUpReducer";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,8 +15,6 @@ import {
   faPersonDigging,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-
 const OperationMenuWrapper = styled.div`
   display: flex;
 `;
@@ -24,7 +24,7 @@ const MenuBtn = styled(IconButton)`
   align-items: center;
   width: 30px;
   height: 30px;
-  margin-right: 20px;
+  margin: 8px;
   border-radius: 5px;
   border: 2px solid #5c836f;
   background: #fff;
@@ -60,6 +60,16 @@ const SmallFontAwesomeIcon = styled(StyledFontAwesomeIcon)`
   width: 20px;
   height: 20px;
 `;
+const BtnWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+`;
+const IconLabel = styled.span`
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: #5c836f;
+`;
 interface OperationMenuProps {
   isSelf: boolean;
   viewMode: "grid" | "list";
@@ -87,6 +97,7 @@ const OperationMenu = ({
   deleteCards,
 }: OperationMenuProps) => {
   const dispatch = useDispatch();
+  const cardList = useSelector((state: RootState) => state.cards);
   const [allCheckStatus, setAllCheckStatus] = useState<boolean>(false);
   const [checkStatus, setCheckStatus] = useState<boolean>(
     Object.values(checkList).some((check) => check === true)
@@ -94,82 +105,111 @@ const OperationMenu = ({
   useEffect(() => {
     setCheckStatus(Object.values(checkList).some((check) => check === true));
   }, [checkList]);
-  return (
+  return cardList.length > 0 ? (
     <OperationMenuWrapper>
       {isSelf && (
-        <MenuBtn
-          onClick={() => {
-            setEditCardId(null);
-            editorToggle();
-            dispatch({
-              type: popUpActions.SHOW_MASK,
-            });
-          }}
-        >
-          <StyledFontAwesomeIcon icon={faPlus}></StyledFontAwesomeIcon>
-        </MenuBtn>
+        <BtnWrapper>
+          <MenuBtn
+            onClick={() => {
+              setEditCardId(null);
+              editorToggle();
+              dispatch({
+                type: popUpActions.SHOW_MASK,
+              });
+            }}
+          >
+            <StyledFontAwesomeIcon icon={faPlus}></StyledFontAwesomeIcon>
+          </MenuBtn>
+          <IconLabel>Add Card</IconLabel>
+        </BtnWrapper>
       )}
-      <MenuBtn onClick={filterToggle}>
-        <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
-      </MenuBtn>
-      {viewMode === "grid" && (
-        <MenuBtn onClick={() => setViewMode("list")}>
-          <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
+      <BtnWrapper>
+        <MenuBtn onClick={filterToggle}>
+          <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
         </MenuBtn>
+        <IconLabel>Filter</IconLabel>
+      </BtnWrapper>
+      {viewMode === "grid" && (
+        <BtnWrapper>
+          <MenuBtn onClick={() => setViewMode("list")}>
+            <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
+          </MenuBtn>
+          <IconLabel>List Mode</IconLabel>
+        </BtnWrapper>
       )}
       {viewMode === "list" && (
-        <MenuBtn onClick={() => setViewMode("grid")}>
-          <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
-        </MenuBtn>
+        <BtnWrapper>
+          <MenuBtn onClick={() => setViewMode("grid")}>
+            <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
+          </MenuBtn>
+          <IconLabel>Grid Mode</IconLabel>
+        </BtnWrapper>
       )}
       {isSelf && (
         <>
           {allCheckStatus && (
-            <MenuBtnActive
-              onClick={() => {
-                setAllCheckStatus(false);
-                clearAllCheck();
-              }}
-            >
-              <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
-            </MenuBtnActive>
+            <BtnWrapper>
+              <MenuBtnActive
+                onClick={() => {
+                  setAllCheckStatus(false);
+                  clearAllCheck();
+                }}
+              >
+                <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
+              </MenuBtnActive>
+              <IconLabel>Uncheck All</IconLabel>
+            </BtnWrapper>
           )}
           {!allCheckStatus && (
-            <MenuBtn
-              onClick={() => {
-                setAllCheckStatus(true);
-                allCheck();
-              }}
-            >
-              <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
-            </MenuBtn>
+            <BtnWrapper>
+              <MenuBtn
+                onClick={() => {
+                  setAllCheckStatus(true);
+                  allCheck();
+                }}
+              >
+                <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
+              </MenuBtn>
+              <IconLabel>Check All</IconLabel>
+            </BtnWrapper>
           )}
           {checkStatus && (
             <>
-              <MenuBtn onClick={() => addEvents("water")}>
-                <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
-              </MenuBtn>
-              <MenuBtn onClick={() => addEvents("fertilize")}>
-                <SmallFontAwesomeIcon
-                  icon={faPersonDigging}
-                ></SmallFontAwesomeIcon>
-              </MenuBtn>
-              <MenuBtn onClick={deleteCards}>
-                <SmallFontAwesomeIcon icon={faTrashCan}></SmallFontAwesomeIcon>
-              </MenuBtn>
+              <BtnWrapper>
+                <MenuBtn onClick={() => addEvents("water")}>
+                  <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
+                </MenuBtn>
+                <IconLabel>Watering</IconLabel>
+              </BtnWrapper>
+              <BtnWrapper>
+                <MenuBtn onClick={() => addEvents("fertilize")}>
+                  <SmallFontAwesomeIcon
+                    icon={faPersonDigging}
+                  ></SmallFontAwesomeIcon>
+                </MenuBtn>
+                <IconLabel>Fertilizing</IconLabel>
+              </BtnWrapper>
+              <BtnWrapper>
+                <MenuBtn onClick={deleteCards}>
+                  <SmallFontAwesomeIcon
+                    icon={faTrashCan}
+                  ></SmallFontAwesomeIcon>
+                </MenuBtn>
+                <IconLabel>Delete Card</IconLabel>
+              </BtnWrapper>
             </>
           )}
           {!checkStatus && (
             <>
-              <MenuBtnDisabled onClick={() => addEvents("water")}>
+              <MenuBtnDisabled>
                 <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
               </MenuBtnDisabled>
-              <MenuBtnDisabled onClick={() => addEvents("fertilize")}>
+              <MenuBtnDisabled>
                 <SmallFontAwesomeIcon
                   icon={faPersonDigging}
                 ></SmallFontAwesomeIcon>
               </MenuBtnDisabled>
-              <MenuBtnDisabled onClick={deleteCards}>
+              <MenuBtnDisabled>
                 <SmallFontAwesomeIcon icon={faTrashCan}></SmallFontAwesomeIcon>
               </MenuBtnDisabled>
             </>
@@ -177,7 +217,7 @@ const OperationMenu = ({
         </>
       )}
     </OperationMenuWrapper>
-  );
+  ) : null;
 };
 
 export default OperationMenu;

@@ -62,7 +62,7 @@ const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
       }
     }
     getFavCards();
-  }, [id, userInfo.userId, favoriteCards, favCards]);
+  }, [id, favoriteCards]);
   return (
     <>
       <FavGrids
