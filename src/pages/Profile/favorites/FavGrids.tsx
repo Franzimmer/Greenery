@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { popUpActions } from "../../../reducer/popUpReducer";
@@ -10,7 +10,15 @@ import { PlantCard } from "../../../types/plantCardType";
 import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
 import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
-import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
+import {
+  GridWrapper,
+  Card,
+  NameText,
+  SpeciesText,
+  NoCardSection,
+  NoCardText,
+  NoCardBtn,
+} from "../cards/CardsGrid";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { defaultState, TabDisplayType } from "../Profile";
 import defaultImg from "../../../assets/default.jpg";
@@ -75,8 +83,9 @@ const FavGrids = ({
   setTabDisplay,
   findOwnerName,
 }: FavGridsProps) => {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -102,7 +111,7 @@ const FavGrids = ({
   }
   return (
     <GridWrapper $mode={"grid"}>
-      {favCards &&
+      {favCards.length !== 0 &&
         favCards.map((card: PlantCard) => {
           return (
             <Card
@@ -163,6 +172,17 @@ const FavGrids = ({
             </Card>
           );
         })}
+      {favCards.length === 0 && (
+        <NoCardSection>
+          <NoCardText>
+            You haven't add any card into your favorites. Go checkout other's
+            plants !
+          </NoCardText>
+          <NoCardBtn onClick={() => navigate("/")}>
+            Checkout the most beloved plants
+          </NoCardBtn>
+        </NoCardSection>
+      )}
     </GridWrapper>
   );
 };

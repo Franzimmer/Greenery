@@ -147,10 +147,9 @@ const IconWrapper = styled.div<MaskAndIconBtnProps>`
   ${(props) =>
     props.$mode === "grid" ? "20px" : !props.$show ? "-50px" : "65px"};
   background: rgba(0, 0, 0, 0);
-  // box-shadow: ${(props) => props.$show && "0px 0px 10px #aaa"};
   transition: 0.25s height;
 `;
-const NoCardSection = styled.div`
+export const NoCardSection = styled.div`
   width: 80vw;
   height: 250px;
   display: flex;
@@ -160,20 +159,22 @@ const NoCardSection = styled.div`
   border: 5px dashed #aaa;
   color: #aaa;
 `;
-const NoCardText = styled.p`
+export const NoCardText = styled.p`
   letter-spacing: 1px;
 `;
-const NoCardBtn = styled.div`
+export const NoCardBtn = styled.div`
   margin-top: 12px;
-  padding: 12px;
+  padding: 8px;
   border-radius: 8px;
   background: #aaa;
   border: 1px solid #aaa;
   color: #fff;
   letter-spacing: 1px;
   cursor: pointer;
-  & :hover {
+  transition: 0.25s;
+  &:hover {
     transform: scale(1.1);
+    transition: 0.25s;
   }
 `;
 type CheckList = Record<string, boolean>;

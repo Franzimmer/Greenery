@@ -20,7 +20,7 @@ const MenuItem = styled(LabelText)<MenuItemProps>`
   transition: 0.5s;
   &:hover {
     color: #5c836f;
-    transform: translateY(-5px);
+    transform: scale(1.1);
     transition: 0.5s;
   }
 `;
