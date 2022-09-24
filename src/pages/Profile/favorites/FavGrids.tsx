@@ -23,7 +23,7 @@ const UserLink = styled(Link)`
   }
 `;
 interface FavIconButtonProps {
-  show: boolean;
+  $show: boolean;
 }
 export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
   position: absolute;
@@ -36,7 +36,7 @@ export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
     transition: 0.25s;
   }
   & * {
-    color: ${(props) => !props.show && "#ccc"};
+    color: ${(props) => !props.$show && "#ccc"};
   }
 `;
 export const DiaryIconBtn = styled(IconButton)`
@@ -101,15 +101,15 @@ const FavGrids = ({
     emitAlert("success", "Remove from your Favorites.");
   }
   return (
-    <GridWrapper mode={"grid"}>
+    <GridWrapper $mode={"grid"}>
       {favCards &&
         favCards.map((card: PlantCard) => {
           return (
             <Card
-              mode={"grid"}
               key={card.cardId}
               id={card.cardId!}
-              show={true}
+              $mode={"grid"}
+              $show={true}
               onClick={() => {
                 setDetailDisplay(true);
                 setDetailData(card);
@@ -151,7 +151,7 @@ const FavGrids = ({
               </DiaryIconBtn>
               {isSelf && (
                 <FavIconButton
-                  show={true}
+                  $show={true}
                   onClick={(e) => {
                     removeFavorite(card.cardId!);
                     e.stopPropagation();

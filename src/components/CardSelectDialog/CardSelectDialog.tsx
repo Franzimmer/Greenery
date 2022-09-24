@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { firebase } from "../../utils/firebase";
 import { CardsActions } from "../../actions/cardsActions";

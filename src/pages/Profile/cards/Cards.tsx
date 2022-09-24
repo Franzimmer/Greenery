@@ -167,6 +167,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
     const targets = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
+    console.log(targets);
     if (!targets.length) return;
     let promises = targets.map((target) => {
       return firebase.deleteCard(target);

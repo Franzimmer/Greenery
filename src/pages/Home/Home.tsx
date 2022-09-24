@@ -334,8 +334,8 @@ const Home = () => {
                     <Card
                       key={card.cardId}
                       id={card.cardId!}
-                      mode={"grid"}
-                      show={true}
+                      $mode={"grid"}
+                      $show={true}
                       onClick={(e) => {
                         setDetailDisplay(true);
                         setDetailData(card);
@@ -370,7 +370,7 @@ const Home = () => {
                         </DiaryIconBtn>
                       )}
                       <FavIconButton
-                        show={
+                        $show={
                           userInfo?.favoriteCards.includes(card.cardId!) ||
                           false
                         }

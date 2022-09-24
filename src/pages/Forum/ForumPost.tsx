@@ -356,7 +356,7 @@ const ForumPost = () => {
             {cards &&
               cards.map((card) => {
                 return (
-                  <TradeCard key={card.cardId} show={true} mode={"grid"}>
+                  <TradeCard key={card.cardId} $show={true} $mode={"grid"}>
                     <PlantImg path={card.plantPhoto} />
                     <NameText>{card.plantName}</NameText>
                     <SpeciesText>{card.species}</SpeciesText>

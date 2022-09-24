@@ -254,11 +254,11 @@ const CardEditor = ({
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
-    await firebase.addCard(data);
+    let cardId = await firebase.addCard(data);
     await firebase.emitNotices(userId, followers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
-      payload: { newCard: data },
+      payload: { newCard: { ...data, cardId } },
     });
     dispatch({
       type: popUpActions.HIDE_ALL,

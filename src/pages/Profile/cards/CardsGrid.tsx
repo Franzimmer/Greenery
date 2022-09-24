@@ -18,28 +18,28 @@ import defaultImg from "../../../assets/default.jpg";
 import { useDispatch } from "react-redux";
 
 interface GridWrapperProps {
-  mode: "grid" | "list";
+  $mode: "grid" | "list";
 }
 export const GridWrapper = styled.div<GridWrapperProps>`
-  display: ${(props) => (props.mode === "grid" ? "grid" : "flex")};
+  display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
   gap: 20px;
   margin-top: 20px;
   flex-direction: column;
 `;
 interface CardProps {
-  show?: boolean;
-  mode: "grid" | "list";
+  $show?: boolean;
+  $mode: "grid" | "list";
 }
 export const Card = styled.div<CardProps>`
-  width: ${(props) => (props.mode === "grid" ? "280px" : "60vw")};
-  display: ${(props) => (props.show ? "flex" : "none")};
-  flex-direction: ${(props) => (props.mode === "grid" ? "column" : "row")};
+  width: ${(props) => (props.$mode === "grid" ? "280px" : "60vw")};
+  display: ${(props) => (props.$show ? "flex" : "none")};
+  flex-direction: ${(props) => (props.$mode === "grid" ? "column" : "row")};
   justify-content: flex-start;
-  align-items: ${(props) => (props.mode === "grid" ? "flex-start" : "center")};
+  align-items: ${(props) => (props.$mode === "grid" ? "flex-start" : "center")};
   background: #fff;
   border-radius: 15px;
-  padding: ${(props) => (props.mode === "list" ? "15px" : "30px 15px 15px")};
+  padding: ${(props) => (props.$mode === "list" ? "15px" : "30px 15px 15px")};
   cursor: pointer;
   position: relative;
   transition: 0.25s;
@@ -48,8 +48,8 @@ export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
   font-size: 20px;
   color: #5c836f;
   margin-right: 8px;
-  margin-left: ${(props) => props.mode === "list" && "32px"};
-  width: ${(props) => props.mode === "list" && "200px"};
+  margin-left: ${(props) => props.$mode === "list" && "32px"};
+  width: ${(props) => props.$mode === "list" && "200px"};
 `;
 export const SpeciesText = styled.div`
   font-size: 14px;
@@ -59,12 +59,12 @@ export const SpeciesText = styled.div`
   margin-right: 10px;
 `;
 interface MaskAndIconBtnProps {
-  show?: boolean;
-  fav?: boolean;
-  mode?: "grid" | "list";
+  $show?: boolean;
+  $fav?: boolean;
+  $mode?: "grid" | "list";
 }
 const EditIconBtn = styled(IconButton)<MaskAndIconBtnProps>`
-  display: ${(props) => (props.show ? "block" : "none")};
+  display: ${(props) => (props.$show ? "block" : "none")};
   background: rgba(0, 0, 0, 0);
   margin: 5px;
   transition: 0.25s;
@@ -76,7 +76,7 @@ const EditIconBtn = styled(IconButton)<MaskAndIconBtnProps>`
 const DiaryIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>``;
 const BookMarkIconBtn = styled(EditIconBtn)<MaskAndIconBtnProps>`
   & * {
-    color: ${(props) => (props.fav ? "#FDDBA9" : "#fff")};
+    color: ${(props) => (props.$fav ? "#FDDBA9" : "#fff")};
   }
 `;
 const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
@@ -88,7 +88,7 @@ const CardMenuIcon = styled.div<MaskAndIconBtnProps>`
 `;
 const CardMask = styled.div<MaskAndIconBtnProps>`
   position: absolute;
-  display: ${(props) => (props.show ? "block" : "none")};
+  display: ${(props) => (props.$show ? "block" : "none")};
   border-radius: 13px;
   top: 0;
   left: 0;
@@ -99,7 +99,7 @@ const CardMask = styled.div<MaskAndIconBtnProps>`
 `;
 const StyledMenuIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
   background: rgba(0, 0, 0, 0);
-  color: ${(props) => (props.show ? "#fff" : "#5c836f")};
+  color: ${(props) => (props.$show ? "#fff" : "#5c836f")};
   width: 30px;
   height: 30px;
   transition: 0.25s;
@@ -109,7 +109,7 @@ const StyledMenuIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
   }
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
-  display: ${(props) => props.show && "block"};
+  display: ${(props) => props.$show && "block"};
   background: rgba(0, 0, 0, 0);
   z-index: 1;
   color: #fff;
@@ -119,8 +119,8 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<MaskAndIconBtnProps>`
 `;
 const CardCheck = styled.input<MaskAndIconBtnProps>`
   position: absolute;
-  top: ${(props) => (props.mode === "list" ? "50%" : "8px")};
-  transform: ${(props) => props.mode === "list" && "translateY(-50%)"};
+  top: ${(props) => (props.$mode === "list" ? "50%" : "8px")};
+  transform: ${(props) => props.$mode === "list" && "translateY(-50%)"};
   left: 15px;
   cursor: pointer;
   height: 20px;
@@ -131,24 +131,50 @@ const CardCheck = styled.input<MaskAndIconBtnProps>`
 `;
 const IconWrapper = styled.div<MaskAndIconBtnProps>`
   display: flex;
-  flex-direction: ${(props) => (props.mode === "list" ? "row" : "column")};
+  flex-direction: ${(props) => (props.$mode === "list" ? "row" : "column")};
   justify-content: space-around;
   align-items: center;
-  width: ${(props) => (props.mode === "list" ? "200px" : "40px")};
-  height: ${(props) => (props.show ? "90%" : "30px")};
+  width: ${(props) => (props.$mode === "list" ? "200px" : "40px")};
+  height: ${(props) => (props.$show ? "90%" : "30px")};
   padding: 5px;
   border-radius: 15px;
   position: absolute;
   top: ${(props) =>
-    props.mode === "grid" && !props.show
+    props.$mode === "grid" && !props.$show
       ? "195px"
-      : props.mode === "grid" && props.show && "15px"};
+      : props.$mode === "grid" && props.$show && "15px"};
   right: 20px;
   ${(props) =>
-    props.mode === "grid" ? "20px" : !props.show ? "-50px" : "65px"};
+    props.$mode === "grid" ? "20px" : !props.$show ? "-50px" : "65px"};
   background: rgba(0, 0, 0, 0);
-  // box-shadow: ${(props) => props.show && "0px 0px 10px #aaa"};
+  // box-shadow: ${(props) => props.$show && "0px 0px 10px #aaa"};
   transition: 0.25s height;
+`;
+const NoCardSection = styled.div`
+  width: 80vw;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 5px dashed #aaa;
+  color: #aaa;
+`;
+const NoCardText = styled.p`
+  letter-spacing: 1px;
+`;
+const NoCardBtn = styled.div`
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #aaa;
+  border: 1px solid #aaa;
+  color: #fff;
+  letter-spacing: 1px;
+  cursor: pointer;
+  & :hover {
+    transform: scale(1.1);
+  }
 `;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
@@ -189,15 +215,16 @@ const CardsGrid = ({
     if (cardMaskDisplay) setCardMaskDisplay(false);
     else if (!cardMaskDisplay) setCardMaskDisplay(true);
   }
+  console.log(checkList);
   return (
-    <GridWrapper mode={viewMode}>
-      {cardList &&
+    <GridWrapper $mode={viewMode}>
+      {cardList.length !== 0 &&
         cardList.map((card) => {
           return (
             <Card
               key={card.cardId}
-              mode={viewMode}
-              show={filterCard(card.tags || [])}
+              $mode={viewMode}
+              $show={filterCard(card.tags || [])}
               onClick={() => {
                 dispatch({
                   type: popUpActions.SHOW_MASK,
@@ -209,7 +236,7 @@ const CardsGrid = ({
               {isSelf && (
                 <CardCheck
                   type="checkbox"
-                  mode={viewMode}
+                  $mode={viewMode}
                   checked={checkList[card.cardId!]}
                   onClick={(e) => {
                     switchOneCheck(card.cardId!);
@@ -218,13 +245,13 @@ const CardsGrid = ({
                 />
               )}
               <CardMask
-                show={cardMaskDisplay}
+                $show={cardMaskDisplay}
                 onClick={(e) => e.stopPropagation()}
               />
               {viewMode === "grid" && (
                 <PlantImg path={card.plantPhoto || defaultImg} />
               )}
-              <NameText mode={viewMode}>{card.plantName}</NameText>
+              <NameText $mode={viewMode}>{card.plantName}</NameText>
               <SpeciesText>{card.species}</SpeciesText>
               <TagsWrapper viewMode={viewMode}>
                 {card?.tags?.length !== 0 &&
@@ -232,9 +259,9 @@ const CardsGrid = ({
                     return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                   })}
               </TagsWrapper>
-              <IconWrapper show={cardMaskDisplay} mode={viewMode}>
+              <IconWrapper $show={cardMaskDisplay} $mode={viewMode}>
                 <DiaryIconBtn
-                  show={cardMaskDisplay}
+                  $show={cardMaskDisplay}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
                     dispatch({
                       type: popUpActions.SHOW_MASK,
@@ -248,8 +275,8 @@ const CardsGrid = ({
                   <StyledFontAwesomeIcon icon={faBook} />
                 </DiaryIconBtn>
                 <BookMarkIconBtn
-                  show={cardMaskDisplay}
-                  fav={userInfo.favoriteCards.includes(card.cardId!)}
+                  $show={cardMaskDisplay}
+                  $fav={userInfo.favoriteCards.includes(card.cardId!)}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
                     favoriteToggle(card.cardId!);
                     e.stopPropagation();
@@ -258,17 +285,17 @@ const CardsGrid = ({
                   <StyledFontAwesomeIcon icon={faBookmark} />
                 </BookMarkIconBtn>
                 <CardMenuIcon
-                  show={cardMaskDisplay}
+                  $show={cardMaskDisplay}
                   onClick={(e) => {
                     toggleMask();
                     e.stopPropagation();
                   }}
                 >
-                  <StyledMenuIcon icon={faEllipsis} show={cardMaskDisplay} />
+                  <StyledMenuIcon icon={faEllipsis} $show={cardMaskDisplay} />
                 </CardMenuIcon>
                 {isSelf && (
                   <EditIconBtn
-                    show={cardMaskDisplay}
+                    $show={cardMaskDisplay}
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
                       dispatch({
                         type: popUpActions.SHOW_MASK,
@@ -286,6 +313,24 @@ const CardsGrid = ({
             </Card>
           );
         })}
+      {cardList.length === 0 && (
+        <NoCardSection>
+          <NoCardText>
+            You haven't had a plant card. Write one for your plant!
+          </NoCardText>
+          <NoCardBtn
+            onClick={() => {
+              setEditCardId(null);
+              editorToggle();
+              dispatch({
+                type: popUpActions.SHOW_MASK,
+              });
+            }}
+          >
+            Add a new card
+          </NoCardBtn>
+        </NoCardSection>
+      )}
     </GridWrapper>
   );
 };
