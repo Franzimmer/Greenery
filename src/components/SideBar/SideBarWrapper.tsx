@@ -27,7 +27,7 @@ const Wrapper = styled.div<WrapperProps>`
   background: rgba(255, 255, 255);
   border: 1px solid #5c836f;
   border-radius: 20px;
-  margin-top: 100px;
+  margin-top: 112px;
   position: fixed;
   z-index: 2;
   top: 0px;

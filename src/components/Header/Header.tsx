@@ -45,9 +45,25 @@ const HeaderLink = styled(Link)`
     transition: 0.5s;
   }
 `;
+const SideBarBtnWrapper = styled.div`
+  // background: linear-gradient(90deg, #7bc09a, #e4e783);
+  background: #5c836f;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+const SideBarBtnHint = styled.span`
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  color: #fff;
+  font-size: 10px;
+`;
 const SideBarBtn = styled.div`
   cursor: pointer;
-  background: linear-gradient(90deg, #7bc09a, #e4e783);
   width: 80px;
   height: 80px;
   display: flex;
@@ -83,7 +99,7 @@ const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
   &::before,
   ::after {
     content: "";
-    width: ${(props) => (props.sideBarDisplay ? "70px" : "50px")};
+    width: ${(props) => (props.sideBarDisplay ? "60px" : "40px")};
     height: 1px;
     background: #fff;
     position: absolute;
@@ -140,11 +156,18 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
         {isLoggedIn && (
           <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
         )}
-        <SideBarBtn onClick={sideBarToggle}>
-          <SideBarBtnDiv
-            sideBarDisplay={isLoggedIn && sideBarDisplay}
-          ></SideBarBtnDiv>
-        </SideBarBtn>
+        <SideBarBtnWrapper>
+          {!sideBarDisplay ? (
+            <SideBarBtnHint>menu</SideBarBtnHint>
+          ) : (
+            <SideBarBtnHint>close</SideBarBtnHint>
+          )}
+          <SideBarBtn onClick={sideBarToggle}>
+            <SideBarBtnDiv
+              sideBarDisplay={isLoggedIn && sideBarDisplay}
+            ></SideBarBtnDiv>
+          </SideBarBtn>
+        </SideBarBtnWrapper>
       </LinkWrapper>
     </HeaderWrapper>
   );
