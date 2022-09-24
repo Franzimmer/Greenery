@@ -12,6 +12,7 @@ import SideBarWrapper from "./components/SideBar/SideBarWrapper";
 import { auth, firebase } from "./utils/firebase";
 import { UserInfoActions } from "./actions/userInfoActions";
 import { CardsActions } from "./actions/cardsActions";
+import { AuthorityActions } from "./reducer/authorityReducer";
 import { myFollowersActions } from "./reducer/myFollowersReducer";
 import { NotificationActions } from "./actions/notificationActions";
 import MontserratBlack from "./assets/fonts/Montserrat-Black.ttf";
@@ -54,11 +55,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function UserLogInObserver({
-  setIsLoggedIn,
-}: {
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+function UserLogInObserver() {
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged(async function(user) {
@@ -68,7 +65,9 @@ function UserLogInObserver({
           type: UserInfoActions.SET_USER_INFO,
           payload: { userData: userInfo.data() },
         });
-        setIsLoggedIn(true);
+        dispatch({
+          type: AuthorityActions.LOG_IN,
+        });
       } else {
         dispatch({
           type: CardsActions.CLEAR_CARDS_DATA,
@@ -82,7 +81,9 @@ function UserLogInObserver({
         dispatch({
           type: NotificationActions.CLEAR_NOTIFICATION,
         });
-        setIsLoggedIn(false);
+        dispatch({
+          type: AuthorityActions.LOG_OUT,
+        });
       }
     });
   }, []);
@@ -90,27 +91,20 @@ function UserLogInObserver({
 }
 function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   return (
     <>
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
-        <UserLogInObserver setIsLoggedIn={setIsLoggedIn} />
+        <UserLogInObserver />
         <Alert />
         <Mask />
         <CardSelectDialog />
         <Header
-          isLoggedIn={isLoggedIn}
           sideBarDisplay={sideBarDisplay}
           setSideBarDisplay={setSideBarDisplay}
         ></Header>
-        {
-          <SideBarWrapper
-            isLoggedIn={isLoggedIn}
-            sideBarDisplay={sideBarDisplay}
-          />
-        }
+        <SideBarWrapper sideBarDisplay={sideBarDisplay} />
         <Outlet />
       </Provider>
     </>

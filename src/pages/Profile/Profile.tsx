@@ -40,7 +40,6 @@ const Profile = () => {
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSelf, setIsSelf] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch({
@@ -51,21 +50,12 @@ const Profile = () => {
     setTimeout(() => setIsLoading(false), 3000);
   }, [id, userInfo]);
 
-  useEffect(() => {
-    auth.onAuthStateChanged(async function(user) {
-      if (user) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
-    });
-  }, []);
   return (
     <>
       {isLoading && <PageLoader />}
       {!isLoading && (
         <MainWrapper>
-          <UserInfoSection id={id} isSelf={isSelf} isLoggedIn={isLoggedIn} />
+          <UserInfoSection id={id} isSelf={isSelf} />
           <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
           {tabDisplay.Cards && (
             <Cards id={id} isSelf={isSelf} setIsLoading={setIsLoading} />

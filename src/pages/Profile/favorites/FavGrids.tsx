@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { popUpActions } from "../../../reducer/popUpReducer";
@@ -11,8 +9,15 @@ import { UserInfoActions } from "../../../actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
 import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
 import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
+import {
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../../components/GlobalStyles/NoDataLayout";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { defaultState, TabDisplayType } from "../Profile";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 
 const UserLink = styled(Link)`
@@ -23,7 +28,7 @@ const UserLink = styled(Link)`
   }
 `;
 interface FavIconButtonProps {
-  show: boolean;
+  $show: boolean;
 }
 export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
   position: absolute;
@@ -36,7 +41,7 @@ export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
     transition: 0.25s;
   }
   & * {
-    color: ${(props) => !props.show && "#ccc"};
+    color: ${(props) => !props.$show && "#ccc"};
   }
 `;
 export const DiaryIconBtn = styled(IconButton)`
@@ -75,8 +80,9 @@ const FavGrids = ({
   setTabDisplay,
   findOwnerName,
 }: FavGridsProps) => {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -101,15 +107,15 @@ const FavGrids = ({
     emitAlert("success", "Remove from your Favorites.");
   }
   return (
-    <GridWrapper mode={"grid"}>
-      {favCards &&
+    <GridWrapper $mode={"grid"}>
+      {favCards.length !== 0 &&
         favCards.map((card: PlantCard) => {
           return (
             <Card
-              mode={"grid"}
               key={card.cardId}
               id={card.cardId!}
-              show={true}
+              $mode={"grid"}
+              $show={true}
               onClick={() => {
                 setDetailDisplay(true);
                 setDetailData(card);
@@ -151,7 +157,7 @@ const FavGrids = ({
               </DiaryIconBtn>
               {isSelf && (
                 <FavIconButton
-                  show={true}
+                  $show={true}
                   onClick={(e) => {
                     removeFavorite(card.cardId!);
                     e.stopPropagation();
@@ -163,6 +169,24 @@ const FavGrids = ({
             </Card>
           );
         })}
+      {favCards.length === 0 && (
+        <NoDataSection>
+          {isSelf && (
+            <>
+              <NoDataText>
+                You haven't add any card into your favorites. Go checkout
+                other's plants !
+              </NoDataText>
+              <NoDataBtn onClick={() => navigate("/")}>
+                Checkout the most beloved plants
+              </NoDataBtn>
+            </>
+          )}
+          {!isSelf && (
+            <NoDataText>User has not add any plant in to favorites.</NoDataText>
+          )}
+        </NoDataSection>
+      )}
     </GridWrapper>
   );
 };

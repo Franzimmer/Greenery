@@ -6,11 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
 import { popUpActions } from "../../reducer/popUpReducer";
+import { AuthorityActions } from "../../reducer/authorityReducer";
 import { UserInfo } from "../../types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
+import user from "../../assets/user.png";
 
 const UserInfoWrapper = styled.div`
   display: flex;
@@ -25,10 +27,10 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background-image: url(${(props) => (props.path ? props.path : "")});
+  background-image: url(${(props) => (props.path ? props.path : user)});
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
 `;
 const UserInfoText = styled.div`
   color: #6a5125;
@@ -71,17 +73,18 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 interface UserInfoProps {
   id: string | undefined;
   isSelf: boolean;
-  isLoggedIn: boolean;
 }
-const UserInfoSection = ({ id, isSelf, isLoggedIn }: UserInfoProps) => {
+const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,

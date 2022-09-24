@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducer";
+import { popUpActions } from "../../reducer/popUpReducer";
+import { PlantCard } from "../../types/plantCardType";
+import { UserInfo } from "../../types/userInfoType";
+import { TypeText } from "./ForumHomePage";
 import parse from "html-react-parser";
+import { firebase } from "../../utils/firebase";
+import TextEditor from "../../components/TextEditor/TextEditor";
+import Chatroom from "../../components/Chatroom/Chatroom";
+import DiaryEditor from "../../components/Diary/DiaryEditor";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
+import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
+import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
+import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrashCan,
   faPenToSquare,
   faBook,
 } from "@fortawesome/free-solid-svg-icons";
-import { firebase } from "../../utils/firebase";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
-import { popUpActions } from "../../reducer/popUpReducer";
-import { PlantCard } from "../../types/plantCardType";
-import { UserInfo } from "../../types/userInfoType";
-import { useParams, useNavigate } from "react-router-dom";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import Chatroom from "../../components/Chatroom/Chatroom";
-import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
-import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
-import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
-import { TypeText } from "./ForumHomePage";
-import DiaryEditor from "../../components/Diary/DiaryEditor";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
 const Wrapper = styled.div`
   width: 80vw;
   margin: 120px auto 50px;
@@ -187,6 +187,7 @@ const ForumPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [chatroomDisplay, setChatroomDisplay] = useState<
     Record<string, boolean>
@@ -342,7 +343,7 @@ const ForumPost = () => {
               >
                 {authorInfo?.userName}
               </AuthorName>
-              {userInfo.userId !== authorInfo?.userId && (
+              {userInfo.userId !== authorInfo?.userId && isLoggedIn && (
                 <OpenChatRoomBtn
                   onClick={() => {
                     openChatroom(authorInfo!.userId);
@@ -356,7 +357,7 @@ const ForumPost = () => {
             {cards &&
               cards.map((card) => {
                 return (
-                  <TradeCard key={card.cardId} show={true} mode={"grid"}>
+                  <TradeCard key={card.cardId} $show={true} $mode={"grid"}>
                     <PlantImg path={card.plantPhoto} />
                     <NameText>{card.plantName}</NameText>
                     <SpeciesText>{card.species}</SpeciesText>

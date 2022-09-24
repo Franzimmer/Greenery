@@ -1,15 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducer";
 import { Note } from "../../types/notificationType";
 import { UserInfo } from "../../types/userInfoType";
 import { NotificationActions } from "../../actions/notificationActions";
-import { useNavigate } from "react-router-dom";
 import { firebase } from "../../utils/firebase";
+import { NoSidebarDataText } from "./FollowList";
 import { CloseBtn } from "../../components/GlobalStyles/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 const NoticeWrapper = styled.div`
   width: 100%;
   overflow-y: auto;
@@ -121,6 +122,9 @@ const Notifications = ({ notices, followInfos }: NotificationsProps) => {
             </Notice>
           );
         })}
+      {notices.length === 0 && (
+        <NoSidebarDataText>No notification now.</NoSidebarDataText>
+      )}
     </NoticeWrapper>
   );
 };

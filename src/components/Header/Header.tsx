@@ -100,17 +100,13 @@ const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
 `;
 
 interface HeaderProps {
-  isLoggedIn: boolean;
   setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarDisplay: boolean;
 }
-const Header = ({
-  isLoggedIn,
-  setSideBarDisplay,
-  sideBarDisplay,
-}: HeaderProps) => {
+const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -145,7 +141,9 @@ const Header = ({
           <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
         )}
         <SideBarBtn onClick={sideBarToggle}>
-          <SideBarBtnDiv sideBarDisplay={sideBarDisplay}></SideBarBtnDiv>
+          <SideBarBtnDiv
+            sideBarDisplay={isLoggedIn && sideBarDisplay}
+          ></SideBarBtnDiv>
         </SideBarBtn>
       </LinkWrapper>
     </HeaderWrapper>

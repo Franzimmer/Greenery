@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
-import { popUpActions } from "../../../reducer/popUpReducer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../reducer";
 import { UserInfoActions } from "../../../actions/userInfoActions";
+import { popUpActions } from "../../../reducer/popUpReducer";
+import { firebase } from "../../../utils/firebase";
 import { IconButton } from "../../../components/GlobalStyles/button";
+import {
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../../components/GlobalStyles/NoDataLayout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface GalleryProps {
   id: string | undefined;
   isSelf: boolean;
@@ -83,7 +88,7 @@ const LabelBtn = styled(IconButton)`
 `;
 const FlexWrapper = styled.div`
   align-self: flex-end;
-  margin-right: 40px;
+  margin: 0 40px 20px 0;
   cursor: pointer;
   width: 200px;
   height: 40px;
@@ -160,7 +165,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
           <IconButton htmlFor="image">
             <StyledFontAwesome icon={faPlus} />
           </IconButton>
-          <LabelBtn htmlFor="image">Add Galery</LabelBtn>
+          <LabelBtn htmlFor="image">Add Photo</LabelBtn>
           <input
             id="image"
             type="file"
@@ -172,7 +177,7 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
         </FlexWrapper>
       )}
       <PinsWrapper>
-        {media &&
+        {media.length !== 0 &&
           media.map((asset, index) => {
             return (
               <Fragment key={`${asset}-asset`}>
@@ -216,6 +221,19 @@ const Gallery = ({ id, isSelf }: GalleryProps) => {
             );
           })}
       </PinsWrapper>
+      {media.length === 0 && (
+        <NoDataSection>
+          {isSelf && (
+            <>
+              <NoDataText>
+                You haven't upload any photo yet. Share some with everyone !
+              </NoDataText>
+              <NoDataBtn htmlFor="image">Add Photo</NoDataBtn>
+            </>
+          )}
+          {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}
+        </NoDataSection>
+      )}
     </>
   );
 };
