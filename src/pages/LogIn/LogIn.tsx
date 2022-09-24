@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { popUpActions } from "../../reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { auth, firebase } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
@@ -8,8 +10,6 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import login2 from "./login4.jpeg";
-import { useDispatch } from "react-redux";
-import { popUpActions } from "../../reducer/popUpReducer";
 const Wrapper = styled.div`
   display: flex;
 `;

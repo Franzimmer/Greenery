@@ -11,6 +11,7 @@ import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
+import user from "../../assets/user.png";
 
 const UserInfoWrapper = styled.div`
   display: flex;
@@ -25,10 +26,10 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background-image: url(${(props) => (props.path ? props.path : "")});
+  background-image: url(${(props) => (props.path ? props.path : user)});
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
 `;
 const UserInfoText = styled.div`
   color: #6a5125;
