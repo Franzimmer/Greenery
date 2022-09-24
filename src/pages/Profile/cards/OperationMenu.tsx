@@ -105,7 +105,7 @@ const OperationMenu = ({
   useEffect(() => {
     setCheckStatus(Object.values(checkList).some((check) => check === true));
   }, [checkList]);
-  return (
+  return cardList.length > 0 ? (
     <OperationMenuWrapper>
       {isSelf && (
         <BtnWrapper>
@@ -123,44 +123,28 @@ const OperationMenu = ({
           <IconLabel>Add Card</IconLabel>
         </BtnWrapper>
       )}
-      {cardList.length > 0 ? (
-        <BtnWrapper>
-          <MenuBtn onClick={filterToggle}>
-            <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
-          </MenuBtn>
-          <IconLabel>Filter</IconLabel>
-        </BtnWrapper>
-      ) : (
-        <MenuBtnDisabled>
+      <BtnWrapper>
+        <MenuBtn onClick={filterToggle}>
           <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
-        </MenuBtnDisabled>
-      )}
-      {viewMode === "grid" &&
-        (cardList.length > 0 ? (
-          <BtnWrapper>
-            <MenuBtn onClick={() => setViewMode("list")}>
-              <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
-            </MenuBtn>
-            <IconLabel>List Mode</IconLabel>
-          </BtnWrapper>
-        ) : (
-          <MenuBtnDisabled>
+        </MenuBtn>
+        <IconLabel>Filter</IconLabel>
+      </BtnWrapper>
+      {viewMode === "grid" && (
+        <BtnWrapper>
+          <MenuBtn onClick={() => setViewMode("list")}>
             <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
-          </MenuBtnDisabled>
-        ))}
-      {viewMode === "list" &&
-        (cardList.length > 0 ? (
-          <BtnWrapper>
-            <MenuBtn onClick={() => setViewMode("grid")}>
-              <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
-            </MenuBtn>
-            <IconLabel>Grid Mode</IconLabel>
-          </BtnWrapper>
-        ) : (
-          <MenuBtnDisabled>
+          </MenuBtn>
+          <IconLabel>List Mode</IconLabel>
+        </BtnWrapper>
+      )}
+      {viewMode === "list" && (
+        <BtnWrapper>
+          <MenuBtn onClick={() => setViewMode("grid")}>
             <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
-          </MenuBtnDisabled>
-        ))}
+          </MenuBtn>
+          <IconLabel>Grid Mode</IconLabel>
+        </BtnWrapper>
+      )}
       {isSelf && (
         <>
           {allCheckStatus && (
@@ -176,24 +160,19 @@ const OperationMenu = ({
               <IconLabel>Uncheck All</IconLabel>
             </BtnWrapper>
           )}
-          {!allCheckStatus &&
-            (cardList.length > 0 ? (
-              <BtnWrapper>
-                <MenuBtn
-                  onClick={() => {
-                    setAllCheckStatus(true);
-                    allCheck();
-                  }}
-                >
-                  <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
-                </MenuBtn>
-                <IconLabel>Check All</IconLabel>
-              </BtnWrapper>
-            ) : (
-              <MenuBtnDisabled>
+          {!allCheckStatus && (
+            <BtnWrapper>
+              <MenuBtn
+                onClick={() => {
+                  setAllCheckStatus(true);
+                  allCheck();
+                }}
+              >
                 <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
-              </MenuBtnDisabled>
-            ))}
+              </MenuBtn>
+              <IconLabel>Check All</IconLabel>
+            </BtnWrapper>
+          )}
           {checkStatus && (
             <>
               <BtnWrapper>
@@ -238,7 +217,7 @@ const OperationMenu = ({
         </>
       )}
     </OperationMenuWrapper>
-  );
+  ) : null;
 };
 
 export default OperationMenu;
