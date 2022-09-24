@@ -109,8 +109,12 @@ const LogIn = () => {
     }, 2000);
   }
   function createNewAccount() {
-    if (!emailRef.current || !passwordRef.current) return;
-    if (emailRef.current.value === "" || passwordRef.current.value === "") {
+    if (!emailRef.current || !passwordRef.current || !nameRef.current) return;
+    if (
+      emailRef.current.value === "" ||
+      passwordRef.current.value === "" ||
+      nameRef.current.value === ""
+    ) {
       emitAlert("fail", "Please fill info completely !");
     }
     const email = emailRef.current?.value;
@@ -120,7 +124,7 @@ const LogIn = () => {
         const user = userCredential.user;
         const data = {
           userId: user.uid,
-          userName: "user",
+          userName: nameRef.current!.value,
           photoUrl: "",
           gallery: [],
           followList: [],
