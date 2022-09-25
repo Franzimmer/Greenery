@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/reducer";
+import {
+  disableWindowScrolling,
+  enableWindowScrolling,
+} from "../../utils/helpers";
 
 interface WindowMaskProps {
   show: boolean;
@@ -16,11 +20,15 @@ const WindowMask = styled.div<WindowMaskProps>`
   right: 0;
   display: ${(props) => (props.show ? "block" : "none")};
   transition: 0.25s;
-  overflow-y: scroll;
+  overflow: hidden;
 `;
 
 const Mask = () => {
   const maskDisplay = useSelector((state: RootState) => state.popUp.mask);
+  useEffect(() => {
+    if (maskDisplay) disableWindowScrolling();
+    else enableWindowScrolling();
+  }, [maskDisplay]);
   return <WindowMask show={maskDisplay}></WindowMask>;
 };
 

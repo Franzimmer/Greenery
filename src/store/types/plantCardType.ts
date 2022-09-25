@@ -11,4 +11,5 @@ export interface PlantCard {
   birthday?: number;
   parents?: string[];
   followers: number;
+  createdTime: number;
 }

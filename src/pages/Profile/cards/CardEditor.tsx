@@ -258,6 +258,7 @@ const CardEditor = ({
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
       followers: 0,
+      createdTime: NaN,
     };
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
@@ -292,7 +293,11 @@ const CardEditor = ({
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
-      birthday: Date.parse(birthdayRef.current?.value || ""),
+      birthday: Date.parse(birthdayRef.current?.value || "")
+        ? Date.parse(birthdayRef.current?.value!)
+        : undefined,
+      createdTime: cardList.find((card) => card.cardId === editCardId)!
+        .createdTime,
     };
     await firebase.editCard(editCardId!, data);
     editorToggle();

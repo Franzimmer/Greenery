@@ -169,7 +169,11 @@ const firebase = {
     return querySnapshot;
   },
   async getUserCards(ownerId: string) {
-    const q = query(cards, where("ownerId", "==", ownerId));
+    const q = query(
+      cards,
+      where("ownerId", "==", ownerId),
+      orderBy("createdTime", "asc")
+    );
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
@@ -183,6 +187,7 @@ const firebase = {
     await setDoc(newCard, {
       ...data,
       cardId: newCard.id,
+      createdTime: serverTimestamp(),
     });
     return newCard.id;
   },
