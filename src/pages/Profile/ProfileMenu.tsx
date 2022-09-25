@@ -12,7 +12,7 @@ interface MenuItemProps {
   show: boolean;
 }
 const MenuItem = styled(LabelText)<MenuItemProps>`
-  font-size: ${(props) => (props.show ? "20px" : "16px")};
+  font-size: 16px;
   margin-right: 20px;
   padding: 5px;
   cursor: pointer;

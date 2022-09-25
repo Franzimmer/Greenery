@@ -41,6 +41,15 @@ const FlexWrapper = styled.div`
   flex-direction: column;
   height: 100vh;
 `;
+const SectionWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin-top: 120px;
+`;
 const LoaderWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -215,7 +224,23 @@ const Text = styled.div`
   margin-bottom: 12px;
   animation: ${Jump} 2s ease-in-out infinite;
 `;
-
+export const SectionLoader = () => {
+  return (
+    <SectionWrapper>
+      <LoaderWrapper>
+        <Base>
+          <FlowerPot></FlowerPot>
+          <BladeCenter></BladeCenter>
+          <BladeLeftSmall></BladeLeftSmall>
+          <BladeRightSmall></BladeRightSmall>
+          <BladeLeftLarge></BladeLeftLarge>
+          <BladeRightLarge></BladeRightLarge>
+        </Base>
+      </LoaderWrapper>
+      <Text>LOADING</Text>
+    </SectionWrapper>
+  );
+};
 const PageLoader = () => {
   return (
     <FlexWrapper>

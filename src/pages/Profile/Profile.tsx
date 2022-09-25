@@ -4,8 +4,6 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { AuthorityActions } from "../../store/reducer/authorityReducer";
-import { CardsActions } from "../../store/actions/cardsActions";
-import { auth } from "../../utils/firebase";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
@@ -14,8 +12,11 @@ import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
 
-const MainWrapper = styled.div`
-  display: flex;
+interface MainWrapperProps {
+  isLoading: boolean;
+}
+const MainWrapper = styled.div<MainWrapperProps>`
+  display: ${(props) => (props.isLoading ? "none" : "flex")};
   flex-direction: column;
   justify-content: center;
   margin: 100px auto 50px;
@@ -42,9 +43,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    dispatch({
-      type: CardsActions.CLEAR_CARDS_DATA,
-    });
+    setIsLoading(true);
+    setTabDisplay(defaultState);
     dispatch({
       type: AuthorityActions.JUDGE_IS_SELF,
       payload: {
@@ -58,18 +58,16 @@ const Profile = () => {
   return (
     <>
       {isLoading && <PageLoader />}
-      {!isLoading && (
-        <MainWrapper>
-          <UserInfoSection id={id} />
-          <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-          {tabDisplay.Cards && <Cards id={id} setIsLoading={setIsLoading} />}
-          {tabDisplay.Calendar && <CalendarApp id={id!} />}
-          {tabDisplay.Gallery && <Gallery id={id} />}
-          {tabDisplay.Favorites && (
-            <Favorites id={id} setTabDisplay={setTabDisplay} />
-          )}
-        </MainWrapper>
-      )}
+      <MainWrapper isLoading={isLoading}>
+        <UserInfoSection id={id} />
+        <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
+        {tabDisplay.Cards && <Cards id={id} setIsLoading={setIsLoading} />}
+        {tabDisplay.Calendar && (
+          <CalendarApp id={id!} $show={tabDisplay.Calendar} />
+        )}
+        {tabDisplay.Gallery && <Gallery id={id} />}
+        {tabDisplay.Favorites && <Favorites id={id} />}
+      </MainWrapper>
     </>
   );
 };
