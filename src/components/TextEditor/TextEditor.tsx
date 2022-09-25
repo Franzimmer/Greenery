@@ -5,19 +5,19 @@ import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
 import "./tiptap.css";
 import MenuBar from "./MenuBar";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
+import { RootState } from "../../store/reducer";
 import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
-import { UserInfo } from "../../types/userInfoType";
+import { UserInfo } from "../../store/types/userInfoType";
 import { Comment } from "../../pages/Forum/ForumPost";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
-import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../store/types/plantCardType";
 interface CardPanelWrapperProps {
   $show: boolean;
 }

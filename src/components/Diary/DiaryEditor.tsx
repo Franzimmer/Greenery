@@ -17,7 +17,7 @@ import {
   faCircleXmark,
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import { IconButton } from "../../components/GlobalStyles/button";
 import Canvas from "./Canvas";
 import { firebase } from "../../utils/firebase";

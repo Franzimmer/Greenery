@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer/index";
-import { UserInfo } from "../../types/userInfoType";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { RootState } from "../../store/reducer/index";
+import { UserInfo } from "../../store/types/userInfoType";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import { firebase, chatrooms } from "../../utils/firebase";
 import {
   onSnapshot,
@@ -26,9 +26,7 @@ const ChatroomWindow = styled.div<ChatroomWindowProps>`
   border: 1px solid #5c836f;
   width: 328px;
   height: 445px;
-  position: fixed;
-  bottom: 1px;
-  right: 80px;
+  margin-right: 20px;
   background-color: #fff;
   box-shadow: 5px 2px 10px #aaa;
   display: ${(props) => (props.show ? "block" : "none")};

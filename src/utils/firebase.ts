@@ -23,11 +23,11 @@ import {
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { UserInfo } from "../types/userInfoType";
+import { UserInfo } from "../store/types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
-import { PlantCard } from "../types/plantCardType";
-import { Note } from "../types/notificationType";
+import { PlantCard } from "../store/types/plantCardType";
+import { Note } from "../store/types/notificationType";
 import { unixTimeToString } from "./helpers";
 
 const firebaseConfig = {

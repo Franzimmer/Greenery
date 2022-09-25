@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../reducer";
-import { PlantCard } from "../../../types/plantCardType";
-import { UserInfo } from "../../../types/userInfoType";
+import { RootState } from "../../../store/reducer";
+import { PlantCard } from "../../../store/types/plantCardType";
+import { UserInfo } from "../../../store/types/userInfoType";
 import { firebase } from "../../../utils/firebase";
 import { TabDisplayType } from "../Profile";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";

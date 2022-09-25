@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { popUpActions } from "../../reducer/popUpReducer";
-import { PlantCard } from "../../types/plantCardType";
+import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PlantCard } from "../../store/types/plantCardType";
 import { unixTimeToString } from "../../utils/helpers";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";

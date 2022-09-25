@@ -6,7 +6,7 @@ import {
   faFaceSmile,
   faFaceSurprise,
 } from "@fortawesome/free-regular-svg-icons";
-import { RootState } from "../../reducer";
+import { RootState } from "../../store/reducer";
 interface AlertWrapperProps {
   show: boolean;
 }

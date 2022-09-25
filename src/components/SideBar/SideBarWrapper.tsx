@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
-import { UserInfo } from "../../types/userInfoType";
-import { Note } from "../../types/notificationType";
-import { NotificationActions } from "../../actions/notificationActions";
-import { myFollowersActions } from "../../reducer/myFollowersReducer";
+import { RootState } from "../../store/reducer";
+import { UserInfo } from "../../store/types/userInfoType";
+import { Note } from "../../store/types/notificationType";
+import { NotificationActions } from "../../store/actions/notificationActions";
+import { myFollowersActions } from "../../store/reducer/myFollowersReducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,

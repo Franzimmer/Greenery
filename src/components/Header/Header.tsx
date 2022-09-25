@@ -1,9 +1,9 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
-import { RootState } from "../../reducer/index";
+import { RootState } from "../../store/reducer/index";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;

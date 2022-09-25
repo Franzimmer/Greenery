@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { UserPhoto } from "../../pages/Profile/UserInfoSection";
-import { RootState } from "../../reducer";
-import { UserInfo } from "../../types/userInfoType";
+import { RootState } from "../../store/reducer";
+import { UserInfo } from "../../store/types/userInfoType";
 import { NoDataText } from "../GlobalStyles/NoDataLayout";
 const ListWrapper = styled.div`
   width: 100%;
