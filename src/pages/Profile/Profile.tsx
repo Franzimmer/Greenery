@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
-import { CardsActions } from "../../actions/cardsActions";
+import { RootState } from "../../store/reducer";
+import { CardsActions } from "../../store/actions/cardsActions";
 import { auth } from "../../utils/firebase";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import UserInfoSection from "./UserInfoSection";
@@ -48,7 +48,7 @@ const Profile = () => {
     if (id === userInfo.userId) setIsSelf(true);
     else setIsSelf(false);
     setTimeout(() => setIsLoading(false), 3000);
-  }, [id, userInfo]);
+  }, [id]);
 
   return (
     <>

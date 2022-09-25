@@ -30,7 +30,7 @@ const TextEditorBtn = styled.div`
   margin: 0px 5px 5px 0px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);

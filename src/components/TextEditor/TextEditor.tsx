@@ -5,19 +5,19 @@ import StarterKit from "@tiptap/starter-kit";
 import "@tiptap/core";
 import "./tiptap.css";
 import MenuBar from "./MenuBar";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
+import { RootState } from "../../store/reducer";
 import { firebase } from "../../utils/firebase";
 import { Post } from "../../pages/Forum/ForumPost";
-import { UserInfo } from "../../types/userInfoType";
+import { UserInfo } from "../../store/types/userInfoType";
 import { Comment } from "../../pages/Forum/ForumPost";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
-import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../store/types/plantCardType";
 interface CardPanelWrapperProps {
   $show: boolean;
 }
@@ -31,9 +31,13 @@ const Wrapper = styled.div<CardPanelWrapperProps>`
   z-index: 101;
   display: flex;
 `;
-const EditoWrapper = styled.div`
+interface EditorWrapperProps {
+  $mode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
+}
+const EditoWrapper = styled.div<EditorWrapperProps>`
   width: 500px;
-  height: 450px;
+  height: ${(props) =>
+    props.$mode === "AddComment" || "EditComment" ? "fit-content" : "450px"};
   background: #fff;
   padding: 15px;
 `;
@@ -244,9 +248,10 @@ const TextEditor = ({
     }
     getUserCards();
   }, []);
+  console.log(editorMode);
   return (
     <Wrapper $show={cardWrapperDisplay}>
-      <EditoWrapper>
+      <EditoWrapper $mode={editorMode}>
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (
           <TypeBtnWrapper>
             <LabelText>Post Type</LabelText>
@@ -339,7 +344,7 @@ const TextEditor = ({
               });
             }}
           >
-            Save Edit
+            Save
           </TextEditorBtn>
         )}
         {editorMode === "AddComment" && (
@@ -352,7 +357,7 @@ const TextEditor = ({
               });
             }}
           >
-            Add Comment
+            Save
           </TextEditorBtn>
         )}
         {editorMode === "EditComment" && (
@@ -361,7 +366,7 @@ const TextEditor = ({
               saveEditComment();
             }}
           >
-            Save Edit Comment
+            Save
           </TextEditorBtn>
         )}
         <TextEditorBtn

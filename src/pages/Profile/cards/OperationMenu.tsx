@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../reducer/index";
-import { popUpActions } from "../../../reducer/popUpReducer";
+import { RootState } from "../../../store/reducer/index";
+import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

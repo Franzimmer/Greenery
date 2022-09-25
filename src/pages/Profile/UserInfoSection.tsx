@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../reducer/index";
-import { UserInfoActions } from "../../actions/userInfoActions";
-import { popUpActions } from "../../reducer/popUpReducer";
-import { AuthorityActions } from "../../reducer/authorityReducer";
-import { UserInfo } from "../../types/userInfoType";
+import { RootState } from "../../store/reducer/index";
+import { UserInfoActions } from "../../store/actions/userInfoActions";
+import { popUpActions } from "../../store/reducer/popUpReducer";
+import { UserInfo } from "../../store/types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -36,7 +35,7 @@ const UserInfoText = styled.div`
   color: #6a5125;
   padding: 0px 10px;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 600;
   &:focus {
     background: #fff;
   }

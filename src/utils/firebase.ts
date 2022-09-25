@@ -23,20 +23,20 @@ import {
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { UserInfo } from "../types/userInfoType";
+import { UserInfo } from "../store/types/userInfoType";
 import { message } from "../components/Chatroom/Chatroom";
 import { Comment, Post } from "../pages/Forum/ForumPost";
-import { PlantCard } from "../types/plantCardType";
-import { Note } from "../types/notificationType";
+import { PlantCard } from "../store/types/plantCardType";
+import { Note } from "../store/types/notificationType";
 import { unixTimeToString } from "./helpers";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAlAkEJTyA258YArFAKWH-aN1ynIGmYqYc",
-  authDomain: "greenery-797bb.firebaseapp.com",
-  projectId: "greenery-797bb",
-  storageBucket: "greenery-797bb.appspot.com",
-  messagingSenderId: "756191479369",
-  appId: "1:756191479369:web:3147acb81630379a626198",
+  apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
+  authDomain: "greenery-8647b.firebaseapp.com",
+  projectId: "greenery-8647b",
+  storageBucket: "greenery-8647b.appspot.com",
+  messagingSenderId: "460789801269",
+  appId: "1:460789801269:web:251f13169aa8a314d52c7c",
 };
 
 const app = initializeApp(firebaseConfig);

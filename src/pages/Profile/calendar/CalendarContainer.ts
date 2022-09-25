@@ -12,7 +12,7 @@ const CalenderContainer = styled.div`
     display: flex;
 
     .react-calendar__navigation__label {
-      font-weight: bold;
+      font-weight: 500;
     }
 
     .react-calendar__navigation__arrow {

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { popUpActions } from "../../reducer/popUpReducer";
-import { PlantCard } from "../../types/plantCardType";
+import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PlantCard } from "../../store/types/plantCardType";
 import { unixTimeToString } from "../../utils/helpers";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
@@ -17,18 +17,20 @@ const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
   top: 50vh;
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
-  border: 1px solid #6a5125;
-  width: 400px;
-  height: auto;
-  flex-direction: column;
   justify-content: space-around;
-  padding: 30px;
   background: #f5f0ec;
   display: ${(props) => (props.$display ? "flex" : "none")};
+`;
+const PageWrapper = styled.div`
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
 `;
 const FlexColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: baseline;
   flex-wrap: wrap;
   margin-top: 20px;
 `;
@@ -47,18 +49,20 @@ const SpeciesText = styled.div`
   color: #999;
 `;
 const DetailLabelText = styled(LabelText)`
+  font-size: 18px;
   color: #5c836f;
-  margin-right: 8px;
+  margin: 0 8px 8px 0;
 `;
 const Description = styled.p`
   font-size: 14px;
 `;
 const PlantImg = styled.img`
-  width: 280px;
+  width: 340px;
   height: auto;
-  margin auto;
+  margin: auto;
 `;
 const FlexBtnWrapper = styled(FlexRowWrapper)`
+  margin-top: auto;
   justify-content: space-around;
 `;
 const DetailOperationBtn = styled(OperationBtn)`
@@ -88,63 +92,77 @@ const DetailedCard = ({
   return (
     <>
       <DetailedCardWrapper $display={detailDisplay}>
-        {detailData?.plantPhoto ? (
-          <PlantImg src={detailData.plantPhoto} />
-        ) : (
-          <PlantImg src={defaultImg} />
-        )}
-        <FlexRowWrapper>
-          {detailData?.plantName && <NameText>{detailData.plantName}</NameText>}
-          {detailData?.species && (
-            <SpeciesText>{detailData.species}</SpeciesText>
+        <PageWrapper>
+          {detailData?.plantPhoto ? (
+            <PlantImg src={detailData.plantPhoto} />
+          ) : (
+            <PlantImg src={defaultImg} />
           )}
-        </FlexRowWrapper>
-        {detailData?.parents && detailData?.parents?.length !== 0 && (
           <FlexRowWrapper>
-            <DetailLabelText>Family</DetailLabelText>
-            <Description>{detailData?.parents?.join(" & ")}'s Baby</Description>
+            {detailData?.plantName && (
+              <NameText>{detailData.plantName}</NameText>
+            )}
+            {detailData?.species && (
+              <SpeciesText>{detailData.species}</SpeciesText>
+            )}
           </FlexRowWrapper>
-        )}
-        {detailData?.waterPref && (
-          <FlexColumnWrapper>
-            <DetailLabelText>Water</DetailLabelText>
-            <Description>{detailData.waterPref}</Description>
-          </FlexColumnWrapper>
-        )}
-        {detailData?.lightPref && (
-          <FlexColumnWrapper>
-            <DetailLabelText>Light</DetailLabelText>
-            <Description>{detailData.lightPref}</Description>
-          </FlexColumnWrapper>
-        )}
-        {detailData?.birthday && (
-          <FlexRowWrapper>
-            <DetailLabelText>Birthday</DetailLabelText>
-            <Description>{unixTimeToString(detailData.birthday)}</Description>
-          </FlexRowWrapper>
-        )}
-        <FlexBtnWrapper>
-          {isSelf && (
+          {detailData?.parents && detailData?.parents?.length !== 0 && (
+            <FlexRowWrapper>
+              <DetailLabelText>Family</DetailLabelText>
+              <Description>
+                {detailData?.parents?.join(" & ")}'s Baby
+              </Description>
+            </FlexRowWrapper>
+          )}
+        </PageWrapper>
+        <PageWrapper>
+          {detailData?.waterPref && (
+            <FlexColumnWrapper>
+              <DetailLabelText>Water</DetailLabelText>
+              <Description>{detailData.waterPref}</Description>
+            </FlexColumnWrapper>
+          )}
+          {detailData?.lightPref && (
+            <FlexColumnWrapper>
+              <DetailLabelText>Light</DetailLabelText>
+              <Description>{detailData.lightPref}</Description>
+            </FlexColumnWrapper>
+          )}
+          {detailData?.toxicity && (
+            <FlexColumnWrapper>
+              <DetailLabelText>Toxicity</DetailLabelText>
+              <Description>{detailData.toxicity}</Description>
+            </FlexColumnWrapper>
+          )}
+          {detailData?.birthday && (
+            <FlexRowWrapper>
+              <DetailLabelText>Birthday</DetailLabelText>
+              <Description>{unixTimeToString(detailData.birthday)}</Description>
+            </FlexRowWrapper>
+          )}
+          <FlexBtnWrapper>
+            {isSelf && (
+              <DetailOperationBtn
+                onClick={() => {
+                  setPropagateDisplay(true);
+                  setDetailDisplay(false);
+                }}
+              >
+                Propagate
+              </DetailOperationBtn>
+            )}
             <DetailOperationBtn
               onClick={() => {
-                setPropagateDisplay(true);
                 setDetailDisplay(false);
+                dispatch({
+                  type: popUpActions.HIDE_ALL,
+                });
               }}
             >
-              Propagate
+              Close
             </DetailOperationBtn>
-          )}
-          <DetailOperationBtn
-            onClick={() => {
-              setDetailDisplay(false);
-              dispatch({
-                type: popUpActions.HIDE_ALL,
-              });
-            }}
-          >
-            Close
-          </DetailOperationBtn>
-        </FlexBtnWrapper>
+          </FlexBtnWrapper>
+        </PageWrapper>
       </DetailedCardWrapper>
       <PropagationMenu
         propagateDisplay={propagateDisplay}

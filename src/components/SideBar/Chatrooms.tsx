@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
-import { RootState } from "../../reducer";
+import { RootState } from "../../store/reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
-import { UserInfo } from "../../types/userInfoType";
+import { UserInfo } from "../../store/types/userInfoType";
 import { NoSidebarDataText } from "./FollowList";
 import Chatroom from "../../components/Chatroom/Chatroom";
 import spinner50 from "../../assets/spinner50.png";
@@ -45,6 +45,14 @@ const Spinner = styled.div<SpinnerProps>`
   margin: 0 auto;
   background: url(${spinner50});
   animation: 2s ${Spin} linear infinite;
+`;
+const ChatroomFlexWrapper = styled.div`
+  position: fixed;
+  bottom: 1px;
+  right: 60px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
 `;
 const Chatrooms = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -109,16 +117,18 @@ const Chatrooms = () => {
           <NoSidebarDataText>No chatroom history</NoSidebarDataText>
         )}
       </ChatroomsWrapper>
-      {chatInfos.map((user) => {
-        return (
-          <Chatroom
-            key={`${user.userId}_chat`}
-            targetInfo={user}
-            chatroomDisplay={chatroomDisplay[user.userId]}
-            toggleChatroom={toggleChatroom}
-          />
-        );
-      })}
+      <ChatroomFlexWrapper>
+        {chatInfos.map((user) => {
+          return (
+            <Chatroom
+              key={`${user.userId}_chat`}
+              targetInfo={user}
+              chatroomDisplay={chatroomDisplay[user.userId]}
+              toggleChatroom={toggleChatroom}
+            />
+          );
+        })}
+      </ChatroomFlexWrapper>
     </>
   );
 };

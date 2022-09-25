@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { LabelText } from "../../components/GlobalStyles/text";
-import { PlantCard } from "../../types/plantCardType";
+import { PlantCard } from "../../store/types/plantCardType";
 interface CardListWrapperProps {
   show: boolean;
 }

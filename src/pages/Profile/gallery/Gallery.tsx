@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../reducer";
-import { UserInfoActions } from "../../../actions/userInfoActions";
-import { popUpActions } from "../../../reducer/popUpReducer";
+import { RootState } from "../../../store/reducer";
+import { UserInfoActions } from "../../../store/actions/userInfoActions";
+import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { firebase } from "../../../utils/firebase";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import {

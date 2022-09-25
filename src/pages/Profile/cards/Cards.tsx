@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../reducer/index";
-import { popUpActions } from "../../../reducer/popUpReducer";
-import { CardsActions } from "../../../actions/cardsActions";
-import { UserInfoActions } from "../../../actions/userInfoActions";
-import { PlantCard } from "../../../types/plantCardType";
+import { RootState } from "../../../store/reducer/index";
+import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { CardsActions } from "../../../store/actions/cardsActions";
+import { UserInfoActions } from "../../../store/actions/userInfoActions";
+import { PlantCard } from "../../../store/types/plantCardType";
 import OperationMenu from "./OperationMenu";
 import CardsGrid from "./CardsGrid";
 import CardEditor from "./CardEditor";
@@ -196,6 +196,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       await firebase.addFavCard(userId, cardId);
       emitAlert("success", "Add to Favorites!");
     }
+    console.log(cardList);
   }
   useEffect(() => {
     async function getCards() {
@@ -216,7 +217,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       }
     }
     getCards();
-  }, [id, isSelf, dispatch]);
+  }, [id, isSelf]);
   useEffect(() => {
     let tags: string[] = [];
     let checkboxes = {} as CheckList;

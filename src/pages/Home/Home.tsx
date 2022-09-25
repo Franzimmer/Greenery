@@ -4,17 +4,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../../store/reducer";
 import {
   faBook,
   faBookmark,
   faAnglesDown,
+  faArrowUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { UserInfoActions } from "../../actions/userInfoActions";
-import { PlantCard } from "../../types/plantCardType";
+import { UserInfoActions } from "../../store/actions/userInfoActions";
+import { PlantCard } from "../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import {
   FavIconButton,
   DiaryIconBtn,
@@ -104,6 +106,7 @@ const FeatureWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 0 0 120px 0;
+  position: relative;
 `;
 const FeatureTextWrapper = styled(FeatureWrapper)`
   margin: 0 0 0 72px;
@@ -113,14 +116,20 @@ const FeatureTextWrapper = styled(FeatureWrapper)`
 const FeatureSecondTitle = styled(MainDescription)`
   font-size: 16px;
 `;
-const CheckIcon = styled(FontAwesomeIcon)`
+const FeatureIcon = styled(FontAwesomeIcon)`
   color: #6a5125;
   width: 22px;
   height: 22px;
   margin: 0 16px 0 0;
 `;
+const RedirectIcon = styled(FeatureIcon)`
+  width: 16px;
+  height: 16px;
+  margin: 0 0 0 8px;
+`;
 const FeatureImg = styled.img`
   width: 40%;
+  box-shadow: -20px 20px 0 10px #fddba9;
 `;
 const QuoteSection = styled.div`
   padding: 48px 24px;
@@ -198,10 +207,29 @@ const SectionTitle = styled.p`
   font-size: 26px;
   letter-spacing: 2px;
   line-height: 30px;
+  font-weight: 500;
 `;
-
+const LogInRedirect = styled.div`
+  background: #fff;
+  color: #6a5125;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 1px;
+  padding: 12px 18px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+  cursor: pointer;
+`;
 const Home = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
@@ -304,26 +332,35 @@ const Home = () => {
                 can:
               </FeatureSecondTitle>
               <MainDescription>
-                <CheckIcon icon={faCircleCheck} />
+                <FeatureIcon icon={faCircleCheck} />
                 Record Your Plant Care Info
               </MainDescription>
               <MainDescription>
-                <CheckIcon icon={faCircleCheck} />
+                <FeatureIcon icon={faCircleCheck} />
                 Write Your Plant Growth Diary
               </MainDescription>
               <MainDescription>
-                <CheckIcon icon={faCircleCheck} />
+                <FeatureIcon icon={faCircleCheck} />
                 Explore People's Amazing Plants
               </MainDescription>
               <MainDescription>
-                <CheckIcon icon={faCircleCheck} />
+                <FeatureIcon icon={faCircleCheck} />
                 Learn Plants Care Tips
               </MainDescription>
               <MainDescription>
-                <CheckIcon icon={faCircleCheck} />
+                <FeatureIcon icon={faCircleCheck} />
                 Exchange Plant With Others
               </MainDescription>
             </FeatureTextWrapper>
+            <LogInRedirect
+              onClick={() => {
+                if (isLoggedIn) navigate(`/profile/${userInfo.userId}`);
+                else navigate(`/login`);
+              }}
+            >
+              Build Your Oasis
+              <RedirectIcon icon={faArrowUpRightFromSquare} />
+            </LogInRedirect>
           </FeatureWrapper>
           <CardsWrapper>
             <SectionTitle>Our Most Beloved Plants</SectionTitle>

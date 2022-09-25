@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducer/index";
-import { popUpActions } from "../../reducer/popUpReducer";
+import { RootState } from "../../store/reducer/index";
+import { popUpActions } from "../../store/reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { Post } from "./ForumPost";
 import { firebase } from "../../utils/firebase";
@@ -45,7 +45,8 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
   cursor: pointer;
   margin: 0px auto;
 `;
-export const ForumPostPageInfo = styled(Link)`
+export const ForumPostPageInfo = styled.div`
+  font-size: 26px;
   text-decoration: none;
   color: #6a5125;
   transition: 0.25s;
@@ -66,7 +67,7 @@ const FlexWrapper = styled.div`
 export const TypeText = styled.p`
   color: #6a5125;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 1px;
   width: 120px;
   height: 20px;
@@ -102,17 +103,17 @@ const PostMask = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  transition: 0.1s;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: 0.5s;
   ${PostTypeBtn}:hover & {
-    background-color: rgba(0, 0, 0, 0.6);
-    transition: 0.1s;
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: 0.5s;
   }
 `;
 const PostTypeText = styled.p`
   font-size: 36px;
-  font-weight: 900;
-  letter-spacing: 2px;
+  font-weight: 200;
+  letter-spacing: 12px;
   color: #fff;
   text-align: center;
   position: relative;
@@ -188,18 +189,19 @@ const ForumHomePage = () => {
             <PostTypeText>Trade</PostTypeText>
           </PostTypeBtn>
         </ForumSectionWrapper>
-        {isLoggedIn && <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>}
+        {isLoggedIn && postList.length !== 0 && (
+          <AddPostBtn onClick={addNewPost}>Add Post</AddPostBtn>
+        )}
         {postList.length !== 0 &&
           postList.map((post) => {
             return (
               <ForumPostPage
                 key={post.postId}
                 show={post.type === filter || filter === "any"}
+                onClick={() => navigate(`/forum/${post.postId}`)}
               >
                 <FlexWrapper>
-                  <ForumPostPageInfo to={post.postId}>
-                    {parse(post.title)}
-                  </ForumPostPageInfo>
+                  <ForumPostPageInfo>{parse(post.title)}</ForumPostPageInfo>
                   <StyledFontAwesomeIcon icon={faArrowUpRightFromSquare} />
                 </FlexWrapper>
                 <TypeText>{post.type}</TypeText>

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDroplet, faPersonDigging } from "@fortawesome/free-solid-svg-icons";
 import { unixTimeToString } from "../../../utils/helpers";
 import { firebase } from "../../../utils/firebase";
-import { PlantCard } from "../../../types/plantCardType";
+import { PlantCard } from "../../../store/types/plantCardType";
 import CalenderContainer from "./CalendarContainer";
 let defaultState = {
   watering: [],

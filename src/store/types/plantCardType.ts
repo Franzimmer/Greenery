@@ -6,6 +6,7 @@ export interface PlantCard {
   plantPhoto?: string;
   waterPref?: string;
   lightPref?: string;
+  toxicity?: string;
   tags?: string[];
   birthday?: number;
   parents?: string[];

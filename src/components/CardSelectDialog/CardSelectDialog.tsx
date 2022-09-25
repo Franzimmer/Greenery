@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { firebase } from "../../utils/firebase";
-import { CardsActions } from "../../actions/cardsActions";
-import { popUpActions, PopUpDisplayType } from "../../reducer/popUpReducer";
+import { CardsActions } from "../../store/actions/cardsActions";
+import {
+  popUpActions,
+  PopUpDisplayType,
+} from "../../store/reducer/popUpReducer";
 import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 import CardsWrapper from "./CardsWrapper";
-import { RootState } from "../../reducer";
-import { PlantCard } from "../../types/plantCardType";
+import { RootState } from "../../store/reducer";
+import { PlantCard } from "../../store/types/plantCardType";
 import { useParams } from "react-router-dom";
 interface DialogWrapperProps {
   show: boolean;
@@ -55,7 +58,7 @@ const CardSelectBtn = styled(OperationBtn)`
   display: inline-block;
   width: 100px;
   letter-spacing: 1px;
-  font-weight: 700;
+  font-weight: 500;
   margin: 30px auto 0px;
   background: #fff;
   border: 1px solid #6a5125;

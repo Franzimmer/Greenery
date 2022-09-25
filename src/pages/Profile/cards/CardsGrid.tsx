@@ -8,9 +8,9 @@ import {
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../reducer";
-import { popUpActions } from "../../../reducer/popUpReducer";
-import { PlantCard } from "../../../types/plantCardType";
+import { RootState } from "../../../store/reducer";
+import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PlantCard } from "../../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
@@ -49,6 +49,7 @@ export const Card = styled.div<CardProps>`
   transition: 0.25s;
 `;
 export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
+  font-weight: 600;
   font-size: 20px;
   color: #5c836f;
   margin-right: 8px;
