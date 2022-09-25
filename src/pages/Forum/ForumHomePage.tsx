@@ -46,7 +46,7 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
   margin: 0px auto;
 `;
 export const ForumPostPageInfo = styled.div`
-  font-size: 26px;
+  font-size: 20px;
   text-decoration: none;
   color: #6a5125;
   transition: 0.25s;

@@ -174,7 +174,7 @@ const firebase = {
     return querySnapshot;
   },
   async getFavCards() {
-    const q = query(cards, orderBy("followers"), limit(10));
+    const q = query(cards, orderBy("followers", "desc"), limit(10));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
@@ -266,14 +266,14 @@ const firebase = {
   },
   async addFavCard(userId: string, cardId: string) {
     let docRef = doc(users, userId);
-    let cardDocRef = doc(users, userId);
+    let cardDocRef = doc(cards, cardId);
     let updateUser = updateDoc(docRef, { favoriteCards: arrayUnion(cardId) });
     let updateCard = updateDoc(cardDocRef, { followers: increment(1) });
     await Promise.all([updateUser, updateCard]);
   },
   async removeFavCard(userId: string, cardId: string) {
     let docRef = doc(users, userId);
-    let cardDocRef = doc(users, userId);
+    let cardDocRef = doc(cards, cardId);
     let updateUser = updateDoc(docRef, { favoriteCards: arrayRemove(cardId) });
     let updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
     await Promise.all([updateUser, updateCard]);
