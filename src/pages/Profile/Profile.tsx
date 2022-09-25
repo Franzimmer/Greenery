@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
+import { AuthorityActions } from "../../store/reducer/authorityReducer";
 import { CardsActions } from "../../store/actions/cardsActions";
 import { auth } from "../../utils/firebase";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
@@ -39,14 +40,18 @@ const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isSelf, setIsSelf] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch({
       type: CardsActions.CLEAR_CARDS_DATA,
     });
-    if (id === userInfo.userId) setIsSelf(true);
-    else setIsSelf(false);
+    dispatch({
+      type: AuthorityActions.JUDGE_IS_SELF,
+      payload: {
+        targetId: id,
+        selfId: userInfo.userId,
+      },
+    });
     setTimeout(() => setIsLoading(false), 3000);
   }, [id]);
 
@@ -55,15 +60,13 @@ const Profile = () => {
       {isLoading && <PageLoader />}
       {!isLoading && (
         <MainWrapper>
-          <UserInfoSection id={id} isSelf={isSelf} />
+          <UserInfoSection id={id} />
           <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-          {tabDisplay.Cards && (
-            <Cards id={id} isSelf={isSelf} setIsLoading={setIsLoading} />
-          )}
+          {tabDisplay.Cards && <Cards id={id} setIsLoading={setIsLoading} />}
           {tabDisplay.Calendar && <CalendarApp id={id!} />}
-          {tabDisplay.Gallery && <Gallery id={id} isSelf={isSelf} />}
+          {tabDisplay.Gallery && <Gallery id={id} />}
           {tabDisplay.Favorites && (
-            <Favorites id={id} isSelf={isSelf} setTabDisplay={setTabDisplay} />
+            <Favorites id={id} setTabDisplay={setTabDisplay} />
           )}
         </MainWrapper>
       )}

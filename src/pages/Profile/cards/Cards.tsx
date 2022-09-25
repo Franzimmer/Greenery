@@ -65,11 +65,11 @@ const TagsList = styled(TagsWrapper)`
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
-  isSelf: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
+const Cards = ({ id, setIsLoading }: CardsGridProps) => {
   const dispatch = useDispatch();
+  const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [editCardId, setEditCardId] = useState<string | null>(null);
@@ -167,7 +167,6 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
     const targets = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
-    console.log(targets);
     if (!targets.length) return;
     let promises = targets.map((target) => {
       return firebase.deleteCard(target);
@@ -196,7 +195,6 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       await firebase.addFavCard(userId, cardId);
       emitAlert("success", "Add to Favorites!");
     }
-    console.log(cardList);
   }
   useEffect(() => {
     async function getCards() {

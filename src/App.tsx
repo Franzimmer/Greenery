@@ -9,7 +9,15 @@ import Mask from "./components/Mask/Mask";
 import CardSelectDialog from "./components/CardSelectDialog/CardSelectDialog";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
-import { auth, firebase } from "./utils/firebase";
+import {
+  onSnapshot,
+  query,
+  collection,
+  orderBy,
+  doc,
+} from "firebase/firestore";
+import { auth, firebase, db } from "./utils/firebase";
+import { Note } from "./store/types/notificationType";
 import { UserInfoActions } from "./store/actions/userInfoActions";
 import { CardsActions } from "./store/actions/cardsActions";
 import { AuthorityActions } from "./store/reducer/authorityReducer";
@@ -77,10 +85,35 @@ const GlobalStyle = createGlobalStyle`
 
 function UserLogInObserver() {
   const dispatch = useDispatch();
+
+  async function listenToNotices(uid: string) {
+    let noticeCol = collection(db, "users", uid, "notices");
+    const q = query(noticeCol, orderBy("time", "desc"));
+    const docRef = doc(noticeCol, "followers");
+    onSnapshot(q, (querySnapshot) => {
+      let noticeData: Note[] = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.id !== "followers") noticeData.push(doc.data() as Note);
+      });
+      dispatch({
+        type: NotificationActions.SET_NOTIFICATIONS,
+        payload: { data: noticeData },
+      });
+    });
+    onSnapshot(docRef, (doc) => {
+      if (doc.exists())
+        dispatch({
+          type: myFollowersActions.SET_FOLLOWERS,
+          payload: { followers: doc.data()!.followers },
+        });
+    });
+  }
+
   useEffect(() => {
     auth.onAuthStateChanged(async function(user) {
       if (user) {
         let userInfo = await firebase.getUserInfo(user.uid);
+        listenToNotices(user.uid);
         dispatch({
           type: UserInfoActions.SET_USER_INFO,
           payload: { userData: userInfo.data() },

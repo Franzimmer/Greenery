@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -248,7 +248,6 @@ const TextEditor = ({
     }
     getUserCards();
   }, []);
-  console.log(editorMode);
   return (
     <Wrapper $show={cardWrapperDisplay}>
       <EditoWrapper $mode={editorMode}>

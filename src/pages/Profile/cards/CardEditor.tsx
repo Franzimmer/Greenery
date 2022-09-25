@@ -171,7 +171,7 @@ const CardEditor = ({
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const cardList = useSelector((state: RootState) => state.cards);
-  const followers = useSelector((state: RootState) => state.myFollowers);
+  const myFollowers = useSelector((state: RootState) => state.myFollowers);
   const dispatch = useDispatch();
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -263,7 +263,7 @@ const CardEditor = ({
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
     let cardId = await firebase.addCard(data);
-    await firebase.emitNotices(userId, followers, "1");
+    await firebase.emitNotices(userId, myFollowers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: { ...data, cardId } },
@@ -322,7 +322,6 @@ const CardEditor = ({
     }
     if (editCardId) getEditCardData();
   }, [editCardId]);
-
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <PageWrapper>
