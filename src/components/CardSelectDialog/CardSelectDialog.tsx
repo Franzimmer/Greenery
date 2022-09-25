@@ -55,7 +55,7 @@ const CardSelectBtn = styled(OperationBtn)`
   display: inline-block;
   width: 100px;
   letter-spacing: 1px;
-  font-weight: 700;
+  font-weight: 500;
   margin: 30px auto 0px;
   background: #fff;
   border: 1px solid #6a5125;

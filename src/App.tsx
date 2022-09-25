@@ -15,30 +15,44 @@ import { CardsActions } from "./actions/cardsActions";
 import { AuthorityActions } from "./reducer/authorityReducer";
 import { myFollowersActions } from "./reducer/myFollowersReducer";
 import { NotificationActions } from "./actions/notificationActions";
-import MontserratBlack from "./assets/fonts/Montserrat-Black.ttf";
-import MontserratBold from "./assets/fonts/Montserrat-Bold.ttf";
+import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
+import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
 import MontserratRegular from "./assets/fonts/Montserrat-Regular.ttf";
 import MontserratRegularItalic from "./assets/fonts/Montserrat-Italic.ttf";
+import MontserratExtraLight from "./assets/fonts/Montserrat-ExtraLight.ttf";
+import MontserratExtraLightItalic from "./assets/fonts/Montserrat-ExtraLightItalic.ttf";
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: Montserrat;
-    src: url(${MontserratBlack}) format('truetype');
-    font-weight: 900;
+    src: url(${MontserratMedium}) format('truetype');
+    font-weight: 500;
   }
   @font-face {
     font-family: Montserrat;
-    src: url(${MontserratBold}) format('truetype');
-    font-weight: 700;
+    src: url(${MontserratMediumItalic}) format('truetype');
+    font-weight: 500;
+    font-style: italic;
   }
   @font-face {
     font-family: Montserrat;
     src: url(${MontserratRegular}) format('truetype');
     font-weight: 400;
   }
-   @font-face {
+  @font-face {
     font-family: Montserrat;
     src: url(${MontserratRegularItalic}) format('truetype');
     font-weight: 400;
+    font-style: italic;
+  }
+  @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratExtraLight}) format('truetype');
+    font-weight: 200;
+  }
+  @font-face {
+    font-family: Montserrat;
+    src: url(${MontserratExtraLightItalic}) format('truetype');
+    font-weight: 200;
     font-style: italic;
   }
   * {

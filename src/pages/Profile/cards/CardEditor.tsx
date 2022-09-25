@@ -37,7 +37,7 @@ const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
 `;
 const InputLabel = styled.span`
   color: #6a5125;
-  font-weight: 700;
+  font-weight: 500;
   margin-right: 8px;
 `;
 

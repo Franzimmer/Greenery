@@ -50,7 +50,7 @@ const FlexWrapper = styled.div`
 `;
 const InputLabel = styled.label`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   color: #6a5125;
   align-self: flex-start;
   margin: 0 0 6px 0;
@@ -65,7 +65,7 @@ const Tab = styled.div`
   cursor: pointer;
   margin: 0px 8px 8px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 1px;
   color: #6a5125;
   transition: 0.25s;

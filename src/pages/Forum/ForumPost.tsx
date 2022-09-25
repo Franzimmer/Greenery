@@ -23,6 +23,7 @@ import {
   faPenToSquare,
   faBook,
 } from "@fortawesome/free-solid-svg-icons";
+import user from "../../assets/user.png";
 const Wrapper = styled.div`
   width: 80vw;
   margin: 120px auto 50px;
@@ -48,7 +49,7 @@ interface AuthorPhotoProps {
   path: string | undefined;
 }
 const AuthorPhoto = styled.div<AuthorPhotoProps>`
-  background-image: url(${(props) => props.path});
+  background-image: url(${(props) => (props.path ? props.path : user)});
   background-size: cover;
   backround-position: center center;
   border-radius: 50%;
@@ -62,7 +63,7 @@ const AuthorName = styled.p`
   margin-top: 8px;
   font-size: 16px;
   letter-spacing: 1px;
-  font-weight: 700;
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
 `;
@@ -74,14 +75,14 @@ const Content = styled.div`
   }
 
   & p {
-    font-size: 16px;
-    line-height: 1.1;
+    font-size: 18px;
+    line-height: 1.25;
   }
 
   & h1,
   h2,
   h3 {
-    line-height: 1.1;
+    line-height: 1.25;
     letter-spacing: 1px;
   }
 
@@ -134,9 +135,17 @@ const TitleWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
 `;
-const PostTitle = styled.h2`
+const FlexWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0px;
+`;
+const PostTitle = styled.div`
+  font-size: 26px;
+  font-weight: 500;
   color: #6a5125;
-  margin: 6px 0px 20px 0px;
 `;
 const CommentBtn = styled(OperationBtn)`
   background: #6a5125;
@@ -329,9 +338,11 @@ const ForumPost = () => {
         <Wrapper>
           <TitleWrapper>
             <TypeText>{post?.type}</TypeText>
-            <PostTitle>{post?.title && parse(post.title)}</PostTitle>
+            <FlexWrapper>
+              <PostTitle>{post?.title && parse(post.title)}</PostTitle>
+              <CommentBtn onClick={addComment}>Comment</CommentBtn>
+            </FlexWrapper>
           </TitleWrapper>
-          <CommentBtn onClick={addComment}>Comment</CommentBtn>
           <PostWrapper>
             <AuthorInfo>
               <AuthorPhoto

@@ -198,6 +198,7 @@ const SectionTitle = styled.p`
   font-size: 26px;
   letter-spacing: 2px;
   line-height: 30px;
+  font-weight: 500;
 `;
 
 const Home = () => {

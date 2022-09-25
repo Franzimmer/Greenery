@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../reducer/index";
 import { UserInfoActions } from "../../actions/userInfoActions";
 import { popUpActions } from "../../reducer/popUpReducer";
-import { AuthorityActions } from "../../reducer/authorityReducer";
 import { UserInfo } from "../../types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,7 +35,6 @@ const UserInfoText = styled.div`
   color: #6a5125;
   padding: 0px 10px;
   font-size: 26px;
-  font-weight: 700;
   &:focus {
     background: #fff;
   }

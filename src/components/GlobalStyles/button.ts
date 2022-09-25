@@ -20,7 +20,7 @@ export const CloseBtn = styled.button`
   text-align: center;
   font-size: 16px;
   border-radius: 50%;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   background-color: #5c836f;
   border: 1px solid #5c836f;

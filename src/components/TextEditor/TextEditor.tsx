@@ -31,9 +31,13 @@ const Wrapper = styled.div<CardPanelWrapperProps>`
   z-index: 101;
   display: flex;
 `;
-const EditoWrapper = styled.div`
+interface EditorWrapperProps {
+  $mode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
+}
+const EditoWrapper = styled.div<EditorWrapperProps>`
   width: 500px;
-  height: 450px;
+  height: ${(props) =>
+    props.$mode === "AddComment" || "EditComment" ? "fit-content" : "450px"};
   background: #fff;
   padding: 15px;
 `;
@@ -246,7 +250,7 @@ const TextEditor = ({
   }, []);
   return (
     <Wrapper $show={cardWrapperDisplay}>
-      <EditoWrapper>
+      <EditoWrapper $mode={editorMode}>
         {editorMode !== "AddComment" && editorMode !== "EditComment" && (
           <TypeBtnWrapper>
             <LabelText>Post Type</LabelText>
@@ -339,7 +343,7 @@ const TextEditor = ({
               });
             }}
           >
-            Save Edit
+            Save
           </TextEditorBtn>
         )}
         {editorMode === "AddComment" && (
@@ -352,7 +356,7 @@ const TextEditor = ({
               });
             }}
           >
-            Add Comment
+            Save
           </TextEditorBtn>
         )}
         {editorMode === "EditComment" && (
@@ -361,7 +365,7 @@ const TextEditor = ({
               saveEditComment();
             }}
           >
-            Save Edit Comment
+            Save
           </TextEditorBtn>
         )}
         <TextEditorBtn
