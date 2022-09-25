@@ -248,6 +248,7 @@ const TextEditor = ({
     }
     getUserCards();
   }, []);
+  console.log(editorMode);
   return (
     <Wrapper $show={cardWrapperDisplay}>
       <EditoWrapper $mode={editorMode}>

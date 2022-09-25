@@ -15,6 +15,7 @@ import { CardsActions } from "./actions/cardsActions";
 import { AuthorityActions } from "./reducer/authorityReducer";
 import { myFollowersActions } from "./reducer/myFollowersReducer";
 import { NotificationActions } from "./actions/notificationActions";
+import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
 import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
 import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
 import MontserratRegular from "./assets/fonts/Montserrat-Regular.ttf";
@@ -22,6 +23,11 @@ import MontserratRegularItalic from "./assets/fonts/Montserrat-Italic.ttf";
 import MontserratExtraLight from "./assets/fonts/Montserrat-ExtraLight.ttf";
 import MontserratExtraLightItalic from "./assets/fonts/Montserrat-ExtraLightItalic.ttf";
 const GlobalStyle = createGlobalStyle`
+@font-face {
+    font-family: Montserrat;
+    src: url(${MontserratSemiBold}) format('truetype');
+    font-weight: 600;
+  }
   @font-face {
     font-family: Montserrat;
     src: url(${MontserratMedium}) format('truetype');

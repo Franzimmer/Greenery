@@ -49,6 +49,7 @@ export const Card = styled.div<CardProps>`
   transition: 0.25s;
 `;
 export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
+  font-weight: 600;
   font-size: 20px;
   color: #5c836f;
   margin-right: 8px;

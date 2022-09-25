@@ -35,6 +35,7 @@ const UserInfoText = styled.div`
   color: #6a5125;
   padding: 0px 10px;
   font-size: 26px;
+  font-weight: 600;
   &:focus {
     background: #fff;
   }
