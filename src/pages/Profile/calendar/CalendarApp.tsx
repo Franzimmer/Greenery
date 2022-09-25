@@ -12,6 +12,13 @@ let defaultState = {
   watering: [],
   fertilizing: [],
 };
+interface SectionWrapperProps {
+  $show: boolean;
+}
+const SectionWrapper = styled.div<SectionWrapperProps>`
+  opacity: ${(props) => (props.$show ? "1" : "0")};
+  transition: 1s;
+`;
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -27,7 +34,11 @@ const Description = styled.p`
   font-size: 16px;
   letter-spacing: 1px;
 `;
-const CalendarApp = ({ id }: { id: string }) => {
+interface CalendarAppProps {
+  id: string;
+  $show: boolean;
+}
+const CalendarApp = ({ id, $show }: CalendarAppProps) => {
   const [events, setEvents] = useState<Record<string, string[]>>(defaultState);
   const [value, onChange] = useState(new Date());
 
@@ -66,25 +77,27 @@ const CalendarApp = ({ id }: { id: string }) => {
     getEventData();
   }, [id, value]);
   return (
-    <CalenderContainer>
-      <Calendar onChange={onChange} value={value} locale="en-us" />
-      {events.watering.length !== 0 && (
-        <FlexWrapper>
-          <StyledFontAwesome icon={faDroplet} />
-          <Description>
-            You have watered {events.watering.join()} on this day !
-          </Description>
-        </FlexWrapper>
-      )}
-      {events.fertilizing.length !== 0 && (
-        <FlexWrapper>
-          <StyledFontAwesome icon={faPersonDigging} />
-          <Description>
-            You have fertilized {events.fertilizing.join()} on this day !
-          </Description>
-        </FlexWrapper>
-      )}
-    </CalenderContainer>
+    <SectionWrapper $show={$show}>
+      <CalenderContainer>
+        <Calendar onChange={onChange} value={value} locale="en-us" />
+        {events.watering.length !== 0 && (
+          <FlexWrapper>
+            <StyledFontAwesome icon={faDroplet} />
+            <Description>
+              You have watered {events.watering.join()} on this day !
+            </Description>
+          </FlexWrapper>
+        )}
+        {events.fertilizing.length !== 0 && (
+          <FlexWrapper>
+            <StyledFontAwesome icon={faPersonDigging} />
+            <Description>
+              You have fertilized {events.fertilizing.join()} on this day !
+            </Description>
+          </FlexWrapper>
+        )}
+      </CalenderContainer>
+    </SectionWrapper>
   );
 };
 

@@ -15,11 +15,17 @@ import {
   NoDataBtn,
 } from "../../../components/GlobalStyles/NoDataLayout";
 import { IconButton } from "../../../components/GlobalStyles/button";
-import { defaultState, TabDisplayType } from "../Profile";
+import { TabDisplayType } from "../Profile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
-
+interface SectionWrapperProps {
+  isLoading: boolean;
+}
+const SectionWrapper = styled.div<SectionWrapperProps>`
+  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  transition: 1s;
+`;
 const UserLink = styled(Link)`
   text-decoration: none;
   color: #5c836f;
@@ -62,22 +68,22 @@ export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 `;
 interface FavGridsProps {
   isSelf: boolean;
+  isLoading: boolean;
   favCards: PlantCard[];
   setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({
   isSelf,
+  isLoading,
   favCards,
   setDetailData,
   setDetailDisplay,
   setDiaryDisplay,
   setDiaryId,
-  setTabDisplay,
   findOwnerName,
 }: FavGridsProps) => {
   const navigate = useNavigate();
@@ -107,7 +113,7 @@ const FavGrids = ({
     emitAlert("success", "Remove from your Favorites.");
   }
   return (
-    <>
+    <SectionWrapper isLoading={isLoading}>
       <GridWrapper $mode={"grid"}>
         {favCards.length !== 0 &&
           favCards.map((card: PlantCard) => {
@@ -127,12 +133,7 @@ const FavGrids = ({
               >
                 <PlantImg path={card.plantPhoto || defaultImg} />
                 <NameText>
-                  <UserLink
-                    to={`/profile/${card.ownerId}`}
-                    onClick={() => {
-                      setTabDisplay(defaultState);
-                    }}
-                  >
+                  <UserLink to={`/profile/${card.ownerId}`}>
                     {findOwnerName(card.ownerId)}
                   </UserLink>
                   's {card.plantName}
@@ -189,7 +190,7 @@ const FavGrids = ({
           )}
         </NoDataSection>
       )}
-    </>
+    </SectionWrapper>
   );
 };
 

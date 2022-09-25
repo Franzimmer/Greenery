@@ -207,7 +207,7 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
         checkboxes[doc.data().cardId!] = false;
       });
       setCheckList(checkboxes);
-      if (results) {
+      if (results.length !== 0) {
         dispatch({
           type: CardsActions.SET_CARDS_DATA,
           payload: { data: results },
@@ -215,7 +215,7 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
       }
     }
     getCards();
-  }, [id, isSelf]);
+  }, [id]);
   useEffect(() => {
     let tags: string[] = [];
     let checkboxes = {} as CheckList;

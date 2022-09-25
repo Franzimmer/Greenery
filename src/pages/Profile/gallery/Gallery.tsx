@@ -11,8 +11,16 @@ import {
   NoDataText,
   NoDataBtn,
 } from "../../../components/GlobalStyles/NoDataLayout";
+import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
+interface SectionWrapperProps {
+  isLoading: boolean;
+}
+const SectionWrapper = styled.div<SectionWrapperProps>`
+  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  transition: 1s;
+`;
 interface GalleryProps {
   id: string | undefined;
 }
@@ -107,11 +115,12 @@ const NoGallerySection = styled(NoDataSection)`
   margin-top: 20px;
 `;
 const Gallery = ({ id }: GalleryProps) => {
+  const dispatch = useDispatch();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const dispatch = useDispatch();
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -151,6 +160,7 @@ const Gallery = ({ id }: GalleryProps) => {
   }
   useEffect(() => {
     async function getMediaData() {
+      setIsLoading(true);
       if (!isSelf) {
         const docData = await firebase.getGallery(id!);
         setMedia(docData.data()!.gallery);
@@ -158,85 +168,91 @@ const Gallery = ({ id }: GalleryProps) => {
         const galleryData = userInfo.gallery;
         setMedia(galleryData);
       }
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
     getMediaData();
   }, [id, isSelf, userInfo]);
   return (
     <>
-      {isSelf && media.length !== 0 && (
-        <FlexWrapper>
-          <IconButton htmlFor="image">
-            <StyledFontAwesome icon={faPlus} />
-          </IconButton>
-          <LabelBtn htmlFor="image">Add Photo</LabelBtn>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            ref={mediaRef}
-            onChange={saveGalleryData}
-            hidden
-          />
-        </FlexWrapper>
-      )}
-      <PinsWrapper>
-        {media.length !== 0 &&
-          media.map((asset, index) => {
-            return (
-              <Fragment key={`${asset}-asset`}>
-                {index % 3 === 1 && (
-                  <SmallPin path={asset}>
-                    <PinMask />
-                    <DeleteBtn
-                      onClick={() => {
-                        deleteMedia(asset);
-                      }}
-                    >
-                      <StyledFontAwesome icon={faTrashCan} />
-                    </DeleteBtn>
-                  </SmallPin>
-                )}
-                {index % 3 === 2 && (
-                  <MediumPin path={asset}>
-                    <PinMask />
-                    <DeleteBtn
-                      onClick={() => {
-                        deleteMedia(asset);
-                      }}
-                    >
-                      <StyledFontAwesome icon={faTrashCan} />
-                    </DeleteBtn>
-                  </MediumPin>
-                )}
-                {index % 3 === 0 && (
-                  <LargePin path={asset}>
-                    <PinMask />
-                    <DeleteBtn
-                      onClick={() => {
-                        deleteMedia(asset);
-                      }}
-                    >
-                      <StyledFontAwesome icon={faTrashCan} />
-                    </DeleteBtn>
-                  </LargePin>
-                )}
-              </Fragment>
-            );
-          })}
-      </PinsWrapper>
-      {media.length === 0 && (
-        <NoGallerySection>
-          {isSelf && (
-            <>
-              <NoDataText>
-                You haven't upload any photo yet. Share some with everyone !
-              </NoDataText>
-              <NoDataBtn htmlFor="image">Add Photo</NoDataBtn>
-            </>
-          )}
-          {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}
-        </NoGallerySection>
-      )}
+      {isLoading && <SectionLoader></SectionLoader>}
+      <SectionWrapper isLoading={isLoading}>
+        {isSelf && media.length !== 0 && (
+          <FlexWrapper>
+            <IconButton htmlFor="image">
+              <StyledFontAwesome icon={faPlus} />
+            </IconButton>
+            <LabelBtn htmlFor="image">Add Photo</LabelBtn>
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              ref={mediaRef}
+              onChange={saveGalleryData}
+              hidden
+            />
+          </FlexWrapper>
+        )}
+        <PinsWrapper>
+          {media.length !== 0 &&
+            media.map((asset, index) => {
+              return (
+                <Fragment key={`${asset}-asset`}>
+                  {index % 3 === 1 && (
+                    <SmallPin path={asset}>
+                      <PinMask />
+                      <DeleteBtn
+                        onClick={() => {
+                          deleteMedia(asset);
+                        }}
+                      >
+                        <StyledFontAwesome icon={faTrashCan} />
+                      </DeleteBtn>
+                    </SmallPin>
+                  )}
+                  {index % 3 === 2 && (
+                    <MediumPin path={asset}>
+                      <PinMask />
+                      <DeleteBtn
+                        onClick={() => {
+                          deleteMedia(asset);
+                        }}
+                      >
+                        <StyledFontAwesome icon={faTrashCan} />
+                      </DeleteBtn>
+                    </MediumPin>
+                  )}
+                  {index % 3 === 0 && (
+                    <LargePin path={asset}>
+                      <PinMask />
+                      <DeleteBtn
+                        onClick={() => {
+                          deleteMedia(asset);
+                        }}
+                      >
+                        <StyledFontAwesome icon={faTrashCan} />
+                      </DeleteBtn>
+                    </LargePin>
+                  )}
+                </Fragment>
+              );
+            })}
+        </PinsWrapper>
+        {media.length === 0 && (
+          <NoGallerySection>
+            {isSelf && (
+              <>
+                <NoDataText>
+                  You haven't upload any photo yet. Share some with everyone !
+                </NoDataText>
+                <NoDataBtn htmlFor="image">Add Photo</NoDataBtn>
+              </>
+            )}
+            {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}
+          </NoGallerySection>
+        )}
+      </SectionWrapper>
     </>
   );
 };
