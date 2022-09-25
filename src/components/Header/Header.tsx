@@ -8,6 +8,7 @@ const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: rgb(245, 240, 236, 0.5);
   width: 100vw;
   height: 100px;
   position: fixed;
@@ -24,7 +25,6 @@ const HeaderLink = styled(Link)`
   font-size: 26px;
   letter-spacing: 1px;
   color: #6a5125;
-  mix-blend-mode: difference;
   position: relative;
   &:hover {
     color: #5c836f;

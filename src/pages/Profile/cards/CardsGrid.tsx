@@ -54,7 +54,7 @@ export const NameText = styled(LabelText)<MaskAndIconBtnProps>`
   color: #5c836f;
   margin-right: 8px;
   margin-left: ${(props) => props.$mode === "list" && "32px"};
-  width: ${(props) => props.$mode === "list" && "200px"};
+  width: 220px;
 `;
 export const SpeciesText = styled.div`
   font-size: 14px;

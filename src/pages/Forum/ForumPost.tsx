@@ -15,6 +15,7 @@ import DiaryEditor from "../../components/Diary/DiaryEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
+import { ChatroomFlexWrapper } from "../../components/SideBar/Chatrooms";
 import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -144,8 +145,8 @@ const FlexWrapper = styled.div`
 `;
 const PostTitle = styled.div`
   font-size: 26px;
-  font-weight: 500;
   color: #6a5125;
+  line-height: 30px;
 `;
 const CommentBtn = styled(OperationBtn)`
   background: #6a5125;
@@ -340,7 +341,9 @@ const ForumPost = () => {
             <TypeText>{post?.type}</TypeText>
             <FlexWrapper>
               <PostTitle>{post?.title && parse(post.title)}</PostTitle>
-              <CommentBtn onClick={addComment}>Comment</CommentBtn>
+              {isLoggedIn && (
+                <CommentBtn onClick={addComment}>Comment</CommentBtn>
+              )}
             </FlexWrapper>
           </TitleWrapper>
           <PostWrapper>
@@ -466,12 +469,14 @@ const ForumPost = () => {
         </Wrapper>
       )}
       {targetUser && chatroomDisplay[targetUser?.userId] && (
-        <Chatroom
-          key={`${targetUser!.userId}_chat`}
-          targetInfo={targetUser!}
-          chatroomDisplay={chatroomDisplay[targetUser!.userId]}
-          toggleChatroom={toggleChatroom}
-        />
+        <ChatroomFlexWrapper>
+          <Chatroom
+            key={`${targetUser!.userId}_chat`}
+            targetInfo={targetUser!}
+            chatroomDisplay={chatroomDisplay[targetUser!.userId]}
+            toggleChatroom={toggleChatroom}
+          />
+        </ChatroomFlexWrapper>
       )}
       {diaryDisplay && (
         <DiaryEditor

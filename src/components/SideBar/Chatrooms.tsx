@@ -46,7 +46,7 @@ const Spinner = styled.div<SpinnerProps>`
   background: url(${spinner50});
   animation: 2s ${Spin} linear infinite;
 `;
-const ChatroomFlexWrapper = styled.div`
+export const ChatroomFlexWrapper = styled.div`
   position: fixed;
   bottom: 1px;
   right: 60px;

@@ -406,18 +406,20 @@ const Home = () => {
                           <StyledFontAwesomeIcon icon={faBook} />
                         </DiaryIconBtn>
                       )}
-                      <FavIconButton
-                        $show={
-                          userInfo?.favoriteCards.includes(card.cardId!) ||
-                          false
-                        }
-                        onClick={(e: React.MouseEvent<HTMLElement>) => {
-                          favoriteToggle(card.cardId!);
-                          e.stopPropagation();
-                        }}
-                      >
-                        <StyledFontAwesomeIcon icon={faBookmark} />
-                      </FavIconButton>
+                      {isLoggedIn && (
+                        <FavIconButton
+                          $show={
+                            userInfo?.favoriteCards.includes(card.cardId!) ||
+                            false
+                          }
+                          onClick={(e: React.MouseEvent<HTMLElement>) => {
+                            favoriteToggle(card.cardId!);
+                            e.stopPropagation();
+                          }}
+                        >
+                          <StyledFontAwesomeIcon icon={faBookmark} />
+                        </FavIconButton>
+                      )}
                     </Card>
                   );
                 })}
