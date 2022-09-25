@@ -71,14 +71,15 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 `;
 interface UserInfoProps {
   id: string | undefined;
-  isSelf: boolean;
 }
-const UserInfoSection = ({ id, isSelf }: UserInfoProps) => {
+const UserInfoSection = ({ id }: UserInfoProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
-  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
+  const { isLoggedIn, isSelf } = useSelector(
+    (state: RootState) => state.authority
+  );
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<boolean>(false);

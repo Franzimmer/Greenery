@@ -3,17 +3,13 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
-import { Note } from "../../store/types/notificationType";
-import { NotificationActions } from "../../store/actions/notificationActions";
-import { myFollowersActions } from "../../store/reducer/myFollowersReducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faUser,
   faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
-import { firebase, db } from "../../utils/firebase";
-import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
+import { firebase } from "../../utils/firebase";
 import FollowList from "./FollowList";
 import Notifications from "./Notifications";
 import Chatrooms from "./Chatrooms";
@@ -110,29 +106,8 @@ const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
         setFollowInfos(followData);
       }
     }
-    async function listenToNotices() {
-      if (!userInfo.userId) return;
-      let noticeCol = collection(db, "users", userInfo.userId, "notices");
-      const q = query(noticeCol, orderBy("time", "desc"));
-      onSnapshot(q, (querySnapshot) => {
-        let noticeData: Note[] = [];
-        querySnapshot.forEach((doc) => {
-          if (doc.id !== "followers") noticeData.push(doc.data() as Note);
-          else
-            dispatch({
-              type: myFollowersActions.SET_FOLLOWERS,
-              payload: { followers: doc.data().followers },
-            });
-        });
-        dispatch({
-          type: NotificationActions.SET_NOTIFICATIONS,
-          payload: { data: noticeData },
-        });
-      });
-    }
-    listenToNotices();
     getUsersData();
-  }, [userInfo]);
+  }, [userInfo.followList]);
   return (
     <Wrapper show={isLoggedIn && sideBarDisplay}>
       <Tabs>

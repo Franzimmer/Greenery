@@ -15,7 +15,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface GalleryProps {
   id: string | undefined;
-  isSelf: boolean;
 }
 interface PinProps {
   path: string;
@@ -107,7 +106,8 @@ const FlexWrapper = styled.div`
 const NoGallerySection = styled(NoDataSection)`
   margin-top: 20px;
 `;
-const Gallery = ({ id, isSelf }: GalleryProps) => {
+const Gallery = ({ id }: GalleryProps) => {
+  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
   const mediaRef = useRef<HTMLInputElement>(null);

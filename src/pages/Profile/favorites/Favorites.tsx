@@ -11,10 +11,10 @@ import FavGrids from "./FavGrids";
 
 interface FavoritesProps {
   id: string | undefined;
-  isSelf: boolean;
   setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
 }
-const Favorites = ({ id, isSelf, setTabDisplay }: FavoritesProps) => {
+const Favorites = ({ id, setTabDisplay }: FavoritesProps) => {
+  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const favoriteCards = userInfo.favoriteCards;
   const [favCards, setFavCards] = useState<PlantCard[]>([]);

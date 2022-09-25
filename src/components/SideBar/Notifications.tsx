@@ -17,16 +17,15 @@ const NoticeWrapper = styled.div`
   padding: 8px;
   border-radius: 20px;
   background-color: #fff;
-  & :not(button) {
-    background-color: #fff;
-  }
 `;
 interface NoticeProps {
   show: boolean;
 }
 const StyleWrapper = styled.div`
+  width: 230px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 `;
 const Notice = styled.div<NoticeProps>`
   padding: 5px;
@@ -35,10 +34,10 @@ const Notice = styled.div<NoticeProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-left: 14px;
+  margin-left: 8px;
   transition: 0.25s;
   &:hover {
-    margin-left: 20px;
+    text-decoration: underline;
     transition: 0.25s;
   }
 `;
@@ -49,14 +48,15 @@ const UnreadMark = styled.div`
   background-color: #5c836f;
 `;
 const NoticeText = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   background-color: none;
-  margin: 0px 8px;
+  margin: 0 0 0 8px;
+  width: 200px;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: block;
   color: #5c836f;
-  height: 16px;
+  height: 14px;
   background: none;
 `;
 interface NotificationsProps {
