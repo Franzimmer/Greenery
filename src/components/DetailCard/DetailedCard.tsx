@@ -128,6 +128,12 @@ const DetailedCard = ({
               <Description>{detailData.lightPref}</Description>
             </FlexColumnWrapper>
           )}
+          {detailData?.toxicity && (
+            <FlexColumnWrapper>
+              <DetailLabelText>Toxicity</DetailLabelText>
+              <Description>{detailData.toxicity}</Description>
+            </FlexColumnWrapper>
+          )}
           {detailData?.birthday && (
             <FlexRowWrapper>
               <DetailLabelText>Birthday</DetailLabelText>

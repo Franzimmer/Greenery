@@ -196,6 +196,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       await firebase.addFavCard(userId, cardId);
       emitAlert("success", "Add to Favorites!");
     }
+    console.log(cardList);
   }
   useEffect(() => {
     async function getCards() {
@@ -216,7 +217,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
       }
     }
     getCards();
-  }, [id, isSelf, dispatch]);
+  }, [id, isSelf]);
   useEffect(() => {
     let tags: string[] = [];
     let checkboxes = {} as CheckList;
@@ -230,6 +231,7 @@ const Cards = ({ id, isSelf, setIsLoading }: CardsGridProps) => {
     setTagList(tags);
     setCheckList(checkboxes);
   }, [cardList]);
+  console.log(cardList);
   return (
     <>
       <DiaryEditor

@@ -18,7 +18,7 @@ const ListWrapper = styled.div`
 `;
 export const Person = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   cursor: pointer;
   margin: 8px 0;

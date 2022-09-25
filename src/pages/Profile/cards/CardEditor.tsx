@@ -19,21 +19,24 @@ interface CardEditorWrapperProps {
   $display: boolean;
 }
 const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
-  position: absolute;
+  position: fixed;
   z-index: 101;
   top: 50vh;
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
   border-radius: 15px;
-  border: 1px solid #6a5125;
-  width: 360px;
-  height: auto;
   display: ${(props) => (props.$display ? "flex" : "none")};
+  justify-content: center;
+  align-items: center;
+  background: #f5f0ec;
+`;
+const PageWrapper = styled.div`
+  display: flex;
   flex-direction: column;
   justify-content: space-around;
-  align-items: center;
+  width: 360px;
+  height: auto;
   padding: 30px;
-  background: #f5f0ec;
 `;
 const InputLabel = styled.span`
   color: #6a5125;
@@ -68,7 +71,7 @@ const Input = styled.input`
 `;
 const TextArea = styled.textarea`
   width: 280px;
-  height: 80px;
+  height: 100px;
   border: 1px solid #6a5125;
   padding: 5px;
 `;
@@ -164,6 +167,7 @@ const CardEditor = ({
   const tagRef = useRef<HTMLInputElement>(null);
   const waterRef = useRef<HTMLTextAreaElement>(null);
   const lightRef = useRef<HTMLTextAreaElement>(null);
+  const toxicityRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const cardList = useSelector((state: RootState) => state.cards);
@@ -200,11 +204,13 @@ const CardEditor = ({
       emitAlert("fail", "Species data is not in the database.");
       waterRef.current!.value = "";
       lightRef.current!.value = "";
+      toxicityRef.current!.value = "";
       return;
     }
     querySnapshot.forEach((doc) => {
       waterRef.current!.value = doc.data().WATER;
       lightRef.current!.value = doc.data().LIGHT;
+      toxicityRef.current!.value = doc.data().TOXICITY;
     });
   }
   function addTag() {
@@ -235,6 +241,7 @@ const CardEditor = ({
     tagRef.current!.value = "";
     waterRef.current!.value = "";
     lightRef.current!.value = "";
+    toxicityRef.current!.value = "";
     setPreviewLink(null);
     setTags([]);
   }
@@ -249,6 +256,7 @@ const CardEditor = ({
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
+      toxicity: toxicityRef.current?.value,
       followers: 0,
     };
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
@@ -283,9 +291,11 @@ const CardEditor = ({
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
+      toxicity: toxicityRef.current?.value,
       birthday: Date.parse(birthdayRef.current?.value || ""),
     };
     await firebase.editCard(editCardId!, data);
+    editorToggle();
     dispatch({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
@@ -294,7 +304,6 @@ const CardEditor = ({
       type: popUpActions.HIDE_ALL,
     });
     emitAlert("success", "Edit Card Success!");
-    editorToggle();
     resetEditor();
   }
   useEffect(() => {
@@ -316,110 +325,118 @@ const CardEditor = ({
 
   return (
     <CardEditorWrapper $display={editorDisplay}>
-      <InputWrapper>
-        <PhotoPreview path={previewLink} />
-        <PhotoInputLabel htmlFor="img">
-          <UploadIcon icon={faPenToSquare} />
-        </PhotoInputLabel>
-        <PhotoInput
-          id="img"
-          ref={imageRef}
-          type="file"
-          accept="image/*"
-          onChange={() => {
-            createPreviewLink();
-          }}
-          hidden
-        />
-      </InputWrapper>
-      <InputFlexWrapper>
-        <InputLabel>Name</InputLabel>
-        <Input type="text" ref={nameRef} />
-      </InputFlexWrapper>
-      <InputFlexWrapper>
-        <InputLabel>Species</InputLabel>
-        <Input
-          type="text"
-          ref={speciesRef}
-          onKeyPress={(e) => {
-            if (!speciesRef.current) return;
-            if (e.key === "Enter") {
-              searchPlantSpecies(speciesRef.current.value);
-            }
-          }}
-        />
-      </InputFlexWrapper>
-      <InputWrapper>
-        <InputLabel>Water Preference</InputLabel>
-        <TextArea ref={waterRef} placeholder="search species..." />
-      </InputWrapper>
-      <InputWrapper>
-        <InputLabel>Light Preference</InputLabel>
-        <TextArea ref={lightRef} placeholder="search species..." />
-      </InputWrapper>
-      <InputFlexWrapper>
-        <InputLabel>Birthday</InputLabel>
-        <Input type="date" ref={birthdayRef} />
-      </InputFlexWrapper>
-      <InputFlexWrapper>
-        <InputLabel>Tags</InputLabel>
-        <Input
-          type="text"
-          ref={tagRef}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              addTag();
-              tagRef.current!.value = "";
-            }
-          }}
-        />
-      </InputFlexWrapper>
-      <TagsWrpper>
-        {tags &&
-          tags.map((tag) => {
-            return (
-              <Tag key={tag} id={tag}>
-                <TagText>{tag}</TagText>
-                <RemoveTagBtn onClick={(e) => RemoveTag(e)}>
-                  &#215;
-                </RemoveTagBtn>
-              </Tag>
-            );
-          })}
-      </TagsWrpper>
-      <BtnWrpper>
-        {editCardId ? (
+      <PageWrapper>
+        <InputWrapper>
+          <PhotoPreview path={previewLink} />
+          <PhotoInputLabel htmlFor="img">
+            <UploadIcon icon={faPenToSquare} />
+          </PhotoInputLabel>
+          <PhotoInput
+            id="img"
+            ref={imageRef}
+            type="file"
+            accept="image/*"
+            onChange={() => {
+              createPreviewLink();
+            }}
+            hidden
+          />
+        </InputWrapper>
+        <InputFlexWrapper>
+          <InputLabel>Name</InputLabel>
+          <Input type="text" ref={nameRef} />
+        </InputFlexWrapper>
+        <InputFlexWrapper>
+          <InputLabel>Species</InputLabel>
+          <Input
+            type="text"
+            ref={speciesRef}
+            onKeyPress={(e) => {
+              if (!speciesRef.current) return;
+              if (e.key === "Enter") {
+                searchPlantSpecies(speciesRef.current.value);
+              }
+            }}
+          />
+        </InputFlexWrapper>
+        <InputFlexWrapper>
+          <InputLabel>Birthday</InputLabel>
+          <Input type="date" ref={birthdayRef} />
+        </InputFlexWrapper>
+        <InputFlexWrapper>
+          <InputLabel>Tags</InputLabel>
+          <Input
+            type="text"
+            ref={tagRef}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                addTag();
+                tagRef.current!.value = "";
+              }
+            }}
+          />
+        </InputFlexWrapper>
+        <TagsWrpper>
+          {tags &&
+            tags.map((tag) => {
+              return (
+                <Tag key={tag} id={tag}>
+                  <TagText>{tag}</TagText>
+                  <RemoveTagBtn onClick={(e) => RemoveTag(e)}>
+                    &#215;
+                  </RemoveTagBtn>
+                </Tag>
+              );
+            })}
+        </TagsWrpper>
+      </PageWrapper>
+      <PageWrapper>
+        <InputWrapper>
+          <InputLabel>Water Preference</InputLabel>
+          <TextArea ref={waterRef} />
+        </InputWrapper>
+        <InputWrapper>
+          <InputLabel>Light Preference</InputLabel>
+          <TextArea ref={lightRef} />
+        </InputWrapper>
+        <InputWrapper>
+          <InputLabel>Toxicity</InputLabel>
+          <TextArea ref={toxicityRef} />
+        </InputWrapper>
+        <BtnWrpper>
+          {editCardId ? (
+            <EditorBtn
+              onClick={() => {
+                editCard();
+                resetEditor();
+                setEditCardId(null);
+              }}
+            >
+              Save
+            </EditorBtn>
+          ) : (
+            <EditorBtn
+              onClick={() => {
+                addCard();
+              }}
+            >
+              Add
+            </EditorBtn>
+          )}
           <EditorBtn
             onClick={() => {
-              editCard();
+              editorToggle();
               resetEditor();
               setEditCardId(null);
+              dispatch({
+                type: popUpActions.HIDE_ALL,
+              });
             }}
           >
-            Save
+            Cancel
           </EditorBtn>
-        ) : (
-          <EditorBtn
-            onClick={() => {
-              addCard();
-            }}
-          >
-            Add
-          </EditorBtn>
-        )}
-        <EditorBtn
-          onClick={() => {
-            editorToggle();
-            resetEditor();
-            setEditCardId(null);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          Cancel
-        </EditorBtn>
-      </BtnWrpper>
+        </BtnWrpper>
+      </PageWrapper>
     </CardEditorWrapper>
   );
 };

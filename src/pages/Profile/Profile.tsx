@@ -48,7 +48,7 @@ const Profile = () => {
     if (id === userInfo.userId) setIsSelf(true);
     else setIsSelf(false);
     setTimeout(() => setIsLoading(false), 3000);
-  }, [id, userInfo]);
+  }, [id]);
 
   return (
     <>

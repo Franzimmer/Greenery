@@ -197,7 +197,7 @@ const PropagationMenu = ({
         <PropageOperationBtn
           onClick={() => {
             numberRef.current!.value = "";
-            inputRef.current!.value = "";
+            if (inputRef.current) inputRef.current!.value = "";
             setPropagateDisplay(false);
             dispatch({
               type: popUpActions.HIDE_ALL,
