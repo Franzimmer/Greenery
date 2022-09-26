@@ -245,8 +245,18 @@ const CardEditor = ({
     setPreviewLink(null);
     setTags([]);
   }
+  function checkInput() {
+    if (nameRef.current?.value === "") {
+      emitAlert("fail", "Please fill plant name.");
+      return false;
+    } else if (speciesRef.current?.value === "") {
+      emitAlert("fail", "Please fill plant species.");
+      return false;
+    }
+  }
   async function addCard() {
     const imgLink = await uploadFile();
+    if (!checkInput()) return;
     const data: PlantCard = {
       cardId: null,
       ownerId: userId,
@@ -280,6 +290,7 @@ const CardEditor = ({
     let imgLink;
     if (imageRef.current?.value) imgLink = await uploadFile();
     else imgLink = previewLink!;
+    if (!checkInput()) return;
     const data = {
       cardId: editCardId!,
       parents:
