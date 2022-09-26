@@ -80,12 +80,13 @@ export const NoSidebarDataText = styled(NoDataText)`
   color: #aaa;
 `;
 const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const { followList } = useSelector((state: RootState) => state.userInfo);
   const navigate = useNavigate();
 
+  console.log(followList);
   return (
     <ListWrapper>
-      {userInfo.followList?.length !== 0 &&
+      {followList?.length !== 0 &&
         followInfos?.map((user) => {
           return (
             <Person
@@ -104,7 +105,7 @@ const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
             </Person>
           );
         })}
-      {userInfo.followList.length === 0 && (
+      {followList.length === 0 && (
         <NoSidebarDataText>You haven't follow anyone.</NoSidebarDataText>
       )}
     </ListWrapper>

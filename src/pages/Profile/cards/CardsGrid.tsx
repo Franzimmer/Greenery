@@ -158,6 +158,7 @@ const IconWrapper = styled.div<MaskAndIconBtnProps>`
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   isSelf: boolean;
+  isLoading: boolean;
   diariesExist: boolean[];
   viewMode: "grid" | "list";
   cardList: PlantCard[];
@@ -174,6 +175,7 @@ interface CardsGridProps {
 }
 const CardsGrid = ({
   isSelf,
+  isLoading,
   diariesExist,
   viewMode,
   cardList,
@@ -298,7 +300,7 @@ const CardsGrid = ({
             );
           })}
       </GridWrapper>
-      {cardList.length === 0 && (
+      {cardList.length === 0 && !isLoading && (
         <NoDataSection>
           {isSelf && (
             <>
