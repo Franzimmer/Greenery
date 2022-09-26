@@ -31,7 +31,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_FOLLOW_LIST: {
-      let currentFollowList = state.followList;
+      let currentFollowList = [...state.followList];
       currentFollowList?.push(action.payload.targetId);
       return {
         ...state,

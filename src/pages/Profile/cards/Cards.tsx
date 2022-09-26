@@ -66,8 +66,9 @@ type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
 }
-const Cards = ({ id, setIsLoading }: CardsGridProps) => {
+const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
   const dispatch = useDispatch();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
@@ -267,6 +268,7 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
       )}
       <CardsGrid
         isSelf={isSelf}
+        isLoading={isLoading}
         diariesExist={diariesExist}
         viewMode={viewMode}
         cardList={cardList}

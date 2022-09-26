@@ -11,6 +11,7 @@ import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
+import { CardsActions } from "../../store/actions/cardsActions";
 
 interface MainWrapperProps {
   isLoading: boolean;
@@ -52,16 +53,23 @@ const Profile = () => {
         selfId: userInfo.userId,
       },
     });
-    setTimeout(() => setIsLoading(false), 3000);
+    dispatch({
+      type: CardsActions.CLEAR_CARDS_DATA,
+    });
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
   }, [id]);
-
+  console.log(isLoading);
   return (
     <>
       {isLoading && <PageLoader />}
       <MainWrapper isLoading={isLoading}>
         <UserInfoSection id={id} />
         <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-        {tabDisplay.Cards && <Cards id={id} setIsLoading={setIsLoading} />}
+        {tabDisplay.Cards && (
+          <Cards id={id} setIsLoading={setIsLoading} isLoading={isLoading} />
+        )}
         {tabDisplay.Calendar && (
           <CalendarApp id={id!} $show={tabDisplay.Calendar} />
         )}
