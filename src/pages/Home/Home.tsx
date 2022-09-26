@@ -156,7 +156,7 @@ interface QuoteSectionProps {
   openAnimation: boolean;
 }
 const complexMixin = css`
-  ${open} 3s ease-in forwards
+  ${open} 1s ease-in forwards
 `;
 const QuoteSection = styled.div<QuoteSectionProps>`
   padding: 48px 24px;
@@ -171,7 +171,7 @@ const QuoteSection = styled.div<QuoteSectionProps>`
   animation: ${(props) => props.openAnimation && complexMixin};
 `;
 const complexOpacity = css`
-  ${showOpacity} 3s ease-in forwards
+  ${showOpacity} 1s ease-in forwards
 `;
 const QuoteText = styled.div<QuoteSectionProps>`
   font-size: 26px;
