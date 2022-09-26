@@ -38,7 +38,9 @@ interface EditorWrapperProps {
 const EditoWrapper = styled.div<EditorWrapperProps>`
   width: 500px;
   height: ${(props) =>
-    props.$mode === "AddComment" || "EditComment" ? "fit-content" : "450px"};
+    props.$mode === "AddComment" || props.$mode === "EditComment"
+      ? "fit-content"
+      : "450px"};
   background: #fff;
   padding: 15px;
 `;
