@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import styled, { keyframes, css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { firebase } from "../../utils/firebase";
@@ -32,6 +32,7 @@ import main from "./main.jpeg";
 import feature from "./feature.jpeg";
 import taquila from "./taquila.png";
 import coconut from "./coconut.png";
+
 const Wrapper = styled.div`
   width: 80vw;
   margin: 150px auto 50px;
@@ -75,9 +76,19 @@ const ArrowIcon = styled(FontAwesomeIcon)`
   height: 20px;
   margin: 0 12px 0 0;
 `;
+const showOpacity = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 const MainStyleWrapper = styled.div`
   display: flex;
   justify-content: center;
+  opacity: 0;
+  animation: ${showOpacity} 0.5s linear forwards;
 `;
 const MainStyle = styled.img`
   width: 30%;
@@ -131,7 +142,23 @@ const FeatureImg = styled.img`
   width: 40%;
   box-shadow: -20px 20px 0 10px #fddba9;
 `;
-const QuoteSection = styled.div`
+const open = keyframes`
+  from {
+    opacity: 0;
+     max-height: 0;
+  }
+  to {
+    opacity: 1;
+     max-height: 500px;
+  }
+`;
+interface QuoteSectionProps {
+  openAnimation: boolean;
+}
+const complexMixin = css`
+  ${open} 1s ease-in forwards
+`;
+const QuoteSection = styled.div<QuoteSectionProps>`
   padding: 48px 24px;
   display: flex;
   flex-direction: column;
@@ -140,18 +167,27 @@ const QuoteSection = styled.div`
   border-top: 1px solid #224229;
   border-bottom: 1px solid #224229;
   margin: 110vh 0 60px 0;
+  max-height: 0;
+  animation: ${(props) => props.openAnimation && complexMixin};
 `;
-const QuoteText = styled.div`
+const complexOpacity = css`
+  ${showOpacity} 1s ease-in forwards
+`;
+const QuoteText = styled.div<QuoteSectionProps>`
   font-size: 26px;
   letter-spacing: 2px;
   color: #224229;
   padding: 8px;
   font-style: italic;
+  opacity: 0;
+  animation: ${(props) => props.openAnimation && complexOpacity};
 `;
-const QuoteAutorText = styled(QuoteText)`
+const QuoteAutorText = styled(QuoteText)<QuoteSectionProps>`
   font-size: 20px;
   align-self: flex-end;
   padding: 8px 72px 0 0;
+  opacity: 0;
+  animation: ${(props) => props.openAnimation && complexOpacity};
 `;
 const DecorationEucari = styled.img`
   position: absolute;
@@ -160,6 +196,8 @@ const DecorationEucari = styled.img`
   width: 10vw;
   background: #bedce6;
   box-shadow: 5vw 80px #f5f0ec inset;
+  opacity: 0;
+  animation: ${showOpacity} 0.5s linear 0.5s forwards;
 `;
 const DecorationRubber = styled.img`
   position: absolute;
@@ -168,6 +206,8 @@ const DecorationRubber = styled.img`
   width: 15vw;
   background: #bedce6;
   box-shadow: 0px 80px #f5f0ec inset;
+  opacity: 0;
+  animation: ${showOpacity} 0.5s linear 1s forwards;
 `;
 const DecorationCoco = styled.img`
   position: absolute;
@@ -176,6 +216,8 @@ const DecorationCoco = styled.img`
   width: 17vw;
   background: #fddba9;
   box-shadow: -10vw 90px #f5f0ec inset;
+  opacity: 0;
+  animation: ${showOpacity} 0.5s linear 1.5s forwards;
 `;
 const DecorationTaquila = styled.img`
   position: absolute;
@@ -184,6 +226,8 @@ const DecorationTaquila = styled.img`
   width: 22vw;
   background: #fddba9;
   box-shadow: 0px 30px #f5f0ec inset;
+  opacity: 0;
+  animation: ${showOpacity} 0.5s linear 2s forwards;
 `;
 const CardsWrapper = styled.div``;
 const CardsFlexWrpper = styled.div`
@@ -226,9 +270,33 @@ const LogInRedirect = styled.div`
   }
   cursor: pointer;
 `;
+interface MyObserverProps {
+  node: React.RefObject<HTMLDivElement>;
+  setOpenAnimation: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const MyObserver = ({ node, setOpenAnimation }: MyObserverProps) => {
+  useEffect(() => {
+    if (!node) return;
+    const options = {
+      root: null,
+      threshold: [0.8],
+    };
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => setOpenAnimation(entries[0].isIntersecting),
+      options
+    );
+    let current = node.current;
+    intersectionObserver.observe(current!);
+    return () => {
+      if (current) intersectionObserver.unobserve(current);
+    };
+  }, [node]);
+  return null;
+};
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const quoteRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -238,6 +306,7 @@ const Home = () => {
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [openAnimation, setOpenAnimation] = useState<boolean>(false);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -288,6 +357,7 @@ const Home = () => {
     }
     getHomePageData();
   }, []);
+
   return (
     <>
       {isLoading && <PageLoader />}
@@ -317,10 +387,18 @@ const Home = () => {
               <MainDescription>Explore</MainDescription>
             </ExploreWrapper>
           </Banner>
-          <QuoteSection>
-            <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
-            <QuoteAutorText>~ Audrey Hepburn</QuoteAutorText>
+          <QuoteSection ref={quoteRef} openAnimation={openAnimation}>
+            <QuoteText openAnimation={openAnimation}>
+              To plant a garden is to believe in tomorrow.
+            </QuoteText>
+            <QuoteAutorText openAnimation={openAnimation}>
+              ~ Audrey Hepburn
+            </QuoteAutorText>
           </QuoteSection>
+          <MyObserver
+            node={quoteRef}
+            setOpenAnimation={setOpenAnimation}
+          ></MyObserver>
           <FeatureWrapper>
             <FeatureImg src={feature} />
             <FeatureTextWrapper>
