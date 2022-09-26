@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { firebase } from "../../utils/firebase";
 import { Editor } from "@tiptap/core";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,12 +14,13 @@ import {
   faQuoteLeft,
   faArrowTurnUp,
 } from "@fortawesome/free-solid-svg-icons";
+import { faImage } from "@fortawesome/free-regular-svg-icons";
 const OperationMenu = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 20px;
 `;
-const TextEditorBtn = styled.div`
+const TextEditorBtn = styled.label`
   display: flex;
   justify-content: center;
   alugn-items: center;
@@ -48,8 +50,23 @@ interface MenuBarProps {
   editor: Editor | null;
 }
 const MenuBar = ({ editor }: MenuBarProps) => {
+  const imageRef = useRef<HTMLInputElement>(null);
   if (!editor) {
     return null;
+  }
+
+  async function addImage() {
+    if (!imageRef.current) return;
+    if (imageRef.current.files!.length === 0) return;
+    let imgLink = await firebase.uploadFile(imageRef.current.files![0]);
+    console.log(imgLink);
+    if (imgLink) {
+      editor!
+        .chain()
+        .focus()
+        .setImage({ src: imgLink })
+        .run();
+    }
   }
 
   return (
@@ -127,7 +144,17 @@ const MenuBar = ({ editor }: MenuBarProps) => {
       >
         <StyledFontAwesomeIcon icon={faQuoteLeft} />
       </TextEditorBtn>
-
+      <TextEditorBtn htmlFor="image">
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          ref={imageRef}
+          onChange={addImage}
+          hidden
+        />
+        <StyledFontAwesomeIcon icon={faImage} />
+      </TextEditorBtn>
       <TextEditorBtn
         onClick={() =>
           editor

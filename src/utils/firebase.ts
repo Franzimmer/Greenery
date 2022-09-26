@@ -340,19 +340,19 @@ const firebase = {
     const docRef = doc(users, userId);
     await updateDoc(docRef, { gallery: arrayRemove(link) });
   },
-  async searchTest() {
-    console.log("test");
-    const q = query(
-      species,
-      where("NAME", ">=", "m"),
-      where("NAME", "<=", "m")
-    );
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      console.log(doc.data());
-    });
-    // return querySnapshot;
-  },
+  // async searchTest() {
+  //   console.log("test");
+  //   const q = query(
+  //     species,
+  //     where("NAME", ">=", "m"),
+  //     where("NAME", "<=", "m")
+  //   );
+  //   const querySnapshot = await getDocs(q);
+  //   querySnapshot.forEach((doc) => {
+  //     console.log(doc.data());
+  //   });
+  //   // return querySnapshot;
+  // },
   async searchSpecies(input: string) {
     const q = query(species, where("NAME", "==", input));
     const querySnapshot = await getDocs(q);
