@@ -169,7 +169,11 @@ const firebase = {
     return querySnapshot;
   },
   async getUserCards(ownerId: string) {
-    const q = query(cards, where("ownerId", "==", ownerId));
+    const q = query(
+      cards,
+      where("ownerId", "==", ownerId),
+      orderBy("createdTime", "asc")
+    );
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
@@ -183,6 +187,7 @@ const firebase = {
     await setDoc(newCard, {
       ...data,
       cardId: newCard.id,
+      createdTime: serverTimestamp(),
     });
     return newCard.id;
   },
@@ -334,6 +339,19 @@ const firebase = {
   async deleteGallery(userId: string, link: string) {
     const docRef = doc(users, userId);
     await updateDoc(docRef, { gallery: arrayRemove(link) });
+  },
+  async searchTest() {
+    console.log("test");
+    const q = query(
+      species,
+      where("NAME", ">=", "m"),
+      where("NAME", "<=", "m")
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      console.log(doc.data());
+    });
+    // return querySnapshot;
   },
   async searchSpecies(input: string) {
     const q = query(species, where("NAME", "==", input));

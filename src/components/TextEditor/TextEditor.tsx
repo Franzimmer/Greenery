@@ -23,7 +23,7 @@ interface CardPanelWrapperProps {
 }
 const Wrapper = styled.div<CardPanelWrapperProps>`
   width: ${(props) => (props.$show ? "880px" : "auto")};
-  position: absolute;
+  position: fixed;
   top: 50vh;
   left: 50vw;
   transtion: 1s;
