@@ -64,7 +64,7 @@ const LeftText = styled.div`
   color: #5c836f;
   border-radius: 16px;
   padding: 2px 10px;
-  margin-bottom: 3px;
+  margin: 6px 0px;
 `;
 const RightText = styled(LeftText)`
   align-self: flex-end;
@@ -81,14 +81,17 @@ const MsgWindow = styled.div`
   flex-direction: column;
   overflow-y: auto;
 `;
-const ChatInput = styled.input`
+const ChatInput = styled.textarea`
   width: 90%;
   height: 36px;
+  max-height: 50px;
   border: 1px solid #5c836f;
   border-radius: 18px;
   margin-left: 8px;
   background-color: #fff;
-  padding-left: 18px;
+  padding: 8px 18px;
+  overflow-y: auto;
+  font-size: 14px;
 `;
 const ChatBtn = styled(CloseBtn)`
   background-color: #fff;
@@ -114,7 +117,7 @@ const Chatroom = ({
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const selfId = userInfo.userId;
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -206,7 +209,6 @@ const Chatroom = ({
             +
           </ChatBtn>
           <ChatInput
-            type="text"
             ref={inputRef}
             onKeyPress={(e) => {
               if (e.key === "Enter") {

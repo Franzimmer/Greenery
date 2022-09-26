@@ -84,15 +84,17 @@ const Chatrooms = () => {
           chatDisplay[targetId[0]] = false;
         });
       } else {
-        setSpinDisplay(false);
+        setTimeout(() => setSpinDisplay(false), 500);
       }
       let queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });
-      setSpinDisplay(false);
-      setChatInfos(chatData);
-      setChatroomDisplay(chatDisplay);
+      setTimeout(() => {
+        setSpinDisplay(false);
+        setChatInfos(chatData);
+        setChatroomDisplay(chatDisplay);
+      }, 500);
     }
     getChatTargets();
   }, []);
@@ -113,7 +115,7 @@ const Chatrooms = () => {
               </Person>
             );
           })}
-        {chatInfos?.length === 0 && (
+        {chatInfos?.length === 0 && !spinDisplay && (
           <NoSidebarDataText>No chatroom history</NoSidebarDataText>
         )}
       </ChatroomsWrapper>
