@@ -252,7 +252,7 @@ const CardEditor = ({
     } else if (speciesRef.current?.value === "") {
       emitAlert("fail", "Please fill plant species.");
       return false;
-    }
+    } else return true;
   }
   async function addCard() {
     const imgLink = await uploadFile();
