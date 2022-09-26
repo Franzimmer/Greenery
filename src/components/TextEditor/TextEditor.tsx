@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import "@tiptap/core";
 import "./tiptap.css";
 import MenuBar from "./MenuBar";
@@ -37,7 +38,9 @@ interface EditorWrapperProps {
 const EditoWrapper = styled.div<EditorWrapperProps>`
   width: 500px;
   height: ${(props) =>
-    props.$mode === "AddComment" || "EditComment" ? "fit-content" : "450px"};
+    props.$mode === "AddComment" || props.$mode === "EditComment"
+      ? "fit-content"
+      : "450px"};
   background: #fff;
   padding: 15px;
 `;
@@ -129,7 +132,12 @@ const TextEditor = ({
     content: initTitle || "Title",
   });
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Image.configure({
+        HTMLAttributes: { class: "my-img" },
+      }),
+    ],
     content: initContent || "",
   });
 
