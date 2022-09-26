@@ -42,9 +42,9 @@ const AuthorInfo = styled.div`
   font-size: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  margin: 0 15px;
+  margin: 16px;
 `;
 interface AuthorPhotoProps {
   path: string | undefined;

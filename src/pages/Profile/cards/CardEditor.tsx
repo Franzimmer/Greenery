@@ -304,9 +304,7 @@ const CardEditor = ({
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
-      birthday: Date.parse(birthdayRef.current?.value || "")
-        ? Date.parse(birthdayRef.current?.value!)
-        : undefined,
+      birthday: Date.parse(birthdayRef.current?.value || ""),
       createdTime: cardList.find((card) => card.cardId === editCardId)!
         .createdTime,
     };
@@ -321,6 +319,7 @@ const CardEditor = ({
     });
     emitAlert("success", "Edit Card Success!");
     resetEditor();
+    setEditCardId(null);
   }
   useEffect(() => {
     async function getEditCardData() {
@@ -333,6 +332,7 @@ const CardEditor = ({
       speciesRef.current!.value = data!.species;
       waterRef.current!.value = data?.waterPref ?? "";
       lightRef.current!.value = data?.lightPref ?? "";
+      toxicityRef.current!.value = data?.toxicity ?? "";
       if (data?.birthday)
         birthdayRef.current!.value = unixTimeToString(data?.birthday);
     }
@@ -423,8 +423,6 @@ const CardEditor = ({
             <EditorBtn
               onClick={() => {
                 editCard();
-                resetEditor();
-                setEditCardId(null);
               }}
             >
               Save

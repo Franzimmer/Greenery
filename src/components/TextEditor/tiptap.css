@@ -1,6 +1,8 @@
 #content .ProseMirror {
   height: 220px;
-  padding: 10px;
+}
+#title .ProseMirror {
+  height: 60px;
 }
 .ProseMirror {
   overflow-y: auto;
@@ -33,7 +35,7 @@
 }
 
 .ProseMirror {
-  padding: 16px;
+  padding: 8px 16px;
   margin-top: 12px;
   border: 1px solid #000;
 }

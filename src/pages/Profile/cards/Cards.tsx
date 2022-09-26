@@ -83,6 +83,7 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
   const [filter, setFilter] = useState<string>("");
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -198,19 +199,23 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
   }
   useEffect(() => {
     async function getCards() {
-      let results: PlantCard[] = [];
+      let cards: PlantCard[] = [];
+      let cardsIds: string[] = [];
       let checkboxes = {} as CheckList;
       let querySnapshot = await firebase.getUserCards(id!);
       if (querySnapshot.empty) return;
       querySnapshot.forEach((doc) => {
-        results.push(doc.data());
+        cards.push(doc.data());
+        cardsIds.push(doc.data().cardId!);
         checkboxes[doc.data().cardId!] = false;
       });
+      let result = await firebase.checkDiariesExistence(cardsIds);
       setCheckList(checkboxes);
-      if (results.length !== 0) {
+      if (cards.length !== 0) {
+        setDiariesExist(result);
         dispatch({
           type: CardsActions.SET_CARDS_DATA,
-          payload: { data: results },
+          payload: { data: cards },
         });
       }
     }
@@ -262,6 +267,7 @@ const Cards = ({ id, setIsLoading }: CardsGridProps) => {
       )}
       <CardsGrid
         isSelf={isSelf}
+        diariesExist={diariesExist}
         viewMode={viewMode}
         cardList={cardList}
         checkList={checkList}

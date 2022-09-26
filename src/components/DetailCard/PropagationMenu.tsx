@@ -98,7 +98,6 @@ const PropagationMenu = ({
   propagateParentData,
 }: PropagationMenuProps) => {
   const numberRef = useRef<HTMLInputElement>(null);
-  const typeRef = useRef("seedling");
   const inputRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<string>("asexual");
   const dispatch = useDispatch();
@@ -129,12 +128,12 @@ const PropagationMenu = ({
     if (!numberRef.current?.value) {
       emitAlert("fail", "Please fill the number you want to propagate.");
       return;
-    } else if (typeRef.current === "seedling" && !inputRef.current?.value) {
+    } else if (type === "seedling" && !inputRef.current?.value) {
       emitAlert("fail", "Please fill out parent info.");
       return;
     }
     let parents = [propagateParentData.plantName];
-    if (typeRef.current === "seedling") {
+    if (type === "seedling") {
       parents.push(inputRef.current!.value);
     }
     const data = {
@@ -153,8 +152,8 @@ const PropagationMenu = ({
       type: popUpActions.HIDE_ALL,
     });
     emitAlert("success", "Propagate success!");
-    numberRef.current!.value = "";
-    inputRef.current!.value = "";
+    if (numberRef.current) numberRef.current!.value = "";
+    if (inputRef.current) inputRef.current!.value = "";
   }
   return (
     <DialogWrapper $display={propagateDisplay}>

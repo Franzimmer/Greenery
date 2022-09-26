@@ -158,6 +158,7 @@ const IconWrapper = styled.div<MaskAndIconBtnProps>`
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   isSelf: boolean;
+  diariesExist: boolean[];
   viewMode: "grid" | "list";
   cardList: PlantCard[];
   checkList: CheckList;
@@ -173,6 +174,7 @@ interface CardsGridProps {
 }
 const CardsGrid = ({
   isSelf,
+  diariesExist,
   viewMode,
   cardList,
   checkList,
@@ -198,7 +200,7 @@ const CardsGrid = ({
     <>
       <GridWrapper $mode={viewMode}>
         {cardList.length !== 0 &&
-          cardList.map((card) => {
+          cardList.map((card, index) => {
             return (
               <Card
                 key={card.cardId}
@@ -240,7 +242,10 @@ const CardsGrid = ({
                 </TagsWrapper>
                 <IconWrapper $show={cardMaskDisplay} $mode={viewMode}>
                   <DiaryIconBtn
-                    $show={cardMaskDisplay}
+                    $show={
+                      (isSelf && cardMaskDisplay) ||
+                      (!isSelf && cardMaskDisplay && diariesExist[index])
+                    }
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
                       dispatch({
                         type: popUpActions.SHOW_MASK,

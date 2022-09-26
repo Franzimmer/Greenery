@@ -1,6 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
-import { fabric } from "fabric";
 import styled, { keyframes } from "styled-components";
+import { fabric } from "fabric";
+import { firebase } from "../../utils/firebase";
+import { useDispatch } from "react-redux";
+import { popUpActions } from "../../store/reducer/popUpReducer";
+import { IconButton } from "../../components/GlobalStyles/button";
+import {
+  NoDataSection,
+  NoDataText,
+  NoDataBtn,
+} from "../../components/GlobalStyles/NoDataLayout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -17,11 +26,7 @@ import {
   faCircleXmark,
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { popUpActions } from "../../store/reducer/popUpReducer";
-import { IconButton } from "../../components/GlobalStyles/button";
 import Canvas from "./Canvas";
-import { firebase } from "../../utils/firebase";
-import { useDispatch } from "react-redux";
 import spinner from "../../assets/spinner.png";
 
 interface WrapperProps {
@@ -36,6 +41,20 @@ const Wrapper = styled.div<WrapperProps>`
   transform: translateX(-50%) translateY(-50%);
   z-index: 101;
   background: #f5f0ec;
+`;
+interface NoDiarySection {
+  $display: boolean;
+}
+const NoDiarySection = styled(NoDataSection)<NoDiarySection>`
+  display: ${(props) => (props.$display ? "flex" : "none")};
+  width: 320px;
+  height: 320px;
+  margin: 0 auto;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 102;
 `;
 const AddImgInput = styled.input``;
 const FlexWrapper = styled.div`
@@ -232,23 +251,10 @@ const DiaryEditor = ({
   }
   useEffect(() => {
     async function getDiary(diaryId: string) {
+      resetCanvas();
       if (!canvas) return;
       let docSnap = await firebase.getDiary(diaryId);
-      if (!docSnap.exists()) {
-        resetCanvas();
-        emitAlert("fail", "No Diary Data Exist.");
-        isSelf && switchToEditMode();
-        if (!isSelf) {
-          setDiariesData([]);
-          setDiaryDisplay(false);
-          setDiaryId(null);
-          dispatch({
-            type: popUpActions.HIDE_ALL,
-          });
-          emitAlert("fail", "No Diary Data Exist.");
-        }
-      } else {
-        resetCanvas();
+      if (docSnap.exists()) {
         setDiariesData(docSnap.data().pages);
         switchToViewMode();
         canvas?.loadFromJSON(docSnap.data().pages[0], async () => {
@@ -260,17 +266,36 @@ const DiaryEditor = ({
           emitAlert("success", "Finish Diary Data Loading!");
         });
         pageRef.current = 0;
-        setLoaderDisplay(false);
       }
+      setLoaderDisplay(false);
     }
     if (diaryId) getDiary(diaryId);
   }, [diaryId]);
+
   return (
     <>
+      <NoDiarySection
+        $display={
+          diaryDisplay &&
+          !loaderDisplay &&
+          diariesData.length === 0 &&
+          mode === "view"
+        }
+      >
+        <NoDataText>You haven't write plants diary</NoDataText>
+        <NoDataBtn
+          onClick={() => {
+            setSaveMode("saveAdd");
+            switchToEditMode();
+          }}
+        >
+          Write Diary
+        </NoDataBtn>
+      </NoDiarySection>
       <Loading $display={diaryDisplay && loaderDisplay} />
       <Wrapper $display={diaryDisplay}>
         <BtnWrapper>
-          {mode === "view" && (
+          {mode === "view" && diariesData.length !== 0 && (
             <>
               {isSelf && (
                 <DiaryIconButton
@@ -353,6 +378,7 @@ const DiaryEditor = ({
               setDiaryDisplay(false);
               setDiaryId(null);
               setLoaderDisplay(true);
+              switchToViewMode();
               dispatch({
                 type: popUpActions.HIDE_ALL,
               });
@@ -365,7 +391,7 @@ const DiaryEditor = ({
           <Canvas setCanvas={setCanvas} />
         </FlexWrapper>
         <ArrowWrapper>
-          {mode === "view" && (
+          {mode === "view" && diariesData.length !== 0 && (
             <>
               <DiaryIconButton onClick={() => switchPage("-")}>
                 <StyledFontAwesomeIcon icon={faArrowLeft} />
