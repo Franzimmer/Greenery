@@ -173,7 +173,7 @@ const Gallery = ({ id }: GalleryProps) => {
       }, 500);
     }
     getMediaData();
-  }, [id, isSelf, userInfo]);
+  }, [id, isSelf]);
   return (
     <>
       {isLoading && <SectionLoader></SectionLoader>}
@@ -247,6 +247,14 @@ const Gallery = ({ id }: GalleryProps) => {
                   You haven't upload any photo yet. Share some with everyone !
                 </NoDataText>
                 <NoDataBtn htmlFor="image">Add Photo</NoDataBtn>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  ref={mediaRef}
+                  onChange={saveGalleryData}
+                  hidden
+                />
               </>
             )}
             {!isSelf && <NoDataText>User has no gallery data.</NoDataText>}

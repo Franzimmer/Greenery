@@ -52,7 +52,7 @@ interface AuthorPhotoProps {
 const AuthorPhoto = styled.div<AuthorPhotoProps>`
   background-image: url(${(props) => (props.path ? props.path : user)});
   background-size: cover;
-  backround-position: center center;
+  background-position: center center;
   border-radius: 50%;
   height: 150px;
   width: 150px;
