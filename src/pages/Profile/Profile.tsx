@@ -58,9 +58,8 @@ const Profile = () => {
     });
     setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 1000);
   }, [id]);
-  console.log(isLoading);
   return (
     <>
       {isLoading && <PageLoader />}

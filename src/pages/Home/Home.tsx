@@ -207,7 +207,7 @@ const DecorationRubber = styled.img`
   background: #bedce6;
   box-shadow: 0px 80px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 1s forwards;
+  animation: ${showOpacity} 0.5s linear 0.5s forwards;
 `;
 const DecorationCoco = styled.img`
   position: absolute;
@@ -279,7 +279,7 @@ const MyObserver = ({ node, setOpenAnimation }: MyObserverProps) => {
     if (!node) return;
     const options = {
       root: null,
-      threshold: [0.8],
+      threshold: [1],
     };
     const intersectionObserver = new IntersectionObserver(
       (entries) => setOpenAnimation(entries[0].isIntersecting),

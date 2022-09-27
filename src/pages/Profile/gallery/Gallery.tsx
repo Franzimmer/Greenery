@@ -160,8 +160,8 @@ const Gallery = ({ id }: GalleryProps) => {
   }
   useEffect(() => {
     async function getMediaData() {
-      setIsLoading(true);
       if (!isSelf) {
+        setIsLoading(true);
         const docData = await firebase.getGallery(id!);
         setMedia(docData.data()!.gallery);
       } else {
@@ -173,7 +173,7 @@ const Gallery = ({ id }: GalleryProps) => {
       }, 500);
     }
     getMediaData();
-  }, [id, isSelf]);
+  }, [id, isSelf, userInfo.gallery]);
   return (
     <>
       {isLoading && <SectionLoader></SectionLoader>}

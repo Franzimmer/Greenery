@@ -70,6 +70,7 @@ const DetailOperationBtn = styled(OperationBtn)`
   border: 1px solid #5c836f;
   width: 150px;
   transition: 0.25s;
+  margin-top: 16px;
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;

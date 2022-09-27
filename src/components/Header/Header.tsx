@@ -9,6 +9,7 @@ const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   background: rgb(245, 240, 236, 0.5);
+  padding-left: 16px;
   width: 100vw;
   height: 100px;
   position: fixed;
