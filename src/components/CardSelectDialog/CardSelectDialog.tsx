@@ -20,7 +20,7 @@ const DialogWrapper = styled.div<DialogWrapperProps>`
   height: 500px;
   background: #fddba9;
   padding: 30px 15px;
-  position: absolute;
+  position: fixed;
   z-index: 101;
   top: 50vh;
   left: 50vw;

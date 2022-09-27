@@ -82,8 +82,6 @@ export const NoSidebarDataText = styled(NoDataText)`
 const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
   const { followList } = useSelector((state: RootState) => state.userInfo);
   const navigate = useNavigate();
-
-  console.log(followList);
   return (
     <ListWrapper>
       {followList?.length !== 0 &&

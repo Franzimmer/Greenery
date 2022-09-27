@@ -20,7 +20,11 @@ import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";
-const Wrapper = styled.div`
+interface WrapperProps {
+  isLoading: boolean;
+}
+const Wrapper = styled.div<WrapperProps>`
+  display: ${(props) => (props.isLoading ? "none" : "block")};
   margin: 150px auto 50px;
   width: 80vw;
 `;
@@ -165,7 +169,7 @@ const ForumHomePage = () => {
   return (
     <>
       {isLoading && <PageLoader />}
-      <Wrapper>
+      <Wrapper isLoading={isLoading}>
         <ForumSectionWrapper>
           <PostTypeBtn
             style={{ backgroundImage: `url(${all})` }}
