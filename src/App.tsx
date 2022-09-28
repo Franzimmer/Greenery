@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
@@ -94,7 +94,11 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function UserLogInObserver() {
+function UserLogInObserver({
+  setSideBarDisplay,
+}: {
+  setSideBarDisplay: Dispatch<SetStateAction<boolean>>;
+}) {
   const dispatch = useDispatch();
 
   async function listenToNotices(uid: string) {
@@ -119,52 +123,50 @@ function UserLogInObserver() {
         });
     });
   }
-  //Fix: wait for re-connect when refresh
-  useEffect(() => {
-    async function checkLogin() {
-      await auth.onAuthStateChanged(async function(user) {
-        if (user) {
-          let userInfo = await firebase.getUserInfo(user.uid);
-          let querySnapshot = await firebase.getUserCards(user.uid!);
-          let cards: PlantCard[] = [];
-          listenToNotices(user.uid);
-          dispatch({
-            type: UserInfoActions.SET_USER_INFO,
-            payload: { userData: userInfo.data() },
-          });
-          dispatch({
-            type: AuthorityActions.LOG_IN,
-          });
 
-          if (!querySnapshot.empty) {
-            querySnapshot.forEach((doc) => {
-              cards.push(doc.data());
-            });
-            dispatch({
-              type: CardsActions.SET_CARDS_DATA,
-              payload: { data: cards },
-            });
-          }
-        } else {
-          dispatch({
-            type: CardsActions.CLEAR_CARDS_DATA,
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        let userInfo = await firebase.getUserInfo(user.uid);
+        let querySnapshot = await firebase.getUserCards(user.uid!);
+        let cards: PlantCard[] = [];
+        listenToNotices(user.uid);
+        dispatch({
+          type: UserInfoActions.SET_USER_INFO,
+          payload: { userData: userInfo.data() },
+        });
+        dispatch({
+          type: AuthorityActions.LOG_IN,
+        });
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach((doc) => {
+            cards.push(doc.data());
           });
           dispatch({
-            type: UserInfoActions.CLEAR_USER_INFO,
-          });
-          dispatch({
-            type: myFollowersActions.CLEAR_FOLLOWERS,
-          });
-          dispatch({
-            type: NotificationActions.CLEAR_NOTIFICATION,
-          });
-          dispatch({
-            type: AuthorityActions.LOG_OUT,
+            type: CardsActions.SET_CARDS_DATA,
+            payload: { data: cards },
           });
         }
-      });
-    }
-    checkLogin();
+      } else {
+        dispatch({
+          type: CardsActions.CLEAR_CARDS_DATA,
+        });
+        dispatch({
+          type: UserInfoActions.CLEAR_USER_INFO,
+        });
+        dispatch({
+          type: myFollowersActions.CLEAR_FOLLOWERS,
+        });
+        dispatch({
+          type: NotificationActions.CLEAR_NOTIFICATION,
+        });
+        dispatch({
+          type: AuthorityActions.LOG_OUT,
+        });
+        setSideBarDisplay(false);
+      }
+    });
   }, []);
   return null;
 }
@@ -175,7 +177,7 @@ function App() {
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
-        <UserLogInObserver />
+        <UserLogInObserver setSideBarDisplay={setSideBarDisplay} />
         <Alert />
         <Mask />
         <CardSelectDialog />

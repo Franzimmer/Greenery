@@ -214,6 +214,9 @@ const TextEditor = ({
     } else newComments = [];
     newComments.push(comment);
     setComments(newComments);
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
     emitAlert("success", "Add Comment Success !");
   }
   async function saveEditComment() {
@@ -232,12 +235,12 @@ const TextEditor = ({
     let newComments = [...comments];
     newComments[targetId] = newComment;
     await firebase.saveEditComment(postId, newComments);
-    emitAlert("success", "Edit Comment Success !");
-    setComments(newComments);
-    setTextEditorDisplay(false);
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
+    emitAlert("success", "Edit Comment Success !");
+    setComments(newComments);
+    setTextEditorDisplay(false);
   }
 
   useEffect(() => {
@@ -359,9 +362,6 @@ const TextEditor = ({
             onClick={async () => {
               await addComment();
               setTextEditorDisplay(false);
-              dispatch({
-                type: popUpActions.HIDE_ALL,
-              });
             }}
           >
             Save

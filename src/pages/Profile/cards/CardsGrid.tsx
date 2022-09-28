@@ -172,9 +172,8 @@ const CardsGrid = ({
         {cardItems.length !== 0 &&
           cardItems.map((card, index) => {
             return (
-              <CardWrapper $mode={viewMode}>
+              <CardWrapper $mode={viewMode} key={card.cardId}>
                 <Card
-                  key={card.cardId}
                   $mode={viewMode}
                   $show={filterCard(card.tags || [])}
                   onClick={() => {

@@ -196,15 +196,16 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
     async function getUserInfo() {
       if (id && !isSelf) {
         let result = await firebase.getUserInfo(id);
+        if (!result.exists()) {
+          emitAlert("fail", "Page Not Exist.");
+          navigate("/");
+        }
         setUserData(result.data());
         userInfo.followList?.includes(id)
           ? setIsFollowed(true)
           : setIsFollowed(false);
       } else if (id && isSelf) {
         setUserData(userInfo);
-      } else {
-        emitAlert("fail", "Page Not Exist.");
-        navigate("/");
       }
     }
     getUserInfo();

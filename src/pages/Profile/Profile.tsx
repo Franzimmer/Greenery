@@ -42,9 +42,6 @@ const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { isLoggedIn, isSelf } = useSelector(
-    (state: RootState) => state.authority
-  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -56,22 +53,20 @@ const Profile = () => {
         selfId: userInfo.userId,
       },
     });
-    dispatch({
-      type: CardsActions.CLEAR_CARDS_DATA,
-    });
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
   }, [id, userInfo.userId]);
+
   return (
     <>
       {isLoading && <PageLoader />}
       <MainWrapper isLoading={isLoading}>
         <UserInfoSection id={id} />
         <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-        {tabDisplay.Cards && (
-          <Cards id={id} setIsLoading={setIsLoading} isLoading={isLoading} />
-        )}
+
+        <Cards id={id} isLoading={isLoading} cardsDisplay={tabDisplay.Cards} />
+
         {tabDisplay.Calendar && (
           <CalendarApp id={id!} $show={tabDisplay.Calendar} />
         )}
