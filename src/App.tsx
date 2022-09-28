@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
 // import { Reset } from "styled-reset";
@@ -9,6 +9,7 @@ import Mask from "./components/Mask/Mask";
 import CardSelectDialog from "./components/CardSelectDialog/CardSelectDialog";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
+import { PlantCard } from "./store/types/plantCardType";
 import {
   onSnapshot,
   query,
@@ -81,9 +82,23 @@ const GlobalStyle = createGlobalStyle`
     background: #F5F0EC;
     overflow-x:hidden;
   }
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
 `;
 
-function UserLogInObserver() {
+function UserLogInObserver({
+  setSideBarDisplay,
+}: {
+  setSideBarDisplay: Dispatch<SetStateAction<boolean>>;
+}) {
   const dispatch = useDispatch();
 
   async function listenToNotices(uid: string) {
@@ -110,9 +125,11 @@ function UserLogInObserver() {
   }
 
   useEffect(() => {
-    auth.onAuthStateChanged(async function(user) {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
         let userInfo = await firebase.getUserInfo(user.uid);
+        let querySnapshot = await firebase.getUserCards(user.uid!);
+        let cards: PlantCard[] = [];
         listenToNotices(user.uid);
         dispatch({
           type: UserInfoActions.SET_USER_INFO,
@@ -121,6 +138,16 @@ function UserLogInObserver() {
         dispatch({
           type: AuthorityActions.LOG_IN,
         });
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach((doc) => {
+            cards.push(doc.data());
+          });
+          dispatch({
+            type: CardsActions.SET_CARDS_DATA,
+            payload: { data: cards },
+          });
+        }
       } else {
         dispatch({
           type: CardsActions.CLEAR_CARDS_DATA,
@@ -137,6 +164,7 @@ function UserLogInObserver() {
         dispatch({
           type: AuthorityActions.LOG_OUT,
         });
+        setSideBarDisplay(false);
       }
     });
   }, []);
@@ -149,7 +177,7 @@ function App() {
       {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
-        <UserLogInObserver />
+        <UserLogInObserver setSideBarDisplay={setSideBarDisplay} />
         <Alert />
         <Mask />
         <CardSelectDialog />

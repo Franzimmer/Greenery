@@ -50,7 +50,11 @@ export const FavIconButton = styled(IconButton)<FavIconButtonProps>`
     color: ${(props) => !props.$show && "#ccc"};
   }
 `;
-export const DiaryIconBtn = styled(IconButton)`
+interface DiaryBtnProps {
+  $show?: boolean;
+}
+export const DiaryIconBtn = styled(IconButton)<DiaryBtnProps>`
+  display: ${(props) => (props.$show ? "block" : "none")};
   position: absolute;
   bottom: 8px;
   right: 8px;
@@ -69,6 +73,7 @@ export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 interface FavGridsProps {
   isSelf: boolean;
   isLoading: boolean;
+  diariesExist: boolean[];
   favCards: PlantCard[];
   setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -79,6 +84,7 @@ interface FavGridsProps {
 const FavGrids = ({
   isSelf,
   isLoading,
+  diariesExist,
   favCards,
   setDetailData,
   setDetailDisplay,
@@ -116,7 +122,7 @@ const FavGrids = ({
     <SectionWrapper isLoading={isLoading}>
       <GridWrapper $mode={"grid"}>
         {favCards.length !== 0 &&
-          favCards.map((card: PlantCard) => {
+          favCards.map((card: PlantCard, index) => {
             return (
               <Card
                 key={card.cardId}
@@ -146,6 +152,7 @@ const FavGrids = ({
                     })}
                 </TagsWrapper>
                 <DiaryIconBtn
+                  $show={isSelf || (!isSelf && diariesExist[index])}
                   onClick={(e) => {
                     setDiaryDisplay(true);
                     setDiaryId(card.cardId);

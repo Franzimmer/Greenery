@@ -5,7 +5,6 @@ import { RootState } from "../../../store/reducer";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { UserInfo } from "../../../store/types/userInfoType";
 import { firebase } from "../../../utils/firebase";
-import { TabDisplayType } from "../Profile";
 import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
@@ -27,6 +26,7 @@ const Favorites = ({ id }: FavoritesProps) => {
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   function findOwnerName(ownerId: string) {
@@ -46,20 +46,25 @@ const Favorites = ({ id }: FavoritesProps) => {
       if (favorites.length !== 0) {
         let queryData = await firebase.getCards(favorites);
         if (!queryData?.empty) {
-          let docData: PlantCard[] = [];
+          let cards: PlantCard[] = [];
+          let cardIds: string[] = [];
           let ownerIds: string[] = [];
           let ownerInfo: UserInfo[] = [];
           queryData?.forEach((doc) => {
-            docData.push(doc.data());
+            cards.push(doc.data());
+            cardIds.push(doc.data().cardId!);
             if (!ownerIds.includes(doc.data().ownerId))
               ownerIds.push(doc.data().ownerId);
           });
-          let usersQueryData = await firebase.getUsers(ownerIds);
-          usersQueryData?.forEach((doc) => {
+          let usersQueryData = firebase.getUsers(ownerIds);
+          let checkResult = firebase.checkDiariesExistence(cardIds);
+          let renderData = await Promise.all([usersQueryData, checkResult]);
+          renderData[0]?.forEach((doc) => {
             ownerInfo.push(doc.data());
           });
-          setFavCards(docData);
+          setFavCards(cards);
           setOwnerData(ownerInfo);
+          setDiariesExist(renderData[1]);
         }
       }
       setTimeout(() => {
@@ -74,6 +79,7 @@ const Favorites = ({ id }: FavoritesProps) => {
       <FavGrids
         isSelf={isSelf}
         isLoading={isLoading}
+        diariesExist={diariesExist}
         favCards={favCards}
         setDetailData={setDetailData}
         setDetailDisplay={setDetailDisplay}

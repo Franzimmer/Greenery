@@ -23,9 +23,14 @@ const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
 `;
 const PageWrapper = styled.div`
   width: 400px;
+  height: 650px;
   display: flex;
   flex-direction: column;
   padding: 30px;
+`;
+const DescriptionWrapper = styled.div`
+  height: 500px;
+  overflow-y: scroll;
 `;
 const FlexColumnWrapper = styled.div`
   display: flex;
@@ -41,12 +46,16 @@ const NameText = styled(LabelText)`
   font-size: 26px;
   color: #5c836f;
   margin-right: 12px;
+  width: 340px;
+  word-wrap: break-word;
 `;
 const SpeciesText = styled.div`
   font-size: 14px;
   letter-spacing: 1px;
   font-style: italic;
   color: #999;
+  width: 340px;
+  word-wrap: break-word;
 `;
 const DetailLabelText = styled(LabelText)`
   font-size: 18px;
@@ -57,9 +66,11 @@ const Description = styled.p`
   font-size: 14px;
 `;
 const PlantImg = styled.img`
-  width: 340px;
+  width: auto;
   height: auto;
   margin: auto;
+  max-width: 340px;
+  max-height: 460px;
 `;
 const FlexBtnWrapper = styled(FlexRowWrapper)`
   margin-top: auto;
@@ -115,32 +126,34 @@ const DetailedCard = ({
               </Description>
             </FlexRowWrapper>
           )}
-        </PageWrapper>
-        <PageWrapper>
-          {detailData?.waterPref && (
-            <FlexColumnWrapper>
-              <DetailLabelText>Water</DetailLabelText>
-              <Description>{detailData.waterPref}</Description>
-            </FlexColumnWrapper>
-          )}
-          {detailData?.lightPref && (
-            <FlexColumnWrapper>
-              <DetailLabelText>Light</DetailLabelText>
-              <Description>{detailData.lightPref}</Description>
-            </FlexColumnWrapper>
-          )}
-          {detailData?.toxicity && (
-            <FlexColumnWrapper>
-              <DetailLabelText>Toxicity</DetailLabelText>
-              <Description>{detailData.toxicity}</Description>
-            </FlexColumnWrapper>
-          )}
           {detailData?.birthday && (
             <FlexRowWrapper>
               <DetailLabelText>Birthday</DetailLabelText>
               <Description>{unixTimeToString(detailData.birthday)}</Description>
             </FlexRowWrapper>
           )}
+        </PageWrapper>
+        <PageWrapper>
+          <DescriptionWrapper>
+            {detailData?.waterPref && (
+              <FlexColumnWrapper>
+                <DetailLabelText>Water</DetailLabelText>
+                <Description>{detailData.waterPref}</Description>
+              </FlexColumnWrapper>
+            )}
+            {detailData?.lightPref && (
+              <FlexColumnWrapper>
+                <DetailLabelText>Light</DetailLabelText>
+                <Description>{detailData.lightPref}</Description>
+              </FlexColumnWrapper>
+            )}
+            {detailData?.toxicity && (
+              <FlexColumnWrapper>
+                <DetailLabelText>Toxicity</DetailLabelText>
+                <Description>{detailData.toxicity}</Description>
+              </FlexColumnWrapper>
+            )}
+          </DescriptionWrapper>
           <FlexBtnWrapper>
             {isSelf && (
               <DetailOperationBtn

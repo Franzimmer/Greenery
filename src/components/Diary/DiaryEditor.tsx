@@ -157,7 +157,6 @@ const DiaryEditor = ({
     canvas.getObjects().forEach((obj) => {
       obj.set({ selectable: true, hoverCursor: "move" });
     });
-    emitAlert("success", "Switch to Edit Mode.");
   }
   function switchToViewMode() {
     setMode("view");
@@ -192,7 +191,6 @@ const DiaryEditor = ({
     if (!fileRef.current.files!.length) return;
     let file = fileRef.current!.files![0];
     let fileLink = await firebase.uploadFile(file);
-    emitAlert("success", "Upload Image Success.");
     fabric.Image.fromURL(fileLink!, function(oImg) {
       oImg.set({ left: 20, top: 50 });
       oImg.scaleToWidth(200, false);
@@ -263,7 +261,6 @@ const DiaryEditor = ({
             obj.set({ selectable: false, hoverCursor: "text" });
           });
           canvas.renderAll();
-          emitAlert("success", "Finish Diary Data Loading!");
         });
         pageRef.current = 0;
       }

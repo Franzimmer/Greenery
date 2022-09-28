@@ -14,6 +14,7 @@ import {
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";
+import { createNull } from "typescript";
 
 interface CardEditorWrapperProps {
   $display: boolean;
@@ -68,6 +69,9 @@ const Input = styled.input`
   border-radius: 15px;
   border: 1px solid #6a5125;
   padding: 0px 15px;
+  & ::placeholder {
+    color: #ddd;
+  }
 `;
 const TextArea = styled.textarea`
   width: 280px;
@@ -215,6 +219,7 @@ const CardEditor = ({
   }
   function addTag() {
     if (!tagRef.current) return;
+    if (tagRef.current.value === "") return;
     if (tags.includes(tagRef.current.value)) return;
     let currentTags = [...tags];
     currentTags.push(tagRef.current.value);
@@ -228,7 +233,8 @@ const CardEditor = ({
     setTags(newTags);
   }
   async function uploadFile() {
-    if (!imageRef.current) return;
+    if (!imageRef.current) return null;
+    if (imageRef.current!.value === "") return null;
     let file = imageRef.current!.files![0];
     let dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
@@ -261,7 +267,7 @@ const CardEditor = ({
       cardId: null,
       ownerId: userId,
       plantName: nameRef.current?.value!,
-      plantPhoto: imgLink,
+      plantPhoto: imgLink || "",
       tags: tags,
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
@@ -291,23 +297,25 @@ const CardEditor = ({
     if (imageRef.current?.value) imgLink = await uploadFile();
     else imgLink = previewLink!;
     if (!checkInput()) return;
-    const data = {
+    const data: PlantCard = {
       cardId: editCardId!,
       parents:
         cardList.find((card) => card.cardId === editCardId)!.parents || [],
       followers: cardList.find((card) => card.cardId === editCardId)!.followers,
       ownerId: userId,
       plantName: nameRef.current?.value!,
-      plantPhoto: imgLink,
+      plantPhoto: imgLink || "",
       tags: tags || [],
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
-      birthday: Date.parse(birthdayRef.current?.value || ""),
       createdTime: cardList.find((card) => card.cardId === editCardId)!
         .createdTime,
     };
+    if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
+      data["birthday"] = Date.parse(birthdayRef.current?.value!);
+    }
     await firebase.editCard(editCardId!, data);
     editorToggle();
     dispatch({
@@ -324,8 +332,7 @@ const CardEditor = ({
   useEffect(() => {
     async function getEditCardData() {
       if (!editCardId) return;
-      let docdata = await firebase.getCardData(editCardId!);
-      let data = docdata.data();
+      let data = cardList.find((card) => card.cardId === editCardId);
       setPreviewLink(data!.plantPhoto || null);
       setTags(data?.tags || []);
       nameRef.current!.value = data!.plantName;
@@ -342,7 +349,7 @@ const CardEditor = ({
     <CardEditorWrapper $display={editorDisplay}>
       <PageWrapper>
         <InputWrapper>
-          <PhotoPreview path={previewLink} />
+          <PhotoPreview path={previewLink || defaultImg} />
           <PhotoInputLabel htmlFor="img">
             <UploadIcon icon={faPenToSquare} />
           </PhotoInputLabel>
@@ -359,13 +366,20 @@ const CardEditor = ({
         </InputWrapper>
         <InputFlexWrapper>
           <InputLabel>Name</InputLabel>
-          <Input type="text" ref={nameRef} />
+          <Input
+            type="text"
+            ref={nameRef}
+            maxLength={16}
+            placeholder={"enter 1-16 character(s)"}
+          />
         </InputFlexWrapper>
         <InputFlexWrapper>
           <InputLabel>Species</InputLabel>
           <Input
             type="text"
             ref={speciesRef}
+            maxLength={40}
+            placeholder={"enter 1-40 character(s)"}
             onKeyPress={(e) => {
               if (!speciesRef.current) return;
               if (e.key === "Enter") {
@@ -383,6 +397,8 @@ const CardEditor = ({
           <Input
             type="text"
             ref={tagRef}
+            maxLength={30}
+            placeholder={"enter 1-30 character(s)"}
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 addTag();
@@ -408,15 +424,27 @@ const CardEditor = ({
       <PageWrapper>
         <InputWrapper>
           <InputLabel>Water Preference</InputLabel>
-          <TextArea ref={waterRef} />
+          <TextArea
+            ref={waterRef}
+            maxLength={500}
+            placeholder={"enter 1-500 character(s)"}
+          />
         </InputWrapper>
         <InputWrapper>
           <InputLabel>Light Preference</InputLabel>
-          <TextArea ref={lightRef} />
+          <TextArea
+            ref={lightRef}
+            maxLength={500}
+            placeholder={"enter 1-500 character(s)"}
+          />
         </InputWrapper>
         <InputWrapper>
           <InputLabel>Toxicity</InputLabel>
-          <TextArea ref={toxicityRef} />
+          <TextArea
+            ref={toxicityRef}
+            maxLength={500}
+            placeholder={"enter 1-500 character(s)"}
+          />
         </InputWrapper>
         <BtnWrpper>
           {editCardId ? (

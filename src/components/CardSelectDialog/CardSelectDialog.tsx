@@ -99,10 +99,10 @@ const CardSelectDialog = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const cardList = useSelector((state: RootState) => state.cards);
   const popUpDisplay: PopUpDisplayType = useSelector(
     (state: RootState) => state.popUp
   );
-  const [cardList, setCardList] = useState<PlantCard[]>([]);
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
@@ -181,19 +181,6 @@ const CardSelectDialog = () => {
     });
     setMenuSelect(menuCheck);
   }
-  async function getUserCards() {
-    let querySnapshot = await firebase.getUserCards(selfId);
-    if (!querySnapshot.empty) {
-      let cards: PlantCard[] = [];
-      querySnapshot.forEach((doc) => {
-        cards.push(doc.data());
-      });
-      setCardList(cards);
-    }
-  }
-  useEffect(() => {
-    getUserCards();
-  }, [selfId]);
   useEffect(() => {
     resetCheck();
   }, [cardList]);

@@ -53,22 +53,20 @@ const Profile = () => {
         selfId: userInfo.userId,
       },
     });
-    dispatch({
-      type: CardsActions.CLEAR_CARDS_DATA,
-    });
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-  }, [id]);
+  }, [id, userInfo.userId]);
+
   return (
     <>
       {isLoading && <PageLoader />}
       <MainWrapper isLoading={isLoading}>
         <UserInfoSection id={id} />
         <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
-        {tabDisplay.Cards && (
-          <Cards id={id} setIsLoading={setIsLoading} isLoading={isLoading} />
-        )}
+
+        <Cards id={id} isLoading={isLoading} cardsDisplay={tabDisplay.Cards} />
+
         {tabDisplay.Calendar && (
           <CalendarApp id={id!} $show={tabDisplay.Calendar} />
         )}

@@ -287,6 +287,10 @@ const ForumPost = () => {
     async function getPost() {
       if (id) {
         let postData = await firebase.getPostData(id);
+        if (!postData.exists()) {
+          emitAlert("fail", "Post not exist !");
+          navigate("/");
+        }
         let userInfo = await firebase.getUserInfo(postData.data()!.authorId);
         setPost(postData.data());
         setInitTitle(postData.data()!.title);

@@ -65,6 +65,7 @@ const LeftText = styled.div`
   border-radius: 16px;
   padding: 2px 10px;
   margin: 6px 0px;
+  word-break: break-word;
 `;
 const RightText = styled(LeftText)`
   align-self: flex-end;
@@ -121,11 +122,13 @@ const Chatroom = ({
   const [msgs, setMsgs] = useState<message[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  function writeMsg() {
+
+  async function writeMsg() {
+    if (inputRef.current!.value === "") return;
     const usersTarget = [targetInfo.userId, selfId];
     const data = {
       userId: selfId,
-      msg: inputRef.current?.value || "",
+      msg: inputRef.current!.value,
     };
     firebase.storeChatroomData(usersTarget, data);
     inputRef.current!.value = "";
@@ -213,6 +216,7 @@ const Chatroom = ({
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 writeMsg();
+                e.preventDefault();
               }
             }}
           ></ChatInput>

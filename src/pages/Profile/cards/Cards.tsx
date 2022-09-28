@@ -14,6 +14,13 @@ import DiaryEditor from "../../../components/Diary/DiaryEditor";
 import DetailedCard from "../../../components/DetailCard/DetailedCard";
 import defaultImg from "../../../assets/default.jpg";
 
+interface WrapperProps {
+  $show: boolean;
+}
+const Wrapper = styled.div<WrapperProps>`
+  display: ${(props) => (props.$show ? "block" : "none")};
+`;
+
 interface PlantImgProps {
   path: string | undefined;
 }
@@ -59,20 +66,21 @@ export const TagsWrapper = styled.div<TagsWrapper>`
 `;
 const TagsList = styled(TagsWrapper)`
   width: auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 `;
 
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
+  cardsDisplay: boolean;
 }
-const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
+const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const dispatch = useDispatch();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [cardItems, setCardItems] = useState<PlantCard[]>([]);
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
@@ -199,29 +207,35 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
     }
   }
   useEffect(() => {
-    async function getCards() {
+    async function getUserCards() {
       let cards: PlantCard[] = [];
       let cardsIds: string[] = [];
       let checkboxes = {} as CheckList;
-      let querySnapshot = await firebase.getUserCards(id!);
-      if (querySnapshot.empty) return;
-      querySnapshot.forEach((doc) => {
-        cards.push(doc.data());
-        cardsIds.push(doc.data().cardId!);
-        checkboxes[doc.data().cardId!] = false;
-      });
-      let result = await firebase.checkDiariesExistence(cardsIds);
-      setCheckList(checkboxes);
-      if (cards.length !== 0) {
-        setDiariesExist(result);
-        dispatch({
-          type: CardsActions.SET_CARDS_DATA,
-          payload: { data: cards },
+
+      if (isSelf) {
+        cards = cardList;
+        console.log(cards);
+        console.log(cardList);
+        cards.forEach((card) => {
+          cardsIds.push(card.cardId!);
+          checkboxes[card.cardId!] = false;
+        });
+      } else {
+        let querySnapshot = await firebase.getUserCards(id!);
+        querySnapshot.forEach((doc) => {
+          cards.push(doc.data());
         });
       }
+
+      let result = await firebase.checkDiariesExistence(cardsIds);
+      console.log(isSelf);
+      console.log(cards);
+      setDiariesExist(result);
+      setCardItems(cards);
+      setCheckList(checkboxes);
     }
-    getCards();
-  }, [id]);
+    getUserCards();
+  }, [id, isSelf]);
   useEffect(() => {
     let tags: string[] = [];
     let checkboxes = {} as CheckList;
@@ -236,7 +250,7 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
     setCheckList(checkboxes);
   }, [cardList]);
   return (
-    <>
+    <Wrapper $show={cardsDisplay}>
       <DiaryEditor
         isSelf={isSelf}
         diaryDisplay={diaryDisplay}
@@ -271,7 +285,7 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
         isLoading={isLoading}
         diariesExist={diariesExist}
         viewMode={viewMode}
-        cardList={cardList}
+        cardItems={cardItems}
         checkList={checkList}
         filterCard={filterCard}
         setDetailDisplay={setDetailDisplay}
@@ -296,7 +310,7 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
-    </>
+    </Wrapper>
   );
 };
 
