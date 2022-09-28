@@ -159,7 +159,13 @@ const PropagationMenu = ({
     <DialogWrapper $display={propagateDisplay}>
       <FlexWrapper>
         <LabelText>Number</LabelText>
-        <Input type="number" min="1" ref={numberRef} />
+        <Input
+          type="number"
+          min="1"
+          max="10"
+          ref={numberRef}
+          placeholder={"choose from 1-10"}
+        />
       </FlexWrapper>
       <FlexWrapper>
         <LabelText>Type</LabelText>

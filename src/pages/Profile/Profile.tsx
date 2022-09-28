@@ -42,6 +42,9 @@ const Profile = () => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isLoggedIn, isSelf } = useSelector(
+    (state: RootState) => state.authority
+  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -59,7 +62,7 @@ const Profile = () => {
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-  }, [id]);
+  }, [id, userInfo.userId]);
   return (
     <>
       {isLoading && <PageLoader />}

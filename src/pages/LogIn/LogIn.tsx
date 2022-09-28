@@ -191,6 +191,8 @@ const LogIn = () => {
               name="nameInput"
               id="nameInput"
               ref={nameRef}
+              maxLength={20}
+              placeholder={"Enter 1-20 character(s)"}
             ></Input>
           </>
         )}

@@ -59,7 +59,7 @@ export const TagsWrapper = styled.div<TagsWrapper>`
 `;
 const TagsList = styled(TagsWrapper)`
   width: auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 `;
 
 type CheckList = Record<string, boolean>;
@@ -73,6 +73,7 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [cardItems, setCardItems] = useState<PlantCard[]>([]);
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
@@ -199,6 +200,35 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
     }
   }
   useEffect(() => {
+    async function getUserCards() {
+      let cards: PlantCard[] = [];
+      let cardsIds: string[] = [];
+      let checkboxes = {} as CheckList;
+
+      if (isSelf) {
+        cards = cardList;
+        cards.forEach((card) => {
+          cardsIds.push(card.cardId!);
+          checkboxes[card.cardId!] = false;
+        });
+      } else {
+        let querySnapshot = await firebase.getUserCards(id!);
+        if (querySnapshot.empty) return;
+        querySnapshot.forEach((doc) => {
+          cards.push(doc.data());
+        });
+      }
+
+      let result = await firebase.checkDiariesExistence(cardsIds);
+      if (cards.length !== 0) {
+        setDiariesExist(result);
+        setCardItems(cards);
+        setCheckList(checkboxes);
+      }
+    }
+    getUserCards();
+  }, [id]);
+  useEffect(() => {
     async function getCards() {
       let cards: PlantCard[] = [];
       let cardsIds: string[] = [];
@@ -271,7 +301,7 @@ const Cards = ({ id, setIsLoading, isLoading }: CardsGridProps) => {
         isLoading={isLoading}
         diariesExist={diariesExist}
         viewMode={viewMode}
-        cardList={cardList}
+        cardItems={cardItems}
         checkList={checkList}
         filterCard={filterCard}
         setDetailDisplay={setDetailDisplay}

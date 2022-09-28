@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,8 +43,8 @@ const UserInfoText = styled.div`
 const IconButtonLabel = styled(IconButton)`
   cursor: pointer;
   position: relative;
-  top: 50px;
-  left: -30px;
+  top: 60px;
+  left: -20px;
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -57,7 +57,7 @@ const NameButtonLabel = styled(IconButtonLabel)`
   left: 5px;
 `;
 const UserInfoBtn = styled(OperationBtn)`
-  margin-left: 40px;
+  margin: 10px 0 0 40px;
   transition: 0.5s;
   &:hover {
     transform: scale(1.1);
@@ -68,6 +68,37 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
   color: #5c836f;
   height: 25px;
+`;
+const NameWrapper = styled.div``;
+interface FloatMsgProps {
+  $show: boolean;
+}
+const showFloat = keyframes`
+  from {
+    max-height:0;
+    opacity: 0;
+  }
+  to {
+    max-height:100px;
+    opacity: 1;
+  }
+`;
+const showMixin = css`
+  ${showFloat} 1s ease-in forwards
+`;
+
+const FloatMsg = styled.div<FloatMsgProps>`
+  padding: 0px 10px;
+  font-size: 14px;
+  color: #aaa;
+  opacity: 0;
+  max-height: 0;
+  animation: ${(props) => props.$show && showMixin};
+`;
+const FlexWrapper = styled.div`
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
 `;
 interface UserInfoProps {
   id: string | undefined;
@@ -125,10 +156,18 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   async function editUserName() {
     setShowNameInput(false);
     if (!nameRef.current) return;
-    if (!nameRef.current.textContent) return;
+    if (!nameRef.current.textContent) {
+      nameRef.current.textContent = userInfo.userName;
+      return;
+    }
+    let nameInput = nameRef.current.textContent;
+    if (nameInput.length > 20) {
+      nameInput = nameInput.substring(0, 20);
+    }
+    nameRef.current.textContent = nameInput;
     dispatch({
       type: UserInfoActions.EDIT_USER_NAME,
-      payload: { userName: nameRef.current.textContent },
+      payload: { userName: nameInput },
     });
     await firebase.updateUserName(id!, nameRef.current.textContent);
     emitAlert("success", "Edit Success !");
@@ -171,10 +210,13 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
     getUserInfo();
   }, [id, isSelf]);
   useEffect(() => {
-    if (isSelf) {
+    if (id && isSelf) {
       setUserData(userInfo);
     }
   }, [userInfo, isSelf]);
+  useEffect(() => {
+    if (showNameInput) nameRef.current?.focus();
+  }, [showNameInput]);
   return (
     <UserInfoWrapper>
       <UserPhoto path={userData?.photoUrl} />
@@ -193,27 +235,37 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
           />
         </>
       )}
-      <UserInfoText
-        contentEditable={showNameInput}
-        ref={nameRef}
-        onKeyPress={(e) => {
-          if (e.key === "Enter") editUserName();
-        }}
-        onBlur={() => setShowNameInput(false)}
-      >
-        {userData?.userName}
-      </UserInfoText>
-      {isSelf && (
-        <NameButtonLabel
-          htmlFor="nameInput"
-          onClick={() => {
-            setShowNameInput(true);
-            nameRef.current?.focus();
-          }}
-        >
-          <StyledFontAwesomeIcon icon={faPenToSquare} />
-        </NameButtonLabel>
-      )}
+      <NameWrapper>
+        <FloatMsg $show={showNameInput}>Enter 1-20 character(s)</FloatMsg>
+        <FlexWrapper>
+          <UserInfoText
+            contentEditable={showNameInput}
+            ref={nameRef}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") editUserName();
+            }}
+            onBlur={() => {
+              if (nameRef.current?.textContent !== userInfo.userName) {
+                editUserName();
+              }
+              setShowNameInput(false);
+            }}
+          >
+            {userData?.userName}
+          </UserInfoText>
+          {isSelf && (
+            <NameButtonLabel
+              htmlFor="nameInput"
+              onClick={() => {
+                setShowNameInput(true);
+              }}
+            >
+              <StyledFontAwesomeIcon icon={faPenToSquare} />
+            </NameButtonLabel>
+          )}
+        </FlexWrapper>
+      </NameWrapper>
+
       {isLoggedIn && !isSelf && !isFollowed && (
         <UserInfoBtn onClick={followStatusToggle}>Follow</UserInfoBtn>
       )}

@@ -84,7 +84,7 @@ const Chatrooms = () => {
           chatDisplay[targetId[0]] = false;
         });
       } else {
-        setTimeout(() => setSpinDisplay(false), 500);
+        setTimeout(() => setSpinDisplay(false), 200);
       }
       let queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
@@ -97,7 +97,7 @@ const Chatrooms = () => {
       }, 500);
     }
     getChatTargets();
-  }, []);
+  }, [userInfo.userId]);
   return (
     <>
       <ChatroomsWrapper>

@@ -77,13 +77,13 @@ const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const notices = useSelector((state: RootState) => state.notifications);
   const [followInfos, setFollowInfos] = useState<UserInfo[]>([]);
-  const dispatch = useDispatch();
-  const defaltState = {
+
+  const defaultState = {
     FollowList: true,
     Notifications: false,
     Chatrooms: false,
   };
-  const [tab, setTab] = useState(defaltState);
+  const [tab, setTab] = useState(defaultState);
   function tabSwitch(tab: "FollowList" | "Notifications" | "Chatrooms") {
     let newState = {
       FollowList: false,
@@ -108,6 +108,9 @@ const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
     }
     getUsersData();
   }, [userInfo.followList]);
+  useEffect(() => {
+    if (!userInfo.userId) setTab(defaultState);
+  }, [userInfo.userId]);
   return (
     <Wrapper show={isLoggedIn && sideBarDisplay}>
       <Tabs>
