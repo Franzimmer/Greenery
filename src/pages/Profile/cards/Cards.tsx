@@ -214,8 +214,6 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
 
       if (isSelf) {
         cards = cardList;
-        console.log(cards);
-        console.log(cardList);
         cards.forEach((card) => {
           cardsIds.push(card.cardId!);
           checkboxes[card.cardId!] = false;
@@ -228,14 +226,12 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       }
 
       let result = await firebase.checkDiariesExistence(cardsIds);
-      console.log(isSelf);
-      console.log(cards);
       setDiariesExist(result);
       setCardItems(cards);
       setCheckList(checkboxes);
     }
     getUserCards();
-  }, [id, isSelf]);
+  }, [id, isSelf, cardList]);
   useEffect(() => {
     let tags: string[] = [];
     let checkboxes = {} as CheckList;

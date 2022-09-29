@@ -69,6 +69,7 @@ const PlantImg = styled.img`
   width: auto;
   height: auto;
   margin: auto;
+  box-shadow: 16px 12px 0px 0px #5c836f;
   max-width: 340px;
   max-height: 460px;
 `;

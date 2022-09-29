@@ -188,7 +188,7 @@ const CardsGrid = ({
                     <CardCheck
                       type="checkbox"
                       $mode={viewMode}
-                      defaultChecked={checkList[card.cardId!]}
+                      checked={checkList[card.cardId!]}
                       onClick={(e) => {
                         switchOneCheck(card.cardId!);
                         e.stopPropagation();

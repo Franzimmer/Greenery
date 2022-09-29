@@ -14,7 +14,6 @@ import {
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";
-import { createNull } from "typescript";
 
 interface CardEditorWrapperProps {
   $display: boolean;
