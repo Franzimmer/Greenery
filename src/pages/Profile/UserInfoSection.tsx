@@ -200,7 +200,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
           emitAlert("fail", "Page Not Exist.");
           navigate("/");
         }
-        setUserData(result.data());
+        setUserData(result.data() as UserInfo);
         userInfo.followList?.includes(id)
           ? setIsFollowed(true)
           : setIsFollowed(false);

@@ -25,10 +25,10 @@ const LinkWrapper = styled.div`
   align-items: center;
 `;
 const HeaderLink = styled(Link)`
-  margin: 10px;
+  margin: 10px 16px 10px 10px;
   text-decoration: none;
   font-size: 26px;
-  letter-spacing: 1px;
+  letter-spacing: 4px;
   color: #6a5125;
   position: relative;
   &:hover {
@@ -165,10 +165,10 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
         <LogoLink to="/">GREENERY</LogoLink>
       </LinkWrapper>
       <LinkWrapper>
-        <HeaderLink to="/forum">Forum</HeaderLink>
-        {!isLoggedIn && <HeaderLink to="/login">LogIn</HeaderLink>}
+        <HeaderLink to="/forum">FORUM</HeaderLink>
+        {!isLoggedIn && <HeaderLink to="/login">LOGIN</HeaderLink>}
         {isLoggedIn && (
-          <HeaderLink to={`/profile/${userInfo.userId}`}>Profile</HeaderLink>
+          <HeaderLink to={`/profile/${userInfo.userId}`}>PROFILE</HeaderLink>
         )}
         <SideBarBtnWrapper>
           {!sideBarDisplay ? (

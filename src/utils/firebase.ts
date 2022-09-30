@@ -4,6 +4,7 @@ import {
   getFirestore,
   collection,
   CollectionReference,
+  DocumentReference,
   doc,
   getDoc,
   getDocs,
@@ -29,6 +30,9 @@ import { Comment, Post } from "../pages/Forum/ForumPost";
 import { PlantCard } from "../store/types/plantCardType";
 import { Note } from "../store/types/notificationType";
 import { unixTimeToString } from "./helpers";
+interface followerDocType {
+  followers: string[];
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
@@ -197,13 +201,27 @@ const firebase = {
   },
   async addFollowList(selfId: string, followId: string) {
     let docRef = doc(users, selfId);
-    let followerDocRef = doc(users, followId, "notices", "followers");
+    let followerDocRef = doc(
+      users,
+      followId,
+      "notices",
+      "followers"
+    ) as DocumentReference<followerDocType>;
+    let result = await getDoc(followerDocRef);
+    let appendFollower;
+    if (!result.exists()) {
+      appendFollower = setDoc(followerDocRef, {
+        followers: [selfId],
+      });
+    } else {
+      appendFollower = updateDoc(followerDocRef, {
+        followers: arrayUnion(selfId),
+      });
+    }
     let updateFollowList = updateDoc(docRef, {
       followList: arrayUnion(followId),
     });
-    let appendFollower = updateDoc(followerDocRef, {
-      followers: arrayUnion(selfId),
-    });
+
     Promise.all([updateFollowList, appendFollower]);
   },
   async removeFollowList(selfId: string, followId: string) {

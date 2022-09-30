@@ -222,6 +222,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         let querySnapshot = await firebase.getUserCards(id!);
         querySnapshot.forEach((doc) => {
           cards.push(doc.data());
+          cardsIds.push(doc.data().cardId!);
         });
       }
 

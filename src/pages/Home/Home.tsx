@@ -1,22 +1,24 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import styled, { keyframes, css } from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import { firebase } from "../../utils/firebase";
+import { RootState } from "../../store/reducer";
+import { UserInfoActions } from "../../store/actions/userInfoActions";
+import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PlantCard } from "../../store/types/plantCardType";
+import { UserInfo } from "../../store/types/userInfoType";
+import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
+import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { firebase } from "../../utils/firebase";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { RootState } from "../../store/reducer";
 import {
   faBook,
   faBookmark,
   faAnglesDown,
   faArrowUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { UserInfoActions } from "../../store/actions/userInfoActions";
-import { PlantCard } from "../../store/types/plantCardType";
-import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
-import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+
 import {
   FavIconButton,
   DiaryIconBtn,
@@ -143,11 +145,11 @@ const FeatureImg = styled.img`
   width: 40%;
   // box-shadow: -20px 20px 0 10px #fddba9;
 `;
-interface QuoteSectionProps {
-  openAnimation: boolean;
-}
+// interface QuoteSectionProps {
+//   openAnimation: boolean;
+// }
 
-const QuoteSection = styled.div<QuoteSectionProps>`
+const QuoteSection = styled.div`
   padding: 48px 24px;
   display: flex;
   flex-direction: column;
@@ -160,14 +162,14 @@ const QuoteSection = styled.div<QuoteSectionProps>`
 const complexOpacity = css`
   ${showOpacity} 1s ease-in forwards
 `;
-const QuoteText = styled.div<QuoteSectionProps>`
+const QuoteText = styled.div`
   font-size: 26px;
   letter-spacing: 2px;
   color: #224229;
   padding: 8px;
   font-style: italic;
 `;
-const QuoteAutorText = styled(QuoteText)<QuoteSectionProps>`
+const QuoteAutorText = styled(QuoteText)`
   font-size: 20px;
   align-self: flex-end;
   padding: 8px 72px 0 0;
@@ -254,6 +256,13 @@ const LogInRedirect = styled.div`
   cursor: pointer;
   box-shadow: 0px 0px 8px 8px rgba(150, 150, 150, 0.1);
 `;
+const UserLink = styled(Link)`
+  text-decoration: none;
+  color: #5c836f;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 interface MyObserverProps {
   node: React.RefObject<HTMLDivElement>;
   setOpenAnimation: React.Dispatch<React.SetStateAction<boolean>>;
@@ -288,9 +297,10 @@ const Home = () => {
   const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
+  const [ownerInfos, setOwnerInfos] = useState<UserInfo[]>([]);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
-  const [openAnimation, setOpenAnimation] = useState<boolean>(false);
+
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -323,25 +333,39 @@ const Home = () => {
       emitAlert("success", "Add to Favorites!");
     }
   }
+  function findOwnerName(ownerId: string) {
+    let target = ownerInfos.find((owner) => owner.userId === ownerId);
+    return target?.userName;
+  }
   useEffect(() => {
     async function getHomePageData() {
       let queryData = await firebase.getFavCards();
       if (!queryData.empty) {
         let favCards: PlantCard[] = [];
         let favCardsIds: string[] = [];
+        let ownerIds: string[] = [];
+        let ownerInfo: UserInfo[] = [];
         queryData.forEach((doc) => {
           favCards.push(doc.data());
           favCardsIds.push(doc.data().cardId!);
+          if (!ownerIds.includes(doc.data().ownerId))
+            ownerIds.push(doc.data().ownerId);
         });
-        let result = await firebase.checkDiariesExistence(favCardsIds);
-        setDiariesExist(result);
+        let diariesCheck = firebase.checkDiariesExistence(favCardsIds);
+        let ownerData = firebase.getUsers(ownerIds);
+        let renderData = await Promise.all([diariesCheck, ownerData]);
+        setDiariesExist(renderData[0]);
+        renderData[1]?.forEach((doc) => {
+          ownerInfo.push(doc.data());
+        });
+        setOwnerInfos(ownerInfo);
         setFavCards(favCards);
       }
       setTimeout(() => setIsLoading(false), 1000);
     }
     getHomePageData();
   }, []);
-
+  console.log(diariesExist);
   return (
     <>
       {isLoading && <PageLoader />}
@@ -371,18 +395,10 @@ const Home = () => {
               <MainDescription>Explore</MainDescription>
             </ExploreWrapper>
           </Banner>
-          <QuoteSection ref={quoteRef} openAnimation={openAnimation}>
-            <QuoteText openAnimation={openAnimation}>
-              To plant a garden is to believe in tomorrow.
-            </QuoteText>
-            <QuoteAutorText openAnimation={openAnimation}>
-              ~ Audrey Hepburn
-            </QuoteAutorText>
+          <QuoteSection ref={quoteRef}>
+            <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
+            <QuoteAutorText>~ Audrey Hepburn</QuoteAutorText>
           </QuoteSection>
-          <MyObserver
-            node={quoteRef}
-            setOpenAnimation={setOpenAnimation}
-          ></MyObserver>
           <FeatureWrapper>
             <FeatureImg src={feature} />
             <FeatureTextWrapper>
@@ -444,7 +460,20 @@ const Home = () => {
                       }}
                     >
                       <PlantImg path={card.plantPhoto || defaultImg} />
-                      <NameText>{card.plantName}</NameText>
+                      <NameText>
+                        <UserLink
+                          to={`/profile/${card.ownerId}`}
+                          onClick={(e) => {
+                            dispatch({
+                              type: popUpActions.HIDE_ALL,
+                            });
+                            e.stopPropagation();
+                          }}
+                        >
+                          {findOwnerName(card.ownerId)}
+                        </UserLink>
+                        's {card.plantName}
+                      </NameText>
                       <SpeciesText>{card.species}</SpeciesText>
                       <TagsWrapper>
                         {card?.tags?.length !== 0 &&
@@ -454,20 +483,20 @@ const Home = () => {
                             );
                           })}
                       </TagsWrapper>
-                      {diariesExist[index] && (
-                        <DiaryIconBtn
-                          onClick={(e) => {
-                            setDiaryDisplay(true);
-                            setDiaryId(card.cardId);
-                            dispatch({
-                              type: popUpActions.SHOW_MASK,
-                            });
-                            e.stopPropagation();
-                          }}
-                        >
-                          <StyledFontAwesomeIcon icon={faBook} />
-                        </DiaryIconBtn>
-                      )}
+
+                      <DiaryIconBtn
+                        $show={diariesExist[index]}
+                        onClick={(e) => {
+                          setDiaryDisplay(true);
+                          setDiaryId(card.cardId);
+                          dispatch({
+                            type: popUpActions.SHOW_MASK,
+                          });
+                          e.stopPropagation();
+                        }}
+                      >
+                        <StyledFontAwesomeIcon icon={faBook} />
+                      </DiaryIconBtn>
                       {isLoggedIn && (
                         <FavIconButton
                           $show={

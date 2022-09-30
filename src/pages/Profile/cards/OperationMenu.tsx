@@ -64,6 +64,7 @@ const BtnWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-right: 12px;
+  cursor: pointer;
 `;
 const IconLabel = styled.span`
   font-size: 14px;
@@ -108,38 +109,38 @@ const OperationMenu = ({
   return cardList.length > 0 ? (
     <OperationMenuWrapper>
       {isSelf && (
-        <BtnWrapper>
-          <MenuBtn
-            onClick={() => {
-              setEditCardId(null);
-              editorToggle();
-              dispatch({
-                type: popUpActions.SHOW_MASK,
-              });
-            }}
-          >
+        <BtnWrapper
+          onClick={() => {
+            setEditCardId(null);
+            editorToggle();
+            dispatch({
+              type: popUpActions.SHOW_MASK,
+            });
+          }}
+        >
+          <MenuBtn>
             <StyledFontAwesomeIcon icon={faPlus}></StyledFontAwesomeIcon>
           </MenuBtn>
           <IconLabel>Add Card</IconLabel>
         </BtnWrapper>
       )}
-      <BtnWrapper>
-        <MenuBtn onClick={filterToggle}>
+      <BtnWrapper onClick={filterToggle}>
+        <MenuBtn>
           <SmallFontAwesomeIcon icon={faFilter}></SmallFontAwesomeIcon>
         </MenuBtn>
         <IconLabel>Filter</IconLabel>
       </BtnWrapper>
       {viewMode === "grid" && (
-        <BtnWrapper>
-          <MenuBtn onClick={() => setViewMode("list")}>
+        <BtnWrapper onClick={() => setViewMode("list")}>
+          <MenuBtn>
             <SmallFontAwesomeIcon icon={faList}></SmallFontAwesomeIcon>
           </MenuBtn>
           <IconLabel>List Mode</IconLabel>
         </BtnWrapper>
       )}
       {viewMode === "list" && (
-        <BtnWrapper>
-          <MenuBtn onClick={() => setViewMode("grid")}>
+        <BtnWrapper onClick={() => setViewMode("grid")}>
+          <MenuBtn>
             <SmallFontAwesomeIcon icon={faTableCells}></SmallFontAwesomeIcon>
           </MenuBtn>
           <IconLabel>Grid Mode</IconLabel>
@@ -148,26 +149,26 @@ const OperationMenu = ({
       {isSelf && (
         <>
           {allCheckStatus && (
-            <BtnWrapper>
-              <MenuBtnActive
-                onClick={() => {
-                  setAllCheckStatus(false);
-                  clearAllCheck();
-                }}
-              >
+            <BtnWrapper
+              onClick={() => {
+                setAllCheckStatus(false);
+                clearAllCheck();
+              }}
+            >
+              <MenuBtnActive>
                 <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
               </MenuBtnActive>
               <IconLabel>Uncheck All</IconLabel>
             </BtnWrapper>
           )}
           {!allCheckStatus && (
-            <BtnWrapper>
-              <MenuBtn
-                onClick={() => {
-                  setAllCheckStatus(true);
-                  allCheck();
-                }}
-              >
+            <BtnWrapper
+              onClick={() => {
+                setAllCheckStatus(true);
+                allCheck();
+              }}
+            >
+              <MenuBtn>
                 <SmallFontAwesomeIcon icon={faCheck}></SmallFontAwesomeIcon>
               </MenuBtn>
               <IconLabel>Check All</IconLabel>
@@ -175,22 +176,22 @@ const OperationMenu = ({
           )}
           {checkStatus && (
             <>
-              <BtnWrapper>
-                <MenuBtn onClick={() => addEvents("water")}>
+              <BtnWrapper onClick={() => addEvents("water")}>
+                <MenuBtn>
                   <SmallFontAwesomeIcon icon={faDroplet}></SmallFontAwesomeIcon>
                 </MenuBtn>
                 <IconLabel>Watering</IconLabel>
               </BtnWrapper>
-              <BtnWrapper>
-                <MenuBtn onClick={() => addEvents("fertilize")}>
+              <BtnWrapper onClick={() => addEvents("fertilize")}>
+                <MenuBtn>
                   <SmallFontAwesomeIcon
                     icon={faPersonDigging}
                   ></SmallFontAwesomeIcon>
                 </MenuBtn>
                 <IconLabel>Fertilizing</IconLabel>
               </BtnWrapper>
-              <BtnWrapper>
-                <MenuBtn onClick={deleteCards}>
+              <BtnWrapper onClick={deleteCards}>
+                <MenuBtn>
                   <SmallFontAwesomeIcon
                     icon={faTrashCan}
                   ></SmallFontAwesomeIcon>

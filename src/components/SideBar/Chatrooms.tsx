@@ -5,10 +5,7 @@ import { RootState } from "../../store/reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../store/types/userInfoType";
-import {
-  ChatroomType,
-  ChatroomActions,
-} from "../../store/reducer/chatroomReducer";
+import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { NoSidebarDataText } from "./FollowList";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
@@ -82,11 +79,14 @@ const Chatrooms = () => {
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });
-      dispatch({
-        type: ChatroomActions.SET_CHATROOMDATA,
-        payload: { targetInfos: chatData },
-      });
-      setTimeout(() => setSpinDisplay(false), 500);
+
+      setTimeout(() => {
+        setSpinDisplay(false);
+        dispatch({
+          type: ChatroomActions.SET_CHATROOMDATA,
+          payload: { targetInfos: chatData },
+        });
+      }, 500);
     }
     getChatTargets();
   }, [userInfo.userId]);
@@ -95,6 +95,7 @@ const Chatrooms = () => {
       <ChatroomsWrapper>
         <Spinner $show={spinDisplay} />
         {chatInfos &&
+          !spinDisplay &&
           chatInfos?.length !== 0 &&
           chatInfos?.map((room) => {
             return (

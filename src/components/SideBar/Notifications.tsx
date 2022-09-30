@@ -8,9 +8,11 @@ import { UserInfo } from "../../store/types/userInfoType";
 import { NotificationActions } from "../../store/actions/notificationActions";
 import { firebase } from "../../utils/firebase";
 import { NoSidebarDataText } from "./FollowList";
-import { CloseBtn } from "../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowUpRightFromSquare,
+  faCircleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 const NoticeWrapper = styled.div`
   width: 100%;
   overflow-y: auto;
@@ -58,6 +60,15 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   color: #5c836f;
   height: 14px;
   background: none;
+`;
+const CloseFontAwesomeIcon = styled(StyledFontAwesomeIcon)`
+  width: 24px;
+  height: 24px;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
 `;
 interface NotificationsProps {
   notices: Note[];
@@ -118,7 +129,10 @@ const Notifications = ({ notices, followInfos }: NotificationsProps) => {
                 )}
                 <StyledFontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </StyleWrapper>
-              <CloseBtn onClick={() => deleteNotice(note.noticeId)}>X</CloseBtn>
+              <CloseFontAwesomeIcon
+                icon={faCircleXmark}
+                onClick={() => deleteNotice(note.noticeId)}
+              />
             </Notice>
           );
         })}
