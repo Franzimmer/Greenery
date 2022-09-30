@@ -27,7 +27,7 @@ export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
   gap: 24px 64px;
-  margin-top: 24px;
+  margin-top: 36px;
   flex-direction: column;
 `;
 interface CardProps {
@@ -50,6 +50,7 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 1s;
+  // box-shadow: 6px 6px 4px 4px rgba(150, 150, 150, 0.4);
 `;
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;
@@ -72,7 +73,7 @@ export const SpeciesText = styled.div`
 const EditIconBtn = styled(IconButton)`
   width: 100%;
   background: rgba(0, 0, 0, 0);
-  margin: 0 auto 16px auto;
+  margin: 0 0 16px 0;
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -92,7 +93,6 @@ interface FavBtnProps {
   $fav?: boolean;
 }
 const BookMarkIconBtn = styled(EditIconBtn)<FavBtnProps>`
-  margin-top: 8px;
   & * {
     color: ${(props) => (props.$fav ? "#5c836f" : "#bbb")};
   }
@@ -101,10 +101,11 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: block;
   background: rgba(0, 0, 0, 0);
   width: 28px;
-  height: fit-content;
+  height: 28px;
 `;
 const BookmarkIcon = styled(StyledFontAwesomeIcon)`
-  width: 24px;
+  width: 28px;
+  height: 28px;
 `;
 const CardCheck = styled.input<GridWrapperProps>`
   position: absolute;
@@ -165,7 +166,7 @@ const CardsGrid = ({
 }: CardsGridProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-
+  console.log(diariesExist);
   return (
     <>
       <GridWrapper $mode={viewMode}>
@@ -188,7 +189,7 @@ const CardsGrid = ({
                     <CardCheck
                       type="checkbox"
                       $mode={viewMode}
-                      defaultChecked={checkList[card.cardId!]}
+                      checked={checkList[card.cardId!]}
                       onClick={(e) => {
                         switchOneCheck(card.cardId!);
                         e.stopPropagation();

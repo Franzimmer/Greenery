@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto } from "./FollowList";
 import { UserInfo } from "../../store/types/userInfoType";
+import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { NoSidebarDataText } from "./FollowList";
-import Chatroom from "../../components/Chatroom/Chatroom";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;
@@ -55,24 +55,16 @@ export const ChatroomFlexWrapper = styled.div`
   flex-direction: row-reverse;
 `;
 const Chatrooms = () => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [chatInfos, setChatInfos] = useState<UserInfo[]>([]);
-  const [chatroomDisplay, setChatroomDisplay] = useState<
-    Record<string, boolean>
-  >({});
+  const chatInfos = useSelector((state: RootState) => state.chatroom);
   const [spinDisplay, setSpinDisplay] = useState<boolean>(true);
 
-  function toggleChatroom(targetId: string) {
-    let newChatDisplay = { ...chatroomDisplay };
-    if (newChatDisplay[targetId]) newChatDisplay[targetId] = false;
-    else if (!newChatDisplay[targetId]) newChatDisplay[targetId] = true;
-    setChatroomDisplay(newChatDisplay);
-  }
   useEffect(() => {
     async function getChatTargets() {
       let targetList: string[] = [];
       let chatData: UserInfo[] = [];
-      let chatDisplay: Record<string, boolean> = {};
+
       let chatrooms = await firebase.getChatrooms(userInfo.userId);
       if (!chatrooms.empty) {
         chatrooms.forEach((chat) => {
@@ -81,19 +73,19 @@ const Chatrooms = () => {
             (user: string) => user !== userInfo.userId
           );
           targetList.push(targetId[0]);
-          chatDisplay[targetId[0]] = false;
         });
-      } else {
-        setTimeout(() => setSpinDisplay(false), 200);
       }
       let queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });
+
       setTimeout(() => {
         setSpinDisplay(false);
-        setChatInfos(chatData);
-        setChatroomDisplay(chatDisplay);
+        dispatch({
+          type: ChatroomActions.SET_CHATROOMDATA,
+          payload: { targetInfos: chatData },
+        });
       }, 500);
     }
     getChatTargets();
@@ -103,15 +95,21 @@ const Chatrooms = () => {
       <ChatroomsWrapper>
         <Spinner $show={spinDisplay} />
         {chatInfos &&
+          !spinDisplay &&
           chatInfos?.length !== 0 &&
-          chatInfos?.map((chat) => {
+          chatInfos?.map((room) => {
             return (
               <Person
-                key={`${chat.userId}_chat`}
-                onClick={() => toggleChatroom(chat.userId)}
+                key={`${room.targetInfo.userId}_chat`}
+                onClick={() =>
+                  dispatch({
+                    type: ChatroomActions.OPEN_CHATROOM,
+                    payload: { targetId: room.targetInfo.userId },
+                  })
+                }
               >
-                <PersonPhoto path={chat.photoUrl} />
-                <ChatroomText>with {chat.userName}</ChatroomText>
+                <PersonPhoto path={room.targetInfo?.photoUrl} />
+                <ChatroomText>with {room.targetInfo?.userName}</ChatroomText>
               </Person>
             );
           })}
@@ -119,18 +117,6 @@ const Chatrooms = () => {
           <NoSidebarDataText>No chatroom history</NoSidebarDataText>
         )}
       </ChatroomsWrapper>
-      <ChatroomFlexWrapper>
-        {chatInfos.map((user) => {
-          return (
-            <Chatroom
-              key={`${user.userId}_chat`}
-              targetInfo={user}
-              chatroomDisplay={chatroomDisplay[user.userId]}
-              toggleChatroom={toggleChatroom}
-            />
-          );
-        })}
-      </ChatroomFlexWrapper>
     </>
   );
 };

@@ -15,7 +15,6 @@ import {
   NoDataBtn,
 } from "../../../components/GlobalStyles/NoDataLayout";
 import { IconButton } from "../../../components/GlobalStyles/button";
-import { TabDisplayType } from "../Profile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
@@ -139,7 +138,15 @@ const FavGrids = ({
               >
                 <PlantImg path={card.plantPhoto || defaultImg} />
                 <NameText>
-                  <UserLink to={`/profile/${card.ownerId}`}>
+                  <UserLink
+                    to={`/profile/${card.ownerId}`}
+                    onClick={(e) => {
+                      dispatch({
+                        type: popUpActions.HIDE_ALL,
+                      });
+                      e.stopPropagation();
+                    }}
+                  >
                     {findOwnerName(card.ownerId)}
                   </UserLink>
                   's {card.plantName}

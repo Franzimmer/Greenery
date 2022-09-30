@@ -14,7 +14,6 @@ import {
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import defaultImg from "../../../assets/default.jpg";
-import { createNull } from "typescript";
 
 interface CardEditorWrapperProps {
   $display: boolean;
@@ -115,12 +114,17 @@ const BtnWrpper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-const EditorBtn = styled(OperationBtn)`
+interface EditortnProps {
+  disabledBtn: boolean;
+}
+const EditorBtn = styled(OperationBtn)<EditortnProps>`
   color: #fff;
   width: 100px;
   margin-top: 12px;
-  border: 1px solid #6a5125;
-  background: #6a5125;
+  border: ${(props) =>
+    props.disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
+  background: ${(props) => (props.disabledBtn ? "#aaa" : "#6a5125")};
+  cursor: ${(props) => props.disabledBtn && "not-allowed"};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -174,6 +178,7 @@ const CardEditor = ({
   const toxicityRef = useRef<HTMLTextAreaElement>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
   const cardList = useSelector((state: RootState) => state.cards);
   const myFollowers = useSelector((state: RootState) => state.myFollowers);
   const dispatch = useDispatch();
@@ -290,6 +295,7 @@ const CardEditor = ({
     });
     emitAlert("success", "You add a new plant card !");
     editorToggle();
+    setDisabledBtn(false);
     resetEditor();
   }
   async function editCard() {
@@ -327,6 +333,7 @@ const CardEditor = ({
     });
     emitAlert("success", "Edit Card Success!");
     resetEditor();
+    setDisabledBtn(false);
     setEditCardId(null);
   }
   useEffect(() => {
@@ -449,29 +456,40 @@ const CardEditor = ({
         <BtnWrpper>
           {editCardId ? (
             <EditorBtn
+              disabledBtn={disabledBtn}
               onClick={() => {
-                editCard();
+                if (!disabledBtn) {
+                  editCard();
+                  setDisabledBtn(true);
+                }
               }}
             >
               Save
             </EditorBtn>
           ) : (
             <EditorBtn
+              disabledBtn={disabledBtn}
               onClick={() => {
-                addCard();
+                if (!disabledBtn) {
+                  addCard();
+                  setDisabledBtn(true);
+                }
               }}
             >
               Add
             </EditorBtn>
           )}
           <EditorBtn
+            disabledBtn={disabledBtn}
             onClick={() => {
-              editorToggle();
-              resetEditor();
-              setEditCardId(null);
-              dispatch({
-                type: popUpActions.HIDE_ALL,
-              });
+              if (!disabledBtn) {
+                editorToggle();
+                resetEditor();
+                setEditCardId(null);
+                dispatch({
+                  type: popUpActions.HIDE_ALL,
+                });
+              }
             }}
           >
             Cancel

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer/index";
 import { UserInfo } from "../../store/types/userInfoType";
+import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { firebase, chatrooms } from "../../utils/firebase";
 import {
@@ -108,16 +109,11 @@ const ChatBtn = styled(CloseBtn)`
 interface ChatroomProps {
   targetInfo: UserInfo;
   chatroomDisplay: boolean;
-  toggleChatroom: (targetId: string) => void;
 }
-const Chatroom = ({
-  targetInfo,
-  chatroomDisplay,
-  toggleChatroom,
-}: ChatroomProps) => {
+const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-  const selfId = userInfo.userId;
+  const { userId } = useSelector((state: RootState) => state.userInfo);
+  const selfId = userId;
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
 
@@ -165,10 +161,10 @@ const Chatroom = ({
 
   useEffect(() => {
     listenToChatroom();
-  }, []);
+  }, [chatroomDisplay]);
   useEffect(() => {
     scrollToBottom();
-  }, [msgs, chatroomDisplay]);
+  }, [msgs]);
   return (
     <>
       <ChatroomWindow show={chatroomDisplay}>
@@ -176,7 +172,12 @@ const Chatroom = ({
           <InfoText>{targetInfo.userName}</InfoText>
           <ChatBtn
             onClick={() => {
-              toggleChatroom(targetInfo.userId);
+              dispatch({
+                type: ChatroomActions.CLOSE_CHATROOM,
+                payload: {
+                  targetId: targetInfo.userId,
+                },
+              });
             }}
           >
             &#215;

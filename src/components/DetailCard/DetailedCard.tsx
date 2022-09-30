@@ -31,6 +31,16 @@ const PageWrapper = styled.div`
 const DescriptionWrapper = styled.div`
   height: 500px;
   overflow-y: scroll;
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
 `;
 const FlexColumnWrapper = styled.div`
   display: flex;
@@ -69,6 +79,7 @@ const PlantImg = styled.img`
   width: auto;
   height: auto;
   margin: auto;
+  box-shadow: 16px 12px 0px 0px #5c836f;
   max-width: 340px;
   max-height: 460px;
 `;

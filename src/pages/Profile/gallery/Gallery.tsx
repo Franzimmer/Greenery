@@ -93,10 +93,12 @@ const LabelBtn = styled(IconButton)`
   width: 100px;
   color: #fff;
 `;
-const FlexWrapper = styled.div`
+interface FlexWrapperProps {
+  disableBtn: boolean;
+}
+const FlexWrapper = styled.label<FlexWrapperProps>`
   align-self: flex-end;
   margin: 0 40px 20px 0;
-  cursor: pointer;
   width: 200px;
   height: 40px;
   border-radius: 20px;
@@ -104,11 +106,16 @@ const FlexWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #5c836f;
+  background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
+  cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
+  }
+  & * {
+    background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
+    cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
   }
 `;
 const NoGallerySection = styled(NoDataSection)`
@@ -120,6 +127,7 @@ const Gallery = ({ id }: GalleryProps) => {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
+  const [disableBtn, setDisableBtn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -148,6 +156,7 @@ const Gallery = ({ id }: GalleryProps) => {
     });
     mediaRef.current!.value = "";
     await firebase.addGallery(id!, link);
+    setDisableBtn(false);
     emitAlert("success", "Upload Success !");
   }
   async function deleteMedia(link: string) {
@@ -179,17 +188,38 @@ const Gallery = ({ id }: GalleryProps) => {
       {isLoading && <SectionLoader></SectionLoader>}
       <SectionWrapper isLoading={isLoading}>
         {isSelf && media.length !== 0 && (
-          <FlexWrapper>
-            <IconButton htmlFor="image">
+          <FlexWrapper
+            disableBtn={disableBtn}
+            htmlFor="image"
+            onClick={(e) => {
+              if (disableBtn) e.preventDefault();
+            }}
+          >
+            <IconButton
+              htmlFor="image"
+              onClick={(e) => {
+                if (disableBtn) e.preventDefault();
+              }}
+            >
               <StyledFontAwesome icon={faPlus} />
             </IconButton>
-            <LabelBtn htmlFor="image">Add Photo</LabelBtn>
+            <LabelBtn
+              htmlFor="image"
+              onClick={(e) => {
+                if (disableBtn) e.preventDefault();
+              }}
+            >
+              Add Photo
+            </LabelBtn>
             <input
               id="image"
               type="file"
               accept="image/*"
               ref={mediaRef}
-              onChange={saveGalleryData}
+              onChange={() => {
+                saveGalleryData();
+                setDisableBtn(true);
+              }}
               hidden
             />
           </FlexWrapper>
@@ -252,7 +282,10 @@ const Gallery = ({ id }: GalleryProps) => {
                   type="file"
                   accept="image/*"
                   ref={mediaRef}
-                  onChange={saveGalleryData}
+                  onChange={() => {
+                    saveGalleryData();
+                    setDisableBtn(true);
+                  }}
                   hidden
                 />
               </>
