@@ -23,7 +23,7 @@ interface CardPanelWrapperProps {
   $show: boolean;
 }
 const Wrapper = styled.div<CardPanelWrapperProps>`
-  width: ${(props) => (props.$show ? "880px" : "auto")};
+  width: ${(props) => (props.$show ? "calc(50vw + 330px)" : "auto")};
   position: fixed;
   top: 50vh;
   left: 50vw;
@@ -36,22 +36,34 @@ interface EditorWrapperProps {
   $mode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
 }
 const EditoWrapper = styled.div<EditorWrapperProps>`
-  width: 500px;
+  width: 50vw;
   height: ${(props) =>
     props.$mode === "AddComment" || props.$mode === "EditComment"
       ? "fit-content"
       : "450px"};
   background: #fff;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 `;
 const LabelText = styled.div`
   font-size: 16px;
   margin: 0 8px 0 0;
 `;
-const TextEditorBtn = styled(OperationBtn)`
+const TextEditorBtnWrapper = styled.div`
+  display: flex;
+  margin-top: auto;
+`;
+interface TextEditorBtnProps {
+  disabledBtn: boolean;
+}
+const TextEditorBtn = styled(OperationBtn)<TextEditorBtnProps>`
   width: 100px;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => (props.disabledBtn ? "#aaa" : "#6a5125")};
+  border: ${(props) =>
+    props.disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
+  cursor: ${(props) => (props.disabledBtn ? "not-allowed" : "pointer")};
   margin: 8px 8px 0px 0px;
   transtion: 0.25s;
   &:hover {
@@ -83,11 +95,11 @@ const TypeBtn = styled.div`
   color: #fff;
   margin-right: 8px;
 `;
-const TypeBtnInactive = styled(TypeBtn)`
+const TypeBtnActive = styled(TypeBtn)`
   background: #fff;
   color: #6a5125;
 `;
-const TypeBtnDisabled = styled(TypeBtnInactive)`
+const TypeBtnDisabled = styled(TypeBtnActive)`
   border: 1px solid #aaa;
   color: #aaa;
   cursor: not-allowed;
@@ -123,6 +135,7 @@ const TextEditor = ({
   const [cardList, setCardList] = useState<PlantCard[]>([]);
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
+  const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
   const [type, setType] = useState<string>("discussion");
   const followers: string[] = useSelector(
     (state: RootState) => state.myFollowers
@@ -187,6 +200,7 @@ const TextEditor = ({
     setPostList(newPosts);
     await firebase.emitNotices(userInfo.userId, followers, "2", postId);
     emitAlert("success", "Add Post Success !");
+    setDisabledBtn(false);
   }
   async function editPost() {
     const html = getPostHTML()!;
@@ -197,6 +211,7 @@ const TextEditor = ({
     await firebase.saveEditPost(post!.postId, data);
     if (setPost) setPost(data);
     emitAlert("success", "Edit Post Success !");
+    setDisabledBtn(false);
   }
   async function addComment() {
     if (!setComments) return;
@@ -214,6 +229,7 @@ const TextEditor = ({
     } else newComments = [];
     newComments.push(comment);
     setComments(newComments);
+    setDisabledBtn(false);
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
@@ -241,6 +257,7 @@ const TextEditor = ({
     emitAlert("success", "Edit Comment Success !");
     setComments(newComments);
     setTextEditorDisplay(false);
+    setDisabledBtn(false);
   }
 
   useEffect(() => {
@@ -262,7 +279,7 @@ const TextEditor = ({
   return (
     <Wrapper $show={cardWrapperDisplay}>
       <EditoWrapper $mode={editorMode}>
-        {editorMode !== "AddComment" && editorMode !== "EditComment" && (
+        {editorMode === "AddPost" && (
           <TypeBtnWrapper>
             <LabelText>Post Type</LabelText>
             {cardList.length === 0 && (
@@ -294,26 +311,26 @@ const TextEditor = ({
                 >
                   Discussion
                 </TypeBtn>
-                <TypeBtnInactive
+                <TypeBtnActive
                   onClick={() => {
                     setType("trade");
                     setCardWrapperDisplay(true);
                   }}
                 >
                   Trade
-                </TypeBtnInactive>
+                </TypeBtnActive>
               </TypeBtnWrapper>
             )}
             {cardList.length > 0 && type === "trade" && (
               <TypeBtnWrapper>
-                <TypeBtnInactive
+                <TypeBtnActive
                   onClick={() => {
                     setType("discussion");
                     setCardWrapperDisplay(false);
                   }}
                 >
                   Discussion
-                </TypeBtnInactive>
+                </TypeBtnActive>
                 <TypeBtn
                   onClick={() => {
                     setType("trade");
@@ -331,61 +348,80 @@ const TextEditor = ({
         )}
         <MenuBar editor={editor} />
         <EditorContent editor={editor} id="content" />
-        {editorMode === "AddPost" && (
+        <TextEditorBtnWrapper>
+          {editorMode === "AddPost" && (
+            <TextEditorBtn
+              disabledBtn={disabledBtn}
+              onClick={() => {
+                if (!disabledBtn) {
+                  savePost();
+                  setTextEditorDisplay(false);
+                  setDisabledBtn(true);
+                  dispatch({
+                    type: popUpActions.HIDE_ALL,
+                  });
+                }
+              }}
+            >
+              Save
+            </TextEditorBtn>
+          )}
+          {editorMode === "EditPost" && (
+            <TextEditorBtn
+              disabledBtn={disabledBtn}
+              onClick={() => {
+                if (!disabledBtn) {
+                  editPost();
+                  setTextEditorDisplay(false);
+                  setDisabledBtn(true);
+                  dispatch({
+                    type: popUpActions.HIDE_ALL,
+                  });
+                }
+              }}
+            >
+              Save
+            </TextEditorBtn>
+          )}
+          {editorMode === "AddComment" && (
+            <TextEditorBtn
+              disabledBtn={disabledBtn}
+              onClick={async () => {
+                if (!disabledBtn) {
+                  await addComment();
+                  setDisabledBtn(true);
+                  setTextEditorDisplay(false);
+                }
+              }}
+            >
+              Save
+            </TextEditorBtn>
+          )}
+          {editorMode === "EditComment" && (
+            <TextEditorBtn
+              disabledBtn={disabledBtn}
+              onClick={() => {
+                if (!disabledBtn) {
+                  saveEditComment();
+                  setDisabledBtn(true);
+                }
+              }}
+            >
+              Save
+            </TextEditorBtn>
+          )}
           <TextEditorBtn
+            disabledBtn={disabledBtn}
             onClick={() => {
-              savePost();
               setTextEditorDisplay(false);
               dispatch({
                 type: popUpActions.HIDE_ALL,
               });
             }}
           >
-            Save
+            Cancel
           </TextEditorBtn>
-        )}
-        {editorMode === "EditPost" && (
-          <TextEditorBtn
-            onClick={() => {
-              editPost();
-              setTextEditorDisplay(false);
-              dispatch({
-                type: popUpActions.HIDE_ALL,
-              });
-            }}
-          >
-            Save
-          </TextEditorBtn>
-        )}
-        {editorMode === "AddComment" && (
-          <TextEditorBtn
-            onClick={async () => {
-              await addComment();
-              setTextEditorDisplay(false);
-            }}
-          >
-            Save
-          </TextEditorBtn>
-        )}
-        {editorMode === "EditComment" && (
-          <TextEditorBtn
-            onClick={() => {
-              saveEditComment();
-            }}
-          >
-            Save
-          </TextEditorBtn>
-        )}
-        <TextEditorBtn
-          onClick={() => {
-            setTextEditorDisplay(false);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          Cancel
-        </TextEditorBtn>
+        </TextEditorBtnWrapper>
       </EditoWrapper>
       <CardPanelWrapper $show={cardWrapperDisplay}>
         <CardsWrapper

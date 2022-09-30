@@ -94,6 +94,7 @@ const MainStyle = styled.img`
   width: 30%;
   transform: translateX(-20px) translateY(-30px);
   box-shadow: 30px 40px 0 #5c836f;
+  border: 1px solid #5c836f;
 `;
 const MainDescriptionWrapper = styled.div`
   width: 180px;
@@ -140,24 +141,12 @@ const RedirectIcon = styled(FeatureIcon)`
 `;
 const FeatureImg = styled.img`
   width: 40%;
-  box-shadow: -20px 20px 0 10px #fddba9;
-`;
-const open = keyframes`
-  from {
-    opacity: 0;
-     max-height: 0;
-  }
-  to {
-    opacity: 1;
-     max-height: 500px;
-  }
+  // box-shadow: -20px 20px 0 10px #fddba9;
 `;
 interface QuoteSectionProps {
   openAnimation: boolean;
 }
-const complexMixin = css`
-  ${open} 1s ease-in forwards
-`;
+
 const QuoteSection = styled.div<QuoteSectionProps>`
   padding: 48px 24px;
   display: flex;
@@ -167,8 +156,6 @@ const QuoteSection = styled.div<QuoteSectionProps>`
   border-top: 1px solid #224229;
   border-bottom: 1px solid #224229;
   margin: 110vh 0 60px 0;
-  max-height: 0;
-  animation: ${(props) => props.openAnimation && complexMixin};
 `;
 const complexOpacity = css`
   ${showOpacity} 1s ease-in forwards
@@ -179,15 +166,11 @@ const QuoteText = styled.div<QuoteSectionProps>`
   color: #224229;
   padding: 8px;
   font-style: italic;
-  opacity: 0;
-  animation: ${(props) => props.openAnimation && complexOpacity};
 `;
 const QuoteAutorText = styled(QuoteText)<QuoteSectionProps>`
   font-size: 20px;
   align-self: flex-end;
   padding: 8px 72px 0 0;
-  opacity: 0;
-  animation: ${(props) => props.openAnimation && complexOpacity};
 `;
 const DecorationEucari = styled.img`
   position: absolute;
@@ -227,7 +210,7 @@ const DecorationTaquila = styled.img`
   background: #fddba9;
   box-shadow: 0px 30px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 2s forwards;
+  animation: ${showOpacity} 0.5s linear 1.5s forwards;
 `;
 const CardsWrapper = styled.div``;
 const CardsFlexWrpper = styled.div`
@@ -269,6 +252,7 @@ const LogInRedirect = styled.div`
     transition: 0.25s;
   }
   cursor: pointer;
+  box-shadow: 0px 0px 8px 8px rgba(150, 150, 150, 0.1);
 `;
 interface MyObserverProps {
   node: React.RefObject<HTMLDivElement>;

@@ -50,6 +50,7 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 1s;
+  // box-shadow: 6px 6px 4px 4px rgba(150, 150, 150, 0.4);
 `;
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;

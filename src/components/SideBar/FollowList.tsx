@@ -38,39 +38,6 @@ const PersonText = styled.p`
   letter-spacing: 1px;
   color: #6a5125;
 `;
-const FollowRedirect = styled.div`
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(45deg, #7bc09a, #e4e783);
-  margin-right: 8px;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  ${Person}:hover & {
-    display: flex;
-  }
-`;
-const FollowRedirectDiv = styled.div`
-  height: 1px;
-  background: #fff;
-  width: 40px;
-  transform: rotate(315deg);
-`;
-const FollowRedirectLeftArrow = styled(FollowRedirectDiv)`
-  width: 15px;
-  transform: rotate(0deg);
-  position: absolute;
-  right: 11px;
-  top: 11px;
-`;
-const FollowRedirectRightArrow = styled(FollowRedirectLeftArrow)`
-  width: 15px;
-  transform: rotate(90deg);
-  position: absolute;
-  right: 3px;
-  top: 18px;
-`;
 const StyleWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -95,11 +62,6 @@ const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
                 <PersonPhoto path={user.photoUrl} />
                 <PersonText>{user.userName}</PersonText>
               </StyleWrapper>
-              <FollowRedirect>
-                <FollowRedirectLeftArrow />
-                <FollowRedirectDiv />
-                <FollowRedirectRightArrow />
-              </FollowRedirect>
             </Person>
           );
         })}

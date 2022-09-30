@@ -1,20 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer/index";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { popUpActions } from "../../store/reducer/popUpReducer";
-const HeaderWrapper = styled.div`
+interface HeaderWrapperProps {
+  bgState: boolean;
+}
+const HeaderWrapper = styled.div<HeaderWrapperProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgb(245, 240, 236, 0.5);
   padding-left: 16px;
   width: 100vw;
   height: 100px;
   position: fixed;
   top: 0;
   z-index: 99;
+  background-color: ${(props) => !props.bgState && "#F5F0EC"};
+  mix-blend-mode: ${(props) => props.bgState && "plus-lighter"};
 `;
 const LinkWrapper = styled.div`
   display: flex;
@@ -45,6 +49,9 @@ const HeaderLink = styled(Link)`
     width: 0%;
     transition: 0.5s;
   }
+`;
+const LogoLink = styled(HeaderLink)`
+  letter-spacing: 8px;
 `;
 const SideBarBtnWrapper = styled.div`
   // background: linear-gradient(90deg, #7bc09a, #e4e783);
@@ -122,7 +129,9 @@ interface HeaderProps {
 }
 const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const [bgState, setBgState] = useState<boolean>(false);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -146,10 +155,14 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
     if (sideBarDisplay) setSideBarDisplay(false);
     if (!sideBarDisplay) setSideBarDisplay(true);
   }
+  useEffect(() => {
+    if (location.pathname === "/login") setBgState(true);
+    else setBgState(false);
+  }, [location]);
   return (
-    <HeaderWrapper>
+    <HeaderWrapper bgState={bgState}>
       <LinkWrapper>
-        <HeaderLink to="/">GREENERY</HeaderLink>
+        <LogoLink to="/">GREENERY</LogoLink>
       </LinkWrapper>
       <LinkWrapper>
         <HeaderLink to="/forum">Forum</HeaderLink>

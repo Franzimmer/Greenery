@@ -6,6 +6,7 @@ import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Alert from "./components/GlobalStyles/Alert";
 import Mask from "./components/Mask/Mask";
+import ChatroomsWrapper from "./components/Chatroom/ChatroomsWrapper";
 import CardSelectDialog from "./components/CardSelectDialog/CardSelectDialog";
 import Header from "./components/Header/Header";
 import SideBarWrapper from "./components/SideBar/SideBarWrapper";
@@ -82,16 +83,7 @@ const GlobalStyle = createGlobalStyle`
     background: #F5F0EC;
     overflow-x:hidden;
   }
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
-  }
 
-  ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-  }
 `;
 
 function UserLogInObserver({
@@ -186,6 +178,7 @@ function App() {
           setSideBarDisplay={setSideBarDisplay}
         ></Header>
         <SideBarWrapper sideBarDisplay={sideBarDisplay} />
+        <ChatroomsWrapper />
         <Outlet />
       </Provider>
     </>

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { useDispatch } from "react-redux";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
@@ -9,38 +9,53 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import login2 from "./login4.jpeg";
+import login from "./login.jpeg";
 const Wrapper = styled.div`
   display: flex;
 `;
-const LogInBanner = styled.div`
+const LogInBg = styled.div`
   position: absolute;
+  z-index: -1;
   top: 0;
   left: 0;
-  width: 50vw;
+  width: 100vw;
   height: 100vh;
-  background-image: url(${login2});
+  background-image: url(${login});
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  filter: sepia(0.4);
+  filter: brightness(0.85);
 `;
-const FlexItem = styled.div`
-  width: 50vw;
-  height: 100vh;
+const LogoWrapper = styled.div`
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: 2vw;
+  position: absolute;
+  top: 52%;
+  left: 33%;
+  transform: translateX(-50%) translateY(-50%);
+  mix-blend-mode: overlay;
+  border: 4px solid;
+  padding: 12px 36px;
+  text-align: center;
+  filter: drop-shadow(0px 0px 16px #fff);
 `;
+
 const LogInPanel = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 75%;
+  transform: translateX(-50%) translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 300px;
-  height: fit-content;
-  border: 1px solid #6a5125;
+  height: 400px;
   border-radius: 8px;
   padding: 24px;
-  margin: 240px auto;
-  background: rgba(255, 255, 255, 0.3);
-  transition: 0.5s;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.2);
+  transition: 1s;
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -58,8 +73,16 @@ const InputLabel = styled.label`
 const Input = styled.input`
   height: 30px;
   width: 100%;
-  margin: 0 0 24px 0;
+  margin: 0 0 36px 0;
   padding-left: 8px;
+  border: 1px solid #6a5125;
+  background-color: rgba(92, 131, 111, 0.2);
+  &:-webkit-autofill,
+  :-webkit-autofill:hover,
+  :-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px rgba(92, 131, 111, 0.2) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 `;
 const Tab = styled.div`
   cursor: pointer;
@@ -89,11 +112,12 @@ const LogInBtn = styled(OperationBtn)`
 `;
 const LogIn = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"login" | "signin">("login");
-  const navigate = useNavigate();
+  const emailRule = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -116,6 +140,9 @@ const LogIn = () => {
       nameRef.current.value === ""
     ) {
       emitAlert("fail", "Please fill info completely !");
+      return;
+    } else if (!emailRule.test(emailRef.current.value)) {
+      emitAlert("fail", "Invalid email!");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -166,14 +193,26 @@ const LogIn = () => {
   }
   return (
     <Wrapper>
-      <LogInBanner />
-      <FlexItem />
+      <LogInBg />
+      <LogoWrapper>GREENERY</LogoWrapper>
       <LogInPanel>
         <FlexWrapper>
           {mode === "login" && (
             <>
-              <TabActive onClick={() => setMode("login")}>Log In </TabActive>
-              <Tab onClick={() => setMode("signin")}>Sign In</Tab>
+              <TabActive
+                onClick={() => {
+                  setMode("login");
+                }}
+              >
+                Log In{" "}
+              </TabActive>
+              <Tab
+                onClick={() => {
+                  setMode("signin");
+                }}
+              >
+                Sign In
+              </Tab>
             </>
           )}
           {mode === "signin" && (
