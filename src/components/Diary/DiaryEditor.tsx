@@ -95,6 +95,9 @@ const Spin = keyframes`
     transform: translateX(-50%) translateY(-50%) rotate(360deg);
   }
 `;
+const PageNumber = styled.span`
+  color: #6a5125;
+`;
 const Loading = styled.div<WrapperProps>`
   display: ${(props) => (props.$display ? "flex" : "none")};
   width: 100px;
@@ -121,7 +124,7 @@ const DiaryEditor = ({
   setDiaryId,
 }: DiaryEditorProps) => {
   const dispatch = useDispatch();
-  const pageRef = useRef(0);
+  const [pageNo, setPageNo] = useState<number>(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
@@ -211,15 +214,14 @@ const DiaryEditor = ({
     let currentDiaries = [...diariesData];
     currentDiaries.push(page);
     setDiariesData(currentDiaries);
-    pageRef.current = currentDiaries.length - 1;
-    load(pageRef.current);
+    setPageNo(currentDiaries.length - 1);
     switchToViewMode();
     await firebase.saveDiary(diaryId, page);
     emitAlert("success", "Save Diary Data Successfully.");
   }
   async function saveEdit() {
     setAllObjDeactive();
-    let index = pageRef.current;
+    let index = pageNo;
     let page = JSON.stringify(canvas);
     let currentDiaries = [...diariesData];
     currentDiaries[index] = page;
@@ -238,13 +240,12 @@ const DiaryEditor = ({
     });
   }
   function switchPage(type: "+" | "-") {
-    if (type === "+" && pageRef.current !== diariesData.length - 1)
-      pageRef.current++;
-    else if (type === "-" && pageRef.current !== 0) pageRef.current--;
-    load(pageRef.current);
+    if (type === "+" && pageNo !== diariesData.length - 1)
+      setPageNo((prev) => prev + 1);
+    else if (type === "-" && pageNo !== 0) setPageNo((prev) => prev - 1);
   }
   function cancelEdit() {
-    load(pageRef.current);
+    load(pageNo);
     switchToViewMode();
   }
   useEffect(() => {
@@ -262,13 +263,15 @@ const DiaryEditor = ({
           });
           canvas.renderAll();
         });
-        pageRef.current = 0;
+        setPageNo(0);
       }
       setLoaderDisplay(false);
     }
     if (diaryId) getDiary(diaryId);
   }, [diaryId]);
-
+  useEffect(() => {
+    load(pageNo);
+  }, [pageNo]);
   return (
     <>
       <NoDiarySection
@@ -315,7 +318,9 @@ const DiaryEditor = ({
                   <StyledFontAwesomeIcon icon={faPlus} />
                 </DiaryIconButton>
               )}
-              <DiaryIconButton onClick={() => load(diariesData.length - 1)}>
+              <DiaryIconButton
+                onClick={() => setPageNo(diariesData.length - 1)}
+              >
                 <StyledFontAwesomeIcon icon={faBookmark} />
               </DiaryIconButton>
             </>
@@ -371,6 +376,7 @@ const DiaryEditor = ({
           <DiaryIconButton
             onClick={() => {
               resetCanvas();
+              setPageNo(0);
               setDiariesData([]);
               setDiaryDisplay(false);
               setDiaryId(null);
@@ -393,6 +399,9 @@ const DiaryEditor = ({
               <DiaryIconButton onClick={() => switchPage("-")}>
                 <StyledFontAwesomeIcon icon={faArrowLeft} />
               </DiaryIconButton>
+              <PageNumber>
+                {pageNo + 1} / {diariesData.length}
+              </PageNumber>
               <DiaryIconButton onClick={() => switchPage("+")}>
                 <StyledFontAwesomeIcon icon={faArrowRight} />
               </DiaryIconButton>
