@@ -166,7 +166,6 @@ const CardsGrid = ({
 }: CardsGridProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  console.log(diariesExist);
   return (
     <>
       <GridWrapper $mode={viewMode}>

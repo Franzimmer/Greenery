@@ -7,12 +7,13 @@ import { RootState } from "../../../store/reducer/index";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { CardsActions } from "../../../store/actions/cardsActions";
-import { firebase } from "../../../utils/firebase";
+import { firebase, species } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
 import {
   OperationBtn,
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
+import { speciesContents } from "./speciesContents";
 import defaultImg from "../../../assets/default.jpg";
 
 interface CardEditorWrapperProps {
@@ -153,6 +154,31 @@ const UploadIcon = styled(FontAwesomeIcon)`
   width: 20px;
   height: 20px;
 `;
+const SpeciesSearchWrapper = styled.div`
+  position: relative;
+`;
+const SearchSuggestionsWrapper = styled.div`
+  position: absolute;
+  top: 35px;
+  width: 200px;
+  height: 100px;
+  background-color: #fff;
+  overflow-y: scroll;
+  cursor: pointer;
+  border-radius: 8px;
+`;
+const SearchSuggestion = styled.p`
+  font-size: 14px;
+  padding: 6px;
+  &:hover {
+    background-color: #5c836f;
+    color: #fff;
+  }
+`;
+const SearchActive = styled(SearchSuggestion)`
+  background-color: #5c836f;
+  color: #fff;
+`;
 interface FCProps {
   userId: string;
   editorDisplay: boolean;
@@ -160,7 +186,6 @@ interface FCProps {
   editCardId: string | null;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
 }
-
 const CardEditor = ({
   userId,
   editorDisplay,
@@ -171,6 +196,7 @@ const CardEditor = ({
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
+  const activeRef = useRef<HTMLParagraphElement>(null);
   const birthdayRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
   const waterRef = useRef<HTMLTextAreaElement>(null);
@@ -179,6 +205,11 @@ const CardEditor = ({
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
+  const [searchSuggests, setSearchSuggests] = useState<string[]>([]);
+  const [searchSuggestsDisplay, setSearchSuggestsDisplay] = useState<boolean>(
+    false
+  );
+  const [searchActive, setSearchActive] = useState<number>(-1);
   const cardList = useSelector((state: RootState) => state.cards);
   const myFollowers = useSelector((state: RootState) => state.myFollowers);
   const dispatch = useDispatch();
@@ -206,11 +237,49 @@ const CardEditor = ({
       return;
     }
   }
+  function searchRecommends() {
+    if (!speciesRef.current) return;
+    if (speciesRef.current.value === "") {
+      setSearchActive(-1);
+      setSearchSuggestsDisplay(false);
+      return;
+    }
+    let results: string[] = [];
+    let targetString = speciesRef.current!.value.toLowerCase();
+    speciesContents.forEach((speciesName) => {
+      if (speciesName.startsWith(targetString)) results.push(speciesName);
+    });
+    if (results.length > 0) {
+      setSearchSuggestsDisplay(true);
+      setSearchSuggests(results);
+      setSearchActive(0);
+    } else {
+      setSearchSuggestsDisplay(true);
+      setSearchSuggests(["No Search Result"]);
+      setSearchActive(-1);
+    }
+  }
+  function switchActive(e: React.KeyboardEvent) {
+    let min = 0;
+    let max = searchSuggests.length - 1;
+    if (e.key === "ArrowUp" && searchActive > min) {
+      e.preventDefault();
+      setSearchActive((prev) => prev - 1);
+    } else if (e.key === "ArrowDown" && searchActive < max) {
+      setSearchActive((prev) => prev + 1);
+    } else if (e.key === "Enter" && searchActive !== -1) {
+      if (!speciesRef.current || !activeRef.current) return;
+      speciesRef.current.value = activeRef.current.textContent!;
+      setSearchSuggestsDisplay(false);
+    } else if (e.key === "Enter" && searchActive === -1) {
+      setSearchSuggests([]);
+      setSearchSuggestsDisplay(false);
+    }
+  }
   async function searchPlantSpecies(input: string) {
     if (!waterRef.current || !lightRef.current) return;
     const querySnapshot = await firebase.searchSpecies(input);
     if (querySnapshot.empty) {
-      emitAlert("fail", "Species data is not in the database.");
       waterRef.current!.value = "";
       lightRef.current!.value = "";
       toxicityRef.current!.value = "";
@@ -253,6 +322,9 @@ const CardEditor = ({
     waterRef.current!.value = "";
     lightRef.current!.value = "";
     toxicityRef.current!.value = "";
+    setSearchActive(-1);
+    setSearchSuggests([]);
+    setSearchSuggestsDisplay(false);
     setPreviewLink(null);
     setTags([]);
   }
@@ -352,6 +424,11 @@ const CardEditor = ({
     }
     if (editCardId) getEditCardData();
   }, [editCardId]);
+  useEffect(() => {
+    if (activeRef.current) {
+      activeRef.current.scrollIntoView();
+    }
+  }, [searchActive]);
   return (
     <CardEditorWrapper $display={editorDisplay}>
       <PageWrapper>
@@ -382,18 +459,33 @@ const CardEditor = ({
         </InputFlexWrapper>
         <InputFlexWrapper>
           <InputLabel>Species</InputLabel>
-          <Input
-            type="text"
-            ref={speciesRef}
-            maxLength={40}
-            placeholder={"enter 1-40 character(s)"}
-            onKeyPress={(e) => {
-              if (!speciesRef.current) return;
-              if (e.key === "Enter") {
-                searchPlantSpecies(speciesRef.current.value);
-              }
-            }}
-          />
+          <SpeciesSearchWrapper>
+            <Input
+              type="text"
+              ref={speciesRef}
+              maxLength={40}
+              placeholder={"enter 1-40 character(s)"}
+              onKeyPress={(e) => {
+                if (!speciesRef.current) return;
+                if (e.key === "Enter") {
+                  searchPlantSpecies(speciesRef.current.value);
+                }
+              }}
+              onKeyDown={(e) => {
+                switchActive(e);
+              }}
+              onChange={searchRecommends}
+            />
+            {searchSuggestsDisplay && (
+              <SearchSuggestionsWrapper>
+                {searchSuggests.map((name, index) => {
+                  if (index === searchActive)
+                    return <SearchActive ref={activeRef}>{name}</SearchActive>;
+                  else return <SearchSuggestion>{name}</SearchSuggestion>;
+                })}
+              </SearchSuggestionsWrapper>
+            )}
+          </SpeciesSearchWrapper>
         </InputFlexWrapper>
         <InputFlexWrapper>
           <InputLabel>Birthday</InputLabel>
