@@ -82,7 +82,8 @@ interface OperationMenuProps {
   allCheck: () => void;
   clearAllCheck: () => void;
   addEvents: (type: "water" | "fertilize") => Promise<void>;
-  deleteCards: () => Promise<void>;
+  setConfirmDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  setConfirmMessage: () => void;
 }
 const OperationMenu = ({
   isSelf,
@@ -95,7 +96,8 @@ const OperationMenu = ({
   allCheck,
   clearAllCheck,
   addEvents,
-  deleteCards,
+  setConfirmDisplay,
+  setConfirmMessage,
 }: OperationMenuProps) => {
   const dispatch = useDispatch();
   const cardList = useSelector((state: RootState) => state.cards);
@@ -190,7 +192,15 @@ const OperationMenu = ({
                 </MenuBtn>
                 <IconLabel>Fertilizing</IconLabel>
               </BtnWrapper>
-              <BtnWrapper onClick={deleteCards}>
+              <BtnWrapper
+                onClick={() => {
+                  dispatch({
+                    type: popUpActions.SHOW_MASK,
+                  });
+                  setConfirmMessage();
+                  setConfirmDisplay(true);
+                }}
+              >
                 <MenuBtn>
                   <SmallFontAwesomeIcon
                     icon={faTrashCan}

@@ -7,6 +7,7 @@ import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { PlantCard } from "../../../store/types/plantCardType";
+import { OperationBtn } from "../../../components/GlobalStyles/button";
 import OperationMenu from "./OperationMenu";
 import CardsGrid from "./CardsGrid";
 import CardEditor from "./CardEditor";
@@ -68,7 +69,40 @@ const TagsList = styled(TagsWrapper)`
   width: auto;
   flex-wrap: wrap;
 `;
-
+const ConfirmPanel = styled.div`
+  position: absolute;
+  z-index: 102;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  padding: 24px;
+  background: #f5f0ec;
+  border-radius: 15px;
+  border: 1px solid #6a5125;
+`;
+const BtnWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  column-gap: 12px;
+`;
+const MsgWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 12px;
+  margin-bottom: 24px;
+`;
+const ConfirmMsg = styled.p``;
+const ConfirmBoldMsg = styled(ConfirmMsg)`
+  font-weight: 500;
+`;
+const ConfirmBtn = styled(OperationBtn)`
+  width: 100px;
+  background-color: #6a5125;
+  border: 1px solid #6a5125;
+`;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   id: string | undefined;
@@ -93,6 +127,8 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
+  const [ConfirmDisplay, setConfirmDisplay] = useState<boolean>(false);
+  const [confirmMsg, setConfirmMsg] = useState<string>("");
   function emitAlert(type: string, msg: string) {
     dispatch({
       type: popUpActions.SHOW_ALERT,
@@ -173,6 +209,15 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     clearAllCheck();
     await firebase.addEvents(type, idList, userInfo.userId);
   }
+  function setConfirmMessage() {
+    const targets = Object.keys(checkList).filter(
+      (key) => checkList[key] === true
+    );
+    const targetNames = targets.map((target) => {
+      return cardList.find((card) => card.cardId === target)?.plantName;
+    });
+    setConfirmMsg(`${targetNames.join(", ")}`);
+  }
   async function deleteCards() {
     const targets = Object.keys(checkList).filter(
       (key) => checkList[key] === true
@@ -186,6 +231,10 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       type: CardsActions.DELETE_PLANT_CARDS,
       payload: { cardIds: targets },
     });
+    dispatch({
+      type: popUpActions.HIDE_ALL,
+    });
+    setConfirmDisplay(false);
     emitAlert("success", `Delete Card Success`);
   }
   async function favoriteToggle(cardId: string) {
@@ -266,7 +315,8 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         allCheck={allCheck}
         clearAllCheck={clearAllCheck}
         addEvents={addEvents}
-        deleteCards={deleteCards}
+        setConfirmDisplay={setConfirmDisplay}
+        setConfirmMessage={setConfirmMessage}
       />
       {filterOptions && tagList.length && (
         <TagsList>
@@ -307,6 +357,28 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
+      {ConfirmDisplay && (
+        <ConfirmPanel>
+          <MsgWrapper>
+            <ConfirmMsg>Are you goin to delete</ConfirmMsg>
+            <ConfirmBoldMsg>{confirmMsg}</ConfirmBoldMsg>
+            <ConfirmMsg></ConfirmMsg>
+          </MsgWrapper>
+          <BtnWrapper>
+            <ConfirmBtn onClick={deleteCards}>Sure</ConfirmBtn>
+            <ConfirmBtn
+              onClick={() => {
+                dispatch({
+                  type: popUpActions.HIDE_ALL,
+                });
+                setConfirmDisplay(false);
+              }}
+            >
+              Cancel
+            </ConfirmBtn>
+          </BtnWrapper>
+        </ConfirmPanel>
+      )}
     </Wrapper>
   );
 };
