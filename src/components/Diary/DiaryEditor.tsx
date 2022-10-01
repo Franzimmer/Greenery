@@ -32,6 +32,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Canvas from "./Canvas";
 import spinner from "../../assets/spinner.png";
+import forward from "./bring-to-front.png";
 
 interface WrapperProps {
   $display: boolean;
@@ -81,6 +82,14 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   width: 20px;
   height: 20px;
 `;
+const ForwardIcon = styled.div`
+  width: 20px;
+  height: 20px;
+  background-image: url(${forward});
+  background-size: cover;
+  background-position: center;
+  background-repeat: norepeat;
+`;
 const DiaryIconButton = styled(IconButton)`
   width: 30px;
   height: 30px;
@@ -117,7 +126,7 @@ const Loading = styled.div<WrapperProps>`
   animation: 2s ${Spin} linear infinite;
 `;
 const FontSizeInput = styled.input`
-  width: 60px;
+  width: 50px;
   font-size: 14px;
   line-height: 18px;
   text-align: center;
@@ -284,6 +293,10 @@ const DiaryEditor = ({
       canvas?.add(oImg);
       canvas?.setActiveObject(oImg);
     });
+  }
+  function bringForward() {
+    let target = canvas?.getActiveObject() as fabric.IText;
+    target.bringForward();
   }
   function removeItem() {
     canvas?.remove(...canvas?.getActiveObjects());
@@ -470,6 +483,9 @@ const DiaryEditor = ({
                   }}
                   hidden
                 />
+              </DiaryIconButton>
+              <DiaryIconButton onClick={bringForward}>
+                <ForwardIcon />
               </DiaryIconButton>
               <DiaryIconButton onClick={removeItem}>
                 <StyledFontAwesomeIcon icon={faTrashCan} />
