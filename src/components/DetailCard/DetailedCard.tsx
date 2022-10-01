@@ -81,7 +81,7 @@ const PlantImg = styled.img`
   margin: auto;
   box-shadow: 16px 12px 0px 0px #5c836f;
   max-width: 340px;
-  max-height: 460px;
+  max-height: 450px;
 `;
 const FlexBtnWrapper = styled(FlexRowWrapper)`
   margin-top: auto;
