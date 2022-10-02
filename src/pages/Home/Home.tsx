@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
@@ -115,6 +115,9 @@ const MainDescription = styled.p`
   display: flex;
   align-items: center;
 `;
+const Feature = styled(MainDescription)`
+  margin-top: 8px;
+`;
 const FeatureWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -129,6 +132,7 @@ const FeatureTextWrapper = styled(FeatureWrapper)`
 `;
 const FeatureSecondTitle = styled(MainDescription)`
   font-size: 16px;
+  margin-bottom: 12px;
 `;
 const FeatureIcon = styled(FontAwesomeIcon)`
   color: #6a5125;
@@ -143,12 +147,8 @@ const RedirectIcon = styled(FeatureIcon)`
 `;
 const FeatureImg = styled.img`
   width: 40%;
-  // box-shadow: -20px 20px 0 10px #fddba9;
+  box-shadow: -20px 20px 0 10px #fddba9;
 `;
-// interface QuoteSectionProps {
-//   openAnimation: boolean;
-// }
-
 const QuoteSection = styled.div`
   padding: 48px 24px;
   display: flex;
@@ -158,9 +158,6 @@ const QuoteSection = styled.div`
   border-top: 1px solid #224229;
   border-bottom: 1px solid #224229;
   margin: 110vh 0 60px 0;
-`;
-const complexOpacity = css`
-  ${showOpacity} 1s ease-in forwards
 `;
 const QuoteText = styled.div`
   font-size: 26px;
@@ -238,6 +235,11 @@ const SectionTitle = styled.p`
   line-height: 30px;
   font-weight: 500;
 `;
+const SectionTitleAlign = styled(SectionTitle)`
+  align-self: end;
+  line-height: 26px;
+  transform: translateY(-16px;);
+`;
 const LogInRedirect = styled.div`
   background: #fff;
   color: #6a5125;
@@ -263,29 +265,6 @@ const UserLink = styled(Link)`
     text-decoration: underline;
   }
 `;
-interface MyObserverProps {
-  node: React.RefObject<HTMLDivElement>;
-  setOpenAnimation: React.Dispatch<React.SetStateAction<boolean>>;
-}
-const MyObserver = ({ node, setOpenAnimation }: MyObserverProps) => {
-  useEffect(() => {
-    if (!node) return;
-    const options = {
-      root: null,
-      threshold: [1],
-    };
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => setOpenAnimation(entries[0].isIntersecting),
-      options
-    );
-    let current = node.current;
-    intersectionObserver.observe(current!);
-    return () => {
-      if (current) intersectionObserver.unobserve(current);
-    };
-  }, [node]);
-  return null;
-};
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -300,6 +279,7 @@ const Home = () => {
   const [ownerInfos, setOwnerInfos] = useState<UserInfo[]>([]);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [ownerId, setOwnerId] = useState<string>("");
 
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -402,33 +382,32 @@ const Home = () => {
           <FeatureWrapper>
             <FeatureImg src={feature} />
             <FeatureTextWrapper>
-              <SectionTitle>
-                A space for plants, A space for Yourself
-              </SectionTitle>
+              <SectionTitle>A space for plants,</SectionTitle>
+              <SectionTitleAlign>a space for Yourself</SectionTitleAlign>
               <FeatureSecondTitle>
-                Greenery is a social space designed for plant people, here you
-                can:
+                Greenery is a social space designed for plant people,
+                <br /> here you can:
               </FeatureSecondTitle>
-              <MainDescription>
+              <Feature>
                 <FeatureIcon icon={faCircleCheck} />
                 Record Your Plant Care Info
-              </MainDescription>
-              <MainDescription>
+              </Feature>
+              <Feature>
                 <FeatureIcon icon={faCircleCheck} />
                 Write Your Plant Growth Diary
-              </MainDescription>
-              <MainDescription>
+              </Feature>
+              <Feature>
                 <FeatureIcon icon={faCircleCheck} />
                 Explore People's Amazing Plants
-              </MainDescription>
-              <MainDescription>
+              </Feature>
+              <Feature>
                 <FeatureIcon icon={faCircleCheck} />
                 Learn Plants Care Tips
-              </MainDescription>
-              <MainDescription>
+              </Feature>
+              <Feature>
                 <FeatureIcon icon={faCircleCheck} />
                 Exchange Plant With Others
-              </MainDescription>
+              </Feature>
             </FeatureTextWrapper>
             <LogInRedirect
               onClick={() => {
@@ -489,6 +468,7 @@ const Home = () => {
                         onClick={(e) => {
                           setDiaryDisplay(true);
                           setDiaryId(card.cardId);
+                          setOwnerId(card.ownerId);
                           dispatch({
                             type: popUpActions.SHOW_MASK,
                           });
@@ -517,13 +497,12 @@ const Home = () => {
             </CardsFlexWrpper>
           </CardsWrapper>
           <DetailedCard
-            isSelf={false}
             detailDisplay={detailDisplay}
             setDetailDisplay={setDetailDisplay}
             detailData={detailData!}
           />
           <DiaryEditor
-            isSelf={false}
+            ownerId={ownerId}
             diaryDisplay={diaryDisplay}
             setDiaryDisplay={setDiaryDisplay}
             diaryId={diaryId!}

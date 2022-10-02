@@ -17,7 +17,6 @@ interface FavoritesProps {
   id: string | undefined;
 }
 const Favorites = ({ id }: FavoritesProps) => {
-  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const favoriteCards = userInfo.favoriteCards;
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
@@ -26,6 +25,7 @@ const Favorites = ({ id }: FavoritesProps) => {
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [ownerId, setOwnerId] = useState<string>("");
   const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -77,7 +77,6 @@ const Favorites = ({ id }: FavoritesProps) => {
     <SectionWrapper>
       {isLoading && <SectionLoader></SectionLoader>}
       <FavGrids
-        isSelf={isSelf}
         isLoading={isLoading}
         diariesExist={diariesExist}
         favCards={favCards}
@@ -85,16 +84,16 @@ const Favorites = ({ id }: FavoritesProps) => {
         setDetailDisplay={setDetailDisplay}
         setDiaryDisplay={setDiaryDisplay}
         setDiaryId={setDiaryId}
+        setOwnerId={setOwnerId}
         findOwnerName={findOwnerName}
       />
       <DetailedCard
-        isSelf={isSelf}
         detailDisplay={detailDisplay}
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}
       />
       <DiaryEditor
-        isSelf={isSelf}
+        ownerId={ownerId}
         diaryDisplay={diaryDisplay}
         setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}

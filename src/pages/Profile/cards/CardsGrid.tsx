@@ -34,8 +34,11 @@ interface CardProps {
   $show?: boolean;
   $mode: "grid" | "list";
 }
-const CardWrapper = styled.div<GridWrapperProps>`
-  display: flex;
+interface CardWrapperProps {
+  $show: boolean;
+}
+const CardWrapper = styled.div<CardWrapperProps>`
+  display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: row;
 `;
 export const Card = styled.div<CardProps>`
@@ -142,6 +145,7 @@ interface CardsGridProps {
   setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
+  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
   switchOneCheck: (cardId: string) => void;
   editorToggle: () => void;
@@ -159,6 +163,7 @@ const CardsGrid = ({
   setDetailData,
   setDiaryDisplay,
   setDiaryId,
+  setOwnerId,
   setEditCardId,
   switchOneCheck,
   editorToggle,
@@ -172,7 +177,10 @@ const CardsGrid = ({
         {cardItems.length !== 0 &&
           cardItems.map((card, index) => {
             return (
-              <CardWrapper $mode={viewMode} key={card.cardId}>
+              <CardWrapper
+                key={card.cardId}
+                $show={filterCard(card.tags || [])}
+              >
                 <Card
                   $mode={viewMode}
                   $show={filterCard(card.tags || [])}
@@ -230,6 +238,7 @@ const CardsGrid = ({
                       });
                       setDiaryDisplay(true);
                       setDiaryId(card.cardId);
+                      setOwnerId(card.ownerId);
                       e.stopPropagation();
                     }}
                   >

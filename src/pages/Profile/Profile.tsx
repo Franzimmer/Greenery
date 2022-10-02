@@ -11,8 +11,6 @@ import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
-import { CardsActions } from "../../store/actions/cardsActions";
-
 interface MainWrapperProps {
   isLoading: boolean;
 }

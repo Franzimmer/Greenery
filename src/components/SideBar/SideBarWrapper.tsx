@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,17 +19,21 @@ interface WrapperProps {
 }
 const Wrapper = styled.div<WrapperProps>`
   width: ${(props) => (props.show ? "300px" : "0px")};
-  max-height: ${(props) => (props.show ? "calc(100vh -42px)" : 0)};
+  max-height: ${(props) => (props.show ? "1000px" : 0)};
   background: rgba(255, 255, 255);
   border: 1px solid #5c836f;
   border-radius: 20px;
   margin-top: 112px;
   position: fixed;
-  z-index: 2;
+  z-index: 3;
   top: 0px;
   right: 10px;
-  display: ${(props) => !props.show && "none"};
+  opacity: ${(props) => (!props.show ? "0" : "1")};
   transition: 0.5s max-height ease-in;
+  & * {
+    max-height: ${(props) => (props.show ? "1000px" : 0)};
+    transition: 0.5s max-height ease-in;
+  }
 `;
 const Tabs = styled.div`
   width: auto;

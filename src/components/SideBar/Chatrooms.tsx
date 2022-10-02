@@ -10,7 +10,7 @@ import { NoSidebarDataText } from "./FollowList";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;
-  max-height: calc(100vh - 42px);
+  height: 300px;
   overflow-y: auto;
   padding: 8px 12px;
   border-radius: 20px;
@@ -42,7 +42,7 @@ const Spinner = styled.div<SpinnerProps>`
   display: ${(props) => (props.$show ? "block" : "none")};
   width: 50px;
   height: 50px;
-  margin: 0 auto;
+  margin: 117px auto;
   background: url(${spinner50});
   animation: 2s ${Spin} linear infinite;
 `;
