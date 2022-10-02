@@ -48,10 +48,10 @@ const Wrapper = styled.div<WrapperProps>`
   z-index: 101;
   background: #f5f0ec;
 `;
-interface NoDiarySection {
+interface NoDiarySectionProps {
   $display: boolean;
 }
-const NoDiarySection = styled(NoDataSection)<NoDiarySection>`
+const NoDiarySection = styled(NoDataSection)<NoDiarySectionProps>`
   display: ${(props) => (props.$display ? "flex" : "none")};
   width: 320px;
   height: 320px;
@@ -209,6 +209,7 @@ const DiaryEditor = ({
     });
   }
   function addText() {
+    if (!fontSizeRef.current) return;
     let text = new fabric.IText("hello world", {
       left: 100,
       top: 100,
@@ -217,6 +218,7 @@ const DiaryEditor = ({
     });
     canvas?.add(text);
     canvas?.setActiveObject(text);
+    fontSizeRef.current!.value = "20";
   }
   function changeTextColor() {
     let cValue = colorRef.current?.value;
@@ -377,6 +379,22 @@ const DiaryEditor = ({
   useEffect(() => {
     load(pageNo);
   }, [pageNo]);
+  useEffect(() => {
+    function handleObj(obj: fabric.IEvent) {
+      console.log(obj.selected);
+      if (!obj.selected) return;
+      if (obj.selected.length > 1) return;
+      if (obj.selected[0]!.type !== "i-text") return;
+      else {
+        let target = obj.selected[0] as fabric.IText;
+        fontSizeRef.current!.value = String(target.fontSize!);
+      }
+    }
+    if (!canvas || !fontSizeRef.current) return;
+    canvas.on("selection:updated", (obj) => handleObj(obj));
+    canvas.on("selection:created", (obj) => handleObj(obj));
+    canvas.on("selection:cleared", (obj) => handleObj(obj));
+  }, [canvas]);
   return (
     <>
       <NoDiarySection
