@@ -229,7 +229,7 @@ const ForumPost = () => {
   const [cards, setCards] = useState<PlantCard[]>([]);
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
-  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [ownerId, setOwnerId] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -286,11 +286,6 @@ const ForumPost = () => {
         targetInfo: result[0].data(),
       },
     });
-  }
-  async function checkOwner(diaryId: string) {
-    let ownerId = await firebase.checkOwner(diaryId);
-    let result = ownerId === userInfo.userId;
-    setIsOwner(result);
   }
   useEffect(() => {
     async function getPost() {
@@ -412,9 +407,9 @@ const ForumPost = () => {
                         </TagsWrapper>
                         <DiaryIconBtn
                           onClick={async (e) => {
-                            await checkOwner(card.cardId!);
                             setDiaryDisplay(true);
                             setDiaryId(card.cardId!);
+                            setOwnerId(card.ownerId!);
                             dispatch({
                               type: popUpActions.SHOW_MASK,
                             });
@@ -503,7 +498,7 @@ const ForumPost = () => {
       )}
       {diaryDisplay && (
         <DiaryEditor
-          isSelf={isOwner}
+          ownerId={ownerId}
           diaryDisplay={diaryDisplay}
           setDiaryDisplay={setDiaryDisplay}
           diaryId={diaryId!}
@@ -512,7 +507,6 @@ const ForumPost = () => {
       )}
       {detailDisplay && (
         <DetailedCard
-          isSelf={false}
           detailDisplay={detailDisplay}
           detailData={detailData!}
           setDetailDisplay={setDetailDisplay}

@@ -70,7 +70,6 @@ export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   height: 26px;
 `;
 interface FavGridsProps {
-  isSelf: boolean;
   isLoading: boolean;
   diariesExist: boolean[];
   favCards: PlantCard[];
@@ -78,10 +77,10 @@ interface FavGridsProps {
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
+  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({
-  isSelf,
   isLoading,
   diariesExist,
   favCards,
@@ -89,10 +88,12 @@ const FavGrids = ({
   setDetailDisplay,
   setDiaryDisplay,
   setDiaryId,
+  setOwnerId,
   findOwnerName,
 }: FavGridsProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -107,6 +108,10 @@ const FavGrids = ({
         type: popUpActions.CLOSE_ALERT,
       });
     }, 2000);
+  }
+  function isOwner(ownerId: string) {
+    if (userInfo.userId === ownerId) return true;
+    else return false;
   }
   async function removeFavorite(cardId: string) {
     let userId = userInfo.userId;
@@ -159,9 +164,13 @@ const FavGrids = ({
                     })}
                 </TagsWrapper>
                 <DiaryIconBtn
-                  $show={isSelf || (!isSelf && diariesExist[index])}
+                  $show={
+                    isOwner(card.ownerId) ||
+                    (!isOwner(card.ownerId) && diariesExist[index])
+                  }
                   onClick={(e) => {
                     setDiaryDisplay(true);
+                    setOwnerId(card.ownerId);
                     setDiaryId(card.cardId);
                     dispatch({
                       type: popUpActions.SHOW_MASK,
@@ -171,7 +180,7 @@ const FavGrids = ({
                 >
                   <StyledFontAwesomeIcon icon={faBook} />
                 </DiaryIconBtn>
-                {isSelf && (
+                {isOwner(card.ownerId) && (
                   <FavIconButton
                     $show={true}
                     onClick={(e) => {

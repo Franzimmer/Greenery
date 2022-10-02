@@ -25,7 +25,7 @@ const Wrapper = styled.div<WrapperProps>`
   border-radius: 20px;
   margin-top: 112px;
   position: fixed;
-  z-index: 2;
+  z-index: 3;
   top: 0px;
   right: 10px;
   display: ${(props) => !props.show && "none"};

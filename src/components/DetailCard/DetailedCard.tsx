@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { unixTimeToString } from "../../utils/helpers";
@@ -99,19 +100,22 @@ const DetailOperationBtn = styled(OperationBtn)`
   }
 `;
 interface DetailedCardProps {
-  isSelf: boolean;
   detailDisplay: boolean;
   detailData: PlantCard;
   setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const DetailedCard = ({
-  isSelf,
   detailDisplay,
   detailData,
   setDetailDisplay,
 }: DetailedCardProps) => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const [propagateDisplay, setPropagateDisplay] = useState(false);
+  function isOwner(ownerId: string) {
+    if (userInfo.userId === ownerId) return true;
+    else return false;
+  }
   return (
     <>
       <DetailedCardWrapper $display={detailDisplay}>
@@ -166,7 +170,7 @@ const DetailedCard = ({
             )}
           </DescriptionWrapper>
           <FlexBtnWrapper>
-            {isSelf && (
+            {isOwner(detailData?.ownerId) && (
               <DetailOperationBtn
                 onClick={() => {
                   setPropagateDisplay(true);

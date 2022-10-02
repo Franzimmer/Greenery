@@ -300,6 +300,7 @@ const Home = () => {
   const [ownerInfos, setOwnerInfos] = useState<UserInfo[]>([]);
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [ownerId, setOwnerId] = useState<string>("");
 
   function emitAlert(type: string, msg: string) {
     dispatch({
@@ -489,6 +490,7 @@ const Home = () => {
                         onClick={(e) => {
                           setDiaryDisplay(true);
                           setDiaryId(card.cardId);
+                          setOwnerId(card.ownerId);
                           dispatch({
                             type: popUpActions.SHOW_MASK,
                           });
@@ -517,13 +519,12 @@ const Home = () => {
             </CardsFlexWrpper>
           </CardsWrapper>
           <DetailedCard
-            isSelf={false}
             detailDisplay={detailDisplay}
             setDetailDisplay={setDetailDisplay}
             detailData={detailData!}
           />
           <DiaryEditor
-            isSelf={false}
+            ownerId={ownerId}
             diaryDisplay={diaryDisplay}
             setDiaryDisplay={setDiaryDisplay}
             diaryId={diaryId!}

@@ -142,6 +142,7 @@ interface CardsGridProps {
   setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
+  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
   setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
   switchOneCheck: (cardId: string) => void;
   editorToggle: () => void;
@@ -159,6 +160,7 @@ const CardsGrid = ({
   setDetailData,
   setDiaryDisplay,
   setDiaryId,
+  setOwnerId,
   setEditCardId,
   switchOneCheck,
   editorToggle,
@@ -230,6 +232,7 @@ const CardsGrid = ({
                       });
                       setDiaryDisplay(true);
                       setDiaryId(card.cardId);
+                      setOwnerId(card.ownerId);
                       e.stopPropagation();
                     }}
                   >

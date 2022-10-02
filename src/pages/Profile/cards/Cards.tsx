@@ -118,6 +118,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
+  const [ownerId, setOwnerId] = useState<string>("");
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
   const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
@@ -298,7 +299,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   return (
     <Wrapper $show={cardsDisplay}>
       <DiaryEditor
-        isSelf={isSelf}
+        ownerId={ownerId}
         diaryDisplay={diaryDisplay}
         setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}
@@ -339,6 +340,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         setDetailData={setDetailData}
         setDiaryDisplay={setDiaryDisplay}
         setDiaryId={setDiaryId}
+        setOwnerId={setOwnerId}
         setEditCardId={setEditCardId}
         switchOneCheck={switchOneCheck}
         editorToggle={editorToggle}
@@ -352,7 +354,6 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         setEditCardId={setEditCardId}
       />
       <DetailedCard
-        isSelf={isSelf}
         detailDisplay={detailDisplay}
         setDetailDisplay={setDetailDisplay}
         detailData={detailData!}

@@ -480,8 +480,36 @@ const CardEditor = ({
               <SearchSuggestionsWrapper>
                 {searchSuggests.map((name, index) => {
                   if (index === searchActive)
-                    return <SearchActive ref={activeRef}>{name}</SearchActive>;
-                  else return <SearchSuggestion>{name}</SearchSuggestion>;
+                    return (
+                      <SearchActive
+                        ref={activeRef}
+                        onClick={() => {
+                          if (!speciesRef.current) return;
+                          speciesRef.current.value = name;
+                          searchPlantSpecies(name);
+                          setSearchSuggestsDisplay(false);
+                          setSearchActive(-1);
+                          setSearchSuggests([]);
+                        }}
+                      >
+                        {name}
+                      </SearchActive>
+                    );
+                  else
+                    return (
+                      <SearchSuggestion
+                        onClick={() => {
+                          if (!speciesRef.current) return;
+                          speciesRef.current.value = name;
+                          searchPlantSpecies(name);
+                          setSearchSuggestsDisplay(false);
+                          setSearchActive(-1);
+                          setSearchSuggests([]);
+                        }}
+                      >
+                        {name}
+                      </SearchSuggestion>
+                    );
                 })}
               </SearchSuggestionsWrapper>
             )}

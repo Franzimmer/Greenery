@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { fabric } from "fabric";
 import { firebase } from "../../utils/firebase";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { IconButton } from "../../components/GlobalStyles/button";
 import {
@@ -142,20 +143,21 @@ const ColorInput = styled.input`
   position: absolute;
 `;
 interface DiaryEditorProps {
-  isSelf: boolean;
+  ownerId: string;
   diaryDisplay: boolean;
   setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   diaryId: string;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 const DiaryEditor = ({
-  isSelf,
+  ownerId,
   diaryDisplay,
   setDiaryDisplay,
   diaryId,
   setDiaryId,
 }: DiaryEditorProps) => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const [pageNo, setPageNo] = useState<number>(0);
   const fontSizeRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -180,6 +182,10 @@ const DiaryEditor = ({
         type: popUpActions.CLOSE_ALERT,
       });
     }, 2000);
+  }
+  function isOwner(ownerId: string) {
+    if (userInfo.userId === ownerId) return true;
+    else return false;
   }
   function setAllObjDeactive() {
     if (!canvas) return;
@@ -391,7 +397,7 @@ const DiaryEditor = ({
       </NoDiarySection>
       <Loading $display={diaryDisplay && loaderDisplay} />
       <Wrapper $display={diaryDisplay}>
-        {mode === "edit" && isSelf && (
+        {mode === "edit" && isOwner(ownerId) && (
           <BtnWrapper>
             <>
               <DiaryIconButton onClick={addText}>
@@ -442,7 +448,7 @@ const DiaryEditor = ({
         <BtnWrapper>
           {mode === "view" && diariesData.length !== 0 && (
             <>
-              {isSelf && (
+              {isOwner(ownerId) && (
                 <DiaryIconButton
                   onClick={() => {
                     setSaveMode("saveEdit");
@@ -452,7 +458,7 @@ const DiaryEditor = ({
                   <StyledFontAwesomeIcon icon={faPenToSquare} />
                 </DiaryIconButton>
               )}
-              {isSelf && (
+              {isOwner(ownerId) && (
                 <DiaryIconButton
                   onClick={() => {
                     resetCanvas();
@@ -470,7 +476,7 @@ const DiaryEditor = ({
               </DiaryIconButton>
             </>
           )}
-          {mode === "edit" && isSelf && (
+          {mode === "edit" && isOwner(ownerId) && (
             <>
               <DiaryIconButton htmlFor="image">
                 <StyledFontAwesomeIcon icon={faImage} />
