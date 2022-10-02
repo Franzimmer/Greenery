@@ -42,7 +42,7 @@ const Spinner = styled.div<SpinnerProps>`
   display: ${(props) => (props.$show ? "block" : "none")};
   width: 50px;
   height: 50px;
-  margin: 0 auto;
+  margin: 117px auto;
   background: url(${spinner50});
   animation: 2s ${Spin} linear infinite;
 `;

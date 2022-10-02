@@ -27,20 +27,24 @@ const LogInBg = styled.div`
   filter: brightness(0.85);
 `;
 const LogoWrapper = styled.div`
-  font-size: 48px;
-  font-weight: 600;
-  letter-spacing: 2vw;
+  font-size: 24px;
+  letter-spacing: 2px;
+  line-height: 42px;
   position: absolute;
-  top: 52%;
-  left: 33%;
+  top: 50%;
+  left: 30%;
   transform: translateX(-50%) translateY(-50%);
-  mix-blend-mode: overlay;
-  border: 4px solid;
+  color: #222422;
+  font-weight: 500;
+  // mix-blend-mode: overlay;
   padding: 12px 36px;
-  text-align: center;
-  filter: drop-shadow(0px 0px 16px #fff);
+  filter: drop-shadow(0px 0px 10px #fff);
 `;
-
+const Author = styled.span`
+  font-size: 16px;
+  letter-spacing: 1px;
+  mix-blend-mode: overlay;
+`;
 const LogInPanel = styled.div`
   position: absolute;
   top: 50%;
@@ -55,7 +59,6 @@ const LogInPanel = styled.div`
   padding: 24px;
   background: rgba(255, 255, 255, 0.65);
   box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.2);
-  transition: 1s;
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -194,7 +197,11 @@ const LogIn = () => {
   return (
     <Wrapper>
       <LogInBg />
-      <LogoWrapper>GREENERY</LogoWrapper>
+      <LogoWrapper>
+        Green is the prime color of the world,
+        <br /> and that from which its loveliness arises.
+        <br /> <Author>- Pedro Calderon De La Barca</Author>
+      </LogoWrapper>
       <LogInPanel>
         <FlexWrapper>
           {mode === "login" && (

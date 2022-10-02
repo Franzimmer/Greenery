@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
@@ -65,9 +65,23 @@ export const TagsWrapper = styled.div<TagsWrapper>`
     props.viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
   padding: 2px;
 `;
+const open = keyframes`
+    from {
+      opacity: 0;
+      max-height: 0;
+    }
+    to {
+      opacity: 1;
+      max-height: 500px;
+    }
+`;
 const TagsList = styled(TagsWrapper)`
   width: auto;
   flex-wrap: wrap;
+  animation: ${open} 1s;
+  & * {
+    animation: ${open} 1s;
+  }
 `;
 const ConfirmPanel = styled.div`
   position: absolute;
