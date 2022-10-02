@@ -140,6 +140,7 @@ const ColorWrapper = styled.div`
 `;
 const ColorInput = styled.input`
   opacity: 0;
+  width: 0;
   position: absolute;
 `;
 interface DiaryEditorProps {
@@ -348,6 +349,7 @@ const DiaryEditor = ({
     else if (type === "-" && pageNo !== 0) setPageNo((prev) => prev - 1);
   }
   function cancelEdit() {
+    resetCanvas();
     load(pageNo);
     switchToViewMode();
   }
@@ -419,17 +421,6 @@ const DiaryEditor = ({
               <DiaryIconButton onClick={plusFontSize}>
                 <StyledFontAwesomeIcon icon={faPlus} />
               </DiaryIconButton>
-              <DiaryIconButton htmlFor="palette">
-                <ColorWrapper>
-                  <StyledFontAwesomeIcon icon={faPalette} />
-                  <ColorInput
-                    type="color"
-                    id="palette"
-                    ref={colorRef}
-                    onChange={changeTextColor}
-                  />
-                </ColorWrapper>
-              </DiaryIconButton>
               <DiaryIconButton onClick={changeTextWeight}>
                 <StyledFontAwesomeIcon icon={faBold} />
               </DiaryIconButton>
@@ -441,6 +432,17 @@ const DiaryEditor = ({
               </DiaryIconButton>
               <DiaryIconButton onClick={underLine}>
                 <StyledFontAwesomeIcon icon={faUnderline} />
+              </DiaryIconButton>
+              <DiaryIconButton htmlFor="palette">
+                <ColorWrapper>
+                  <StyledFontAwesomeIcon icon={faPalette} />
+                  <ColorInput
+                    type="color"
+                    id="palette"
+                    ref={colorRef}
+                    onChange={changeTextColor}
+                  />
+                </ColorWrapper>
               </DiaryIconButton>
             </>
           </BtnWrapper>

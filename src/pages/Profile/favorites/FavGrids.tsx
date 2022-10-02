@@ -180,7 +180,7 @@ const FavGrids = ({
                 >
                   <StyledFontAwesomeIcon icon={faBook} />
                 </DiaryIconBtn>
-                {isOwner(card.ownerId) && (
+                {isSelf && (
                   <FavIconButton
                     $show={true}
                     onClick={(e) => {

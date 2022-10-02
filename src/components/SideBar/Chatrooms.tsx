@@ -10,7 +10,7 @@ import { NoSidebarDataText } from "./FollowList";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;
-  height: 550px;
+  height: 300px;
   overflow-y: auto;
   padding: 8px 12px;
   border-radius: 20px;

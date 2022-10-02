@@ -71,6 +71,7 @@ const AuthorName = styled.p`
 `;
 const Content = styled.div`
   color: #6a5125;
+  word-break: break-all;
   padding: 40px 20px;
   & > * + * {
     margin-top: 0.75em;
@@ -179,13 +180,23 @@ const OpenChatRoomBtn = styled(OperationBtn)`
 const OverflowWrapper = styled.div`
   min-width: fit-content;
   flex-basis: 300px;
-  height: 400px;
-  overflow-y: auto;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 4px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
 `;
 const TradeCardWrapper = styled.div`
   width: 300px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 `;
 const TradeCard = styled(Card)`
   margin: 12px;

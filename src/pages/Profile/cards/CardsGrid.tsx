@@ -34,8 +34,11 @@ interface CardProps {
   $show?: boolean;
   $mode: "grid" | "list";
 }
-const CardWrapper = styled.div<GridWrapperProps>`
-  display: flex;
+interface CardWrapperProps {
+  $show: boolean;
+}
+const CardWrapper = styled.div<CardWrapperProps>`
+  display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: row;
 `;
 export const Card = styled.div<CardProps>`
@@ -174,7 +177,10 @@ const CardsGrid = ({
         {cardItems.length !== 0 &&
           cardItems.map((card, index) => {
             return (
-              <CardWrapper $mode={viewMode} key={card.cardId}>
+              <CardWrapper
+                key={card.cardId}
+                $show={filterCard(card.tags || [])}
+              >
                 <Card
                   $mode={viewMode}
                   $show={filterCard(card.tags || [])}

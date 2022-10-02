@@ -8,7 +8,7 @@ import { UserInfo } from "../../store/types/userInfoType";
 import { NoDataText } from "../GlobalStyles/NoDataLayout";
 const ListWrapper = styled.div`
   width: 100%;
-  height: 550px;
+  height: 300px;
   overflow-y: auto;
   padding: 8px;
   border-radius: 20px;

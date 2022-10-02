@@ -340,6 +340,7 @@ const CardEditor = ({
   async function addCard() {
     const imgLink = await uploadFile();
     if (!checkInput()) return;
+    setDisabledBtn(true);
     const data: PlantCard = {
       cardId: null,
       ownerId: userId,
@@ -375,6 +376,7 @@ const CardEditor = ({
     if (imageRef.current?.value) imgLink = await uploadFile();
     else imgLink = previewLink!;
     if (!checkInput()) return;
+    setDisabledBtn(true);
     const data: PlantCard = {
       cardId: editCardId!,
       parents:
@@ -580,7 +582,6 @@ const CardEditor = ({
               onClick={() => {
                 if (!disabledBtn) {
                   editCard();
-                  setDisabledBtn(true);
                 }
               }}
             >
@@ -592,7 +593,6 @@ const CardEditor = ({
               onClick={() => {
                 if (!disabledBtn) {
                   addCard();
-                  setDisabledBtn(true);
                 }
               }}
             >
