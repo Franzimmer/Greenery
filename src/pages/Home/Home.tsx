@@ -30,14 +30,18 @@ import PageLoader from "../../components/GlobalStyles/PageLoader";
 import defaultImg from "../../assets/default.jpg";
 import rubber from "./rubber.png";
 import left from "./left.png";
-import main from "./main.jpeg";
+import main from "./main.webp";
 import feature from "./feature.jpeg";
 import taquila from "./taquila.png";
 import coconut from "./coconut.png";
 
-const Wrapper = styled.div`
+interface WrapperProps {
+  isLoading: boolean;
+}
+const Wrapper = styled.div<WrapperProps>`
   width: 80vw;
   margin: 150px auto 50px;
+  opacity: ${(props) => (props.isLoading ? "0" : "1")};
 `;
 const Banner = styled.div`
   position: absolute;
@@ -179,7 +183,7 @@ const DecorationEucari = styled.img`
   background: #bedce6;
   box-shadow: 5vw 80px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 0.5s forwards;
+  animation: ${showOpacity} 1s linear 1s forwards;
 `;
 const DecorationRubber = styled.img`
   position: absolute;
@@ -189,7 +193,7 @@ const DecorationRubber = styled.img`
   background: #bedce6;
   box-shadow: 0px 80px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 0.5s forwards;
+  animation: ${showOpacity} 1s linear 1s forwards;
 `;
 const DecorationCoco = styled.img`
   position: absolute;
@@ -199,17 +203,18 @@ const DecorationCoco = styled.img`
   background: #fddba9;
   box-shadow: -10vw 90px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 1.5s forwards;
+  animation: ${showOpacity} 1s linear 1.25s forwards;
 `;
 const DecorationTaquila = styled.img`
   position: absolute;
+  z-index: -1;
   bottom: 11vh;
   left: 12vw;
   width: 22vw;
   background: #fddba9;
   box-shadow: 0px 30px #f5f0ec inset;
   opacity: 0;
-  animation: ${showOpacity} 0.5s linear 1.5s forwards;
+  animation: ${showOpacity} 1s linear 1.25s forwards;
 `;
 const CardsWrapper = styled.div``;
 const CardsFlexWrpper = styled.div`
@@ -268,6 +273,7 @@ const UserLink = styled(Link)`
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const imagePreload = [main];
   const quoteRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -345,171 +351,166 @@ const Home = () => {
     }
     getHomePageData();
   }, []);
-  console.log(diariesExist);
   return (
     <>
       {isLoading && <PageLoader />}
-      {!isLoading && (
-        <Wrapper>
-          <Banner>
-            <DecorationEucari src={left}></DecorationEucari>
-            <DecorationTaquila src={taquila}></DecorationTaquila>
-            <MainStyleWrapper>
-              <MainStyle src={main} />
-              <MainDescriptionWrapper>
-                <MainDescriptionTitle>
-                  To be human is to experience biophilia.
-                </MainDescriptionTitle>
-                <MainDescription>[bio-feelya] —</MainDescription>
-                <MainDescription>
-                  Our innate desire to connect with nature.
-                </MainDescription>
-                <br></br>
-                <MainDescription>It’s in our DNA.</MainDescription>
-              </MainDescriptionWrapper>
-            </MainStyleWrapper>
-            <DecorationCoco src={coconut}></DecorationCoco>
-            <DecorationRubber src={rubber}></DecorationRubber>
-            <ExploreWrapper>
-              <ArrowIcon icon={faAnglesDown} />
-              <MainDescription>Explore</MainDescription>
-            </ExploreWrapper>
-          </Banner>
-          <QuoteSection ref={quoteRef}>
-            <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
-            <QuoteAutorText>~ Audrey Hepburn</QuoteAutorText>
-          </QuoteSection>
-          <FeatureWrapper>
-            <FeatureImg src={feature} />
-            <FeatureTextWrapper>
-              <SectionTitle>A space for plants,</SectionTitle>
-              <SectionTitleAlign>a space for Yourself</SectionTitleAlign>
-              <FeatureSecondTitle>
-                Greenery is a social space designed for plant people,
-                <br /> here you can:
-              </FeatureSecondTitle>
-              <Feature>
-                <FeatureIcon icon={faCircleCheck} />
-                Record Your Plant Care Info
-              </Feature>
-              <Feature>
-                <FeatureIcon icon={faCircleCheck} />
-                Write Your Plant Growth Diary
-              </Feature>
-              <Feature>
-                <FeatureIcon icon={faCircleCheck} />
-                Explore People's Amazing Plants
-              </Feature>
-              <Feature>
-                <FeatureIcon icon={faCircleCheck} />
-                Learn Plants Care Tips
-              </Feature>
-              <Feature>
-                <FeatureIcon icon={faCircleCheck} />
-                Exchange Plant With Others
-              </Feature>
-            </FeatureTextWrapper>
-            <LogInRedirect
-              onClick={() => {
-                if (isLoggedIn) navigate(`/profile/${userInfo.userId}`);
-                else navigate(`/login`);
-              }}
-            >
-              Build Your Oasis
-              <RedirectIcon icon={faArrowUpRightFromSquare} />
-            </LogInRedirect>
-          </FeatureWrapper>
-          <CardsWrapper>
-            <SectionTitle>Our Most Beloved Plants</SectionTitle>
-            <CardsFlexWrpper>
-              {favCards.length !== 0 &&
-                favCards.map((card, index) => {
-                  return (
-                    <Card
-                      key={card.cardId}
-                      id={card.cardId!}
-                      $mode={"grid"}
-                      $show={true}
-                      onClick={(e) => {
-                        setDetailDisplay(true);
-                        setDetailData(card);
-                        dispatch({
-                          type: popUpActions.SHOW_MASK,
-                        });
-                      }}
-                    >
-                      <PlantImg path={card.plantPhoto || defaultImg} />
-                      <NameText>
-                        <UserLink
-                          to={`/profile/${card.ownerId}`}
-                          onClick={(e) => {
-                            dispatch({
-                              type: popUpActions.HIDE_ALL,
-                            });
-                            e.stopPropagation();
-                          }}
-                        >
-                          {findOwnerName(card.ownerId)}
-                        </UserLink>
-                        's {card.plantName}
-                      </NameText>
-                      <SpeciesText>{card.species}</SpeciesText>
-                      <TagsWrapper>
-                        {card?.tags?.length !== 0 &&
-                          card.tags?.map((tag) => {
-                            return (
-                              <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>
-                            );
-                          })}
-                      </TagsWrapper>
-
-                      <DiaryIconBtn
-                        $show={diariesExist[index]}
+      <Wrapper isLoading={isLoading}>
+        <Banner>
+          <MainStyleWrapper>
+            <MainStyle src={main} />
+            <MainDescriptionWrapper>
+              <MainDescriptionTitle>
+                To be human is to experience biophilia.
+              </MainDescriptionTitle>
+              <MainDescription>[bio-feelya] —</MainDescription>
+              <MainDescription>
+                Our innate desire to connect with nature.
+              </MainDescription>
+              <br></br>
+              <MainDescription>It’s in our DNA.</MainDescription>
+            </MainDescriptionWrapper>
+          </MainStyleWrapper>
+          <DecorationEucari src={left}></DecorationEucari>
+          <DecorationTaquila src={taquila}></DecorationTaquila>
+          <DecorationCoco src={coconut}></DecorationCoco>
+          <DecorationRubber src={rubber}></DecorationRubber>
+          <ExploreWrapper>
+            <ArrowIcon icon={faAnglesDown} />
+            <MainDescription>Explore</MainDescription>
+          </ExploreWrapper>
+        </Banner>
+        <QuoteSection ref={quoteRef}>
+          <QuoteText>To plant a garden is to believe in tomorrow.</QuoteText>
+          <QuoteAutorText>~ Audrey Hepburn</QuoteAutorText>
+        </QuoteSection>
+        <FeatureWrapper>
+          <FeatureImg src={feature} />
+          <FeatureTextWrapper>
+            <SectionTitle>A space for plants,</SectionTitle>
+            <SectionTitleAlign>a space for Yourself</SectionTitleAlign>
+            <FeatureSecondTitle>
+              Greenery is a social space designed for plant people,
+              <br /> here you can:
+            </FeatureSecondTitle>
+            <Feature>
+              <FeatureIcon icon={faCircleCheck} />
+              Record Your Plant Care Info
+            </Feature>
+            <Feature>
+              <FeatureIcon icon={faCircleCheck} />
+              Write Your Plant Growth Diary
+            </Feature>
+            <Feature>
+              <FeatureIcon icon={faCircleCheck} />
+              Explore People's Amazing Plants
+            </Feature>
+            <Feature>
+              <FeatureIcon icon={faCircleCheck} />
+              Learn Plants Care Tips
+            </Feature>
+            <Feature>
+              <FeatureIcon icon={faCircleCheck} />
+              Exchange Plant With Others
+            </Feature>
+          </FeatureTextWrapper>
+          <LogInRedirect
+            onClick={() => {
+              if (isLoggedIn) navigate(`/profile/${userInfo.userId}`);
+              else navigate(`/login`);
+            }}
+          >
+            Build Your Oasis
+            <RedirectIcon icon={faArrowUpRightFromSquare} />
+          </LogInRedirect>
+        </FeatureWrapper>
+        <CardsWrapper>
+          <SectionTitle>Our Most Beloved Plants</SectionTitle>
+          <CardsFlexWrpper>
+            {favCards.length !== 0 &&
+              favCards.map((card, index) => {
+                return (
+                  <Card
+                    key={card.cardId}
+                    id={card.cardId!}
+                    $mode={"grid"}
+                    $show={true}
+                    onClick={(e) => {
+                      setDetailDisplay(true);
+                      setDetailData(card);
+                      dispatch({
+                        type: popUpActions.SHOW_MASK,
+                      });
+                    }}
+                  >
+                    <PlantImg path={card.plantPhoto || defaultImg} />
+                    <NameText>
+                      <UserLink
+                        to={`/profile/${card.ownerId}`}
                         onClick={(e) => {
-                          setDiaryDisplay(true);
-                          setDiaryId(card.cardId);
-                          setOwnerId(card.ownerId);
                           dispatch({
-                            type: popUpActions.SHOW_MASK,
+                            type: popUpActions.HIDE_ALL,
                           });
                           e.stopPropagation();
                         }}
                       >
-                        <StyledFontAwesomeIcon icon={faBook} />
-                      </DiaryIconBtn>
-                      {isLoggedIn && (
-                        <FavIconButton
-                          $show={
-                            userInfo?.favoriteCards.includes(card.cardId!) ||
-                            false
-                          }
-                          onClick={(e: React.MouseEvent<HTMLElement>) => {
-                            favoriteToggle(card.cardId!);
-                            e.stopPropagation();
-                          }}
-                        >
-                          <StyledFontAwesomeIcon icon={faBookmark} />
-                        </FavIconButton>
-                      )}
-                    </Card>
-                  );
-                })}
-            </CardsFlexWrpper>
-          </CardsWrapper>
-          <DetailedCard
-            detailDisplay={detailDisplay}
-            setDetailDisplay={setDetailDisplay}
-            detailData={detailData!}
-          />
-          <DiaryEditor
-            ownerId={ownerId}
-            diaryDisplay={diaryDisplay}
-            setDiaryDisplay={setDiaryDisplay}
-            diaryId={diaryId!}
-            setDiaryId={setDiaryId}
-          />
-        </Wrapper>
-      )}
+                        {findOwnerName(card.ownerId)}
+                      </UserLink>
+                      's {card.plantName}
+                    </NameText>
+                    <SpeciesText>{card.species}</SpeciesText>
+                    <TagsWrapper>
+                      {card?.tags?.length !== 0 &&
+                        card.tags?.map((tag) => {
+                          return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                        })}
+                    </TagsWrapper>
+
+                    <DiaryIconBtn
+                      $show={diariesExist[index]}
+                      onClick={(e) => {
+                        setDiaryDisplay(true);
+                        setDiaryId(card.cardId);
+                        setOwnerId(card.ownerId);
+                        dispatch({
+                          type: popUpActions.SHOW_MASK,
+                        });
+                        e.stopPropagation();
+                      }}
+                    >
+                      <StyledFontAwesomeIcon icon={faBook} />
+                    </DiaryIconBtn>
+                    {isLoggedIn && (
+                      <FavIconButton
+                        $show={
+                          userInfo?.favoriteCards.includes(card.cardId!) ||
+                          false
+                        }
+                        onClick={(e: React.MouseEvent<HTMLElement>) => {
+                          favoriteToggle(card.cardId!);
+                          e.stopPropagation();
+                        }}
+                      >
+                        <StyledFontAwesomeIcon icon={faBookmark} />
+                      </FavIconButton>
+                    )}
+                  </Card>
+                );
+              })}
+          </CardsFlexWrpper>
+        </CardsWrapper>
+        <DetailedCard
+          detailDisplay={detailDisplay}
+          setDetailDisplay={setDetailDisplay}
+          detailData={detailData!}
+        />
+        <DiaryEditor
+          ownerId={ownerId}
+          diaryDisplay={diaryDisplay}
+          setDiaryDisplay={setDiaryDisplay}
+          diaryId={diaryId!}
+          setDiaryId={setDiaryId}
+        />
+      </Wrapper>
     </>
   );
 };
