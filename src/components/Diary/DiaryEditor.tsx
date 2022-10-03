@@ -381,7 +381,6 @@ const DiaryEditor = ({
   }, [pageNo]);
   useEffect(() => {
     function handleObj(obj: fabric.IEvent) {
-      console.log(obj.selected);
       if (!obj.selected) return;
       if (obj.selected.length > 1) return;
       if (obj.selected[0]!.type !== "i-text") return;

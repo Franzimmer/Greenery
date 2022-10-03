@@ -390,23 +390,6 @@ const firebase = {
     let result = await Promise.all(promises);
     return result;
   },
-  //Fix Testing
-  // async deleteCardByName() {
-  //   const q = query(cards, where("plantName", "==", "Baby 大麥草"));
-  //   const querySnapshot = await getDocs(q);
-  //   let cardIds: string[] = [];
-  //   if (!querySnapshot.empty) {
-  //     querySnapshot.forEach((doc) => {
-  //       let card = doc.data();
-  //       cardIds.push(card.cardId!);
-  //     });
-  //   }
-  //   let promises = cardIds.map((id) => {
-  //     return deleteDoc(doc(cards, id));
-  //   });
-  //   await Promise.all(promises);
-  //   alert("success delete");
-  // },
 };
 
 export {

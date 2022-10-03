@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Outlet } from "react-router-dom";
-// import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Alert from "./components/GlobalStyles/Alert";

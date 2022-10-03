@@ -54,7 +54,6 @@ const LogoLink = styled(HeaderLink)`
   letter-spacing: 8px;
 `;
 const SideBarBtnWrapper = styled.div`
-  // background: linear-gradient(90deg, #7bc09a, #e4e783);
   background: #5c836f;
   width: 90px;
   height: 90px;

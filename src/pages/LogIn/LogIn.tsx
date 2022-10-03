@@ -36,7 +36,6 @@ const LogoWrapper = styled.div`
   transform: translateX(-50%) translateY(-50%);
   color: #222422;
   font-weight: 500;
-  // mix-blend-mode: overlay;
   padding: 12px 36px;
   filter: drop-shadow(0px 0px 10px #fff);
 `;
