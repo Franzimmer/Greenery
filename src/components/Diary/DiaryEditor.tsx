@@ -394,7 +394,7 @@ const DiaryEditor = ({
     canvas.on("selection:updated", (obj) => handleObj(obj));
     canvas.on("selection:created", (obj) => handleObj(obj));
     canvas.on("selection:cleared", (obj) => handleObj(obj));
-  }, [canvas]);
+  }, [mode]);
   return (
     <>
       <NoDiarySection
