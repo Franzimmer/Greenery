@@ -165,7 +165,6 @@ function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
   return (
     <>
-      {/* <Reset /> */}
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver setSideBarDisplay={setSideBarDisplay} />

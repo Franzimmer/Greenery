@@ -144,7 +144,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   async function editUserPhoto() {
     if (!photoRef.current) return;
     if (photoRef.current.files!.length === 0) return;
-    let link = await firebase.uploadFile(photoRef.current.files![0]);
+    const link = await firebase.uploadFile(photoRef.current.files![0]);
     photoRef.current.value = "";
     dispatch({
       type: UserInfoActions.EDIT_USER_PHOTO,
@@ -195,7 +195,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   useEffect(() => {
     async function getUserInfo() {
       if (id && !isSelf) {
-        let result = await firebase.getUserInfo(id);
+        const result = await firebase.getUserInfo(id);
         if (!result.exists()) {
           emitAlert("fail", "Page Not Exist.");
           navigate("/");

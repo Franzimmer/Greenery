@@ -61,20 +61,20 @@ const Chatrooms = () => {
 
   useEffect(() => {
     async function getChatTargets() {
-      let targetList: string[] = [];
-      let chatData: UserInfo[] = [];
+      const targetList: string[] = [];
+      const chatData: UserInfo[] = [];
 
-      let chatrooms = await firebase.getChatrooms(userInfo.userId);
+      const chatrooms = await firebase.getChatrooms(userInfo.userId);
       if (!chatrooms.empty) {
         chatrooms.forEach((chat) => {
-          let chatData = chat.data();
-          let targetId = chatData.users.filter(
+          const chatData = chat.data();
+          const targetId = chatData.users.filter(
             (user: string) => user !== userInfo.userId
           );
           targetList.push(targetId[0]);
         });
       }
-      let queryData = await firebase.getUsers(targetList);
+      const queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });

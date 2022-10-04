@@ -165,7 +165,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     if (filterOptions) {
       setFilterOptionsOpen(false);
       setFilter("");
-      let checkboxes = {} as CheckList;
+      const checkboxes = {} as CheckList;
       cardList.forEach((card) => {
         checkboxes[card.cardId!] = false;
       });
@@ -173,11 +173,11 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     } else setFilterOptionsOpen(true);
   }
   function selectFilter(e: React.MouseEvent<HTMLElement>) {
-    let eventTarget = e.target as HTMLDivElement;
-    let filter = eventTarget.textContent!;
+    const eventTarget = e.target as HTMLDivElement;
+    const filter = eventTarget.textContent!;
     setFilter(filter);
-    let filtered = cardList.filter((card) => card.tags?.includes(filter));
-    let checkboxes = {} as CheckList;
+    const filtered = cardList.filter((card) => card.tags?.includes(filter));
+    const checkboxes = {} as CheckList;
     filtered.forEach((card) => {
       checkboxes[card.cardId!] = false;
     });
@@ -188,19 +188,19 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     else return true;
   }
   function allCheck() {
-    let newObj = Object.fromEntries(
+    const newObj = Object.fromEntries(
       Object.keys(checkList).map((key) => [key, true])
     );
     setCheckList(newObj);
   }
   function clearAllCheck() {
-    let newObj = Object.fromEntries(
+    const newObj = Object.fromEntries(
       Object.keys(checkList).map((key) => [key, false])
     );
     setCheckList(newObj);
   }
   function switchOneCheck(cardId: string) {
-    let newObj = { ...checkList };
+    const newObj = { ...checkList };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setCheckList(newObj);
   }
@@ -209,10 +209,10 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       (key) => checkList[key] === true
     );
     if (!eventIds.length) return;
-    let idList: string[] = [];
-    let nameList: string[] = [];
+    const idList: string[] = [];
+    const nameList: string[] = [];
     eventIds.forEach((eventId) => {
-      let targetCard = cardList.find((card) => card.cardId === eventId);
+      const targetCard = cardList.find((card) => card.cardId === eventId);
       idList.push(targetCard!.cardId!);
       nameList.push(targetCard!.plantName);
     });
@@ -238,7 +238,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       (key) => checkList[key] === true
     );
     if (!targets.length) return;
-    let promises = targets.map((target) => {
+    const promises = targets.map((target) => {
       return firebase.deleteCard(target);
     });
     await Promise.all(promises);
@@ -253,7 +253,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     emitAlert("success", `Delete Card Success`);
   }
   async function favoriteToggle(cardId: string) {
-    let userId = userInfo.userId;
+    const userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {
       dispatch({
         type: UserInfoActions.DELETE_FAVORITE_PLANT,
@@ -273,8 +273,8 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   useEffect(() => {
     async function getUserCards() {
       let cards: PlantCard[] = [];
-      let cardsIds: string[] = [];
-      let checkboxes = {} as CheckList;
+      const cardsIds: string[] = [];
+      const checkboxes = {} as CheckList;
 
       if (isSelf) {
         cards = cardList;
@@ -283,7 +283,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
           checkboxes[card.cardId!] = false;
         });
       } else {
-        let querySnapshot = await firebase.getUserCards(id!);
+        const querySnapshot = await firebase.getUserCards(id!);
         querySnapshot.forEach((doc) => {
           cards.push(doc.data());
           cardsIds.push(doc.data().cardId!);
@@ -298,10 +298,10 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     getUserCards();
   }, [id, isSelf, cardList]);
   useEffect(() => {
-    let tags: string[] = [];
-    let checkboxes = {} as CheckList;
+    const tags: string[] = [];
+    const checkboxes = {} as CheckList;
     cardList.forEach((card) => {
-      let searchTargets = card.tags;
+      const searchTargets = card.tags;
       checkboxes[card.cardId!] = false;
       searchTargets?.forEach((tag) => {
         if (!tags.includes(tag)) tags.push(tag);

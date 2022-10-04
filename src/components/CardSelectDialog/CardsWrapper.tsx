@@ -68,7 +68,7 @@ const CardsWrapper = ({
   setMenuSelect,
 }: CardsWrapperProps) => {
   function switchOneCheck(cardId: string): void {
-    let newObj = { ...menuSelect };
+    const newObj = { ...menuSelect };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setMenuSelect(newObj);
   }

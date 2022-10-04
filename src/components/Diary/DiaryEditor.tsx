@@ -210,7 +210,7 @@ const DiaryEditor = ({
   }
   function addText() {
     if (!fontSizeRef.current) return;
-    let text = new fabric.IText("hello world", {
+    const text = new fabric.IText("hello world", {
       left: 100,
       top: 100,
       fontFamily: "Montserrat",
@@ -221,7 +221,7 @@ const DiaryEditor = ({
     fontSizeRef.current!.value = "20";
   }
   function changeTextColor() {
-    let cValue = colorRef.current?.value;
+    const cValue = colorRef.current?.value;
     if (canvas?.getActiveObject().type !== "i-text") return;
     canvas?.getActiveObject().set("fill", cValue);
     canvas?.renderAll();
@@ -229,8 +229,8 @@ const DiaryEditor = ({
   function plusFontSize() {
     if (!fontSizeRef.current) return;
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
+    const target = canvas?.getActiveObject() as fabric.IText;
+    const fontSize = Number(fontSizeRef.current.value);
     if (fontSize <= 46 && fontSize >= 10)
       fontSizeRef.current.value = String(fontSize + 2);
     else if (fontSize > 48) fontSizeRef.current.value = "48";
@@ -241,8 +241,8 @@ const DiaryEditor = ({
   function minusFontSize() {
     if (!fontSizeRef.current) return;
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
+    const target = canvas?.getActiveObject() as fabric.IText;
+    const fontSize = Number(fontSizeRef.current.value);
     if (fontSize >= 12 && fontSize <= 48)
       fontSizeRef.current.value = String(fontSize - 2);
     else if (fontSize > 48) fontSizeRef.current.value = "48";
@@ -253,8 +253,8 @@ const DiaryEditor = ({
   function changeFontSize() {
     if (!fontSizeRef.current) return;
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
+    const target = canvas?.getActiveObject() as fabric.IText;
+    const fontSize = Number(fontSizeRef.current.value);
     if (fontSize > 48) {
       fontSizeRef.current.value = "48";
     } else if (fontSize < 10) {
@@ -265,28 +265,28 @@ const DiaryEditor = ({
   }
   function changeFontStyle() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.fontStyle === "normal") target.fontStyle = "italic";
     else if (target.fontStyle === "italic") target.fontStyle = "normal";
     canvas?.renderAll();
   }
   function strikeThrough() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.linethrough === false) target.set("linethrough", true);
     else if (target.linethrough === true) target.set("linethrough", false);
     canvas?.renderAll();
   }
   function underLine() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.underline === false) target.set("underline", true);
     else if (target.underline === true) target.set("underline", false);
     canvas?.renderAll();
   }
   function changeTextWeight() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.fontWeight === "normal") target.set("fontWeight", 500);
     else if (target.fontWeight === 500) target.set("fontWeight", "normal");
     canvas?.renderAll();
@@ -294,8 +294,8 @@ const DiaryEditor = ({
   async function addImage() {
     if (!fileRef.current) return;
     if (!fileRef.current.files!.length) return;
-    let file = fileRef.current!.files![0];
-    let fileLink = await firebase.uploadFile(file);
+    const file = fileRef.current!.files![0];
+    const fileLink = await firebase.uploadFile(file);
     fabric.Image.fromURL(fileLink!, function(oImg) {
       oImg.set({ left: 20, top: 50 });
       oImg.scaleToWidth(200, false);
@@ -304,7 +304,7 @@ const DiaryEditor = ({
     });
   }
   function bringForward() {
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     target.bringForward();
   }
   function removeItem() {
@@ -316,8 +316,8 @@ const DiaryEditor = ({
   }
   async function save() {
     setAllObjDeactive();
-    let page = JSON.stringify(canvas);
-    let currentDiaries = [...diariesData];
+    const page = JSON.stringify(canvas);
+    const currentDiaries = [...diariesData];
     currentDiaries.push(page);
     setDiariesData(currentDiaries);
     setPageNo(currentDiaries.length - 1);
@@ -327,9 +327,9 @@ const DiaryEditor = ({
   }
   async function saveEdit() {
     setAllObjDeactive();
-    let index = pageNo;
-    let page = JSON.stringify(canvas);
-    let currentDiaries = [...diariesData];
+    const index = pageNo;
+    const page = JSON.stringify(canvas);
+    const currentDiaries = [...diariesData];
     currentDiaries[index] = page;
     await firebase.saveEditDiary(diaryId, currentDiaries);
     emitAlert("success", "Update Diary Data Successfully.");
@@ -359,11 +359,11 @@ const DiaryEditor = ({
     async function getDiary(diaryId: string) {
       resetCanvas();
       if (!canvas) return;
-      let docSnap = await firebase.getDiary(diaryId);
-      if (docSnap.exists()) {
-        setDiariesData(docSnap.data().pages);
+      const docSnapshot = await firebase.getDiary(diaryId);
+      if (docSnapshot.exists()) {
+        setDiariesData(docSnapshot.data().pages);
         switchToViewMode();
-        canvas?.loadFromJSON(docSnap.data().pages[0], async () => {
+        canvas?.loadFromJSON(docSnapshot.data().pages[0], async () => {
           canvas.selection = false;
           canvas.getObjects().forEach((obj) => {
             obj.set({ selectable: false, hoverCursor: "text" });
@@ -385,7 +385,7 @@ const DiaryEditor = ({
       if (obj.selected.length > 1) return;
       if (obj.selected[0]!.type !== "i-text") return;
       else {
-        let target = obj.selected[0] as fabric.IText;
+        const target = obj.selected[0] as fabric.IText;
         fontSizeRef.current!.value = String(target.fontSize!);
       }
     }

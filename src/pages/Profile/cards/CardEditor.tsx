@@ -230,7 +230,7 @@ const CardEditor = ({
   function createPreviewLink() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length !== 0) {
-      let path = URL.createObjectURL(imageRef.current.files![0]);
+      const path = URL.createObjectURL(imageRef.current.files![0]);
       setPreviewLink(path);
     } else {
       setPreviewLink(null);
@@ -260,8 +260,8 @@ const CardEditor = ({
     }
   }
   function switchActive(e: React.KeyboardEvent) {
-    let min = 0;
-    let max = searchSuggests.length - 1;
+    const min = 0;
+    const max = searchSuggests.length - 1;
     if (e.key === "ArrowUp" && searchActive > min) {
       e.preventDefault();
       setSearchActive((prev) => prev - 1);
@@ -295,22 +295,24 @@ const CardEditor = ({
     if (!tagRef.current) return;
     if (tagRef.current.value === "") return;
     if (tags.includes(tagRef.current.value)) return;
-    let currentTags = [...tags];
+    const currentTags = [...tags];
     currentTags.push(tagRef.current.value);
     setTags(currentTags);
   }
   function RemoveTag(e: React.MouseEvent<HTMLElement>) {
     if (!tagRef.current) return;
-    let currentTags = [...tags];
-    let button = e.target as HTMLDivElement;
-    let newTags = currentTags.filter((tag) => tag !== button.parentElement!.id);
+    const currentTags = [...tags];
+    const button = e.target as HTMLDivElement;
+    const newTags = currentTags.filter(
+      (tag) => tag !== button.parentElement!.id
+    );
     setTags(newTags);
   }
   async function uploadFile() {
     if (!imageRef.current) return null;
     if (imageRef.current!.value === "") return null;
-    let file = imageRef.current!.files![0];
-    let dowloadLink = await firebase.uploadFile(file);
+    const file = imageRef.current!.files![0];
+    const dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
   }
   function resetEditor() {
@@ -357,7 +359,7 @@ const CardEditor = ({
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
-    let cardId = await firebase.addCard(data);
+    const cardId = await firebase.addCard(data);
     await firebase.emitNotices(userId, myFollowers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
@@ -413,7 +415,7 @@ const CardEditor = ({
   useEffect(() => {
     async function getEditCardData() {
       if (!editCardId) return;
-      let data = cardList.find((card) => card.cardId === editCardId);
+      const data = cardList.find((card) => card.cardId === editCardId);
       setPreviewLink(data!.plantPhoto || null);
       setTags(data?.tags || []);
       nameRef.current!.value = data!.plantName;

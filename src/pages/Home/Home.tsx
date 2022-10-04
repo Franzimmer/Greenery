@@ -273,7 +273,6 @@ const UserLink = styled(Link)`
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const imagePreload = [main];
   const quoteRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -302,7 +301,7 @@ const Home = () => {
     }, 2000);
   }
   async function favoriteToggle(cardId: string) {
-    let userId = userInfo.userId;
+    const userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {
       dispatch({
         type: UserInfoActions.DELETE_FAVORITE_PLANT,
@@ -320,26 +319,26 @@ const Home = () => {
     }
   }
   function findOwnerName(ownerId: string) {
-    let target = ownerInfos.find((owner) => owner.userId === ownerId);
+    const target = ownerInfos.find((owner) => owner.userId === ownerId);
     return target?.userName;
   }
   useEffect(() => {
     async function getHomePageData() {
-      let queryData = await firebase.getFavCards();
+      const queryData = await firebase.getFavCards();
       if (!queryData.empty) {
-        let favCards: PlantCard[] = [];
-        let favCardsIds: string[] = [];
-        let ownerIds: string[] = [];
-        let ownerInfo: UserInfo[] = [];
+        const favCards: PlantCard[] = [];
+        const favCardsIds: string[] = [];
+        const ownerIds: string[] = [];
+        const ownerInfo: UserInfo[] = [];
         queryData.forEach((doc) => {
           favCards.push(doc.data());
           favCardsIds.push(doc.data().cardId!);
           if (!ownerIds.includes(doc.data().ownerId))
             ownerIds.push(doc.data().ownerId);
         });
-        let diariesCheck = firebase.checkDiariesExistence(favCardsIds);
-        let ownerData = firebase.getUsers(ownerIds);
-        let renderData = await Promise.all([diariesCheck, ownerData]);
+        const diariesCheck = firebase.checkDiariesExistence(favCardsIds);
+        const ownerData = firebase.getUsers(ownerIds);
+        const renderData = await Promise.all([diariesCheck, ownerData]);
         setDiariesExist(renderData[0]);
         renderData[1]?.forEach((doc) => {
           ownerInfo.push(doc.data());

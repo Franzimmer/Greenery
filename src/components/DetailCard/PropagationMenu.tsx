@@ -103,7 +103,7 @@ const PropagationMenu = ({
   const dispatch = useDispatch();
 
   async function addDocPromise(data: PlantCard) {
-    let cardId = await firebase.addCard(data);
+    const cardId = await firebase.addCard(data);
     const uploadData = { ...data, cardId };
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
@@ -132,7 +132,7 @@ const PropagationMenu = ({
       emitAlert("fail", "Please fill out parent info.");
       return;
     }
-    let parents = [propagateParentData.plantName];
+    const parents = [propagateParentData.plantName];
     if (type === "seedling") {
       parents.push(inputRef.current!.value);
     }
@@ -145,7 +145,7 @@ const PropagationMenu = ({
       plantName: `Baby ${propagateParentData.species}`,
     };
     const targets = Array(Number(numberRef.current.value)).fill(data);
-    let promises = targets.map((target) => addDocPromise(target));
+    const promises = targets.map((target) => addDocPromise(target));
     await Promise.all(promises);
     setPropagateDisplay(false);
     dispatch({

@@ -40,25 +40,25 @@ const Favorites = ({ id }: FavoritesProps) => {
       if (userInfo.userId === id) {
         favorites = favoriteCards;
       } else {
-        let docSnapshot = await firebase.getUserInfo(id);
+        const docSnapshot = await firebase.getUserInfo(id);
         favorites = docSnapshot.data()?.favoriteCards!;
       }
       if (favorites.length !== 0) {
-        let queryData = await firebase.getCards(favorites);
+        const queryData = await firebase.getCards(favorites);
         if (!queryData?.empty) {
-          let cards: PlantCard[] = [];
-          let cardIds: string[] = [];
-          let ownerIds: string[] = [];
-          let ownerInfo: UserInfo[] = [];
+          const cards: PlantCard[] = [];
+          const cardIds: string[] = [];
+          const ownerIds: string[] = [];
+          const ownerInfo: UserInfo[] = [];
           queryData?.forEach((doc) => {
             cards.push(doc.data());
             cardIds.push(doc.data().cardId!);
             if (!ownerIds.includes(doc.data().ownerId))
               ownerIds.push(doc.data().ownerId);
           });
-          let usersQueryData = firebase.getUsers(ownerIds);
-          let checkResult = firebase.checkDiariesExistence(cardIds);
-          let renderData = await Promise.all([usersQueryData, checkResult]);
+          const usersQueryData = firebase.getUsers(ownerIds);
+          const checkResult = firebase.checkDiariesExistence(cardIds);
+          const renderData = await Promise.all([usersQueryData, checkResult]);
           renderData[0]?.forEach((doc) => {
             ownerInfo.push(doc.data());
           });

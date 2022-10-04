@@ -30,14 +30,14 @@ interface ProfileMenuProps {
 }
 const ProfileMenu = ({ tabDisplay, setTabDisplay }: ProfileMenuProps) => {
   function tabSwitcher(event: React.MouseEvent<HTMLElement>) {
-    let resetState = {
+    const resetState = {
       Cards: false,
       Calendar: false,
       Gallery: false,
       Favorites: false,
     };
-    let target = event.target as HTMLButtonElement;
-    let key = target.textContent as
+    const target = event.target as HTMLButtonElement;
+    const key = target.textContent as
       | "Cards"
       | "Calendar"
       | "Gallery"

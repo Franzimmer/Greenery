@@ -83,7 +83,7 @@ const Notifications = ({ notices, followInfos }: NotificationsProps) => {
   const noticeMsg2 = " release a new Post, go check it！";
 
   function findUserName(userId: string) {
-    let target = followInfos.find((info) => info.userId === userId);
+    const target = followInfos.find((info) => info.userId === userId);
     if (target) return target.userName;
   }
   async function deleteNotice(noticeId: string) {

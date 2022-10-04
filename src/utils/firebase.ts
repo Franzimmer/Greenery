@@ -55,25 +55,26 @@ const chatrooms = collection(db, "chatrooms");
 const diaries = collection(db, "diaries");
 
 const firebase = {
+  //userinfo collection
   async initUserInfo(uid: string, data: UserInfo) {
     const docRef = doc(users, uid);
     await setDoc(docRef, data);
   },
   async getUserInfo(id: string) {
-    let docRef = doc(users, id);
-    let docSnapshot = await getDoc(docRef);
+    const docRef = doc(users, id);
+    const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
   async updateUserPhoto(id: string, url: string) {
-    let docRef = doc(users, id);
+    const docRef = doc(users, id);
     await updateDoc(docRef, { photoUrl: url });
   },
   async updateUserName(id: string, name: string) {
-    let docRef = doc(users, id);
+    const docRef = doc(users, id);
     await updateDoc(docRef, { userName: name });
   },
   async checkChatroom(users: string[]) {
-    let usersCopy = [...users];
+    const usersCopy = [...users];
     const q = query(
       chatrooms,
       where("users", "in", [users, usersCopy.reverse()])
@@ -87,25 +88,25 @@ const firebase = {
     }
   },
   async storeChatroomData(users: string[], msg: message) {
-    let usersCopy = [...users];
+    const usersCopy = [...users];
     const q = query(
       chatrooms,
       where("users", "in", [users, usersCopy.reverse()])
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
-      let room = doc(chatrooms);
+      const room = doc(chatrooms);
       await setDoc(room, { users: users, msgs: [msg] });
     } else {
       querySnapshot.forEach(async (docData) => {
-        let docRef = doc(chatrooms, docData.id);
-        let docMsgs = docData.data().msgs;
+        const docRef = doc(chatrooms, docData.id);
+        const docMsgs = docData.data().msgs;
         await updateDoc(docRef, { msgs: [...docMsgs, msg] });
       });
     }
   },
   async changePlantOwner(cardId: string, newOwnerId: string) {
-    let docRef = doc(cards, cardId);
+    const docRef = doc(cards, cardId);
     await updateDoc(docRef, { ownerId: newOwnerId });
   },
   async addPost(postData: {
@@ -114,7 +115,7 @@ const firebase = {
     authorId: string;
     type: string;
   }) {
-    let post = doc(posts);
+    const post = doc(posts);
     await setDoc(post, {
       ...postData,
       postId: post.id,
@@ -123,21 +124,21 @@ const firebase = {
     return post.id;
   },
   async getPostData(postId: string) {
-    let docRef = doc(posts, postId);
-    let docSnapshot = await getDoc(docRef);
+    const docRef = doc(posts, postId);
+    const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
   async saveEditPost(postId: string, post: Post) {
-    let docRef = doc(posts, postId);
-    let docSnapshot = await setDoc(docRef, {
+    const docRef = doc(posts, postId);
+    const docSnapshot = await setDoc(docRef, {
       ...post,
       createdTime: serverTimestamp(),
     });
     return docSnapshot;
   },
   async deletePost(postId: string) {
-    let docRef = doc(posts, postId);
-    let docSnapshot = await deleteDoc(docRef);
+    const docRef = doc(posts, postId);
+    const docSnapshot = await deleteDoc(docRef);
     return docSnapshot;
   },
   async getPosts() {
@@ -154,15 +155,15 @@ const firebase = {
     postId: string,
     comment: { content: string; authorId: string; createdTime: number }
   ) {
-    let docRef = doc(posts, postId);
+    const docRef = doc(posts, postId);
     await updateDoc(docRef, { comments: arrayUnion(comment) });
   },
   async saveEditComment(postId: string, comments: Comment[]) {
-    let docRef = doc(posts, postId);
+    const docRef = doc(posts, postId);
     await updateDoc(docRef, { comments: comments });
   },
   async getCardData(cardId: string) {
-    let docRef = doc(cards, cardId);
+    const docRef = doc(cards, cardId);
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
@@ -200,14 +201,14 @@ const firebase = {
     await setDoc(docRef, data);
   },
   async addFollowList(selfId: string, followId: string) {
-    let docRef = doc(users, selfId);
-    let followerDocRef = doc(
+    const docRef = doc(users, selfId);
+    const followerDocRef = doc(
       users,
       followId,
       "notices",
       "followers"
     ) as DocumentReference<followerDocType>;
-    let result = await getDoc(followerDocRef);
+    const result = await getDoc(followerDocRef);
     let appendFollower;
     if (!result.exists()) {
       appendFollower = setDoc(followerDocRef, {
@@ -218,19 +219,19 @@ const firebase = {
         followers: arrayUnion(selfId),
       });
     }
-    let updateFollowList = updateDoc(docRef, {
+    const updateFollowList = updateDoc(docRef, {
       followList: arrayUnion(followId),
     });
 
     Promise.all([updateFollowList, appendFollower]);
   },
   async removeFollowList(selfId: string, followId: string) {
-    let docRef = doc(users, selfId);
-    let followerDocRef = doc(users, followId, "notices", "followers");
-    let updateFollowList = updateDoc(docRef, {
+    const docRef = doc(users, selfId);
+    const followerDocRef = doc(users, followId, "notices", "followers");
+    const updateFollowList = updateDoc(docRef, {
       followList: arrayRemove(followId),
     });
-    let removeFollower = updateDoc(followerDocRef, {
+    const removeFollower = updateDoc(followerDocRef, {
       followers: arrayRemove(selfId),
     });
     Promise.all([updateFollowList, removeFollower]);
@@ -252,9 +253,9 @@ const firebase = {
     type: string,
     postId?: string
   ) {
-    let noticesCol = collection(db, "users", targetId, "notices");
-    let notice = doc(noticesCol);
-    let data = {
+    const noticesCol = collection(db, "users", targetId, "notices");
+    const notice = doc(noticesCol);
+    const data = {
       userId,
       type,
       noticeId: notice.id,
@@ -273,54 +274,56 @@ const firebase = {
     postId?: string
   ) {
     if (followersId.length) {
-      let promises = followersId.map((targetId) => {
+      const promises = followersId.map((targetId) => {
         return this.emitNotice(userId, targetId, type, postId);
       });
       await Promise.all(promises);
     } else return;
   },
   async deleteNotice(userId: string, noticeId: string) {
-    let docRef = doc(db, "users", userId, "notices", noticeId);
+    const docRef = doc(db, "users", userId, "notices", noticeId);
     await deleteDoc(docRef);
   },
   async updateReadStatus(userId: string, noticeId: string) {
-    let docRef = doc(db, "users", userId, "notices", noticeId);
+    const docRef = doc(db, "users", userId, "notices", noticeId);
     await updateDoc(docRef, { read: true });
   },
   async addFavCard(userId: string, cardId: string) {
-    let docRef = doc(users, userId);
-    let cardDocRef = doc(cards, cardId);
-    let updateUser = updateDoc(docRef, { favoriteCards: arrayUnion(cardId) });
-    let updateCard = updateDoc(cardDocRef, { followers: increment(1) });
+    const docRef = doc(users, userId);
+    const cardDocRef = doc(cards, cardId);
+    const updateUser = updateDoc(docRef, { favoriteCards: arrayUnion(cardId) });
+    const updateCard = updateDoc(cardDocRef, { followers: increment(1) });
     await Promise.all([updateUser, updateCard]);
   },
   async removeFavCard(userId: string, cardId: string) {
-    let docRef = doc(users, userId);
-    let cardDocRef = doc(cards, cardId);
-    let updateUser = updateDoc(docRef, { favoriteCards: arrayRemove(cardId) });
-    let updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
+    const docRef = doc(users, userId);
+    const cardDocRef = doc(cards, cardId);
+    const updateUser = updateDoc(docRef, {
+      favoriteCards: arrayRemove(cardId),
+    });
+    const updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
     await Promise.all([updateUser, updateCard]);
   },
   async getDiary(diaryId: string) {
-    let docRef = doc(diaries, diaryId);
+    const docRef = doc(diaries, diaryId);
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
   async saveDiary(diaryId: string, page: string) {
-    let docRef = doc(diaries, diaryId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
+    const docRef = doc(diaries, diaryId);
+    const docSnapshot = await getDoc(docRef);
+    if (!docSnapshot.exists()) {
       await setDoc(docRef, { pages: [] });
     }
     await updateDoc(docRef, { pages: arrayUnion(page) });
   },
   async saveEditDiary(diaryId: string, currentDiaries: string[]) {
-    let docRef = doc(diaries, diaryId);
+    const docRef = doc(diaries, diaryId);
     await setDoc(docRef, { pages: currentDiaries });
   },
   async getEvent(docName: string, id: string) {
     const activitiesRef = collection(db, "users", id, "activities");
-    let docRef = doc(activitiesRef, docName);
+    const docRef = doc(activitiesRef, docName);
     const docSnapshot = await getDoc(docRef);
     return docSnapshot;
   },
@@ -329,9 +332,9 @@ const firebase = {
     cardIds: string[],
     userId: string
   ) {
-    let docName = unixTimeToString(Date.now());
+    const docName = unixTimeToString(Date.now());
     const activitiesRef = collection(db, "users", userId, "activities");
-    let docRef = doc(activitiesRef, docName);
+    const docRef = doc(activitiesRef, docName);
     const docSnapshot = await getDoc(docRef);
     if (!docSnapshot.exists()) {
       await setDoc(docRef, { watering: [], fertilizing: [] });
@@ -371,15 +374,15 @@ const firebase = {
     return dowloadLink;
   },
   async checkOwner(cardId: string) {
-    let docRef = doc(cards, cardId);
-    let docSnapshot = await getDoc(docRef);
+    const docRef = doc(cards, cardId);
+    const docSnapshot = await getDoc(docRef);
     if (docSnapshot.exists()) {
       return docSnapshot.data().ownerId;
     }
   },
   async checkDiaryExistence(id: string) {
     const docRef = doc(diaries, id);
-    let docSnapshot = await getDoc(docRef);
+    const docSnapshot = await getDoc(docRef);
     if (docSnapshot.exists()) return true;
     else return false;
   },
@@ -387,7 +390,7 @@ const firebase = {
     const promises = idList.map((id) => {
       return this.checkDiaryExistence(id);
     });
-    let result = await Promise.all(promises);
+    const result = await Promise.all(promises);
     return result;
   },
 };

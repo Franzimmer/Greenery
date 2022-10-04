@@ -45,14 +45,14 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
   useEffect(() => {
     async function getEventData() {
       let eventRef;
-      let docName = unixTimeToString(value.getTime());
+      const docName = unixTimeToString(value.getTime());
       const docSnapshot = await firebase.getEvent(docName, id);
       if (docSnapshot.exists()) {
         eventRef = docSnapshot.data();
-        let cardList: PlantCard[] = [];
-        let waterEvents = docSnapshot.data().watering;
-        let fertilizeEvents = docSnapshot.data().fertilizing;
-        let eventIds = waterEvents.concat(
+        const cardList: PlantCard[] = [];
+        const waterEvents = docSnapshot.data().watering;
+        const fertilizeEvents = docSnapshot.data().fertilizing;
+        const eventIds = waterEvents.concat(
           fertilizeEvents.filter(
             (item: string) => waterEvents.indexOf(item) < 0
           )
@@ -62,10 +62,10 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
         querySnapshot!.forEach((doc) => {
           cardList.push(doc.data());
         });
-        let waterRef = eventRef.watering.map((id: string) => {
+        const waterRef = eventRef.watering.map((id: string) => {
           return cardList.find((card) => card.cardId === id)?.plantName;
         });
-        let fertilizeRef = eventRef.fertilizing.map((id: string) => {
+        const fertilizeRef = eventRef.fertilizing.map((id: string) => {
           return cardList.find((card) => card.cardId === id)?.plantName;
         });
         setEvents({

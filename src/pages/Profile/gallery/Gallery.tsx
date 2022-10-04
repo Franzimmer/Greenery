@@ -148,8 +148,8 @@ const Gallery = ({ id }: GalleryProps) => {
       emitAlert("fail", "Please choose a file.");
       return;
     }
-    let file = mediaRef.current!.files![0];
-    let link = await firebase.uploadFile(file);
+    const file = mediaRef.current!.files![0];
+    const link = await firebase.uploadFile(file);
     dispatch({
       type: UserInfoActions.ADD_GALLERY,
       payload: { link },

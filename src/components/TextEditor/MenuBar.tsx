@@ -58,7 +58,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   async function addImage() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length === 0) return;
-    let imgLink = await firebase.uploadFile(imageRef.current.files![0]);
+    const imgLink = await firebase.uploadFile(imageRef.current.files![0]);
     if (imgLink) {
       editor!
         .chain()

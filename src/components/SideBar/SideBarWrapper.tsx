@@ -89,7 +89,7 @@ const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
   };
   const [tab, setTab] = useState(defaultState);
   function tabSwitch(tab: "FollowList" | "Notifications" | "Chatrooms") {
-    let newState = {
+    const newState = {
       FollowList: false,
       Notifications: false,
       Chatrooms: false,
@@ -100,9 +100,9 @@ const SidebarWrapper = ({ sideBarDisplay }: SidebarWrapperProps) => {
 
   useEffect(() => {
     async function getUsersData() {
-      let followData: UserInfo[] = [];
+      const followData: UserInfo[] = [];
       if (!userInfo.followList) return;
-      let queryData = await firebase.getUsers(userInfo.followList);
+      const queryData = await firebase.getUsers(userInfo.followList);
       if (!queryData?.empty) {
         queryData?.forEach((doc) => {
           followData.push(doc.data());

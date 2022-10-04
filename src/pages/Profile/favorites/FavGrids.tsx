@@ -115,7 +115,7 @@ const FavGrids = ({
     else return false;
   }
   async function removeFavorite(cardId: string) {
-    let userId = userInfo.userId;
+    const userId = userInfo.userId;
     dispatch({
       type: UserInfoActions.DELETE_FAVORITE_PLANT,
       payload: { cardId },

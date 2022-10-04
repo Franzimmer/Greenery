@@ -176,7 +176,7 @@ const TextEditor = ({
     return postHtml;
   }
   async function savePost() {
-    let cardIds: string[] = [];
+    const cardIds: string[] = [];
     if (!setPostList || !postList) return;
     const postType = type;
     const html = getPostHTML()!;
@@ -193,9 +193,9 @@ const TextEditor = ({
       });
       data["cardIds"] = cardIds;
     }
-    let postId = await firebase.addPost(data);
+    const postId = await firebase.addPost(data);
     data["postId"] = postId;
-    let newPosts = [...postList];
+    const newPosts = [...postList];
     newPosts.unshift(data);
     setPostList(newPosts);
     await firebase.emitNotices(userInfo.userId, followers, "2", postId);
@@ -237,18 +237,18 @@ const TextEditor = ({
   }
   async function saveEditComment() {
     if (!comments || !setComments) return;
-    let postId = post!.postId;
-    let newComment = {
+    const postId = post!.postId;
+    const newComment = {
       authorId: editTargetComment!.authorId,
       content: getPostHTML()?.content || "",
       createdTime: Date.now(),
     };
-    let targetId = comments!.findIndex(
+    const targetId = comments!.findIndex(
       (comment) =>
         comment.authorId === editTargetComment?.authorId &&
         comment.createdTime === editTargetComment.createdTime
     );
-    let newComments = [...comments];
+    const newComments = [...comments];
     newComments[targetId] = newComment;
     await firebase.saveEditComment(postId, newComments);
     dispatch({
@@ -262,10 +262,10 @@ const TextEditor = ({
 
   useEffect(() => {
     async function getUserCards() {
-      let querySnapshot = await firebase.getUserCards(userInfo.userId);
+      const querySnapshot = await firebase.getUserCards(userInfo.userId);
       if (!querySnapshot.empty) {
-        let cards: PlantCard[] = [];
-        let checkList = {} as Record<string, boolean>;
+        const cards: PlantCard[] = [];
+        const checkList = {} as Record<string, boolean>;
         querySnapshot.forEach((doc) => {
           cards.push(doc.data());
           checkList[doc.data().cardId!] = false;

@@ -156,8 +156,8 @@ const ForumHomePage = () => {
   }
   useEffect(() => {
     async function getPosts() {
-      let postList: Post[] = [];
-      let posts = await firebase.getPosts();
+      const postList: Post[] = [];
+      const posts = await firebase.getPosts();
       posts.forEach((post) => {
         postList.push(post.data());
       });

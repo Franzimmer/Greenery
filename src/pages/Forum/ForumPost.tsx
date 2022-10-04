@@ -271,8 +271,8 @@ const ForumPost = () => {
     setInitContent("");
   }
   async function deleteComment(deleteTarget: Comment) {
-    let postId = post!.postId;
-    let newComments = comments!.filter((comment) => comment !== deleteTarget);
+    const postId = post!.postId;
+    const newComments = comments!.filter((comment) => comment !== deleteTarget);
     await firebase.saveEditComment(postId, newComments);
     setComments(newComments);
     emitAlert("success", "Delete Comment Success !");
@@ -287,10 +287,10 @@ const ForumPost = () => {
     setTextEditorDisplay(true);
   }
   async function openChatroom(targetId: string) {
-    let users = [userInfo.userId, targetId];
-    let getUserInfo = firebase.getUserInfo(targetId);
-    let checkRoom = firebase.checkChatroom(users);
-    let result = await Promise.all([getUserInfo, checkRoom]);
+    const users = [userInfo.userId, targetId];
+    const getUserInfo = firebase.getUserInfo(targetId);
+    const checkRoom = firebase.checkChatroom(users);
+    const result = await Promise.all([getUserInfo, checkRoom]);
     dispatch({
       type: ChatroomActions.ADD_CHATROOM,
       payload: {
@@ -301,12 +301,12 @@ const ForumPost = () => {
   useEffect(() => {
     async function getPost() {
       if (id) {
-        let postData = await firebase.getPostData(id);
+        const postData = await firebase.getPostData(id);
         if (!postData.exists()) {
           emitAlert("fail", "Post not exist !");
           navigate("/");
         }
-        let userInfo = await firebase.getUserInfo(postData.data()!.authorId);
+        const userInfo = await firebase.getUserInfo(postData.data()!.authorId);
         setPost(postData.data());
         setInitTitle(postData.data()!.title);
         setInitContent(postData.data()!.content);
@@ -314,10 +314,10 @@ const ForumPost = () => {
         setAuthorInfo(userInfo.data());
         setTimeout(() => setIsLoading(false), 1000);
         if (postData.data()?.cardIds?.length !== 0) {
-          let cardsData: PlantCard[] = [];
-          let cardIds = postData.data()?.cardIds;
+          const cardsData: PlantCard[] = [];
+          const cardIds = postData.data()?.cardIds;
           if (!cardIds) return;
-          let cards = await firebase.getCards(cardIds);
+          const cards = await firebase.getCards(cardIds);
           if (!cards?.empty) {
             cards?.forEach((card) => {
               cardsData.push(card.data());
@@ -331,19 +331,19 @@ const ForumPost = () => {
   }, []);
   useEffect(() => {
     async function getCommentAuthorInfo() {
-      let authorInfos: Record<string, UserInfo> = {};
+      const authorInfos: Record<string, UserInfo> = {};
       if (comments) {
-        let authorIdList: string[] = [];
+        const authorIdList: string[] = [];
         comments.forEach((comment) => {
           if (!authorIdList.includes(comment.authorId))
             authorIdList.push(comment.authorId);
         });
-        let promises = authorIdList.map(async (id) => {
+        const promises = authorIdList.map(async (id) => {
           return firebase.getUserInfo(id);
         });
-        let data = await Promise.all(promises);
+        const data = await Promise.all(promises);
         data.forEach((promise) => {
-          let userData = promise.data() as UserInfo;
+          const userData = promise.data() as UserInfo;
           authorInfos[userData.userId] = userData;
         });
       }

@@ -54,7 +54,7 @@ const Profile = () => {
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-  }, [id, userInfo.userId]);
+  }, [dispatch, id, userInfo.userId]);
 
   return (
     <>

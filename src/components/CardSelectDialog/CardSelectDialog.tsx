@@ -130,26 +130,32 @@ const CardSelectDialog = () => {
       return;
     }
     setCardListDisplay(false);
-    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
-    let nameList = selected.map((card) => {
+    const selected = cardList.filter(
+      (card) => menuSelect[card.cardId!] === true
+    );
+    const nameList = selected.map((card) => {
       return card.plantName;
     });
-    let msg = `Are you sure to send ${nameList.join(" & ")} to ${targetName}?`;
+    const msg = `Are you sure to send ${nameList.join(
+      " & "
+    )} to ${targetName}?`;
     setBtnWrapperDisplay(true);
     setConfirm(msg);
   }
 
   async function tradePlants() {
     if (!targetId || !selfId) return;
-    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
-    let idList = selected.map((card) => {
+    const selected = cardList.filter(
+      (card) => menuSelect[card.cardId!] === true
+    );
+    const idList = selected.map((card) => {
       return card.cardId;
     });
-    let nameList = selected.map((card) => {
+    const nameList = selected.map((card) => {
       return card.plantName;
     });
     const newOwnerId = targetId;
-    let promises = idList.map((cardId) => {
+    const promises = idList.map((cardId) => {
       return firebase.changePlantOwner(cardId!, newOwnerId);
     });
     await Promise.all(promises);
@@ -174,7 +180,7 @@ const CardSelectDialog = () => {
     return;
   }
   function resetCheck() {
-    let menuCheck = {} as Record<string, boolean>;
+    const menuCheck = {} as Record<string, boolean>;
     cardList.forEach((card) => {
       menuCheck[card.cardId!] = false;
     });
