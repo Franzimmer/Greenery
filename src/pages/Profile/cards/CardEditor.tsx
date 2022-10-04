@@ -8,6 +8,7 @@ import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import {
   OperationBtn,
   CloseBtn,
@@ -193,6 +194,10 @@ const CardEditor = ({
   editCardId,
   setEditCardId,
 }: FCProps) => {
+  const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
+  const cardList = useSelector((state: RootState) => state.cards);
+  const myFollowers = useSelector((state: RootState) => state.myFollowers);
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
@@ -210,23 +215,7 @@ const CardEditor = ({
     false
   );
   const [searchActive, setSearchActive] = useState<number>(-1);
-  const cardList = useSelector((state: RootState) => state.cards);
-  const myFollowers = useSelector((state: RootState) => state.myFollowers);
-  const dispatch = useDispatch();
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   function createPreviewLink() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length !== 0) {
@@ -332,10 +321,10 @@ const CardEditor = ({
   }
   function checkInput() {
     if (nameRef.current?.value === "") {
-      emitAlert("fail", "Please fill plant name.");
+      alertDispatcher("fail", "Please fill plant name.");
       return false;
     } else if (speciesRef.current?.value === "") {
-      emitAlert("fail", "Please fill plant species.");
+      alertDispatcher("fail", "Please fill plant species.");
       return false;
     } else return true;
   }
@@ -368,7 +357,7 @@ const CardEditor = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "You add a new plant card !");
+    alertDispatcher("success", "You add a new plant card !");
     editorToggle();
     setDisabledBtn(false);
     resetEditor();
@@ -407,7 +396,7 @@ const CardEditor = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Edit Card Success!");
+    alertDispatcher("success", "Edit Card Success!");
     resetEditor();
     setDisabledBtn(false);
     setEditCardId(null);

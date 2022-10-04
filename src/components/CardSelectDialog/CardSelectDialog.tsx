@@ -9,6 +9,7 @@ import {
   PopUpDisplayType,
 } from "../../store/reducer/popUpReducer";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import CardsWrapper from "./CardsWrapper";
 import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 interface DialogWrapperProps {
@@ -97,6 +98,7 @@ const OverflowWrapper = styled.div`
 const CardSelectDialog = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const cardList = useSelector((state: RootState) => state.cards);
   const popUpDisplay: PopUpDisplayType = useSelector(
@@ -109,24 +111,10 @@ const CardSelectDialog = () => {
   const selfId = userInfo.userId;
   const targetId = popUpDisplay.target.id;
   const targetName = popUpDisplay.target.name;
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function confirmTradeItems() {
     if (!targetId) return;
     if (Object.values(menuSelect).every((select) => select === false)) {
-      emitAlert("fail", "Choose at least one plant !");
+      alertDispatcher("fail", "Choose at least one plant !");
       return;
     }
     setCardListDisplay(false);
@@ -176,7 +164,7 @@ const CardSelectDialog = () => {
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Send out success !");
+    alertDispatcher("success", "Send out success !");
     return;
   }
   function resetCheck() {

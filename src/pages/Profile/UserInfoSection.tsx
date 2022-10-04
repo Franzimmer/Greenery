@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../store/reducer/index";
 import { UserInfoActions } from "../../store/actions/userInfoActions";
-import { popUpActions } from "../../store/reducer/popUpReducer";
 import { UserInfo } from "../../store/types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import user from "../../assets/user.png";
@@ -106,6 +106,7 @@ interface UserInfoProps {
 const UserInfoSection = ({ id }: UserInfoProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alertDispatcher = useAlertDispatcher();
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const { isLoggedIn, isSelf } = useSelector(
@@ -115,30 +116,15 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
-
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function userSignOut() {
     signOut(auth)
       .then(() => {
         navigate("/login");
-        emitAlert("success", "Log Out Success !");
+        alertDispatcher("success", "Log Out Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   async function editUserPhoto() {
@@ -151,7 +137,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
       payload: { photoUrl: link },
     });
     await firebase.updateUserPhoto(id!, link);
-    emitAlert("success", "User Photo Upload Success !");
+    alertDispatcher("success", "User Photo Upload Success !");
   }
   async function editUserName() {
     setShowNameInput(false);
@@ -170,13 +156,13 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
       payload: { userName: nameInput },
     });
     await firebase.updateUserName(id!, nameRef.current.textContent);
-    emitAlert("success", "Edit Success !");
+    alertDispatcher("success", "Edit Success !");
   }
   async function followStatusToggle() {
     if (isFollowed) {
       setIsFollowed(false);
       await firebase.removeFollowList(userInfo.userId, id!);
-      emitAlert("success", "Unfollow Success.");
+      alertDispatcher("success", "Unfollow Success.");
       dispatch({
         type: UserInfoActions.REMOVE_FOLLOW_LIST,
         payload: { targetId: id },
@@ -185,7 +171,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
     if (!isFollowed) {
       setIsFollowed(true);
       await firebase.addFollowList(userInfo.userId, id!);
-      emitAlert("success", "Follow Success.");
+      alertDispatcher("success", "Follow Success.");
       dispatch({
         type: UserInfoActions.ADD_FOLLOW_LIST,
         payload: { targetId: id },
@@ -197,7 +183,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
       if (id && !isSelf) {
         const result = await firebase.getUserInfo(id);
         if (!result.exists()) {
-          emitAlert("fail", "Page Not Exist.");
+          alertDispatcher("fail", "Page Not Exist.");
           navigate("/");
         }
         setUserData(result.data() as UserInfo);

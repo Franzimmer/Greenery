@@ -9,6 +9,7 @@ import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
 import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
 import {
@@ -94,22 +95,10 @@ const FavGrids = ({
 }: FavGridsProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   function isOwner(ownerId: string) {
     if (userInfo.userId === ownerId) return true;
     else return false;
@@ -121,7 +110,7 @@ const FavGrids = ({
       payload: { cardId },
     });
     await firebase.removeFavCard(userId, cardId);
-    emitAlert("success", "Remove from your Favorites.");
+    alertDispatcher("success", "Remove from your Favorites.");
   }
   return (
     <SectionWrapper isLoading={isLoading}>

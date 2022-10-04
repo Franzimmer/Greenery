@@ -5,6 +5,7 @@ import { popUpActions } from "../../store/reducer/popUpReducer";
 import { CardsActions } from "../../store/actions/cardsActions";
 import { PlantCard } from "../../store/types/plantCardType";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
 interface DialogWrapperProps {
@@ -97,10 +98,11 @@ const PropagationMenu = ({
   setPropagateDisplay,
   propagateParentData,
 }: PropagationMenuProps) => {
+  const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const numberRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<string>("asexual");
-  const dispatch = useDispatch();
 
   async function addDocPromise(data: PlantCard) {
     const cardId = await firebase.addCard(data);
@@ -110,26 +112,12 @@ const PropagationMenu = ({
       payload: { newCard: uploadData },
     });
   }
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   async function propagate() {
     if (!numberRef.current?.value) {
-      emitAlert("fail", "Please fill the number you want to propagate.");
+      alertDispatcher("fail", "Please fill the number you want to propagate.");
       return;
     } else if (type === "seedling" && !inputRef.current?.value) {
-      emitAlert("fail", "Please fill out parent info.");
+      alertDispatcher("fail", "Please fill out parent info.");
       return;
     }
     const parents = [propagateParentData.plantName];
@@ -151,7 +139,7 @@ const PropagationMenu = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Propagate success!");
+    alertDispatcher("success", "Propagate success!");
     if (numberRef.current) numberRef.current!.value = "";
     if (inputRef.current) inputRef.current!.value = "";
   }

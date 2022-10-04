@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer/index";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 interface HeaderWrapperProps {
   bgState: boolean;
 }
@@ -127,28 +127,14 @@ interface HeaderProps {
   sideBarDisplay: boolean;
 }
 const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
-  const dispatch = useDispatch();
   const location = useLocation();
+  const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [bgState, setBgState] = useState<boolean>(false);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function sideBarToggle() {
     if (!isLoggedIn) {
-      emitAlert("success", "Please Log In First");
+      alertDispatcher("success", "Please Log In First");
       return;
     }
     if (sideBarDisplay) setSideBarDisplay(false);

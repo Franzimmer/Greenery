@@ -9,12 +9,13 @@ import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
-import { TypeText } from "./ForumHomePage";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
 import DetailedCard from "../../components/DetailCard/DetailedCard";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { TypeText } from "./ForumHomePage";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
@@ -220,6 +221,7 @@ const ForumPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [post, setPost] = useState<Post>();
@@ -242,25 +244,10 @@ const ForumPost = () => {
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [ownerId, setOwnerId] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
-
   async function deletePost(postId: string) {
     await firebase.deletePost(postId);
     navigate("/forum");
-    emitAlert("success", "Delete Post Success !");
+    alertDispatcher("success", "Delete Post Success !");
   }
   function addComment() {
     setEditorMode("AddComment");
@@ -275,7 +262,7 @@ const ForumPost = () => {
     const newComments = comments!.filter((comment) => comment !== deleteTarget);
     await firebase.saveEditComment(postId, newComments);
     setComments(newComments);
-    emitAlert("success", "Delete Comment Success !");
+    alertDispatcher("success", "Delete Comment Success !");
   }
   function editComment(comment: Comment) {
     setEditTargetComment(comment);
@@ -303,7 +290,7 @@ const ForumPost = () => {
       if (id) {
         const postData = await firebase.getPostData(id);
         if (!postData.exists()) {
-          emitAlert("fail", "Post not exist !");
+          alertDispatcher("fail", "Post not exist !");
           navigate("/");
         }
         const userInfo = await firebase.getUserInfo(postData.data()!.authorId);

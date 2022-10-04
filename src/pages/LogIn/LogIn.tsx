@@ -1,10 +1,9 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { popUpActions } from "../../store/reducer/popUpReducer";
-import { OperationBtn } from "../../components/GlobalStyles/button";
 import { auth, firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
+import { OperationBtn } from "../../components/GlobalStyles/button";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -113,27 +112,13 @@ const LogInBtn = styled(OperationBtn)`
   }
 `;
 const LogIn = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alertDispatcher = useAlertDispatcher();
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"login" | "signin">("login");
   const emailRule = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current || !nameRef.current) return;
     if (
@@ -141,10 +126,10 @@ const LogIn = () => {
       passwordRef.current.value === "" ||
       nameRef.current.value === ""
     ) {
-      emitAlert("fail", "Please fill info completely !");
+      alertDispatcher("fail", "Please fill info completely !");
       return;
     } else if (!emailRule.test(emailRef.current.value)) {
-      emitAlert("fail", "Invalid email!");
+      alertDispatcher("fail", "Invalid email!");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -165,17 +150,17 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
-        emitAlert("success", "Sign In Success !");
+        alertDispatcher("success", "Sign In Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   function userSignIn() {
     if (!emailRef.current || !passwordRef.current) return;
     if (emailRef.current.value === "" || passwordRef.current.value === "") {
-      emitAlert("fail", "Please fill info completely !");
+      alertDispatcher("fail", "Please fill info completely !");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -186,11 +171,11 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
-        emitAlert("success", "Log In Success !");
+        alertDispatcher("success", "Log In Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   return (

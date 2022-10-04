@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import Canvas from "./Canvas";
 import { IconButton } from "../../components/GlobalStyles/button";
 import {
@@ -158,6 +159,7 @@ const DiaryEditor = ({
   setDiaryId,
 }: DiaryEditorProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [pageNo, setPageNo] = useState<number>(0);
   const fontSizeRef = useRef<HTMLInputElement>(null);
@@ -170,20 +172,6 @@ const DiaryEditor = ({
     "saveAdd"
   );
   const [loaderDisplay, setLoaderDisplay] = useState<boolean>(true);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function isOwner(ownerId: string) {
     if (userInfo.userId === ownerId) return true;
     else return false;
@@ -323,7 +311,7 @@ const DiaryEditor = ({
     setPageNo(currentDiaries.length - 1);
     switchToViewMode();
     await firebase.saveDiary(diaryId, page);
-    emitAlert("success", "Save Diary Data Successfully.");
+    alertDispatcher("success", "Save Diary Data Successfully.");
   }
   async function saveEdit() {
     setAllObjDeactive();
@@ -332,7 +320,7 @@ const DiaryEditor = ({
     const currentDiaries = [...diariesData];
     currentDiaries[index] = page;
     await firebase.saveEditDiary(diaryId, currentDiaries);
-    emitAlert("success", "Update Diary Data Successfully.");
+    alertDispatcher("success", "Update Diary Data Successfully.");
     setDiariesData(currentDiaries);
     switchToViewMode();
   }

@@ -9,6 +9,7 @@ import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
@@ -18,7 +19,6 @@ import {
   faAnglesDown,
   faArrowUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
-
 import {
   FavIconButton,
   DiaryIconBtn,
@@ -29,7 +29,7 @@ import DetailedCard from "../../components/DetailCard/DetailedCard";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import defaultImg from "../../assets/default.jpg";
 import rubber from "./rubber.png";
-import left from "./left.png";
+import eucari from "./eucari.png";
 import main from "./main.webp";
 import feature from "./feature.jpeg";
 import taquila from "./taquila.png";
@@ -273,6 +273,7 @@ const UserLink = styled(Link)`
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alertDispatcher = useAlertDispatcher();
   const quoteRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -285,21 +286,6 @@ const Home = () => {
   const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [ownerId, setOwnerId] = useState<string>("");
-
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   async function favoriteToggle(cardId: string) {
     const userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {
@@ -308,14 +294,14 @@ const Home = () => {
         payload: { cardId },
       });
       await firebase.removeFavCard(userId, cardId);
-      emitAlert("success", "Remove from your Favorites.");
+      alertDispatcher("success", "Remove from your Favorites.");
     } else {
       dispatch({
         type: UserInfoActions.ADD_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.addFavCard(userId, cardId);
-      emitAlert("success", "Add to Favorites!");
+      alertDispatcher("success", "Add to Favorites!");
     }
   }
   function findOwnerName(ownerId: string) {
@@ -369,7 +355,7 @@ const Home = () => {
               <MainDescription>It’s in our DNA.</MainDescription>
             </MainDescriptionWrapper>
           </MainStyleWrapper>
-          <DecorationEucari src={left}></DecorationEucari>
+          <DecorationEucari src={eucari}></DecorationEucari>
           <DecorationTaquila src={taquila}></DecorationTaquila>
           <DecorationCoco src={coconut}></DecorationCoco>
           <DecorationRubber src={rubber}></DecorationRubber>

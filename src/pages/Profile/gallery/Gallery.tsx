@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import {
   NoDataSection,
@@ -123,29 +123,17 @@ const NoGallerySection = styled(NoDataSection)`
 `;
 const Gallery = ({ id }: GalleryProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
   const [disableBtn, setDisableBtn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   async function saveGalleryData() {
     if (mediaRef.current!.value === "") {
-      emitAlert("fail", "Please choose a file.");
+      alertDispatcher("fail", "Please choose a file.");
       return;
     }
     const file = mediaRef.current!.files![0];
@@ -157,7 +145,7 @@ const Gallery = ({ id }: GalleryProps) => {
     mediaRef.current!.value = "";
     await firebase.addGallery(id!, link);
     setDisableBtn(false);
-    emitAlert("success", "Upload Success !");
+    alertDispatcher("success", "Upload Success !");
   }
   async function deleteMedia(link: string) {
     await firebase.deleteGallery(id!, link);
@@ -165,7 +153,7 @@ const Gallery = ({ id }: GalleryProps) => {
       type: UserInfoActions.REMOVE_GALLERY,
       payload: { link },
     });
-    emitAlert("success", "Delete Success !");
+    alertDispatcher("success", "Delete Success !");
   }
   useEffect(() => {
     async function getMediaData() {

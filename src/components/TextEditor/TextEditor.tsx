@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import MenuBar from "./MenuBar";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
 import { Post } from "../../pages/Forum/ForumPost";
@@ -131,6 +132,7 @@ const TextEditor = ({
   setTextEditorDisplay,
 }: TiptapProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
   const [cardList, setCardList] = useState<PlantCard[]>([]);
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
@@ -153,21 +155,6 @@ const TextEditor = ({
     ],
     content: initContent || "",
   });
-
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function getPostHTML() {
     if (!titleEditor || !editor) return;
     const title = titleEditor!.getHTML();
@@ -199,7 +186,7 @@ const TextEditor = ({
     newPosts.unshift(data);
     setPostList(newPosts);
     await firebase.emitNotices(userInfo.userId, followers, "2", postId);
-    emitAlert("success", "Add Post Success !");
+    alertDispatcher("success", "Add Post Success !");
     setDisabledBtn(false);
   }
   async function editPost() {
@@ -210,7 +197,7 @@ const TextEditor = ({
     } as Post;
     await firebase.saveEditPost(post!.postId, data);
     if (setPost) setPost(data);
-    emitAlert("success", "Edit Post Success !");
+    alertDispatcher("success", "Edit Post Success !");
     setDisabledBtn(false);
   }
   async function addComment() {
@@ -233,7 +220,7 @@ const TextEditor = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Add Comment Success !");
+    alertDispatcher("success", "Add Comment Success !");
   }
   async function saveEditComment() {
     if (!comments || !setComments) return;
@@ -254,7 +241,7 @@ const TextEditor = ({
     dispatch({
       type: popUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Edit Comment Success !");
+    alertDispatcher("success", "Edit Comment Success !");
     setComments(newComments);
     setTextEditorDisplay(false);
     setDisabledBtn(false);
@@ -294,7 +281,7 @@ const TextEditor = ({
                 </TypeBtn>
                 <TypeBtnDisabled
                   onClick={() =>
-                    emitAlert("fail", "You have no plant to trade.")
+                    alertDispatcher("fail", "You have no plant to trade.")
                   }
                 >
                   Trade

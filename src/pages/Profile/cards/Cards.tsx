@@ -7,6 +7,7 @@ import { CardsActions } from "../../../store/actions/cardsActions";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { OperationBtn } from "../../../components/GlobalStyles/button";
 import OperationMenu from "./OperationMenu";
 import CardsGrid from "./CardsGrid";
@@ -125,6 +126,7 @@ interface CardsGridProps {
 }
 const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -144,20 +146,6 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [ConfirmDisplay, setConfirmDisplay] = useState<boolean>(false);
   const [confirmMsg, setConfirmMsg] = useState<string>("");
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function editorToggle() {
     editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
@@ -217,10 +205,13 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
-      emitAlert("success", `Watering ${nameList.join(" & ")} Success!`);
+      alertDispatcher("success", `Watering ${nameList.join(" & ")} Success!`);
     }
     if (type === "fertilize")
-      emitAlert("success", `Fertilizing ${nameList.join(" & ")} Success!`);
+      alertDispatcher(
+        "success",
+        `Fertilizing ${nameList.join(" & ")} Success!`
+      );
     clearAllCheck();
     await firebase.addEvents(type, idList, userInfo.userId);
   }
@@ -250,7 +241,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       type: popUpActions.HIDE_ALL,
     });
     setConfirmDisplay(false);
-    emitAlert("success", `Delete Card Success`);
+    alertDispatcher("success", `Delete Card Success`);
   }
   async function favoriteToggle(cardId: string) {
     const userId = userInfo.userId;
@@ -260,14 +251,14 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         payload: { cardId },
       });
       await firebase.removeFavCard(userId, cardId);
-      emitAlert("success", "Remove from your Favorites.");
+      alertDispatcher("success", "Remove from your Favorites.");
     } else {
       dispatch({
         type: UserInfoActions.ADD_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.addFavCard(userId, cardId);
-      emitAlert("success", "Add to Favorites!");
+      alertDispatcher("success", "Add to Favorites!");
     }
   }
   useEffect(() => {
