@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
-import { firebase } from "../../utils/firebase";
-import { Person, PersonPhoto } from "./FollowList";
-import { UserInfo } from "../../store/types/userInfoType";
 import { ChatroomActions } from "../../store/reducer/chatroomReducer";
-import { NoSidebarDataText } from "./FollowList";
+import { UserInfo } from "../../store/types/userInfoType";
+import { firebase } from "../../utils/firebase";
+import { Person, PersonPhoto, NoSidebarDataText } from "./FollowList";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;

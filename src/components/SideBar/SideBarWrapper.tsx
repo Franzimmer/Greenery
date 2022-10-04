@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { firebase } from "../../utils/firebase";
+import FollowList from "./FollowList";
+import Notifications from "./Notifications";
+import Chatrooms from "./Chatrooms";
 import {
   faBell,
   faUser,
   faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
-import { firebase } from "../../utils/firebase";
-import FollowList from "./FollowList";
-import Notifications from "./Notifications";
-import Chatrooms from "./Chatrooms";
 
 interface WrapperProps {
   show: boolean;

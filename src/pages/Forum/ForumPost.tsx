@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import parse from "html-react-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
+import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
 import { TypeText } from "./ForumHomePage";
-import parse from "html-react-parser";
 import { firebase } from "../../utils/firebase";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import DiaryEditor from "../../components/Diary/DiaryEditor";
 import DetailedCard from "../../components/DetailCard/DetailedCard";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
-import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { ChatroomActions } from "../../store/reducer/chatroomReducer";
-import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
+import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
 import {
   faTrashCan,
   faPenToSquare,

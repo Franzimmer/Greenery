@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/reducer/index";
 import { UserInfo } from "../../store/types/userInfoType";
+import { RootState } from "../../store/reducer/index";
 import { ChatroomActions } from "../../store/reducer/chatroomReducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { firebase, chatrooms } from "../../utils/firebase";
+import { CloseBtn } from "../GlobalStyles/button";
 import {
   onSnapshot,
   query,
@@ -14,7 +15,6 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
-import { CloseBtn } from "../GlobalStyles/button";
 
 export interface message {
   userId: string;

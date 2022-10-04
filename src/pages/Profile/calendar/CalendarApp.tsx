@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDroplet, faPersonDigging } from "@fortawesome/free-solid-svg-icons";
-import { unixTimeToString } from "../../../utils/helpers";
 import { firebase } from "../../../utils/firebase";
+import { unixTimeToString } from "../../../utils/helpers";
 import { PlantCard } from "../../../store/types/plantCardType";
 import CalenderContainer from "./CalendarContainer";
+import { faDroplet, faPersonDigging } from "@fortawesome/free-solid-svg-icons";
+import "react-calendar/dist/Calendar.css";
 let defaultState = {
   watering: [],
   fertilizing: [],

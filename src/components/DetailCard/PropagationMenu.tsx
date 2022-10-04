@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { CardsActions } from "../../store/actions/cardsActions";
 import { PlantCard } from "../../store/types/plantCardType";
+import { firebase } from "../../utils/firebase";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
 interface DialogWrapperProps {

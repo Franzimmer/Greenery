@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
-import styled, { css, keyframes } from "styled-components";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { auth, firebase } from "../../utils/firebase";
-import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
 import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { PlantCard } from "../../../store/types/plantCardType";
+import { firebase } from "../../../utils/firebase";
 import { OperationBtn } from "../../../components/GlobalStyles/button";
 import OperationMenu from "./OperationMenu";
 import CardsGrid from "./CardsGrid";

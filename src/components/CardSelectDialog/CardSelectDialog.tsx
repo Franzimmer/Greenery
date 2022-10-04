@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { firebase } from "../../utils/firebase";
+import { RootState } from "../../store/reducer";
 import { CardsActions } from "../../store/actions/cardsActions";
 import {
   popUpActions,
   PopUpDisplayType,
 } from "../../store/reducer/popUpReducer";
-import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
+import { firebase } from "../../utils/firebase";
 import CardsWrapper from "./CardsWrapper";
-import { RootState } from "../../store/reducer";
-import { PlantCard } from "../../store/types/plantCardType";
-import { useParams } from "react-router-dom";
+import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 interface DialogWrapperProps {
   show: boolean;
 }

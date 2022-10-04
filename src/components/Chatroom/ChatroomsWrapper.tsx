@@ -1,6 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import Chatroom from "./Chatroom";
 

@@ -1,17 +1,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fabric } from "fabric";
-import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
+import { firebase } from "../../utils/firebase";
+import Canvas from "./Canvas";
 import { IconButton } from "../../components/GlobalStyles/button";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
 } from "../../components/GlobalStyles/noDataLayout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faArrowLeft,
@@ -31,7 +32,6 @@ import {
   faCircleXmark,
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import Canvas from "./Canvas";
 import spinner from "../../assets/spinner.png";
 import forward from "./bring-to-front.png";
 

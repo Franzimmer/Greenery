@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { Note } from "../../store/types/notificationType";
@@ -8,7 +9,6 @@ import { UserInfo } from "../../store/types/userInfoType";
 import { NotificationActions } from "../../store/actions/notificationActions";
 import { firebase } from "../../utils/firebase";
 import { NoSidebarDataText } from "./FollowList";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUpRightFromSquare,
   faCircleXmark,

@@ -2,10 +2,14 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { UserPhoto } from "../../pages/Profile/UserInfoSection";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
+<<<<<<< HEAD
 import { NoDataText } from "../GlobalStyles/noDataLayout";
+=======
+import { NoDataText } from "../GlobalStyles/NoDataLayout";
+import { UserPhoto } from "../../pages/Profile/UserInfoSection";
+>>>>>>> 64146c8 (remove unused imports & group imports)
 const ListWrapper = styled.div`
   width: 100%;
   height: 300px;

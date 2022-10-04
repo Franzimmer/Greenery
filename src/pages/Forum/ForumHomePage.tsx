@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import parse from "html-react-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer/index";
 import { popUpActions } from "../../store/reducer/popUpReducer";
+import { firebase } from "../../utils/firebase";
+import TextEditor from "../../components/TextEditor/TextEditor";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { Post } from "./ForumPost";
-import { firebase } from "../../utils/firebase";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
 } from "../../components/GlobalStyles/noDataLayout";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";

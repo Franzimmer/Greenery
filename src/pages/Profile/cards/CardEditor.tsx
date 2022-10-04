@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
 import { PlantCard } from "../../../store/types/plantCardType";
@@ -14,6 +13,7 @@ import {
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import { speciesContents } from "./speciesContents";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 
 interface CardEditorWrapperProps {

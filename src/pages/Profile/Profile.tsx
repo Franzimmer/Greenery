@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { AuthorityActions } from "../../store/reducer/authorityReducer";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 interface MainWrapperProps {
   isLoading: boolean;
 }

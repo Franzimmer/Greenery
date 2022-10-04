@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../../store/reducer";
 import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { PlantCard } from "../../../store/types/plantCardType";

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { RootState } from "../../store/reducer/index";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/reducer/index";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 interface HeaderWrapperProps {
   bgState: boolean;

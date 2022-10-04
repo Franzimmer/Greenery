@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
-import styled, { keyframes, css } from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import styled, { keyframes } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
-import { firebase } from "../../utils/firebase";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfoActions } from "../../store/actions/userInfoActions";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
+import { firebase } from "../../utils/firebase";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import {
   faBook,

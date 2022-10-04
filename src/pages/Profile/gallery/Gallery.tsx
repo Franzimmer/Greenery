@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
@@ -12,7 +13,6 @@ import {
   NoDataBtn,
 } from "../../../components/GlobalStyles/noDataLayout";
 import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface SectionWrapperProps {
   isLoading: boolean;
