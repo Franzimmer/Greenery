@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../../store/reducer";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
@@ -21,10 +21,10 @@ import { IconButton } from "../../../components/GlobalStyles/button";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 interface SectionWrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const SectionWrapper = styled.div<SectionWrapperProps>`
-  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  opacity: ${(props) => (props.$isLoading ? "0" : "1")};
   transition: 1s;
 `;
 const UserLink = styled(Link)`
@@ -113,7 +113,7 @@ const FavGrids = ({
     alertDispatcher("success", "Remove from your Favorites.");
   }
   return (
-    <SectionWrapper isLoading={isLoading}>
+    <SectionWrapper $isLoading={isLoading}>
       <GridWrapper $mode={"grid"}>
         {favCards.length !== 0 &&
           favCards.map((card: PlantCard, index) => {
@@ -127,17 +127,17 @@ const FavGrids = ({
                   setDetailDisplay(true);
                   setDetailData(card);
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                 }}
               >
-                <PlantImg path={card.plantPhoto || defaultImg} />
+                <PlantImg $path={card.plantPhoto || defaultImg} />
                 <NameText>
                   <UserLink
                     to={`/profile/${card.ownerId}`}
                     onClick={(e) => {
                       dispatch({
-                        type: popUpActions.HIDE_ALL,
+                        type: PopUpActions.HIDE_ALL,
                       });
                       e.stopPropagation();
                     }}
@@ -163,7 +163,7 @@ const FavGrids = ({
                     setOwnerId(card.ownerId);
                     setDiaryId(card.cardId);
                     dispatch({
-                      type: popUpActions.SHOW_MASK,
+                      type: PopUpActions.SHOW_MASK,
                     });
                     e.stopPropagation();
                   }}

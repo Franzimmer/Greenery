@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { UserInfo } from "../../store/types/userInfoType";
 import { RootState } from "../../store/reducer/index";
-import { ChatroomActions } from "../../store/reducer/chatroomReducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase, chatrooms } from "../../utils/firebase";
 import { CloseBtn } from "../GlobalStyles/button";
 import {
@@ -21,7 +21,7 @@ export interface message {
   msg: string;
 }
 interface ChatroomWindowProps {
-  show: boolean;
+  $show: boolean;
 }
 const ChatroomWindow = styled.div<ChatroomWindowProps>`
   border: 1px solid #5c836f;
@@ -30,7 +30,7 @@ const ChatroomWindow = styled.div<ChatroomWindowProps>`
   margin-right: 20px;
   background-color: #fff;
   box-shadow: 5px 2px 10px #aaa;
-  display: ${(props) => (props.show ? "block" : "none")};
+  display: ${(props) => (props.$show ? "block" : "none")};
 `;
 const FlexWrapper = styled.div`
   width: 100%;
@@ -166,64 +166,60 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
     scrollToBottom();
   }, [msgs]);
   return (
-    <>
-      <ChatroomWindow show={chatroomDisplay}>
-        <FlexWrapper>
-          <InfoText>{targetInfo.userName}</InfoText>
-          <ChatBtn
-            onClick={() => {
-              dispatch({
-                type: ChatroomActions.CLOSE_CHATROOM,
-                payload: {
-                  targetId: targetInfo.userId,
-                },
-              });
-            }}
-          >
-            &#215;
-          </ChatBtn>
-        </FlexWrapper>
-        <MsgWindow ref={scrollRef}>
-          {msgs.length !== 0 &&
-            msgs.map((msg, index) => {
-              if (msg.userId !== selfId)
-                return (
-                  <LeftText key={`${msg.userId}_${index}`}>{msg.msg}</LeftText>
-                );
-              else
-                return (
-                  <RightText key={`${msg.userId}_${index}`}>
-                    {msg.msg}
-                  </RightText>
-                );
-            })}
-        </MsgWindow>
-        <FlexInputWrapper>
-          <ChatBtn
-            onClick={() => {
-              dispatch({
-                type: popUpActions.SHOW_CARD_SELECT_TRADE,
-                payload: {
-                  targetId: targetInfo.userId,
-                  targetName: targetInfo.userName,
-                },
-              });
-            }}
-          >
-            +
-          </ChatBtn>
-          <ChatInput
-            ref={inputRef}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                writeMsg();
-                e.preventDefault();
-              }
-            }}
-          ></ChatInput>
-        </FlexInputWrapper>
-      </ChatroomWindow>
-    </>
+    <ChatroomWindow $show={chatroomDisplay}>
+      <FlexWrapper>
+        <InfoText>{targetInfo.userName}</InfoText>
+        <ChatBtn
+          onClick={() => {
+            dispatch({
+              type: ChatroomActions.CLOSE_CHATROOM,
+              payload: {
+                targetId: targetInfo.userId,
+              },
+            });
+          }}
+        >
+          &#215;
+        </ChatBtn>
+      </FlexWrapper>
+      <MsgWindow ref={scrollRef}>
+        {msgs.length !== 0 &&
+          msgs.map((msg, index) => {
+            if (msg.userId !== selfId)
+              return (
+                <LeftText key={`${msg.userId}_${index}`}>{msg.msg}</LeftText>
+              );
+            else
+              return (
+                <RightText key={`${msg.userId}_${index}`}>{msg.msg}</RightText>
+              );
+          })}
+      </MsgWindow>
+      <FlexInputWrapper>
+        <ChatBtn
+          onClick={() => {
+            dispatch({
+              type: PopUpActions.SHOW_CARD_SELECT_TRADE,
+              payload: {
+                targetId: targetInfo.userId,
+                targetName: targetInfo.userName,
+              },
+            });
+          }}
+        >
+          +
+        </ChatBtn>
+        <ChatInput
+          ref={inputRef}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              writeMsg();
+              e.preventDefault();
+            }
+          }}
+        ></ChatInput>
+      </FlexInputWrapper>
+    </ChatroomWindow>
   );
 };
 

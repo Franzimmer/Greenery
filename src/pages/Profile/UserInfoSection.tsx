@@ -20,13 +20,13 @@ const UserInfoWrapper = styled.div`
   margin-bottom: 20px;
 `;
 interface UserPhotoProps {
-  path: string | undefined;
+  $path: string | undefined;
 }
 export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background-image: url(${(props) => (props.path ? props.path : user)});
+  background-image: url(${(props) => (props.$path ? props.$path : user)});
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -206,7 +206,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   }, [showNameInput]);
   return (
     <UserInfoWrapper>
-      <UserPhoto path={userData?.photoUrl} />
+      <UserPhoto $path={userData?.photoUrl} />
       {isSelf && (
         <>
           <IconButtonLabel htmlFor="upload">

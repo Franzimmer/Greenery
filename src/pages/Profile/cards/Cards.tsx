@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { PlantCard } from "../../../store/types/plantCardType";
@@ -24,12 +24,12 @@ const Wrapper = styled.div<WrapperProps>`
 `;
 
 interface PlantImgProps {
-  path: string | undefined;
+  $path: string | undefined;
 }
 export const PlantImg = styled.div<PlantImgProps>`
   border-radius: 10px;
   margin: 8px auto;
-  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
+  background-image: url(${(props) => (props.$path ? props.$path : defaultImg)});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -56,14 +56,14 @@ export const Tag = styled.p`
   }
 `;
 interface TagsWrapper {
-  viewMode?: "grid" | "list";
+  $viewMode?: "grid" | "list";
 }
 export const TagsWrapper = styled.div<TagsWrapper>`
   width: 200px;
   display: flex;
   flex-wrap: wrap;
   margin: ${(props) =>
-    props.viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
+    props.$viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
   padding: 2px;
 `;
 const open = keyframes`
@@ -238,7 +238,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       payload: { cardIds: targets },
     });
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     setConfirmDisplay(false);
     alertDispatcher("success", `Delete Card Success`);
@@ -375,7 +375,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
             <ConfirmBtn
               onClick={() => {
                 dispatch({
-                  type: popUpActions.HIDE_ALL,
+                  type: PopUpActions.HIDE_ALL,
                 });
                 setConfirmDisplay(false);
               }}

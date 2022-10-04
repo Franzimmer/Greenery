@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/reducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
+import { RootState } from "../../store/reducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { unixTimeToString } from "../../utils/helpers";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
@@ -174,7 +174,7 @@ const DetailedCard = ({
             <EditIconBtn
               onClick={(e: React.MouseEvent<HTMLElement>) => {
                 dispatch({
-                  type: popUpActions.SHOW_MASK,
+                  type: PopUpActions.SHOW_MASK,
                 });
                 setEditCardId(detailData.cardId);
                 setDetailDisplay(false);
@@ -220,7 +220,7 @@ const DetailedCard = ({
               onClick={() => {
                 setDetailDisplay(false);
                 dispatch({
-                  type: popUpActions.HIDE_ALL,
+                  type: PopUpActions.HIDE_ALL,
                 });
               }}
             >

@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
-import { ChatroomActions } from "../../store/reducer/chatroomReducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
@@ -49,10 +49,10 @@ const AuthorInfo = styled.div`
   margin: 16px;
 `;
 interface AuthorPhotoProps {
-  path: string | undefined;
+  $path: string | undefined;
 }
 const AuthorPhoto = styled.div<AuthorPhotoProps>`
-  background-image: url(${(props) => (props.path ? props.path : user)});
+  background-image: url(${(props) => (props.$path ? props.$path : user)});
   background-size: cover;
   background-position: center center;
   border-radius: 50%;
@@ -252,7 +252,7 @@ const ForumPost = () => {
   function addComment() {
     setEditorMode("AddComment");
     dispatch({
-      type: popUpActions.SHOW_MASK,
+      type: PopUpActions.SHOW_MASK,
     });
     setTextEditorDisplay(true);
     setInitContent("");
@@ -269,7 +269,7 @@ const ForumPost = () => {
     setInitContent(comment.content);
     setEditorMode("EditComment");
     dispatch({
-      type: popUpActions.SHOW_MASK,
+      type: PopUpActions.SHOW_MASK,
     });
     setTextEditorDisplay(true);
   }
@@ -355,7 +355,7 @@ const ForumPost = () => {
           <PostWrapper>
             <AuthorInfo>
               <AuthorPhoto
-                path={authorInfo?.photoUrl}
+                $path={authorInfo?.photoUrl}
                 onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
               />
               <AuthorName
@@ -388,11 +388,11 @@ const ForumPost = () => {
                           setDetailDisplay(true);
                           setDetailData(card);
                           dispatch({
-                            type: popUpActions.SHOW_MASK,
+                            type: PopUpActions.SHOW_MASK,
                           });
                         }}
                       >
-                        <PlantImg path={card.plantPhoto} />
+                        <PlantImg $path={card.plantPhoto} />
                         <NameText>{card.plantName}</NameText>
                         <SpeciesText>{card.species}</SpeciesText>
                         <TagsWrapper>
@@ -409,7 +409,7 @@ const ForumPost = () => {
                             setDiaryId(card.cardId!);
                             setOwnerId(card.ownerId!);
                             dispatch({
-                              type: popUpActions.SHOW_MASK,
+                              type: PopUpActions.SHOW_MASK,
                             });
                             e.stopPropagation();
                           }}
@@ -430,7 +430,7 @@ const ForumPost = () => {
                     setEditorMode("EditPost");
                     setTextEditorDisplay(true);
                     dispatch({
-                      type: popUpActions.SHOW_MASK,
+                      type: PopUpActions.SHOW_MASK,
                     });
                   }}
                 >
@@ -449,7 +449,7 @@ const ForumPost = () => {
                 <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
                   <AuthorInfo>
                     <AuthorPhoto
-                      path={commentAuthorInfos[comment.authorId]?.photoUrl}
+                      $path={commentAuthorInfos[comment.authorId]?.photoUrl}
                       onClick={() => navigate(`/profile/${comment.authorId}`)}
                     />
                     <AuthorName>

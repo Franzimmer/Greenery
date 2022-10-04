@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
-import { ChatroomActions } from "../../store/reducer/chatroomReducer";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
 import { Person, PersonPhoto, NoSidebarDataText } from "./FollowList";
@@ -107,7 +107,7 @@ const Chatrooms = () => {
                   })
                 }
               >
-                <PersonPhoto path={room.targetInfo?.photoUrl} />
+                <PersonPhoto $path={room.targetInfo?.photoUrl} />
                 <ChatroomText>with {room.targetInfo?.userName}</ChatroomText>
               </Person>
             );

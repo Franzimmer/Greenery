@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer/index";
 import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 interface HeaderWrapperProps {
-  bgState: boolean;
+  $bgState: boolean;
 }
 const HeaderWrapper = styled.div<HeaderWrapperProps>`
   display: flex;
@@ -17,8 +17,8 @@ const HeaderWrapper = styled.div<HeaderWrapperProps>`
   position: fixed;
   top: 0;
   z-index: 99;
-  background-color: ${(props) => !props.bgState && "#F5F0EC"};
-  mix-blend-mode: ${(props) => props.bgState && "plus-lighter"};
+  background-color: ${(props) => !props.$bgState && "#F5F0EC"};
+  mix-blend-mode: ${(props) => props.$bgState && "plus-lighter"};
 `;
 const LinkWrapper = styled.div`
   display: flex;
@@ -87,14 +87,14 @@ const hoverEffect = keyframes`
   }
 `;
 interface SideBarBtnDivProps {
-  sideBarDisplay: boolean;
+  $sideBarDisplay: boolean;
 }
 const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
-  width: ${(props) => (props.sideBarDisplay ? "0px" : "70px")};
+  width: ${(props) => (props.$sideBarDisplay ? "0px" : "70px")};
   height: 1px;
   background: #fff;
   transform: ${(props) =>
-    props.sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
+    props.$sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
   position: relative;
   display: flex;
   justify-content: center;
@@ -106,19 +106,19 @@ const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
   &::before,
   ::after {
     content: "";
-    width: ${(props) => (props.sideBarDisplay ? "60px" : "40px")};
+    width: ${(props) => (props.$sideBarDisplay ? "60px" : "40px")};
     height: 1px;
     background: #fff;
     position: absolute;
-    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "10px")};
+    bottom: ${(props) => (props.$sideBarDisplay ? "0px" : "10px")};
     ${SideBarBtn}:hover & {
       animation: 1s ${hoverEffect} ease-out;
     }
   }
   &::after {
-    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "-10px")};
+    bottom: ${(props) => (props.$sideBarDisplay ? "0px" : "-10px")};
     transform: ${(props) =>
-      props.sideBarDisplay ? "rotate(90deg)" : "rotate(0deg)"};
+      props.$sideBarDisplay ? "rotate(90deg)" : "rotate(0deg)"};
   }
 `;
 
@@ -145,7 +145,7 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
     else setBgState(false);
   }, [location]);
   return (
-    <HeaderWrapper bgState={bgState}>
+    <HeaderWrapper $bgState={bgState}>
       <LinkWrapper>
         <LogoLink to="/">GREENERY</LogoLink>
       </LinkWrapper>
@@ -163,7 +163,7 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
           )}
           <SideBarBtn onClick={sideBarToggle}>
             <SideBarBtnDiv
-              sideBarDisplay={isLoggedIn && sideBarDisplay}
+              $sideBarDisplay={isLoggedIn && sideBarDisplay}
             ></SideBarBtnDiv>
           </SideBarBtn>
         </SideBarBtnWrapper>

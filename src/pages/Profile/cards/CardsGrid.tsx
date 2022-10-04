@@ -4,7 +4,7 @@ import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../../store/reducer";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { LabelText } from "../../../components/GlobalStyles/text";
@@ -34,10 +34,10 @@ interface CardProps {
   $show?: boolean;
   $mode: "grid" | "list";
 }
-interface CardWrapperProps {
+interface DisplayProps {
   $show: boolean;
 }
-const CardWrapper = styled.div<CardWrapperProps>`
+const CardWrapper = styled.div<DisplayProps>`
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: row;
 `;
@@ -149,7 +149,7 @@ const CardsGrid = ({
                   $show={filterCard(card.tags || [])}
                   onClick={() => {
                     dispatch({
-                      type: popUpActions.SHOW_MASK,
+                      type: PopUpActions.SHOW_MASK,
                     });
                     setDetailDisplay(true);
                     setDetailData(card);
@@ -167,11 +167,11 @@ const CardsGrid = ({
                     />
                   )}
                   {viewMode === "grid" && (
-                    <PlantImg path={card.plantPhoto || defaultImg} />
+                    <PlantImg $path={card.plantPhoto || defaultImg} />
                   )}
                   <NameText $mode={viewMode}>{card.plantName}</NameText>
                   <SpeciesText>{card.species}</SpeciesText>
-                  <TagsWrapper viewMode={viewMode}>
+                  <TagsWrapper $viewMode={viewMode}>
                     {card?.tags?.length !== 0 &&
                       card.tags?.map((tag: string) => {
                         return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
@@ -182,7 +182,7 @@ const CardsGrid = ({
                     $mode={viewMode}
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
                       dispatch({
-                        type: popUpActions.SHOW_MASK,
+                        type: PopUpActions.SHOW_MASK,
                       });
                       setDiaryDisplay(true);
                       setDiaryId(card.cardId);
@@ -219,7 +219,7 @@ const CardsGrid = ({
                   setEditCardId(null);
                   editorToggle();
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                 }}
               >

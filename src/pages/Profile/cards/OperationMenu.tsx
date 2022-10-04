@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../../store/reducer/index";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import {
   faPlus,
@@ -116,7 +116,7 @@ const OperationMenu = ({
             setEditCardId(null);
             editorToggle();
             dispatch({
-              type: popUpActions.SHOW_MASK,
+              type: PopUpActions.SHOW_MASK,
             });
           }}
         >
@@ -195,7 +195,7 @@ const OperationMenu = ({
               <BtnWrapper
                 onClick={() => {
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                   setConfirmMessage();
                   setConfirmDisplay(true);

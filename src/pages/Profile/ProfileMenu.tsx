@@ -9,14 +9,14 @@ const MenuWrapper = styled.div`
   margin-bottom 10px;
 `;
 interface MenuItemProps {
-  show: boolean;
+  $show: boolean;
 }
 const MenuItem = styled(LabelText)<MenuItemProps>`
   font-size: 16px;
   margin-right: 20px;
   padding: 5px;
   cursor: pointer;
-  color: ${(props) => (props.show ? "#5c836f" : "#6a5125")};
+  color: ${(props) => (props.$show ? "#5c836f" : "#6a5125")};
   transition: 0.5s;
   &:hover {
     color: #5c836f;
@@ -47,16 +47,16 @@ const ProfileMenu = ({ tabDisplay, setTabDisplay }: ProfileMenuProps) => {
   }
   return (
     <MenuWrapper>
-      <MenuItem show={tabDisplay.Cards} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Cards} onClick={(e) => tabSwitcher(e)}>
         Cards
       </MenuItem>
-      <MenuItem show={tabDisplay.Calendar} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Calendar} onClick={(e) => tabSwitcher(e)}>
         Calendar
       </MenuItem>
-      <MenuItem show={tabDisplay.Gallery} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Gallery} onClick={(e) => tabSwitcher(e)}>
         Gallery
       </MenuItem>
-      <MenuItem show={tabDisplay.Favorites} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Favorites} onClick={(e) => tabSwitcher(e)}>
         Favorites
       </MenuItem>
     </MenuWrapper>

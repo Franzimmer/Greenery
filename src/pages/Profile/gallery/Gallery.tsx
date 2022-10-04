@@ -15,23 +15,20 @@ import {
 import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface SectionWrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const SectionWrapper = styled.div<SectionWrapperProps>`
-  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  opacity: ${(props) => (props.$isLoading ? "0" : "1")};
   transition: 1s;
 `;
-interface GalleryProps {
-  id: string | undefined;
-}
 interface PinProps {
-  path: string;
+  $path: string;
 }
 const Pin = styled.div<PinProps>`
   cursor: pointer;
   position: relative;
   margin: 20px 15px;
-  background-image: url(${(props) => props.path});
+  background-image: url(${(props) => props.$path});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -94,7 +91,7 @@ const LabelBtn = styled(IconButton)`
   color: #fff;
 `;
 interface FlexWrapperProps {
-  disableBtn: boolean;
+  $disableBtn: boolean;
 }
 const FlexWrapper = styled.label<FlexWrapperProps>`
   align-self: flex-end;
@@ -106,21 +103,24 @@ const FlexWrapper = styled.label<FlexWrapperProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
-  cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
+  background: ${(props) => (props.$disableBtn ? "#aaa" : "#5c836f")};
+  cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
   }
   & * {
-    background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
-    cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
+    background: ${(props) => (props.$disableBtn ? "#aaa" : "#5c836f")};
+    cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   }
 `;
 const NoGallerySection = styled(NoDataSection)`
   margin-top: 20px;
 `;
+interface GalleryProps {
+  id: string | undefined;
+}
 const Gallery = ({ id }: GalleryProps) => {
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
@@ -174,10 +174,10 @@ const Gallery = ({ id }: GalleryProps) => {
   return (
     <>
       {isLoading && <SectionLoader></SectionLoader>}
-      <SectionWrapper isLoading={isLoading}>
+      <SectionWrapper $isLoading={isLoading}>
         {isSelf && media.length !== 0 && (
           <FlexWrapper
-            disableBtn={disableBtn}
+            $disableBtn={disableBtn}
             htmlFor="image"
             onClick={(e) => {
               if (disableBtn) e.preventDefault();
@@ -218,7 +218,7 @@ const Gallery = ({ id }: GalleryProps) => {
               return (
                 <Fragment key={`${asset}-asset`}>
                   {index % 3 === 1 && (
-                    <SmallPin path={asset}>
+                    <SmallPin $path={asset}>
                       <PinMask />
                       <DeleteBtn
                         onClick={() => {
@@ -230,7 +230,7 @@ const Gallery = ({ id }: GalleryProps) => {
                     </SmallPin>
                   )}
                   {index % 3 === 2 && (
-                    <MediumPin path={asset}>
+                    <MediumPin $path={asset}>
                       <PinMask />
                       <DeleteBtn
                         onClick={() => {
@@ -242,7 +242,7 @@ const Gallery = ({ id }: GalleryProps) => {
                     </MediumPin>
                   )}
                   {index % 3 === 0 && (
-                    <LargePin path={asset}>
+                    <LargePin $path={asset}>
                       <PinMask />
                       <DeleteBtn
                         onClick={() => {

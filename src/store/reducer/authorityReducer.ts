@@ -1,37 +1,16 @@
-interface authorityType {
-  isLoggedIn: boolean;
-  isSelf: boolean;
-}
+import { AuthorityType } from "../types/authorityType";
+import {
+  AuthorityActions,
+  AuthorityActionTypes,
+} from "../actions/authorityActions";
 
-export enum AuthorityActions {
-  LOG_IN = "LOG_IN",
-  LOG_OUT = "LOG_OUT",
-  JUDGE_IS_SELF = "JUDGE_IS_SELF",
-}
-
-interface userLogIn {
-  type: AuthorityActions.LOG_IN;
-}
-interface userLogOut {
-  type: AuthorityActions.LOG_OUT;
-}
-interface judgeIsSelf {
-  type: AuthorityActions.JUDGE_IS_SELF;
-  payload: {
-    targetId: string;
-    selfId: string;
-  };
-}
-
-type authorityActionTypes = userLogIn | userLogOut | judgeIsSelf;
-
-const initialAuthority: authorityType = {
+const initialAuthority: AuthorityType = {
   isLoggedIn: false,
   isSelf: false,
 };
 const authority = (
-  state: authorityType = initialAuthority,
-  action: authorityActionTypes
+  state: AuthorityType = initialAuthority,
+  action: AuthorityActionTypes
 ) => {
   switch (action.type) {
     case AuthorityActions.LOG_IN: {

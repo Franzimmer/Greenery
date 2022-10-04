@@ -57,14 +57,14 @@ const TextEditorBtnWrapper = styled.div`
   margin-top: auto;
 `;
 interface TextEditorBtnProps {
-  disabledBtn: boolean;
+  $disabledBtn: boolean;
 }
 const TextEditorBtn = styled(OperationBtn)<TextEditorBtnProps>`
   width: 100px;
-  background: ${(props) => (props.disabledBtn ? "#aaa" : "#6a5125")};
+  background: ${(props) => (props.$disabledBtn ? "#aaa" : "#6a5125")};
   border: ${(props) =>
-    props.disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
-  cursor: ${(props) => (props.disabledBtn ? "not-allowed" : "pointer")};
+    props.$disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
+  cursor: ${(props) => (props.$disabledBtn ? "not-allowed" : "pointer")};
   margin: 8px 8px 0px 0px;
   transtion: 0.25s;
   &:hover {
@@ -338,7 +338,7 @@ const TextEditor = ({
         <TextEditorBtnWrapper>
           {editorMode === "AddPost" && (
             <TextEditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
                 if (!disabledBtn) {
                   savePost();
@@ -355,7 +355,7 @@ const TextEditor = ({
           )}
           {editorMode === "EditPost" && (
             <TextEditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
                 if (!disabledBtn) {
                   editPost();
@@ -372,7 +372,7 @@ const TextEditor = ({
           )}
           {editorMode === "AddComment" && (
             <TextEditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={async () => {
                 if (!disabledBtn) {
                   await addComment();
@@ -386,7 +386,7 @@ const TextEditor = ({
           )}
           {editorMode === "EditComment" && (
             <TextEditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
                 if (!disabledBtn) {
                   saveEditComment();
@@ -398,7 +398,7 @@ const TextEditor = ({
             </TextEditorBtn>
           )}
           <TextEditorBtn
-            disabledBtn={disabledBtn}
+            $disabledBtn={disabledBtn}
             onClick={() => {
               setTextEditorDisplay(false);
               dispatch({

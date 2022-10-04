@@ -21,9 +21,10 @@ import { auth, firebase, db } from "./utils/firebase";
 import { Note } from "./store/types/notificationType";
 import { UserInfoActions } from "./store/actions/userInfoActions";
 import { CardsActions } from "./store/actions/cardsActions";
-import { AuthorityActions } from "./store/reducer/authorityReducer";
-import { myFollowersActions } from "./store/reducer/myFollowersReducer";
+import { AuthorityActions } from "./store/actions/authorityActions";
+import { MyFollowersActions } from "./store/actions/myFollowersActions";
 import { NotificationActions } from "./store/actions/notificationActions";
+import { ChatroomActions } from "./store/actions/chatroomActions";
 import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
 import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
 import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
@@ -109,7 +110,7 @@ function UserLogInObserver({
     onSnapshot(docRef, (doc) => {
       if (doc.exists())
         dispatch({
-          type: myFollowersActions.SET_FOLLOWERS,
+          type: MyFollowersActions.SET_FOLLOWERS,
           payload: { followers: doc.data()!.followers },
         });
     });
@@ -147,10 +148,13 @@ function UserLogInObserver({
           type: UserInfoActions.CLEAR_USER_INFO,
         });
         dispatch({
-          type: myFollowersActions.CLEAR_FOLLOWERS,
+          type: MyFollowersActions.CLEAR_FOLLOWERS,
         });
         dispatch({
           type: NotificationActions.CLEAR_NOTIFICATION,
+        });
+        dispatch({
+          type: ChatroomActions.CLOSE_ALL_ROOMS,
         });
         dispatch({
           type: AuthorityActions.LOG_OUT,

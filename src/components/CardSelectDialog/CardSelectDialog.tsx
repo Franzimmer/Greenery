@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
+import { PopUpType } from "../../store/types/popUpType";
 import { CardsActions } from "../../store/actions/cardsActions";
-import {
-  popUpActions,
-  PopUpDisplayType,
-} from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
 import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import CardsWrapper from "./CardsWrapper";
@@ -101,16 +99,14 @@ const CardSelectDialog = () => {
   const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const cardList = useSelector((state: RootState) => state.cards);
-  const popUpDisplay: PopUpDisplayType = useSelector(
-    (state: RootState) => state.popUp
-  );
+  const popUp: PopUpType = useSelector((state: RootState) => state.popUp);
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
   const [btnWrapperDisplay, setBtnWrapperDisplay] = useState<boolean>(true);
   const selfId = userInfo.userId;
-  const targetId = popUpDisplay.target.id;
-  const targetName = popUpDisplay.target.name;
+  const targetId = popUp.target.id;
+  const targetName = popUp.target.name;
   function confirmTradeItems() {
     if (!targetId) return;
     if (Object.values(menuSelect).every((select) => select === false)) {
@@ -162,7 +158,7 @@ const CardSelectDialog = () => {
     setBtnWrapperDisplay(false);
     setCardListDisplay(true);
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "Send out success !");
     return;
@@ -179,13 +175,13 @@ const CardSelectDialog = () => {
   }, [cardList]);
   return (
     <>
-      <DialogWrapper show={popUpDisplay.cardSelect}>
+      <DialogWrapper show={popUp.cardSelect}>
         <DialogCloseBtn
           onClick={() => {
             resetCheck();
             setCardListDisplay(true);
             dispatch({
-              type: popUpActions.HIDE_ALL,
+              type: PopUpActions.HIDE_ALL,
             });
           }}
         >

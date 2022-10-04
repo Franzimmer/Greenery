@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfoActions } from "../../store/actions/userInfoActions";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { PlantCard } from "../../store/types/plantCardType";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
@@ -423,17 +423,17 @@ const Home = () => {
                       setDetailDisplay(true);
                       setDetailData(card);
                       dispatch({
-                        type: popUpActions.SHOW_MASK,
+                        type: PopUpActions.SHOW_MASK,
                       });
                     }}
                   >
-                    <PlantImg path={card.plantPhoto || defaultImg} />
+                    <PlantImg $path={card.plantPhoto || defaultImg} />
                     <NameText>
                       <UserLink
                         to={`/profile/${card.ownerId}`}
                         onClick={(e) => {
                           dispatch({
-                            type: popUpActions.HIDE_ALL,
+                            type: PopUpActions.HIDE_ALL,
                           });
                           e.stopPropagation();
                         }}
@@ -457,7 +457,7 @@ const Home = () => {
                         setDiaryId(card.cardId);
                         setOwnerId(card.ownerId);
                         dispatch({
-                          type: popUpActions.SHOW_MASK,
+                          type: PopUpActions.SHOW_MASK,
                         });
                         e.stopPropagation();
                       }}

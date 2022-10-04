@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer/index";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
@@ -21,10 +21,10 @@ import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";
 interface WrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
-  display: ${(props) => (props.isLoading ? "none" : "block")};
+  display: ${(props) => (props.$isLoading ? "none" : "block")};
   margin: 150px auto 50px;
   width: 80vw;
 `;
@@ -36,13 +36,13 @@ const ForumSectionWrapper = styled.div`
   margin: 0px auto 50px;
 `;
 interface ForumPostPageProps {
-  show: boolean;
+  $show: boolean;
 }
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80vw;
   height: 100px;
   border: 1px solid #6a5125;
-  display: ${(props) => (props.show ? "flex" : "none")};
+  display: ${(props) => (props.$show ? "flex" : "none")};
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
@@ -151,7 +151,7 @@ const ForumHomePage = () => {
     setInitContent("");
     setTextEditorDisplay(true);
     dispatch({
-      type: popUpActions.SHOW_MASK,
+      type: PopUpActions.SHOW_MASK,
     });
   }
   useEffect(() => {
@@ -169,7 +169,7 @@ const ForumHomePage = () => {
   return (
     <>
       {isLoading && <PageLoader />}
-      <Wrapper isLoading={isLoading}>
+      <Wrapper $isLoading={isLoading}>
         <ForumSectionWrapper>
           <PostTypeBtn
             style={{ backgroundImage: `url(${all})` }}
@@ -201,7 +201,7 @@ const ForumHomePage = () => {
             return (
               <ForumPostPage
                 key={post.postId}
-                show={post.type === filter || filter === "any"}
+                $show={post.type === filter || filter === "any"}
                 onClick={() => navigate(`/forum/${post.postId}`)}
               >
                 <FlexWrapper>

@@ -5,9 +5,13 @@ import styled from "styled-components";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { NoDataText } from "../GlobalStyles/noDataLayout";
 =======
 import { NoDataText } from "../GlobalStyles/NoDataLayout";
+=======
+import { NoDataText } from "../GlobalStyles/noDataLayout";
+>>>>>>> b9f1c26 (fix redux file structure)
 import { UserPhoto } from "../../pages/Profile/UserInfoSection";
 >>>>>>> 64146c8 (remove unused imports & group imports)
 const ListWrapper = styled.div`
@@ -64,7 +68,7 @@ const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
               key={`${user.userId}`}
             >
               <StyleWrapper>
-                <PersonPhoto path={user.photoUrl} />
+                <PersonPhoto $path={user.photoUrl} />
                 <PersonText>{user.userName}</PersonText>
               </StyleWrapper>
             </Person>

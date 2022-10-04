@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
 import { PlantCard } from "../../../store/types/plantCardType";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
@@ -47,12 +47,12 @@ const InputLabel = styled.span`
 `;
 
 interface PhotoPreviewProps {
-  path: string | null;
+  $path: string | null;
 }
 const PhotoPreview = styled.div<PhotoPreviewProps>`
   width: 280px;
   height: 150px;
-  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
+  background-image: url(${(props) => (props.$path ? props.$path : defaultImg)});
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;
@@ -117,16 +117,16 @@ const BtnWrpper = styled.div`
   justify-content: space-between;
 `;
 interface EditortnProps {
-  disabledBtn: boolean;
+  $disabledBtn: boolean;
 }
 const EditorBtn = styled(OperationBtn)<EditortnProps>`
   color: #fff;
   width: 100px;
   margin-top: 12px;
   border: ${(props) =>
-    props.disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
-  background: ${(props) => (props.disabledBtn ? "#aaa" : "#6a5125")};
-  cursor: ${(props) => props.disabledBtn && "not-allowed"};
+    props.$disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
+  background: ${(props) => (props.$disabledBtn ? "#aaa" : "#6a5125")};
+  cursor: ${(props) => props.$disabledBtn && "not-allowed"};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -355,7 +355,7 @@ const CardEditor = ({
       payload: { newCard: { ...data, cardId } },
     });
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "You add a new plant card !");
     editorToggle();
@@ -394,7 +394,7 @@ const CardEditor = ({
       payload: { editCard: data },
     });
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "Edit Card Success!");
     resetEditor();
@@ -426,7 +426,7 @@ const CardEditor = ({
     <CardEditorWrapper $display={editorDisplay}>
       <PageWrapper>
         <InputWrapper>
-          <PhotoPreview path={previewLink || defaultImg} />
+          <PhotoPreview $path={previewLink || defaultImg} />
           <PhotoInputLabel htmlFor="img">
             <UploadIcon icon={faPenToSquare} />
           </PhotoInputLabel>
@@ -569,7 +569,7 @@ const CardEditor = ({
         <BtnWrpper>
           {editCardId ? (
             <EditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
                 if (!disabledBtn) {
                   editCard();
@@ -580,7 +580,7 @@ const CardEditor = ({
             </EditorBtn>
           ) : (
             <EditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
                 if (!disabledBtn) {
                   addCard();
@@ -591,14 +591,14 @@ const CardEditor = ({
             </EditorBtn>
           )}
           <EditorBtn
-            disabledBtn={disabledBtn}
+            $disabledBtn={disabledBtn}
             onClick={() => {
               if (!disabledBtn) {
                 editorToggle();
                 resetEditor();
                 setEditCardId(null);
                 dispatch({
-                  type: popUpActions.HIDE_ALL,
+                  type: PopUpActions.HIDE_ALL,
                 });
               }
             }}

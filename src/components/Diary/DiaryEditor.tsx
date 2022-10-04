@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fabric } from "fabric";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
 import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import Canvas from "./Canvas";
@@ -13,7 +13,7 @@ import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../components/GlobalStyles/noDataLayout";
+} from "../GlobalStyles/noDataLayout";
 import {
   faArrowRight,
   faArrowLeft,
@@ -528,7 +528,7 @@ const DiaryEditor = ({
               setLoaderDisplay(true);
               switchToViewMode();
               dispatch({
-                type: popUpActions.HIDE_ALL,
+                type: PopUpActions.HIDE_ALL,
               });
             }}
           >
