@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { CardsActions } from "../../store/actions/cardsActions";
 import { PlantCard } from "../../store/types/plantCardType";
 import { firebase } from "../../utils/firebase";
@@ -137,7 +137,7 @@ const PropagationMenu = ({
     await Promise.all(promises);
     setPropagateDisplay(false);
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "Propagate success!");
     if (numberRef.current) numberRef.current!.value = "";
@@ -193,7 +193,7 @@ const PropagationMenu = ({
             if (inputRef.current) inputRef.current!.value = "";
             setPropagateDisplay(false);
             dispatch({
-              type: popUpActions.HIDE_ALL,
+              type: PopUpActions.HIDE_ALL,
             });
           }}
         >

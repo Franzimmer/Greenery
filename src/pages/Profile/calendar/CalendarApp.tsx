@@ -57,7 +57,7 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
             (item: string) => waterEvents.indexOf(item) < 0
           )
         );
-        const querySnapshot = await firebase.getCards(eventIds);
+        const querySnapshot = await firebase.getCardsByIds(eventIds);
         if (querySnapshot?.empty) return;
         querySnapshot!.forEach((doc) => {
           cardList.push(doc.data());

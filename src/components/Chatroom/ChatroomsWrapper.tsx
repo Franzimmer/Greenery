@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+import { ChatroomType } from "../../store/types/chatroomType";
 import { RootState } from "../../store/reducer";
 import Chatroom from "./Chatroom";
 
@@ -15,7 +16,9 @@ const ChatroomFlexWrapper = styled.div`
 `;
 
 const ChatroomsWrapper = () => {
-  const chatInfos = useSelector((state: RootState) => state.chatroom);
+  const chatInfos = useSelector(
+    (state: RootState) => state.chatroom
+  ) as ChatroomType[];
   return (
     <ChatroomFlexWrapper>
       {chatInfos?.map((room) => {

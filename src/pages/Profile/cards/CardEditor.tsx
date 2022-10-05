@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,17 +23,14 @@ import { speciesContents } from "./speciesContents";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 
-interface CardEditorWrapperProps {
-  $display: boolean;
-}
-const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
+const CardEditorWrapper = styled.div`
   position: fixed;
   z-index: 101;
   top: 50vh;
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
   border-radius: 15px;
-  display: ${(props) => (props.$display ? "flex" : "none")};
+  display: flex;
   justify-content: center;
   align-items: center;
   background: #f5f0ec;
@@ -180,20 +183,20 @@ const SearchActive = styled(SearchSuggestion)`
   background-color: #5c836f;
   color: #fff;
 `;
-interface FCProps {
+interface CardEditorProps {
   userId: string;
-  editorDisplay: boolean;
-  editorToggle: () => void;
   editCardId: string | null;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  editorDisplay: boolean;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
 }
 const CardEditor = ({
   userId,
-  editorDisplay,
-  editorToggle,
   editCardId,
   setEditCardId,
-}: FCProps) => {
+  editorDisplay,
+  setEditorDisplay,
+}: CardEditorProps) => {
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
   const cardList = useSelector((state: RootState) => state.cards);
@@ -211,9 +214,6 @@ const CardEditor = ({
   const [tags, setTags] = useState<string[]>([]);
   const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
   const [searchSuggests, setSearchSuggests] = useState<string[]>([]);
-  const [searchSuggestsDisplay, setSearchSuggestsDisplay] = useState<boolean>(
-    false
-  );
   const [searchActive, setSearchActive] = useState<number>(-1);
 
   function createPreviewLink() {
@@ -229,8 +229,8 @@ const CardEditor = ({
   function searchRecommends() {
     if (!speciesRef.current) return;
     if (speciesRef.current.value === "") {
+      setSearchSuggests([]);
       setSearchActive(-1);
-      setSearchSuggestsDisplay(false);
       return;
     }
     let results: string[] = [];
@@ -239,12 +239,10 @@ const CardEditor = ({
       if (speciesName.startsWith(targetString)) results.push(speciesName);
     });
     if (results.length > 0) {
-      setSearchSuggestsDisplay(true);
       setSearchSuggests(results);
       setSearchActive(0);
     } else {
-      setSearchSuggestsDisplay(true);
-      setSearchSuggests(["No Search Result"]);
+      setSearchSuggests([]);
       setSearchActive(-1);
     }
   }
@@ -259,10 +257,8 @@ const CardEditor = ({
     } else if (e.key === "Enter" && searchActive !== -1) {
       if (!speciesRef.current || !activeRef.current) return;
       speciesRef.current.value = activeRef.current.textContent!;
-      setSearchSuggestsDisplay(false);
     } else if (e.key === "Enter" && searchActive === -1) {
       setSearchSuggests([]);
-      setSearchSuggestsDisplay(false);
     }
   }
   async function searchPlantSpecies(input: string) {
@@ -272,13 +268,13 @@ const CardEditor = ({
       waterRef.current!.value = "";
       lightRef.current!.value = "";
       toxicityRef.current!.value = "";
-      return;
+    } else {
+      querySnapshot.forEach((doc) => {
+        waterRef.current!.value = doc.data().WATER;
+        lightRef.current!.value = doc.data().LIGHT;
+        toxicityRef.current!.value = doc.data().TOXICITY;
+      });
     }
-    querySnapshot.forEach((doc) => {
-      waterRef.current!.value = doc.data().WATER;
-      lightRef.current!.value = doc.data().LIGHT;
-      toxicityRef.current!.value = doc.data().TOXICITY;
-    });
   }
   function addTag() {
     if (!tagRef.current) return;
@@ -288,13 +284,10 @@ const CardEditor = ({
     currentTags.push(tagRef.current.value);
     setTags(currentTags);
   }
-  function RemoveTag(e: React.MouseEvent<HTMLElement>) {
+  function RemoveTag(target: string) {
     if (!tagRef.current) return;
     const currentTags = [...tags];
-    const button = e.target as HTMLDivElement;
-    const newTags = currentTags.filter(
-      (tag) => tag !== button.parentElement!.id
-    );
+    const newTags = currentTags.filter((tag) => tag !== target);
     setTags(newTags);
   }
   async function uploadFile() {
@@ -304,106 +297,95 @@ const CardEditor = ({
     const dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
   }
-  function resetEditor() {
-    imageRef.current!.value = "";
-    nameRef.current!.value = "";
-    speciesRef.current!.value = "";
-    birthdayRef.current!.value = "";
-    tagRef.current!.value = "";
-    waterRef.current!.value = "";
-    lightRef.current!.value = "";
-    toxicityRef.current!.value = "";
-    setSearchActive(-1);
-    setSearchSuggests([]);
-    setSearchSuggestsDisplay(false);
-    setPreviewLink(null);
-    setTags([]);
-  }
   function checkInput() {
     if (nameRef.current?.value === "") {
       alertDispatcher("fail", "Please fill plant name.");
+      setDisabledBtn(false);
       return false;
     } else if (speciesRef.current?.value === "") {
       alertDispatcher("fail", "Please fill plant species.");
+      setDisabledBtn(false);
       return false;
     } else return true;
   }
-  async function addCard() {
-    const imgLink = await uploadFile();
-    if (!checkInput()) return;
-    setDisabledBtn(true);
+  async function handleUploadData() {
+    let imgLink;
+    if (imageRef.current?.value) imgLink = await uploadFile();
+    else imgLink = previewLink!;
     const data: PlantCard = {
-      cardId: null,
+      cardId: editCardId ? editCardId : null,
       ownerId: userId,
-      plantName: nameRef.current?.value!,
       plantPhoto: imgLink || "",
-      tags: tags,
+      tags: tags || [],
+      plantName: nameRef.current?.value!,
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
-      followers: 0,
-      createdTime: NaN,
+      createdTime: editCardId
+        ? cardList.find((card) => card.cardId === editCardId)!.createdTime
+        : NaN,
+      followers: editCardId
+        ? cardList.find((card) => card.cardId === editCardId)!.followers
+        : 0,
     };
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
+    if (editCardId) {
+      data["parents"] =
+        cardList.find((card) => card.cardId === editCardId)!.parents || [];
+    }
+    return data;
+  }
+  async function addCard() {
+    setDisabledBtn(true);
+    if (!checkInput()) return;
+    const data = await handleUploadData();
     const cardId = await firebase.addCard(data);
     await firebase.emitNotices(userId, myFollowers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: { ...data, cardId } },
     });
-    dispatch({
-      type: PopUpActions.HIDE_ALL,
-    });
+    handleCloseClick();
     alertDispatcher("success", "You add a new plant card !");
-    editorToggle();
-    setDisabledBtn(false);
-    resetEditor();
   }
   async function editCard() {
-    let imgLink;
-    if (imageRef.current?.value) imgLink = await uploadFile();
-    else imgLink = previewLink!;
-    if (!checkInput()) return;
     setDisabledBtn(true);
-    const data: PlantCard = {
-      cardId: editCardId!,
-      parents:
-        cardList.find((card) => card.cardId === editCardId)!.parents || [],
-      followers: cardList.find((card) => card.cardId === editCardId)!.followers,
-      ownerId: userId,
-      plantName: nameRef.current?.value!,
-      plantPhoto: imgLink || "",
-      tags: tags || [],
-      species: speciesRef.current?.value!,
-      waterPref: waterRef.current?.value,
-      lightPref: lightRef.current?.value,
-      toxicity: toxicityRef.current?.value,
-      createdTime: cardList.find((card) => card.cardId === editCardId)!
-        .createdTime,
-    };
-    if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
-      data["birthday"] = Date.parse(birthdayRef.current?.value!);
-    }
+    if (!checkInput()) return;
+    const data = await handleUploadData();
     await firebase.editCard(editCardId!, data);
-    editorToggle();
     dispatch({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
-    dispatch({
-      type: PopUpActions.HIDE_ALL,
-    });
+    handleCloseClick();
     alertDispatcher("success", "Edit Card Success!");
-    resetEditor();
-    setDisabledBtn(false);
-    setEditCardId(null);
+  }
+  function handleCloseClick() {
+    if (!disabledBtn) {
+      setEditCardId(null);
+      setEditorDisplay(false);
+      setPreviewLink(null);
+      setDisabledBtn(false);
+      setTags([]);
+      setSearchSuggests([]);
+      dispatch({
+        type: PopUpActions.HIDE_ALL,
+      });
+    }
+  }
+  function handleSpeciesSearch(name: string) {
+    if (!speciesRef.current) return;
+    speciesRef.current.value = name;
+    searchPlantSpecies(name);
+    setSearchActive(-1);
+    setSearchSuggests([]);
   }
   useEffect(() => {
-    async function getEditCardData() {
-      if (!editCardId) return;
+    if (!editCardId) return;
+    else {
       const data = cardList.find((card) => card.cardId === editCardId);
       setPreviewLink(data!.plantPhoto || null);
       setTags(data?.tags || []);
@@ -415,15 +397,14 @@ const CardEditor = ({
       if (data?.birthday)
         birthdayRef.current!.value = unixTimeToString(data?.birthday);
     }
-    if (editCardId) getEditCardData();
   }, [editCardId]);
   useEffect(() => {
     if (activeRef.current) {
       activeRef.current.scrollIntoView();
     }
   }, [searchActive]);
-  return (
-    <CardEditorWrapper $display={editorDisplay}>
+  return editCardId || editorDisplay ? (
+    <CardEditorWrapper>
       <PageWrapper>
         <InputWrapper>
           <PhotoPreview $path={previewLink || defaultImg} />
@@ -435,9 +416,7 @@ const CardEditor = ({
             ref={imageRef}
             type="file"
             accept="image/*"
-            onChange={() => {
-              createPreviewLink();
-            }}
+            onChange={createPreviewLink}
             hidden
           />
         </InputWrapper>
@@ -457,33 +436,24 @@ const CardEditor = ({
               type="text"
               ref={speciesRef}
               maxLength={40}
-              placeholder={"enter 1-40 character(s)"}
+              placeholder={"press enter to search"}
               onKeyPress={(e) => {
                 if (!speciesRef.current) return;
-                if (e.key === "Enter") {
+                if (e.key === "Enter")
                   searchPlantSpecies(speciesRef.current.value);
-                }
               }}
-              onKeyDown={(e) => {
-                switchActive(e);
-              }}
+              onKeyDown={(e) => switchActive(e)}
               onChange={searchRecommends}
             />
-            {searchSuggestsDisplay && (
+            {!!searchSuggests.length && (
               <SearchSuggestionsWrapper>
                 {searchSuggests.map((name, index) => {
                   if (index === searchActive)
                     return (
                       <SearchActive
+                        key={name}
                         ref={activeRef}
-                        onClick={() => {
-                          if (!speciesRef.current) return;
-                          speciesRef.current.value = name;
-                          searchPlantSpecies(name);
-                          setSearchSuggestsDisplay(false);
-                          setSearchActive(-1);
-                          setSearchSuggests([]);
-                        }}
+                        onClick={() => handleSpeciesSearch(name)}
                       >
                         {name}
                       </SearchActive>
@@ -491,14 +461,8 @@ const CardEditor = ({
                   else
                     return (
                       <SearchSuggestion
-                        onClick={() => {
-                          if (!speciesRef.current) return;
-                          speciesRef.current.value = name;
-                          searchPlantSpecies(name);
-                          setSearchSuggestsDisplay(false);
-                          setSearchActive(-1);
-                          setSearchSuggests([]);
-                        }}
+                        key={name}
+                        onClick={() => handleSpeciesSearch(name)}
                       >
                         {name}
                       </SearchSuggestion>
@@ -531,9 +495,9 @@ const CardEditor = ({
           {tags &&
             tags.map((tag) => {
               return (
-                <Tag key={tag} id={tag}>
+                <Tag key={tag}>
                   <TagText>{tag}</TagText>
-                  <RemoveTagBtn onClick={(e) => RemoveTag(e)}>
+                  <RemoveTagBtn onClick={() => RemoveTag(tag)}>
                     &#215;
                   </RemoveTagBtn>
                 </Tag>
@@ -571,9 +535,7 @@ const CardEditor = ({
             <EditorBtn
               $disabledBtn={disabledBtn}
               onClick={() => {
-                if (!disabledBtn) {
-                  editCard();
-                }
+                if (!disabledBtn) editCard();
               }}
             >
               Save
@@ -582,33 +544,19 @@ const CardEditor = ({
             <EditorBtn
               $disabledBtn={disabledBtn}
               onClick={() => {
-                if (!disabledBtn) {
-                  addCard();
-                }
+                if (!disabledBtn) addCard();
               }}
             >
               Add
             </EditorBtn>
           )}
-          <EditorBtn
-            $disabledBtn={disabledBtn}
-            onClick={() => {
-              if (!disabledBtn) {
-                editorToggle();
-                resetEditor();
-                setEditCardId(null);
-                dispatch({
-                  type: PopUpActions.HIDE_ALL,
-                });
-              }
-            }}
-          >
+          <EditorBtn $disabledBtn={disabledBtn} onClick={handleCloseClick}>
             Cancel
           </EditorBtn>
         </BtnWrpper>
       </PageWrapper>
     </CardEditorWrapper>
-  );
+  ) : null;
 };
 
 export default CardEditor;

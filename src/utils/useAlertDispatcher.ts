@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux";
-import { popUpActions } from "../store/reducer/popUpReducer";
+import { PopUpActions } from "../store/actions/popUpActions";
 
 export const useAlertDispatcher = () => {
   const dispatch = useDispatch();
 
   return (type: string, msg: string) => {
     dispatch({
-      type: popUpActions.SHOW_ALERT,
+      type: PopUpActions.SHOW_ALERT,
       payload: {
         type,
         msg,
@@ -14,7 +14,7 @@ export const useAlertDispatcher = () => {
     });
     setTimeout(() => {
       dispatch({
-        type: popUpActions.CLOSE_ALERT,
+        type: PopUpActions.CLOSE_ALERT,
       });
     }, 2000);
   };

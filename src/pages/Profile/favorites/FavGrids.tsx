@@ -76,8 +76,6 @@ interface FavGridsProps {
   diariesExist: boolean[];
   favCards: PlantCard[];
   setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
   setOwnerId: React.Dispatch<React.SetStateAction<string>>;
   findOwnerName: (ownerId: string) => string | undefined;
@@ -87,8 +85,6 @@ const FavGrids = ({
   diariesExist,
   favCards,
   setDetailData,
-  setDetailDisplay,
-  setDiaryDisplay,
   setDiaryId,
   setOwnerId,
   findOwnerName,
@@ -124,7 +120,6 @@ const FavGrids = ({
                 $mode={"grid"}
                 $show={true}
                 onClick={() => {
-                  setDetailDisplay(true);
                   setDetailData(card);
                   dispatch({
                     type: PopUpActions.SHOW_MASK,
@@ -159,7 +154,6 @@ const FavGrids = ({
                     (!isOwner(card.ownerId) && diariesExist[index])
                   }
                   onClick={(e) => {
-                    setDiaryDisplay(true);
                     setOwnerId(card.ownerId);
                     setDiaryId(card.cardId);
                     dispatch({

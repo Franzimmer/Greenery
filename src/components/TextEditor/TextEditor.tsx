@@ -10,14 +10,14 @@ import "@tiptap/core";
 import "./tiptap.css";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
 import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import MenuBar from "./MenuBar";
 import CardsWrapper from "../../components/CardSelectDialog/CardsWrapper";
-import { Post } from "../../pages/Forum/ForumPost";
+import { Post } from "../../pages/Forum/ForumPost/ForumPost";
 import { UserInfo } from "../../store/types/userInfoType";
-import { Comment } from "../../pages/Forum/ForumPost";
+import { Comment } from "../../pages/Forum/ForumPost/ForumPost";
 import { PlantCard } from "../../store/types/plantCardType";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 interface CardPanelWrapperProps {
@@ -218,7 +218,7 @@ const TextEditor = ({
     setComments(newComments);
     setDisabledBtn(false);
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "Add Comment Success !");
   }
@@ -239,7 +239,7 @@ const TextEditor = ({
     newComments[targetId] = newComment;
     await firebase.saveEditComment(postId, newComments);
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
     alertDispatcher("success", "Edit Comment Success !");
     setComments(newComments);
@@ -345,7 +345,7 @@ const TextEditor = ({
                   setTextEditorDisplay(false);
                   setDisabledBtn(true);
                   dispatch({
-                    type: popUpActions.HIDE_ALL,
+                    type: PopUpActions.HIDE_ALL,
                   });
                 }
               }}
@@ -362,7 +362,7 @@ const TextEditor = ({
                   setTextEditorDisplay(false);
                   setDisabledBtn(true);
                   dispatch({
-                    type: popUpActions.HIDE_ALL,
+                    type: PopUpActions.HIDE_ALL,
                   });
                 }
               }}
@@ -402,7 +402,7 @@ const TextEditor = ({
             onClick={() => {
               setTextEditorDisplay(false);
               dispatch({
-                type: popUpActions.HIDE_ALL,
+                type: PopUpActions.HIDE_ALL,
               });
             }}
           >

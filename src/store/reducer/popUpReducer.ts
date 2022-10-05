@@ -1,5 +1,5 @@
 import { PopUpType } from "../types/popUpType";
-import { popUpActions, PopUpActionTypes } from "../actions/popUpActions";
+import { PopUpActions, PopUpActionTypes } from "../actions/popUpActions";
 
 const initialState: PopUpType = {
   mask: false,
@@ -16,7 +16,7 @@ const initialState: PopUpType = {
 };
 const popUp = (state: PopUpType = initialState, action: PopUpActionTypes) => {
   switch (action.type) {
-    case popUpActions.SHOW_CARD_SELECT_TRADE: {
+    case PopUpActions.SHOW_CARD_SELECT_TRADE: {
       return {
         ...state,
         mask: true,
@@ -27,13 +27,13 @@ const popUp = (state: PopUpType = initialState, action: PopUpActionTypes) => {
         },
       };
     }
-    case popUpActions.SHOW_MASK: {
+    case PopUpActions.SHOW_MASK: {
       return { ...state, mask: true };
     }
-    case popUpActions.HIDE_ALL: {
+    case PopUpActions.HIDE_ALL: {
       return initialState;
     }
-    case popUpActions.SHOW_ALERT: {
+    case PopUpActions.SHOW_ALERT: {
       return {
         ...state,
         alert: true,
@@ -43,7 +43,7 @@ const popUp = (state: PopUpType = initialState, action: PopUpActionTypes) => {
         },
       };
     }
-    case popUpActions.CLOSE_ALERT: {
+    case PopUpActions.CLOSE_ALERT: {
       return {
         ...state,
         alert: false,

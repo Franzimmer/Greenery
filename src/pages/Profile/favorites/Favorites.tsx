@@ -21,9 +21,7 @@ const Favorites = ({ id }: FavoritesProps) => {
   const favoriteCards = userInfo.favoriteCards;
   const [favCards, setFavCards] = useState<PlantCard[]>([]);
   const [ownerData, setOwnerData] = useState<UserInfo[]>([]);
-  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
-  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [ownerId, setOwnerId] = useState<string>("");
   const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
@@ -44,7 +42,7 @@ const Favorites = ({ id }: FavoritesProps) => {
         favorites = docSnapshot.data()?.favoriteCards!;
       }
       if (favorites.length !== 0) {
-        const queryData = await firebase.getCards(favorites);
+        const queryData = await firebase.getCardsByIds(favorites);
         if (!queryData?.empty) {
           const cards: PlantCard[] = [];
           const cardIds: string[] = [];
@@ -81,21 +79,13 @@ const Favorites = ({ id }: FavoritesProps) => {
         diariesExist={diariesExist}
         favCards={favCards}
         setDetailData={setDetailData}
-        setDetailDisplay={setDetailDisplay}
-        setDiaryDisplay={setDiaryDisplay}
         setDiaryId={setDiaryId}
         setOwnerId={setOwnerId}
         findOwnerName={findOwnerName}
       />
-      <DetailedCard
-        detailDisplay={detailDisplay}
-        setDetailDisplay={setDetailDisplay}
-        detailData={detailData!}
-      />
+      <DetailedCard detailData={detailData!} setDetailData={setDetailData} />
       <DiaryEditor
         ownerId={ownerId}
-        diaryDisplay={diaryDisplay}
-        setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}
         setDiaryId={setDiaryId}
       />

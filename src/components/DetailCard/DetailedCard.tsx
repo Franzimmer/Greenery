@@ -12,10 +12,8 @@ import CardEditor from "../../pages/Profile/cards/CardEditor";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "../../assets/default.jpg";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-interface DetailedCardWrapperProps {
-  $display: boolean;
-}
-const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
+
+const DetailedCardWrapper = styled.div`
   position: fixed;
   z-index: 101;
   top: 50vh;
@@ -23,7 +21,7 @@ const DetailedCardWrapper = styled.div<DetailedCardWrapperProps>`
   transform: translateX(-50%) translateY(-50%);
   justify-content: space-around;
   background: #f5f0ec;
-  display: ${(props) => (props.$display ? "flex" : "none")};
+  display: flex;
 `;
 const PageWrapper = styled.div`
   width: 400px;
@@ -115,15 +113,10 @@ const EditIconBtn = styled(IconButton)`
   }
 `;
 interface DetailedCardProps {
-  detailDisplay: boolean;
   detailData: PlantCard;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
 }
-const DetailedCard = ({
-  detailDisplay,
-  detailData,
-  setDetailDisplay,
-}: DetailedCardProps) => {
+const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
   const dispatch = useDispatch();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -139,96 +132,110 @@ const DetailedCard = ({
   }
   return (
     <>
-      <DetailedCardWrapper $display={detailDisplay}>
-        <PageWrapper>
-          {detailData?.plantPhoto ? (
-            <PlantImg src={detailData.plantPhoto} />
-          ) : (
-            <PlantImg src={defaultImg} />
-          )}
-          <FlexRowWrapper>
-            {detailData?.plantName && (
-              <NameText>{detailData.plantName}</NameText>
+      {detailData && (
+        <DetailedCardWrapper>
+          <PageWrapper>
+            {detailData?.plantPhoto ? (
+              <PlantImg src={detailData.plantPhoto} />
+            ) : (
+              <PlantImg src={defaultImg} />
             )}
-            {detailData?.species && (
-              <SpeciesText>{detailData.species}</SpeciesText>
-            )}
-          </FlexRowWrapper>
-          {detailData?.parents && detailData?.parents?.length !== 0 && (
             <FlexRowWrapper>
-              <DetailLabelText>Family</DetailLabelText>
-              <Description>
-                {detailData?.parents?.join(" & ")}'s Baby
-              </Description>
+              {detailData?.plantName && (
+                <NameText>{detailData.plantName}</NameText>
+              )}
+              {detailData?.species && (
+                <SpeciesText>{detailData.species}</SpeciesText>
+              )}
             </FlexRowWrapper>
-          )}
-          {detailData?.birthday && (
-            <FlexRowWrapper>
-              <DetailLabelText>Birthday</DetailLabelText>
-              <Description>{unixTimeToString(detailData.birthday)}</Description>
-            </FlexRowWrapper>
-          )}
-        </PageWrapper>
-        <PageWrapper>
-          {detailData && detailData.ownerId === userInfo.userId && (
-            <EditIconBtn
-              onClick={(e: React.MouseEvent<HTMLElement>) => {
-                dispatch({
-                  type: PopUpActions.SHOW_MASK,
-                });
-                setEditCardId(detailData.cardId);
-                setDetailDisplay(false);
-                editorToggle();
-                e.stopPropagation();
-              }}
-            >
-              <StyledFontAwesomeIcon icon={faPenToSquare} />
-            </EditIconBtn>
-          )}
-          <DescriptionWrapper>
-            {detailData?.waterPref && (
-              <FlexColumnWrapper>
-                <DetailLabelText>Water</DetailLabelText>
-                <Description>{detailData.waterPref}</Description>
-              </FlexColumnWrapper>
+            {detailData?.birthday && (
+              <FlexRowWrapper>
+                <DetailLabelText>Birthday</DetailLabelText>
+                <Description>
+                  {unixTimeToString(detailData.birthday)}
+                </Description>
+              </FlexRowWrapper>
             )}
-            {detailData?.lightPref && (
-              <FlexColumnWrapper>
-                <DetailLabelText>Light</DetailLabelText>
-                <Description>{detailData.lightPref}</Description>
-              </FlexColumnWrapper>
-            )}
-            {detailData?.toxicity && (
-              <FlexColumnWrapper>
-                <DetailLabelText>Toxicity</DetailLabelText>
-                <Description>{detailData.toxicity}</Description>
-              </FlexColumnWrapper>
-            )}
-          </DescriptionWrapper>
-          <FlexBtnWrapper>
-            {isOwner(detailData?.ownerId) && (
-              <DetailOperationBtn
-                onClick={() => {
-                  setPropagateDisplay(true);
-                  setDetailDisplay(false);
+          </PageWrapper>
+          <PageWrapper>
+            {detailData && detailData.ownerId === userInfo.userId && (
+              <EditIconBtn
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  dispatch({
+                    type: PopUpActions.SHOW_MASK,
+                  });
+                  setEditCardId(detailData.cardId);
+
+                  editorToggle();
+                  e.stopPropagation();
                 }}
               >
-                Propagate
-              </DetailOperationBtn>
+                <StyledFontAwesomeIcon icon={faPenToSquare} />
+              </EditIconBtn>
             )}
-            <DetailOperationBtn
-              onClick={() => {
-                setDetailDisplay(false);
-                dispatch({
-                  type: PopUpActions.HIDE_ALL,
-                });
-              }}
-            >
-              Close
-            </DetailOperationBtn>
-          </FlexBtnWrapper>
-        </PageWrapper>
-      </DetailedCardWrapper>
+            <DescriptionWrapper>
+              {detailData?.waterPref && (
+                <FlexColumnWrapper>
+                  <DetailLabelText>Water</DetailLabelText>
+                  <Description>{detailData.waterPref}</Description>
+                </FlexColumnWrapper>
+              )}
+              {detailData?.birthday && (
+                <FlexRowWrapper>
+                  <DetailLabelText>Birthday</DetailLabelText>
+                  <Description>
+                    {unixTimeToString(detailData.birthday)}
+                  </Description>
+                </FlexRowWrapper>
+              )}
+            </DescriptionWrapper>
+          </PageWrapper>
+          <PageWrapper>
+            <DescriptionWrapper>
+              {detailData?.waterPref && (
+                <FlexColumnWrapper>
+                  <DetailLabelText>Water</DetailLabelText>
+                  <Description>{detailData.waterPref}</Description>
+                </FlexColumnWrapper>
+              )}
+              {detailData?.lightPref && (
+                <FlexColumnWrapper>
+                  <DetailLabelText>Light</DetailLabelText>
+                  <Description>{detailData.lightPref}</Description>
+                </FlexColumnWrapper>
+              )}
+              {detailData?.toxicity && (
+                <FlexColumnWrapper>
+                  <DetailLabelText>Toxicity</DetailLabelText>
+                  <Description>{detailData.toxicity}</Description>
+                </FlexColumnWrapper>
+              )}
+            </DescriptionWrapper>
+            <FlexBtnWrapper>
+              {isOwner(detailData?.ownerId) && (
+                <DetailOperationBtn
+                  onClick={() => {
+                    setPropagateDisplay(true);
+                    setDetailData(undefined);
+                  }}
+                >
+                  Propagate
+                </DetailOperationBtn>
+              )}
+              <DetailOperationBtn
+                onClick={() => {
+                  setDetailData(undefined);
+                  dispatch({
+                    type: PopUpActions.HIDE_ALL,
+                  });
+                }}
+              >
+                Close
+              </DetailOperationBtn>
+            </FlexBtnWrapper>
+          </PageWrapper>
+        </DetailedCardWrapper>
+      )}
       <PropagationMenu
         propagateDisplay={propagateDisplay}
         setPropagateDisplay={setPropagateDisplay}
@@ -237,7 +244,7 @@ const DetailedCard = ({
       <CardEditor
         userId={userInfo.userId}
         editorDisplay={editorDisplay}
-        editorToggle={editorToggle}
+        setEditorDisplay={setEditorDisplay}
         editCardId={editCardId}
         setEditCardId={setEditCardId}
       />

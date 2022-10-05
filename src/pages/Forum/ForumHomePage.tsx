@@ -10,7 +10,7 @@ import { firebase } from "../../utils/firebase";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import { OperationBtn } from "../../components/GlobalStyles/button";
-import { Post } from "./ForumPost";
+import { Post } from "./ForumPost/ForumPost";
 import {
   NoDataSection,
   NoDataText,

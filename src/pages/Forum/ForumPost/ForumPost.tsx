@@ -4,33 +4,37 @@ import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/reducer";
-import { ChatroomActions } from "../../store/actions/chatroomActions";
-import { PopUpActions } from "../../store/actions/popUpActions";
-import { PlantCard } from "../../store/types/plantCardType";
-import { UserInfo } from "../../store/types/userInfoType";
-import { firebase } from "../../utils/firebase";
-import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import DiaryEditor from "../../components/Diary/DiaryEditor";
-import DetailedCard from "../../components/DetailCard/DetailedCard";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
-import { TypeText } from "./ForumHomePage";
-import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
-import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
-import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
-import { DiaryIconBtn } from "../Profile/favorites/FavGrids";
+import { RootState } from "../../../store/reducer";
+import { ChatroomActions } from "../../../store/actions/chatroomActions";
+import { PopUpActions } from "../../../store/actions/popUpActions";
+import { PlantCard } from "../../../store/types/plantCardType";
+import { UserInfo } from "../../../store/types/userInfoType";
+import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
+import CommentSection from "./CommentSection";
+import TextEditor from "../../../components/TextEditor/TextEditor";
+import DiaryEditor from "../../../components/Diary/DiaryEditor";
+import DetailedCard from "../../../components/DetailCard/DetailedCard";
+import PageLoader from "../../../components/GlobalStyles/PageLoader";
+import { TypeText } from "../ForumHomePage";
+import {
+  OperationBtn,
+  IconButton,
+} from "../../../components/GlobalStyles/button";
+import { PlantImg, Tag, TagsWrapper } from "../../Profile/cards/Cards";
+import { Card, NameText, SpeciesText } from "../../Profile/cards/CardsGrid";
+import { DiaryIconBtn } from "../../Profile/favorites/FavGrids";
 import {
   faTrashCan,
   faPenToSquare,
   faBook,
 } from "@fortawesome/free-solid-svg-icons";
-import user from "../../assets/user.png";
+import user from "../../../assets/user.png";
 const Wrapper = styled.div`
   width: 80vw;
   margin: 120px auto 50px;
 `;
-const PostWrapper = styled.div`
+export const PostWrapper = styled.div`
   margin-top: 12px;
   display: flex;
   justify-content: flex-start;
@@ -39,7 +43,7 @@ const PostWrapper = styled.div`
   width: 100%;
   position: relative;
 `;
-const AuthorInfo = styled.div`
+export const AuthorInfo = styled.div`
   padding: 15px;
   font-size: 10px;
   display: flex;
@@ -51,7 +55,7 @@ const AuthorInfo = styled.div`
 interface AuthorPhotoProps {
   $path: string | undefined;
 }
-const AuthorPhoto = styled.div<AuthorPhotoProps>`
+export const AuthorPhoto = styled.div<AuthorPhotoProps>`
   background-image: url(${(props) => (props.$path ? props.$path : user)});
   background-size: cover;
   background-position: center center;
@@ -61,7 +65,7 @@ const AuthorPhoto = styled.div<AuthorPhotoProps>`
   cursor: pointer;
   margin: 0 auto;
 `;
-const AuthorName = styled.p`
+export const AuthorName = styled.p`
   color: #6a5125;
   margin-top: 8px;
   font-size: 16px;
@@ -70,7 +74,7 @@ const AuthorName = styled.p`
   text-align: center;
   cursor: pointer;
 `;
-const Content = styled.div`
+export const Content = styled.div`
   color: #6a5125;
   word-break: break-all;
   padding: 40px 20px;
@@ -100,7 +104,7 @@ const Content = styled.div`
     border-left: 5px solid #6a5125;
   }
 `;
-const BtnWrapper = styled.div`
+export const BtnWrapper = styled.div`
   display: none;
   position: absolute;
   top: 8px;
@@ -111,7 +115,7 @@ const BtnWrapper = styled.div`
     tansition: .5s;
   }
 `;
-const EditIconBtn = styled(IconButton)`
+export const EditIconBtn = styled(IconButton)`
   width: 26px;
   height: 26px;
   margin-left: 12px;
@@ -124,7 +128,7 @@ const EditIconBtn = styled(IconButton)`
     tansition: 0.5s;
   }
 `;
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   color: #6a5125;
   width: 18px;
   height: 18px;
@@ -161,7 +165,7 @@ const CommentBtn = styled(OperationBtn)`
     transition: 0.25s;
   }
 `;
-const OpenChatRoomBtn = styled(OperationBtn)`
+export const OpenChatRoomBtn = styled(OperationBtn)`
   width: 160px;
   height: 30px;
   padding: 0px 10px;
@@ -237,11 +241,9 @@ const ForumPost = () => {
     "AddPost" | "EditPost" | "AddComment" | "EditComment"
   >("EditPost");
   const [editTargetComment, setEditTargetComment] = useState<Comment>();
-  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<PlantCard>();
   const [cards, setCards] = useState<PlantCard[]>([]);
   const [diaryId, setDiaryId] = useState<string | null>(null);
-  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
   const [ownerId, setOwnerId] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   async function deletePost(postId: string) {
@@ -256,22 +258,6 @@ const ForumPost = () => {
     });
     setTextEditorDisplay(true);
     setInitContent("");
-  }
-  async function deleteComment(deleteTarget: Comment) {
-    const postId = post!.postId;
-    const newComments = comments!.filter((comment) => comment !== deleteTarget);
-    await firebase.saveEditComment(postId, newComments);
-    setComments(newComments);
-    alertDispatcher("success", "Delete Comment Success !");
-  }
-  function editComment(comment: Comment) {
-    setEditTargetComment(comment);
-    setInitContent(comment.content);
-    setEditorMode("EditComment");
-    dispatch({
-      type: PopUpActions.SHOW_MASK,
-    });
-    setTextEditorDisplay(true);
   }
   async function openChatroom(targetId: string) {
     const users = [userInfo.userId, targetId];
@@ -304,7 +290,7 @@ const ForumPost = () => {
           const cardsData: PlantCard[] = [];
           const cardIds = postData.data()?.cardIds;
           if (!cardIds) return;
-          const cards = await firebase.getCards(cardIds);
+          const cards = await firebase.getCardsByIds(cardIds);
           if (!cards?.empty) {
             cards?.forEach((card) => {
               cardsData.push(card.data());
@@ -365,16 +351,13 @@ const ForumPost = () => {
               </AuthorName>
               {userInfo.userId !== authorInfo?.userId && isLoggedIn && (
                 <OpenChatRoomBtn
-                  onClick={() => {
-                    openChatroom(authorInfo!.userId);
-                  }}
+                  onClick={() => openChatroom(authorInfo!.userId)}
                 >
                   Open Chatroom
                 </OpenChatRoomBtn>
               )}
             </AuthorInfo>
             <Content>{post?.content && parse(post.content)}</Content>
-
             {cards.length !== 0 && (
               <OverflowWrapper>
                 <TradeCardWrapper>
@@ -385,7 +368,6 @@ const ForumPost = () => {
                         $show={true}
                         $mode={"grid"}
                         onClick={() => {
-                          setDetailDisplay(true);
                           setDetailData(card);
                           dispatch({
                             type: PopUpActions.SHOW_MASK,
@@ -405,7 +387,6 @@ const ForumPost = () => {
                         </TagsWrapper>
                         <DiaryIconBtn
                           onClick={async (e) => {
-                            setDiaryDisplay(true);
                             setDiaryId(card.cardId!);
                             setOwnerId(card.ownerId!);
                             dispatch({
@@ -422,7 +403,6 @@ const ForumPost = () => {
                 </TradeCardWrapper>
               </OverflowWrapper>
             )}
-
             {userInfo.userId === post?.authorId && (
               <BtnWrapper>
                 <EditIconBtn
@@ -446,37 +426,19 @@ const ForumPost = () => {
             comments.length !== 0 &&
             comments.map((comment) => {
               return (
-                <PostWrapper key={`${comment.authorId}_${comment.createdTime}`}>
-                  <AuthorInfo>
-                    <AuthorPhoto
-                      $path={commentAuthorInfos[comment.authorId]?.photoUrl}
-                      onClick={() => navigate(`/profile/${comment.authorId}`)}
-                    />
-                    <AuthorName>
-                      {commentAuthorInfos[comment.authorId]?.userName}
-                    </AuthorName>
-                    {userInfo.userId !== comment.authorId && (
-                      <OpenChatRoomBtn
-                        onClick={() => {
-                          openChatroom(comment.authorId);
-                        }}
-                      >
-                        Open Chatroom
-                      </OpenChatRoomBtn>
-                    )}
-                  </AuthorInfo>
-                  <Content>{post?.content && parse(comment.content)}</Content>
-                  {userInfo.userId === comment.authorId && (
-                    <BtnWrapper>
-                      <EditIconBtn onClick={() => editComment(comment)}>
-                        <StyledFontAwesomeIcon icon={faPenToSquare} />
-                      </EditIconBtn>
-                      <EditIconBtn onClick={() => deleteComment(comment)}>
-                        <StyledFontAwesomeIcon icon={faTrashCan} />
-                      </EditIconBtn>
-                    </BtnWrapper>
-                  )}
-                </PostWrapper>
+                <CommentSection
+                  post={post}
+                  comments={comments}
+                  userInfo={userInfo}
+                  comment={comment}
+                  commentAuthorInfos={commentAuthorInfos}
+                  openChatroom={openChatroom}
+                  setComments={setComments}
+                  setEditTargetComment={setEditTargetComment}
+                  setInitContent={setInitContent}
+                  setEditorMode={setEditorMode}
+                  setTextEditorDisplay={setTextEditorDisplay}
+                ></CommentSection>
               );
             })}
           {textEditorDisplay && (
@@ -494,21 +456,15 @@ const ForumPost = () => {
           )}
         </Wrapper>
       )}
-      {diaryDisplay && (
+      {diaryId && (
         <DiaryEditor
           ownerId={ownerId}
-          diaryDisplay={diaryDisplay}
-          setDiaryDisplay={setDiaryDisplay}
           diaryId={diaryId!}
           setDiaryId={setDiaryId}
         />
       )}
-      {detailDisplay && (
-        <DetailedCard
-          detailDisplay={detailDisplay}
-          detailData={detailData!}
-          setDetailDisplay={setDetailDisplay}
-        />
+      {detailData && (
+        <DetailedCard detailData={detailData!} setDetailData={setDetailData} />
       )}
     </>
   );

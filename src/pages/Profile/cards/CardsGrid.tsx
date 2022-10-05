@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, MouseEvent } from "react";
 import styled from "styled-components";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -104,14 +104,12 @@ interface CardsGridProps {
   cardItems: PlantCard[];
   checkList: CheckList;
   filterCard: (tagList: string[]) => boolean;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
+  setOwnerId: Dispatch<SetStateAction<string>>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   switchOneCheck: (cardId: string) => void;
-  editorToggle: () => void;
   favoriteToggle: (cardId: string) => Promise<void>;
 }
 const CardsGrid = ({
@@ -122,18 +120,29 @@ const CardsGrid = ({
   cardItems,
   checkList,
   filterCard,
-  setDetailDisplay,
   setDetailData,
-  setDiaryDisplay,
   setDiaryId,
   setOwnerId,
   setEditCardId,
+  setEditorDisplay,
   switchOneCheck,
-  editorToggle,
   favoriteToggle,
 }: CardsGridProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  function handleDiaryClick(card: PlantCard) {
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+    setDiaryId(card.cardId);
+    setOwnerId(card.ownerId);
+  }
+  function handleEditorClick(cardId: string) {
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+    setEditCardId(cardId);
+  }
   return (
     <>
       <GridWrapper $mode={viewMode}>
@@ -151,7 +160,6 @@ const CardsGrid = ({
                     dispatch({
                       type: PopUpActions.SHOW_MASK,
                     });
-                    setDetailDisplay(true);
                     setDetailData(card);
                   }}
                 >
@@ -184,7 +192,6 @@ const CardsGrid = ({
                       dispatch({
                         type: PopUpActions.SHOW_MASK,
                       });
-                      setDiaryDisplay(true);
                       setDiaryId(card.cardId);
                       setOwnerId(card.ownerId);
                       e.stopPropagation();
@@ -216,8 +223,7 @@ const CardsGrid = ({
               </NoDataText>
               <NoDataBtn
                 onClick={() => {
-                  setEditCardId(null);
-                  editorToggle();
+                  setEditorDisplay(true);
                   dispatch({
                     type: PopUpActions.SHOW_MASK,
                   });

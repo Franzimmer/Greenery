@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
+import { ChatroomType } from "../../store/types/chatroomType";
 import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
@@ -56,7 +57,9 @@ export const ChatroomFlexWrapper = styled.div`
 const Chatrooms = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const chatInfos = useSelector((state: RootState) => state.chatroom);
+  const chatInfos = useSelector(
+    (state: RootState) => state.chatroom
+  ) as ChatroomType[];
   const [spinDisplay, setSpinDisplay] = useState<boolean>(true);
 
   useEffect(() => {

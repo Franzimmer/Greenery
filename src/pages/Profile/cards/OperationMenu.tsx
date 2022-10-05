@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -75,14 +75,13 @@ interface OperationMenuProps {
   isSelf: boolean;
   viewMode: "grid" | "list";
   checkList: Record<string, boolean>;
-  setViewMode: React.Dispatch<React.SetStateAction<"grid" | "list">>;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
-  editorToggle: () => void;
+  setViewMode: Dispatch<SetStateAction<"grid" | "list">>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   filterToggle: () => void;
   allCheck: () => void;
   clearAllCheck: () => void;
   addEvents: (type: "water" | "fertilize") => Promise<void>;
-  setConfirmDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setConfirmMessage: () => void;
 }
 const OperationMenu = ({
@@ -91,12 +90,11 @@ const OperationMenu = ({
   checkList,
   setViewMode,
   setEditCardId,
-  editorToggle,
+  setEditorDisplay,
   filterToggle,
   allCheck,
   clearAllCheck,
   addEvents,
-  setConfirmDisplay,
   setConfirmMessage,
 }: OperationMenuProps) => {
   const dispatch = useDispatch();
@@ -113,8 +111,7 @@ const OperationMenu = ({
       {isSelf && (
         <BtnWrapper
           onClick={() => {
-            setEditCardId(null);
-            editorToggle();
+            setEditorDisplay(true);
             dispatch({
               type: PopUpActions.SHOW_MASK,
             });
@@ -198,7 +195,6 @@ const OperationMenu = ({
                     type: PopUpActions.SHOW_MASK,
                   });
                   setConfirmMessage();
-                  setConfirmDisplay(true);
                 }}
               >
                 <MenuBtn>
