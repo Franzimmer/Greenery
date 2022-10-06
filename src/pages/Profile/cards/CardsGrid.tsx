@@ -1,23 +1,22 @@
 import React from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBook,
-  faPenToSquare,
-  faBookmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
 import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
-import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../../components/GlobalStyles/NoDataLayout";
+} from "../../../components/GlobalStyles/noDataLayout";
+import {
+  FavIconButton,
+  DiaryIconBtn,
+  StyledFontAwesomeIcon,
+} from "../favorites/FavGrids";
 import defaultImg from "../../../assets/default.jpg";
 
 interface GridWrapperProps {
@@ -26,7 +25,7 @@ interface GridWrapperProps {
 export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
-  gap: 24px 64px;
+  gap: 24px 36px;
   margin-top: 36px;
   flex-direction: column;
 `;
@@ -43,6 +42,7 @@ const CardWrapper = styled.div<CardWrapperProps>`
 `;
 export const Card = styled.div<CardProps>`
   width: ${(props) => (props.$mode === "grid" ? "280px" : "75vw")};
+  min-height: 290px;
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: ${(props) => (props.$mode === "grid" ? "column" : "row")};
   justify-content: flex-start;
@@ -73,43 +73,6 @@ export const SpeciesText = styled.div`
   width: 200px;
   word-wrap: break-word;
 `;
-const EditIconBtn = styled(IconButton)`
-  width: 100%;
-  background: rgba(0, 0, 0, 0);
-  margin: 0 0 16px 0;
-  transition: 0.25s;
-  &:hover {
-    transform: scale(1.1);
-    transition: 0.25s;
-  }
-  & * {
-    color: #5c836f;
-  }
-`;
-interface DiaryBtnProps {
-  $show?: boolean;
-}
-const DiaryIconBtn = styled(EditIconBtn)<DiaryBtnProps>`
-  display: ${(props) => (props.$show ? "block" : "none")};
-`;
-interface FavBtnProps {
-  $fav?: boolean;
-}
-const BookMarkIconBtn = styled(EditIconBtn)<FavBtnProps>`
-  & * {
-    color: ${(props) => (props.$fav ? "#5c836f" : "#bbb")};
-  }
-`;
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  display: block;
-  background: rgba(0, 0, 0, 0);
-  width: 28px;
-  height: 28px;
-`;
-const BookmarkIcon = styled(StyledFontAwesomeIcon)`
-  width: 28px;
-  height: 28px;
-`;
 const CardCheck = styled.input<GridWrapperProps>`
   position: absolute;
   top: ${(props) => (props.$mode === "list" ? "50%" : "8px")};
@@ -122,16 +85,16 @@ const CardCheck = styled.input<GridWrapperProps>`
     accent-color: #6a5125;
   }
 `;
-const IconWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  border-radius: 15px;
-  background: rgba(0, 0, 0, 0);
-  margin: 4px 0 0 8px;
+interface CardGridIcon {
+  $mode: "grid" | "list";
+}
+const CardGridFavIcon = styled(FavIconButton)<CardGridIcon>`
+  top: ${(props) => (props.$mode === "grid" ? "195px" : "initial")};
 `;
-
+const CardGridDiaryIcon = styled(DiaryIconBtn)<CardGridIcon>`
+  bottom: ${(props) => (props.$mode === "grid" ? "8px" : "initial")};
+  right: ${(props) => (props.$mode === "grid" ? "8px" : "48px")};
+`;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   isSelf: boolean;
@@ -214,24 +177,9 @@ const CardsGrid = ({
                         return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
                       })}
                   </TagsWrapper>
-                </Card>
-                <IconWrapper>
-                  {isSelf && (
-                    <EditIconBtn
-                      onClick={(e: React.MouseEvent<HTMLElement>) => {
-                        dispatch({
-                          type: popUpActions.SHOW_MASK,
-                        });
-                        setEditCardId(card.cardId);
-                        editorToggle();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <StyledFontAwesomeIcon icon={faPenToSquare} />
-                    </EditIconBtn>
-                  )}
-                  <DiaryIconBtn
+                  <CardGridDiaryIcon
                     $show={isSelf || (!isSelf && diariesExist[index])}
+                    $mode={viewMode}
                     onClick={(e: React.MouseEvent<HTMLElement>) => {
                       dispatch({
                         type: popUpActions.SHOW_MASK,
@@ -243,17 +191,18 @@ const CardsGrid = ({
                     }}
                   >
                     <StyledFontAwesomeIcon icon={faBook} />
-                  </DiaryIconBtn>
-                  <BookMarkIconBtn
-                    $fav={userInfo.favoriteCards.includes(card.cardId!)}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  </CardGridDiaryIcon>
+                  <CardGridFavIcon
+                    $show={userInfo.favoriteCards.includes(card.cardId!)}
+                    $mode={viewMode}
+                    onClick={(e) => {
                       favoriteToggle(card.cardId!);
                       e.stopPropagation();
                     }}
                   >
-                    <BookmarkIcon icon={faBookmark} />
-                  </BookMarkIconBtn>
-                </IconWrapper>
+                    <StyledFontAwesomeIcon icon={faBookmark} />
+                  </CardGridFavIcon>
+                </Card>
               </CardWrapper>
             );
           })}

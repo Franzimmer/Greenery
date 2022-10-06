@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { UserPhoto } from "../../pages/Profile/UserInfoSection";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
-import { NoDataText } from "../GlobalStyles/NoDataLayout";
+import { NoDataText } from "../GlobalStyles/noDataLayout";
 const ListWrapper = styled.div`
   width: 100%;
   height: 300px;

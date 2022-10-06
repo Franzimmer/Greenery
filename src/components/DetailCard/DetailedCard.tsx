@@ -5,10 +5,13 @@ import { RootState } from "../../store/reducer";
 import { popUpActions } from "../../store/reducer/popUpReducer";
 import { PlantCard } from "../../store/types/plantCardType";
 import { unixTimeToString } from "../../utils/helpers";
-import { OperationBtn } from "../../components/GlobalStyles/button";
+import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
+import { StyledFontAwesomeIcon } from "../../pages/Profile/favorites/FavGrids";
+import CardEditor from "../../pages/Profile/cards/CardEditor";
 import PropagationMenu from "./PropagationMenu";
 import defaultImg from "../../assets/default.jpg";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 interface DetailedCardWrapperProps {
   $display: boolean;
 }
@@ -99,6 +102,18 @@ const DetailOperationBtn = styled(OperationBtn)`
     transition: 0.25s;
   }
 `;
+const EditIconBtn = styled(IconButton)`
+  background: rgba(0, 0, 0, 0);
+  margin: 0 0 8px auto;
+  transition: 0.25s;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.25s;
+  }
+  & * {
+    color: #5c836f;
+  }
+`;
 interface DetailedCardProps {
   detailDisplay: boolean;
   detailData: PlantCard;
@@ -110,11 +125,17 @@ const DetailedCard = ({
   setDetailDisplay,
 }: DetailedCardProps) => {
   const dispatch = useDispatch();
+  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [propagateDisplay, setPropagateDisplay] = useState(false);
+  const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   function isOwner(ownerId: string) {
     if (userInfo.userId === ownerId) return true;
     else return false;
+  }
+  function editorToggle() {
+    editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
   }
   return (
     <>
@@ -149,6 +170,21 @@ const DetailedCard = ({
           )}
         </PageWrapper>
         <PageWrapper>
+          {detailData && detailData.ownerId === userInfo.userId && (
+            <EditIconBtn
+              onClick={(e: React.MouseEvent<HTMLElement>) => {
+                dispatch({
+                  type: popUpActions.SHOW_MASK,
+                });
+                setEditCardId(detailData.cardId);
+                setDetailDisplay(false);
+                editorToggle();
+                e.stopPropagation();
+              }}
+            >
+              <StyledFontAwesomeIcon icon={faPenToSquare} />
+            </EditIconBtn>
+          )}
           <DescriptionWrapper>
             {detailData?.waterPref && (
               <FlexColumnWrapper>
@@ -197,6 +233,13 @@ const DetailedCard = ({
         propagateDisplay={propagateDisplay}
         setPropagateDisplay={setPropagateDisplay}
         propagateParentData={detailData}
+      />
+      <CardEditor
+        userId={userInfo.userId}
+        editorDisplay={editorDisplay}
+        editorToggle={editorToggle}
+        editCardId={editCardId}
+        setEditCardId={setEditCardId}
       />
     </>
   );

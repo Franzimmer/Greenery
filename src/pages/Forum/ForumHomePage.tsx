@@ -11,7 +11,7 @@ import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../components/GlobalStyles/NoDataLayout";
+} from "../../components/GlobalStyles/noDataLayout";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import PageLoader from "../../components/GlobalStyles/PageLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
