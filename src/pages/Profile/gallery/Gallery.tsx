@@ -10,7 +10,7 @@ import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../../components/GlobalStyles/NoDataLayout";
+} from "../../../components/GlobalStyles/noDataLayout";
 import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";

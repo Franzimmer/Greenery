@@ -7,7 +7,7 @@ import { RootState } from "../../../store/reducer/index";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { CardsActions } from "../../../store/actions/cardsActions";
-import { firebase, species } from "../../../utils/firebase";
+import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
 import {
   OperationBtn,

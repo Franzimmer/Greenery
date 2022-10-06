@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
@@ -13,9 +14,8 @@ import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../../components/GlobalStyles/NoDataLayout";
+} from "../../../components/GlobalStyles/noDataLayout";
 import { IconButton } from "../../../components/GlobalStyles/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 interface SectionWrapperProps {
