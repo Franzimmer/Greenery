@@ -35,12 +35,12 @@ interface followerDocType {
 }
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzAPEBDBRizK3T73NKY8rta7OhgVp3iUw",
+  apiKey: `${process.env.FIREBASE_APP_API_KEY}`,
   authDomain: "greenery-8647b.firebaseapp.com",
   projectId: "greenery-8647b",
   storageBucket: "greenery-8647b.appspot.com",
-  messagingSenderId: "460789801269",
-  appId: "1:460789801269:web:251f13169aa8a314d52c7c",
+  messagingSenderId: `${process.env.FIREBASE_MESSAGING_SENDER_ID}`,
+  appId: `${process.env.FIREBASE_APP_ID}`,
 };
 
 const app = initializeApp(firebaseConfig);
