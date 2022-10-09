@@ -1,13 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { UserInfo } from "../../store/types/userInfoType";
 import { RootState } from "../../store/reducer/index";
 import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase, chatrooms } from "../../utils/firebase";
-import { CloseBtn } from "../GlobalStyles/button";
 import { onSnapshot, DocumentData, doc } from "firebase/firestore";
+import { faLeaf, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 
 export interface message {
   userId: string;
@@ -17,11 +19,9 @@ interface ChatroomWindowProps {
   $show: boolean;
 }
 const ChatroomWindow = styled.div<ChatroomWindowProps>`
-  border: 1px solid #5c836f;
   width: 328px;
   height: 445px;
   margin-right: 20px;
-  background-color: #fff;
   box-shadow: 5px 2px 10px #aaa;
   display: ${(props) => (props.$show ? "block" : "none")};
 `;
@@ -88,16 +88,21 @@ const ChatInput = styled.textarea`
   overflow-y: auto;
   font-size: 14px;
 `;
-const ChatBtn = styled(CloseBtn)`
+const ChatBtn = styled.div`
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 50%;
+  cursor: pointer;
+`;
+const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+  width: 24px;
+  height: 24px;
+  padding: 2px;
   background-color: #fff;
+  border-radius: 50%;
   color: #5c836f;
-  transition: 0.25s;
-  &:hover {
-    background-color: #fff;
-    border: 1px solid #5c836f;
-    color: #5c836f;
-    transform: scale(1.3);
-  }
+`;
+const StyledCloseIcon = styled(StyledFontAwesomeIcon)`
+  padding: 5px;
 `;
 interface ChatroomProps {
   targetInfo: UserInfo;
@@ -161,7 +166,7 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
             })
           }
         >
-          &#215;
+          <StyledCloseIcon icon={faXmark} />
         </ChatBtn>
       </FlexWrapper>
       <MsgWindow ref={scrollRef}>
@@ -179,17 +184,17 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
       </MsgWindow>
       <FlexInputWrapper>
         <ChatBtn
-          onClick={() => {
+          onClick={() =>
             dispatch({
               type: PopUpActions.SHOW_CARD_SELECT_TRADE,
               payload: {
                 targetId: targetInfo.userId,
                 targetName: targetInfo.userName,
               },
-            });
-          }}
+            })
+          }
         >
-          +
+          <StyledFontAwesomeIcon icon={faLeaf} />
         </ChatBtn>
         <ChatInput
           ref={inputRef}

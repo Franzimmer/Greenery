@@ -104,7 +104,7 @@ const firebase = {
 
     Promise.all([updateFollowList, appendFollower]);
   },
-  async removeFollowList(selfId: string, followId: string) {
+  removeFollowList(selfId: string, followId: string) {
     const docRef = doc(users, selfId);
     const followerDocRef = doc(users, followId, "notices", "followers");
     const updateFollowList = updateDoc(docRef, {
@@ -145,7 +145,7 @@ const firebase = {
       const promises = followersId.map((targetId) => {
         return this.emitNotice(userId, targetId, type, postId);
       });
-      await Promise.all(promises);
+      Promise.all(promises);
     } else return;
   },
   async deleteNotice(userId: string, noticeId: string) {
@@ -193,21 +193,21 @@ const firebase = {
     const docRef = doc(users, userId);
     await updateDoc(docRef, { gallery: arrayRemove(link) });
   },
-  async addFavCard(userId: string, cardId: string) {
+  addFavCard(userId: string, cardId: string) {
     const docRef = doc(users, userId);
     const cardDocRef = doc(cards, cardId);
     const updateUser = updateDoc(docRef, { favoriteCards: arrayUnion(cardId) });
     const updateCard = updateDoc(cardDocRef, { followers: increment(1) });
-    await Promise.all([updateUser, updateCard]);
+    Promise.all([updateUser, updateCard]);
   },
-  async removeFavCard(userId: string, cardId: string) {
+  removeFavCard(userId: string, cardId: string) {
     const docRef = doc(users, userId);
     const cardDocRef = doc(cards, cardId);
     const updateUser = updateDoc(docRef, {
       favoriteCards: arrayRemove(cardId),
     });
     const updateCard = updateDoc(cardDocRef, { followers: increment(-1) });
-    await Promise.all([updateUser, updateCard]);
+    Promise.all([updateUser, updateCard]);
   },
   //chatroom
   async checkChatroom(users: string[]) {
@@ -371,8 +371,9 @@ const firebase = {
     const promises = idList.map((id) => {
       return this.checkDiaryExistence(id);
     });
-    const result = await Promise.all(promises);
-    return result;
+    let checkResult: boolean[] = [];
+    Promise.all(promises).then((result) => (checkResult = result));
+    return checkResult;
   },
   async searchSpecies(input: string) {
     const q = query(species, where("NAME", "==", input));

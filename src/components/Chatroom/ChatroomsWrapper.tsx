@@ -7,7 +7,7 @@ import Chatroom from "./Chatroom";
 
 const ChatroomFlexWrapper = styled.div`
   position: fixed;
-  bottom: 1px;
+  bottom: 0px;
   right: 60px;
   display: flex;
   flex-wrap: nowrap;

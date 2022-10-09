@@ -5,7 +5,7 @@ import { RootState } from "../store/reducer/index";
 import { PlantCard } from "../store/types/plantCardType";
 import { QuerySnapshot } from "firebase/firestore";
 import { firebase } from "./firebase";
-import useGetFavCards from "./useGetFavCards";
+import useGetFavCards from "./useGetFavCardsData";
 
 const useFavCards = () => {
   const { id } = useParams();
