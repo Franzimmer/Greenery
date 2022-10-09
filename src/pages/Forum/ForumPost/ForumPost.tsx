@@ -11,6 +11,7 @@ import { PlantCard } from "../../../store/types/plantCardType";
 import { UserInfo } from "../../../store/types/userInfoType";
 import { firebase } from "../../../utils/firebase";
 import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
+import ConetentSection from "./ContentSection";
 import CommentSection from "./CommentSection";
 import TextEditor from "../../../components/TextEditor/TextEditor";
 import DiaryEditor from "../../../components/Diary/DiaryEditor";
@@ -21,14 +22,6 @@ import {
   OperationBtn,
   IconButton,
 } from "../../../components/GlobalStyles/button";
-import { PlantImg, Tag, TagsWrapper } from "../../Profile/cards/Cards";
-import { Card, NameText, SpeciesText } from "../../Profile/cards/CardsGrid";
-import { DiaryIconBtn } from "../../Profile/favorites/FavGrids";
-import {
-  faTrashCan,
-  faPenToSquare,
-  faBook,
-} from "@fortawesome/free-solid-svg-icons";
 import user from "../../../assets/user.png";
 const Wrapper = styled.div`
   width: 80vw;
@@ -133,11 +126,6 @@ export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   width: 18px;
   height: 18px;
 `;
-const BookFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
-  width: 26px;
-  height: 26px;
-`;
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -181,30 +169,6 @@ export const OpenChatRoomBtn = styled(OperationBtn)`
     transform: scale(1.1);
     transition: 0.25s;
   }
-`;
-const OverflowWrapper = styled.div`
-  min-width: fit-content;
-  flex-basis: 300px;
-  overflow-x: scroll;
-  &::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 4px;
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-  }
-`;
-const TradeCardWrapper = styled.div`
-  width: 300px;
-  display: flex;
-  flex-direction: row;
-`;
-const TradeCard = styled(Card)`
-  margin: 12px;
 `;
 export interface Post {
   postId: string;
@@ -259,17 +223,18 @@ const ForumPost = () => {
     setTextEditorDisplay(true);
     setInitContent("");
   }
-  async function openChatroom(targetId: string) {
+  function openChatroom(targetId: string) {
     const users = [userInfo.userId, targetId];
     const getUserInfo = firebase.getUserInfo(targetId);
     const checkRoom = firebase.checkChatroom(users);
-    const result = await Promise.all([getUserInfo, checkRoom]);
-    dispatch({
-      type: ChatroomActions.ADD_CHATROOM,
-      payload: {
-        targetInfo: result[0].data(),
-      },
-    });
+    Promise.all([getUserInfo, checkRoom]).then((result) =>
+      dispatch({
+        type: ChatroomActions.ADD_CHATROOM,
+        payload: {
+          targetInfo: result[0].data(),
+        },
+      })
+    );
   }
   useEffect(() => {
     async function getPost() {
@@ -303,24 +268,25 @@ const ForumPost = () => {
     getPost();
   }, []);
   useEffect(() => {
-    async function getCommentAuthorInfo() {
+    function getCommentAuthorInfo() {
       const authorInfos: Record<string, UserInfo> = {};
-      if (comments) {
-        const authorIdList: string[] = [];
-        comments.forEach((comment) => {
-          if (!authorIdList.includes(comment.authorId))
-            authorIdList.push(comment.authorId);
-        });
-        const promises = authorIdList.map(async (id) => {
-          return firebase.getUserInfo(id);
-        });
-        const data = await Promise.all(promises);
-        data.forEach((promise) => {
-          const userData = promise.data() as UserInfo;
-          authorInfos[userData.userId] = userData;
-        });
-      }
-      setCommentAuthorInfos(authorInfos);
+      if (!comments) return;
+      const authorIdList: string[] = [];
+      comments.forEach((comment) => {
+        if (!authorIdList.includes(comment.authorId))
+          authorIdList.push(comment.authorId);
+      });
+      const promises = authorIdList.map(async (id) => {
+        return firebase.getUserInfo(id);
+      });
+      Promise.all(promises)
+        .then((data) =>
+          data.forEach((promise) => {
+            const userData = promise.data() as UserInfo;
+            authorInfos[userData.userId] = userData;
+          })
+        )
+        .then(() => setCommentAuthorInfos(authorInfos));
     }
     getCommentAuthorInfo();
   }, [comments]);
@@ -338,90 +304,20 @@ const ForumPost = () => {
               )}
             </FlexWrapper>
           </TitleWrapper>
-          <PostWrapper>
-            <AuthorInfo>
-              <AuthorPhoto
-                $path={authorInfo?.photoUrl}
-                onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-              />
-              <AuthorName
-                onClick={() => navigate(`/profile/${authorInfo?.userId}`)}
-              >
-                {authorInfo?.userName}
-              </AuthorName>
-              {userInfo.userId !== authorInfo?.userId && isLoggedIn && (
-                <OpenChatRoomBtn
-                  onClick={() => openChatroom(authorInfo!.userId)}
-                >
-                  Open Chatroom
-                </OpenChatRoomBtn>
-              )}
-            </AuthorInfo>
-            <Content>{post?.content && parse(post.content)}</Content>
-            {cards.length !== 0 && (
-              <OverflowWrapper>
-                <TradeCardWrapper>
-                  {cards.map((card) => {
-                    return (
-                      <TradeCard
-                        key={card.cardId}
-                        $show={true}
-                        $mode={"grid"}
-                        onClick={() => {
-                          setDetailData(card);
-                          dispatch({
-                            type: PopUpActions.SHOW_MASK,
-                          });
-                        }}
-                      >
-                        <PlantImg $path={card.plantPhoto} />
-                        <NameText>{card.plantName}</NameText>
-                        <SpeciesText>{card.species}</SpeciesText>
-                        <TagsWrapper>
-                          {card?.tags?.length !== 0 &&
-                            card.tags?.map((tag) => {
-                              return (
-                                <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>
-                              );
-                            })}
-                        </TagsWrapper>
-                        <DiaryIconBtn
-                          onClick={async (e) => {
-                            setDiaryId(card.cardId!);
-                            setOwnerId(card.ownerId!);
-                            dispatch({
-                              type: PopUpActions.SHOW_MASK,
-                            });
-                            e.stopPropagation();
-                          }}
-                        >
-                          <BookFontAwesomeIcon icon={faBook} />
-                        </DiaryIconBtn>
-                      </TradeCard>
-                    );
-                  })}
-                </TradeCardWrapper>
-              </OverflowWrapper>
-            )}
-            {userInfo.userId === post?.authorId && (
-              <BtnWrapper>
-                <EditIconBtn
-                  onClick={() => {
-                    setEditorMode("EditPost");
-                    setTextEditorDisplay(true);
-                    dispatch({
-                      type: PopUpActions.SHOW_MASK,
-                    });
-                  }}
-                >
-                  <StyledFontAwesomeIcon icon={faPenToSquare} />
-                </EditIconBtn>
-                <EditIconBtn onClick={() => deletePost(post.postId)}>
-                  <StyledFontAwesomeIcon icon={faTrashCan} />
-                </EditIconBtn>
-              </BtnWrapper>
-            )}
-          </PostWrapper>
+          <ConetentSection
+            post={post}
+            cards={cards}
+            isLoggedIn={isLoggedIn}
+            authorInfo={authorInfo!}
+            userInfo={userInfo}
+            openChatroom={openChatroom}
+            setEditorMode={setEditorMode}
+            setTextEditorDisplay={setTextEditorDisplay}
+            deletePost={deletePost}
+            setDetailData={setDetailData}
+            setDiaryId={setDiaryId}
+            setOwnerId={setOwnerId}
+          />
           {comments &&
             comments.length !== 0 &&
             comments.map((comment) => {
@@ -438,7 +334,7 @@ const ForumPost = () => {
                   setInitContent={setInitContent}
                   setEditorMode={setEditorMode}
                   setTextEditorDisplay={setTextEditorDisplay}
-                ></CommentSection>
+                />
               );
             })}
           {textEditorDisplay && (

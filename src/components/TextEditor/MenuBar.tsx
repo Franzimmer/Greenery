@@ -39,7 +39,6 @@ const TextEditorBtn = styled.label`
     transition: 0.25s;
   }
 `;
-
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   color: #6a5125;
   width: 16px;
@@ -54,7 +53,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   if (!editor) {
     return null;
   }
-
   async function addImage() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length === 0) return;
@@ -67,7 +65,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
         .run();
     }
   }
-
   return (
     <OperationMenu>
       <TextEditorBtn
@@ -106,7 +103,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
       >
         <StyledFontAwesomeIcon icon={faStrikethrough} />
       </TextEditorBtn>
-
       <TextEditorBtn
         onClick={() =>
           editor

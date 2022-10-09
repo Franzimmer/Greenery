@@ -4,16 +4,9 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { NoDataText } from "../GlobalStyles/noDataLayout";
-=======
-import { NoDataText } from "../GlobalStyles/NoDataLayout";
-=======
-import { NoDataText } from "../GlobalStyles/noDataLayout";
->>>>>>> b9f1c26 (fix redux file structure)
 import { UserPhoto } from "../../pages/Profile/UserInfoSection";
->>>>>>> 64146c8 (remove unused imports & group imports)
+
 const ListWrapper = styled.div`
   width: 100%;
   height: 300px;
@@ -55,7 +48,10 @@ export const NoSidebarDataText = styled(NoDataText)`
   padding: 14px 22px;
   color: #aaa;
 `;
-const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
+interface FollowListProps {
+  followInfos: UserInfo[];
+}
+const FollowList = ({ followInfos }: FollowListProps) => {
   const { followList } = useSelector((state: RootState) => state.userInfo);
   const navigate = useNavigate();
   return (

@@ -79,21 +79,21 @@ const Notifications = ({ notices, followInfos }: NotificationsProps) => {
     const target = followInfos.find((info) => info.userId === userId);
     if (target) return target.userName;
   }
-  async function deleteNotice(noticeId: string) {
+  function deleteNotice(noticeId: string) {
     const userId = userInfo.userId;
     dispatch({
       type: NotificationActions.DELETE_NOTIFICATION,
       payload: { noticeId },
     });
-    await firebase.deleteNotice(userId, noticeId);
+    firebase.deleteNotice(userId, noticeId);
   }
-  async function changeReadStatus(noticeId: string) {
+  function changeReadStatus(noticeId: string) {
     const userId = userInfo.userId;
     dispatch({
       type: NotificationActions.UPDATE_READ_STATUS,
       payload: { noticeId },
     });
-    await firebase.updateNoticeReadStatus(userId, noticeId);
+    firebase.updateNoticeReadStatus(userId, noticeId);
   }
   return (
     <NoticeWrapper>
@@ -104,9 +104,7 @@ const Notifications = ({ notices, followInfos }: NotificationsProps) => {
               key={note.noticeId}
               $read={note.read}
               onClick={() => {
-                if (!note.read) {
-                  changeReadStatus(note.noticeId);
-                }
+                if (!note.read) changeReadStatus(note.noticeId);
               }}
             >
               <StyleWrapper>

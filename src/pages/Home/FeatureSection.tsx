@@ -8,7 +8,6 @@ import feature from "./feature.jpeg";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { MainDescription } from "./MainVisual";
-import { SectionTitle } from "./Home";
 const Feature = styled(MainDescription)`
   margin-top: 8px;
 `;
@@ -42,6 +41,14 @@ const RedirectIcon = styled(FeatureIcon)`
 const FeatureImg = styled.img`
   width: 40%;
   box-shadow: -20px 20px 0 10px #fddba9;
+`;
+export const SectionTitle = styled.p`
+  margin-bottom: 16px;
+  color: #6a5125;
+  font-size: 26px;
+  letter-spacing: 2px;
+  line-height: 30px;
+  font-weight: 500;
 `;
 const SectionTitleAlign = styled(SectionTitle)`
   align-self: end;

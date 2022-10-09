@@ -229,12 +229,12 @@ export const SectionLoader = () => {
     <SectionWrapper>
       <LoaderWrapper>
         <Base>
-          <FlowerPot></FlowerPot>
-          <BladeCenter></BladeCenter>
-          <BladeLeftSmall></BladeLeftSmall>
-          <BladeRightSmall></BladeRightSmall>
-          <BladeLeftLarge></BladeLeftLarge>
-          <BladeRightLarge></BladeRightLarge>
+          <FlowerPot />
+          <BladeCenter />
+          <BladeLeftSmall />
+          <BladeRightSmall />
+          <BladeLeftLarge />
+          <BladeRightLarge />
         </Base>
       </LoaderWrapper>
       <Text>LOADING</Text>
@@ -246,12 +246,12 @@ const PageLoader = () => {
     <FlexWrapper>
       <LoaderWrapper>
         <Base>
-          <FlowerPot></FlowerPot>
-          <BladeCenter></BladeCenter>
-          <BladeLeftSmall></BladeLeftSmall>
-          <BladeRightSmall></BladeRightSmall>
-          <BladeLeftLarge></BladeLeftLarge>
-          <BladeRightLarge></BladeRightLarge>
+          <FlowerPot />
+          <BladeCenter />
+          <BladeLeftSmall />
+          <BladeRightSmall />
+          <BladeLeftLarge />
+          <BladeRightLarge />
         </Base>
       </LoaderWrapper>
       <Text>LOADING</Text>

@@ -7,14 +7,7 @@ import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase, chatrooms } from "../../utils/firebase";
 import { CloseBtn } from "../GlobalStyles/button";
-import {
-  onSnapshot,
-  query,
-  where,
-  getDocs,
-  DocumentData,
-  doc,
-} from "firebase/firestore";
+import { onSnapshot, DocumentData, doc } from "firebase/firestore";
 
 export interface message {
   userId: string;
@@ -112,16 +105,13 @@ interface ChatroomProps {
 }
 const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
   const dispatch = useDispatch();
-  const { userId } = useSelector((state: RootState) => state.userInfo);
-  const selfId = userId;
+  const selfId = useSelector((state: RootState) => state.userInfo.userId);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
-
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  async function writeMsg() {
+  const usersTarget = [targetInfo.userId, selfId];
+  function writeMsg() {
     if (inputRef.current!.value === "") return;
-    const usersTarget = [targetInfo.userId, selfId];
     const data = {
       userId: selfId,
       msg: inputRef.current!.value,
@@ -129,40 +119,32 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
     firebase.storeChatroomData(usersTarget, data);
     inputRef.current!.value = "";
   }
-  async function listenToChatroom() {
-    const usersTarget = [targetInfo.userId, selfId];
-    const usersTargetFlip = [selfId, targetInfo.userId];
-    const q = query(
-      chatrooms,
-      where("users", "in", [usersTarget, usersTargetFlip])
-    );
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      return;
-    } else {
-      querySnapshot.forEach((docData: DocumentData) => {
-        let docRef = doc(chatrooms, docData.id);
-        setMsgs(docData.data().msgs);
-        onSnapshot(docRef, async (doc: DocumentData) => {
-          let msgs = doc.data().msgs;
-          setMsgs(msgs);
-        });
-      });
-    }
-  }
-  function scrollToBottom() {
-    if (!scrollRef?.current) return;
-    scrollRef!.current.scrollTo({
-      top: scrollRef!.current.scrollHeight,
-      left: 0,
-      behavior: "auto",
-    });
-  }
-
   useEffect(() => {
+    async function listenToChatroom() {
+      const querySnapshot = await firebase.findChatroom(usersTarget);
+      if (querySnapshot.empty) return;
+      else {
+        querySnapshot.forEach((docData: DocumentData) => {
+          let docRef = doc(chatrooms, docData.id);
+          setMsgs(docData.data().msgs);
+          onSnapshot(docRef, async (doc: DocumentData) => {
+            let msgs = doc.data().msgs;
+            setMsgs(msgs);
+          });
+        });
+      }
+    }
     listenToChatroom();
   }, [chatroomDisplay]);
   useEffect(() => {
+    function scrollToBottom() {
+      if (!scrollRef?.current) return;
+      scrollRef!.current.scrollTo({
+        top: scrollRef!.current.scrollHeight,
+        left: 0,
+        behavior: "auto",
+      });
+    }
     scrollToBottom();
   }, [msgs]);
   return (
@@ -170,14 +152,14 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
       <FlexWrapper>
         <InfoText>{targetInfo.userName}</InfoText>
         <ChatBtn
-          onClick={() => {
+          onClick={() =>
             dispatch({
               type: ChatroomActions.CLOSE_CHATROOM,
               payload: {
                 targetId: targetInfo.userId,
               },
-            });
-          }}
+            })
+          }
         >
           &#215;
         </ChatBtn>

@@ -247,6 +247,12 @@ const firebase = {
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
+  async findChatroom(users: string[]) {
+    const usersFlip = [...users].reverse();
+    const q = query(chatrooms, where("users", "in", [users, usersFlip]));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
+  },
   //cards coolection
   async changePlantOwner(cardId: string, newOwnerId: string) {
     const docRef = doc(cards, cardId);

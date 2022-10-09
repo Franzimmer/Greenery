@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { PlantCard } from "../../store/types/plantCardType";
@@ -114,11 +114,10 @@ const EditIconBtn = styled(IconButton)`
 `;
 interface DetailedCardProps {
   detailData: PlantCard;
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
 }
 const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
   const dispatch = useDispatch();
-  const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [propagateDisplay, setPropagateDisplay] = useState(false);
   const [editCardId, setEditCardId] = useState<string | null>(null);
@@ -127,8 +126,11 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
     if (userInfo.userId === ownerId) return true;
     else return false;
   }
-  function editorToggle() {
-    editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
+  function handleEditorClick(cardId: string) {
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+    setEditCardId(cardId);
   }
   return (
     <>
@@ -161,36 +163,13 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
             {detailData && detailData.ownerId === userInfo.userId && (
               <EditIconBtn
                 onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  dispatch({
-                    type: PopUpActions.SHOW_MASK,
-                  });
-                  setEditCardId(detailData.cardId);
-
-                  editorToggle();
+                  handleEditorClick(editCardId!);
                   e.stopPropagation();
                 }}
               >
                 <StyledFontAwesomeIcon icon={faPenToSquare} />
               </EditIconBtn>
             )}
-            <DescriptionWrapper>
-              {detailData?.waterPref && (
-                <FlexColumnWrapper>
-                  <DetailLabelText>Water</DetailLabelText>
-                  <Description>{detailData.waterPref}</Description>
-                </FlexColumnWrapper>
-              )}
-              {detailData?.birthday && (
-                <FlexRowWrapper>
-                  <DetailLabelText>Birthday</DetailLabelText>
-                  <Description>
-                    {unixTimeToString(detailData.birthday)}
-                  </Description>
-                </FlexRowWrapper>
-              )}
-            </DescriptionWrapper>
-          </PageWrapper>
-          <PageWrapper>
             <DescriptionWrapper>
               {detailData?.waterPref && (
                 <FlexColumnWrapper>

@@ -118,7 +118,7 @@ const LogIn = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"login" | "signin">("login");
-  const emailRule = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const emailRule = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current || !nameRef.current) return;
     if (

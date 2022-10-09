@@ -97,70 +97,93 @@ const CardSelectDialog = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const selfId = useSelector((state: RootState) => state.userInfo.userId);
   const cardList = useSelector((state: RootState) => state.cards);
   const popUp: PopUpType = useSelector((state: RootState) => state.popUp);
+  const { target } = useSelector((state: RootState) => state.popUp);
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
   const [btnWrapperDisplay, setBtnWrapperDisplay] = useState<boolean>(true);
-  const selfId = userInfo.userId;
-  const targetId = popUp.target.id;
-  const targetName = popUp.target.name;
-  function confirmTradeItems() {
-    if (!targetId) return;
+
+  function checkCardSelect() {
     if (Object.values(menuSelect).every((select) => select === false)) {
       alertDispatcher("fail", "Choose at least one plant !");
-      return;
-    }
-    setCardListDisplay(false);
+      return false;
+    } else return true;
+  }
+  function setConfirmMsg() {
     const selected = cardList.filter(
       (card) => menuSelect[card.cardId!] === true
     );
     const nameList = selected.map((card) => {
       return card.plantName;
     });
-    const msg = `Are you sure to send ${nameList.join(
-      " & "
-    )} to ${targetName}?`;
-    setBtnWrapperDisplay(true);
+    const msg = `Are you sure to send ${nameList.join(" & ")} to ${
+      target.name
+    }?`;
     setConfirm(msg);
   }
-
-  async function tradePlants() {
-    if (!targetId || !selfId) return;
+  function confirmTradeItems() {
+    if (!target.id) return;
+    if (!checkCardSelect()) return;
+    setConfirmMsg();
+    setCardListDisplay(false);
+    setBtnWrapperDisplay(true);
+  }
+  function filterTagetPlants() {
+    const idList: string[] = [];
+    const nameList: string[] = [];
     const selected = cardList.filter(
       (card) => menuSelect[card.cardId!] === true
     );
-    const idList = selected.map((card) => {
-      return card.cardId;
+    selected.forEach((card) => {
+      idList.push(card.cardId!);
+      nameList.push(card.plantName);
     });
-    const nameList = selected.map((card) => {
-      return card.plantName;
-    });
-    const newOwnerId = targetId;
-    const promises = idList.map((cardId) => {
-      return firebase.changePlantOwner(cardId!, newOwnerId);
-    });
-    await Promise.all(promises);
+    return { idList, nameList };
+  }
+  function removeTradePlants(idList: string[]) {
     if (id === selfId) {
       dispatch({
         type: CardsActions.DELETE_PLANT_CARDS,
         payload: { cardIds: idList },
       });
     }
-    const usersTarget = [targetId!, selfId!];
+  }
+  async function sendTradeMsg(nameList: string[]) {
+    const usersTarget = [target.id!, selfId!];
     const data = {
       userId: selfId,
       msg: `${nameList.join(" & ")} has been sent to your space`,
     };
     await firebase.storeChatroomData(usersTarget, data);
-    setBtnWrapperDisplay(false);
-    setCardListDisplay(true);
-    dispatch({
-      type: PopUpActions.HIDE_ALL,
+  }
+  function tradePlants() {
+    if (!target.id || !selfId) return;
+    const { idList, nameList } = filterTagetPlants();
+    const newOwnerId = target.id;
+    const promises = idList.map((cardId) => {
+      return firebase.changePlantOwner(cardId!, newOwnerId);
     });
-    alertDispatcher("success", "Send out success !");
+    Promise.all(promises)
+      .then(() => {
+        removeTradePlants(idList!);
+        sendTradeMsg(nameList);
+      })
+      .then(() => {
+        dispatch({
+          type: PopUpActions.HIDE_ALL,
+        });
+        alertDispatcher("success", "Send out success !");
+      })
+      .catch((error: Error) => {
+        alertDispatcher("fail", error.message);
+      })
+      .finally(() => {
+        setBtnWrapperDisplay(false);
+        setCardListDisplay(true);
+      });
     return;
   }
   function resetCheck() {
@@ -170,30 +193,27 @@ const CardSelectDialog = () => {
     });
     setMenuSelect(menuCheck);
   }
+  function handleDialogCloseClick() {
+    resetCheck();
+    setCardListDisplay(true);
+    dispatch({
+      type: PopUpActions.HIDE_ALL,
+    });
+  }
   useEffect(() => {
     resetCheck();
   }, [cardList]);
   return (
     <>
       <DialogWrapper show={popUp.cardSelect}>
-        <DialogCloseBtn
-          onClick={() => {
-            resetCheck();
-            setCardListDisplay(true);
-            dispatch({
-              type: PopUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          &#215;
-        </DialogCloseBtn>
+        <DialogCloseBtn onClick={handleDialogCloseClick}>&#215;</DialogCloseBtn>
         <OverflowWrapper>
           <CardsWrapper
             cardList={cardList}
             cardListDisplay={cardListDisplay}
             menuSelect={menuSelect}
             setMenuSelect={setMenuSelect}
-          ></CardsWrapper>
+          />
         </OverflowWrapper>
         {!cardListDisplay && (
           <ConfirmWrapper>

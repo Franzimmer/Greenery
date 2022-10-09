@@ -17,7 +17,7 @@ const Banner = styled.div`
   align-items: center;
   width: 100vw;
   height: 95vh;
-  padding: 10vh 10vw;
+  padding: 100px 10vh 10px 10vw;
 `;
 const showOpacity = keyframes`
   from {

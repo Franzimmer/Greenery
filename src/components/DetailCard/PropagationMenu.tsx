@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { PopUpActions } from "../../store/actions/popUpActions";
@@ -62,11 +62,6 @@ const TypeBtnInactive = styled(TypeBtn)`
   background: none;
   color: #6a5125;
 `;
-interface PropagationMenuProps {
-  propagateDisplay: boolean;
-  setPropagateDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  propagateParentData: PlantCard;
-}
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -93,6 +88,11 @@ const PropageOperationBtn = styled(OperationBtn)`
     transition: 0.25s;
   }
 `;
+interface PropagationMenuProps {
+  propagateDisplay: boolean;
+  setPropagateDisplay: Dispatch<SetStateAction<boolean>>;
+  propagateParentData: PlantCard;
+}
 const PropagationMenu = ({
   propagateDisplay,
   setPropagateDisplay,
@@ -112,18 +112,18 @@ const PropagationMenu = ({
       payload: { newCard: uploadData },
     });
   }
-  async function propagate() {
+  function propagateInputCheck() {
     if (!numberRef.current?.value) {
       alertDispatcher("fail", "Please fill the number you want to propagate.");
-      return;
+      return false;
     } else if (type === "seedling" && !inputRef.current?.value) {
       alertDispatcher("fail", "Please fill out parent info.");
-      return;
-    }
+      return false;
+    } else return true;
+  }
+  function preparePropagateData() {
     const parents = [propagateParentData.plantName];
-    if (type === "seedling") {
-      parents.push(inputRef.current!.value);
-    }
+    if (type === "seedling") parents.push(inputRef.current!.value);
     const data = {
       ...propagateParentData,
       parents: parents,
@@ -132,16 +132,34 @@ const PropagationMenu = ({
       cardId: "",
       plantName: `Baby ${propagateParentData.species}`,
     };
-    const targets = Array(Number(numberRef.current.value)).fill(data);
+    return data;
+  }
+  function propagate() {
+    if (!propagateInputCheck()) return;
+    const data = preparePropagateData();
+    const targets = Array(Number(numberRef.current!.value)).fill(data);
     const promises = targets.map((target) => addDocPromise(target));
-    await Promise.all(promises);
+    Promise.all(promises)
+      .then(() => {
+        dispatch({
+          type: PopUpActions.HIDE_ALL,
+        });
+        setPropagateDisplay(false);
+        alertDispatcher("success", "Propagate success!");
+        if (numberRef.current) numberRef.current!.value = "";
+        if (inputRef.current) inputRef.current!.value = "";
+      })
+      .catch((error: Error) => {
+        alertDispatcher("fail", error.message);
+      });
+  }
+  function handleCloseClick() {
+    numberRef.current!.value = "";
+    if (inputRef.current) inputRef.current!.value = "";
     setPropagateDisplay(false);
     dispatch({
       type: PopUpActions.HIDE_ALL,
     });
-    alertDispatcher("success", "Propagate success!");
-    if (numberRef.current) numberRef.current!.value = "";
-    if (inputRef.current) inputRef.current!.value = "";
   }
   return (
     <DialogWrapper $display={propagateDisplay}>
@@ -187,16 +205,7 @@ const PropagationMenu = ({
       )}
       <FlexWrapper>
         <PropageOperationBtn onClick={propagate}>Propagate</PropageOperationBtn>
-        <PropageOperationBtn
-          onClick={() => {
-            numberRef.current!.value = "";
-            if (inputRef.current) inputRef.current!.value = "";
-            setPropagateDisplay(false);
-            dispatch({
-              type: PopUpActions.HIDE_ALL,
-            });
-          }}
-        >
+        <PropageOperationBtn onClick={handleCloseClick}>
           Close
         </PropageOperationBtn>
       </FlexWrapper>

@@ -56,7 +56,7 @@ export const ChatroomFlexWrapper = styled.div`
 `;
 const Chatrooms = () => {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const { userId } = useSelector((state: RootState) => state.userInfo);
   const chatInfos = useSelector(
     (state: RootState) => state.chatroom
   ) as ChatroomType[];
@@ -66,13 +66,12 @@ const Chatrooms = () => {
     async function getChatTargets() {
       const targetList: string[] = [];
       const chatData: UserInfo[] = [];
-
-      const chatrooms = await firebase.getChatrooms(userInfo.userId);
+      const chatrooms = await firebase.getChatrooms(userId);
       if (!chatrooms.empty) {
         chatrooms.forEach((chat) => {
           const chatData = chat.data();
           const targetId = chatData.users.filter(
-            (user: string) => user !== userInfo.userId
+            (user: string) => user !== userId
           );
           targetList.push(targetId[0]);
         });
@@ -91,7 +90,7 @@ const Chatrooms = () => {
       }, 500);
     }
     getChatTargets();
-  }, [userInfo.userId]);
+  }, [userId, dispatch]);
   return (
     <>
       <ChatroomsWrapper>
@@ -111,7 +110,7 @@ const Chatrooms = () => {
                 }
               >
                 <PersonPhoto $path={room.targetInfo?.photoUrl} />
-                <ChatroomText>with {room.targetInfo?.userName}</ChatroomText>
+                <ChatroomText>{room.targetInfo?.userName}</ChatroomText>
               </Person>
             );
           })}

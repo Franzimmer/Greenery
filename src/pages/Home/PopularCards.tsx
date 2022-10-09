@@ -12,7 +12,7 @@ import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { PlantImg, Tag, TagsWrapper } from "../Profile/cards/Cards";
 import { Card, NameText, SpeciesText } from "../Profile/cards/CardsGrid";
 import defaultImg from "../../assets/default.jpg";
-import { SectionTitle } from "./Home";
+import { SectionTitle } from "./FeatureSection";
 import {
   FavIconButton,
   DiaryIconBtn,
@@ -86,6 +86,13 @@ const PopularCards = ({
     const target = ownerInfos.find((owner) => owner.userId === ownerId);
     return target?.userName;
   }
+  function handleDiaryclick(card: PlantCard) {
+    setDiaryId(card.cardId);
+    setOwnerId(card.ownerId);
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+  }
   return (
     <CardsWrapper>
       <SectionTitle>Our Most Beloved Plants</SectionTitle>
@@ -95,7 +102,6 @@ const PopularCards = ({
             return (
               <Card
                 key={card.cardId}
-                id={card.cardId!}
                 $mode={"grid"}
                 $show={true}
                 onClick={() => {
@@ -130,11 +136,7 @@ const PopularCards = ({
                 <DiaryIconBtn
                   $show={diariesExist[index]}
                   onClick={(e) => {
-                    setDiaryId(card.cardId);
-                    setOwnerId(card.ownerId);
-                    dispatch({
-                      type: PopUpActions.SHOW_MASK,
-                    });
+                    handleDiaryclick(card);
                     e.stopPropagation();
                   }}
                 >

@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, MouseEvent } from "react";
 import styled from "styled-components";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../../store/reducer";
 import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
@@ -27,6 +26,7 @@ export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
   gap: 24px 36px;
+  row-gap: 12px;
   margin-top: 36px;
   flex-direction: column;
 `;
@@ -43,7 +43,7 @@ const CardWrapper = styled.div<DisplayProps>`
 `;
 export const Card = styled.div<CardProps>`
   width: ${(props) => (props.$mode === "grid" ? "280px" : "75vw")};
-  min-height: 290px;
+  min-height: ${(props) => props.$mode === "grid" && "290px"};
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: ${(props) => (props.$mode === "grid" ? "column" : "row")};
   justify-content: flex-start;
@@ -137,12 +137,6 @@ const CardsGrid = ({
     setDiaryId(card.cardId);
     setOwnerId(card.ownerId);
   }
-  function handleEditorClick(cardId: string) {
-    dispatch({
-      type: PopUpActions.SHOW_MASK,
-    });
-    setEditCardId(cardId);
-  }
   return (
     <>
       <GridWrapper $mode={viewMode}>
@@ -188,12 +182,8 @@ const CardsGrid = ({
                   <CardGridDiaryIcon
                     $show={isSelf || (!isSelf && diariesExist[index])}
                     $mode={viewMode}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
-                      dispatch({
-                        type: PopUpActions.SHOW_MASK,
-                      });
-                      setDiaryId(card.cardId);
-                      setOwnerId(card.ownerId);
+                    onClick={(e: MouseEvent<HTMLElement>) => {
+                      handleDiaryClick(card);
                       e.stopPropagation();
                     }}
                   >

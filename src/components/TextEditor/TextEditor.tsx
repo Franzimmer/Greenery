@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -112,11 +112,11 @@ interface TiptapProps {
   post?: Post;
   comments?: Comment[];
   editTargetComment?: Comment;
-  setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>;
-  setComments?: React.Dispatch<React.SetStateAction<Comment[]>>;
-  setTextEditorDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   postList?: Post[];
-  setPostList?: React.Dispatch<React.SetStateAction<Post[]>>;
+  setPost?: Dispatch<SetStateAction<Post | undefined>>;
+  setComments?: Dispatch<SetStateAction<Comment[]>>;
+  setTextEditorDisplay: Dispatch<SetStateAction<boolean>>;
+  setPostList?: Dispatch<SetStateAction<Post[]>>;
 }
 const TextEditor = ({
   editorMode,
@@ -133,15 +133,18 @@ const TextEditor = ({
 }: TiptapProps) => {
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
-  const userInfo: UserInfo = useSelector((state: RootState) => state.userInfo);
-  const [cardList, setCardList] = useState<PlantCard[]>([]);
+  const { userId }: UserInfo = useSelector(
+    (state: RootState) => state.userInfo
+  );
+  const followers: string[] = useSelector(
+    (state: RootState) => state.myFollowers
+  );
+  const cardList: PlantCard[] = useSelector((state: RootState) => state.cards);
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardWrapperDisplay, setCardWrapperDisplay] = useState<boolean>(false);
   const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
   const [type, setType] = useState<string>("discussion");
-  const followers: string[] = useSelector(
-    (state: RootState) => state.myFollowers
-  );
+
   const titleEditor = useEditor({
     extensions: [Document, Text, Heading.configure({ levels: [3] })],
     content: initTitle || "Title",
@@ -162,19 +165,16 @@ const TextEditor = ({
     const postHtml = { title, content };
     return postHtml;
   }
-  async function savePost() {
+  async function uploadPostData() {
     const cardIds: string[] = [];
-    if (!setPostList || !postList) return;
-    const postType = type;
     const html = getPostHTML()!;
-    const authorId = userInfo.userId;
     const data = {
       ...html,
-      authorId,
-      type: postType,
+      authorId: userId,
+      type,
       cardIds,
     } as Post;
-    if (postType === "trade") {
+    if (type === "trade") {
       Object.keys(menuSelect).forEach((id) => {
         if (menuSelect[id]) cardIds.push(id);
       });
@@ -182,12 +182,27 @@ const TextEditor = ({
     }
     const postId = await firebase.addPost(data);
     data["postId"] = postId;
-    const newPosts = [...postList];
+    return data;
+  }
+  function closeEditor() {
+    dispatch({
+      type: PopUpActions.HIDE_ALL,
+    });
+    setTextEditorDisplay(false);
+    setDisabledBtn(false);
+  }
+  function updatePostList(data: Post) {
+    if (!setPostList || !postList) return;
+    const newPosts = [...postList!];
     newPosts.unshift(data);
     setPostList(newPosts);
-    await firebase.emitNotices(userInfo.userId, followers, "2", postId);
+  }
+  async function savePost() {
+    const data = (await uploadPostData()) as Post;
+    updatePostList(data);
+    closeEditor();
+    await firebase.emitNotices(userId, followers, "2", data!.postId);
     alertDispatcher("success", "Add Post Success !");
-    setDisabledBtn(false);
   }
   async function editPost() {
     const html = getPostHTML()!;
@@ -197,34 +212,34 @@ const TextEditor = ({
     } as Post;
     await firebase.saveEditPost(post!.postId, data);
     if (setPost) setPost(data);
+    closeEditor();
     alertDispatcher("success", "Edit Post Success !");
-    setDisabledBtn(false);
   }
-  async function addComment() {
-    if (!setComments) return;
+  async function uploadCommentData() {
     const { content } = getPostHTML()!;
-    const authorId = userInfo.userId;
     const comment = {
       content,
-      authorId,
+      authorId: userId,
       createdTime: Date.now(),
     } as Comment;
     await firebase.saveComment(post!.postId, comment);
-    let newComments: Comment[] = [];
-    if (comments?.length) {
-      newComments = [...comments];
-    } else newComments = [];
+    return comment;
+  }
+  function updateCommentList(comment: Comment) {
+    let newComments: Comment[];
+    if (comments?.length) newComments = [...comments];
+    else newComments = [];
     newComments.push(comment);
-    setComments(newComments);
-    setDisabledBtn(false);
-    dispatch({
-      type: PopUpActions.HIDE_ALL,
-    });
+    if (setComments) setComments(newComments);
+  }
+  async function addComment() {
+    const comment = await uploadCommentData();
+    updateCommentList(comment);
+    closeEditor();
     alertDispatcher("success", "Add Comment Success !");
   }
-  async function saveEditComment() {
+  function updateEditComment() {
     if (!comments || !setComments) return;
-    const postId = post!.postId;
     const newComment = {
       authorId: editTargetComment!.authorId,
       content: getPostHTML()?.content || "",
@@ -237,32 +252,30 @@ const TextEditor = ({
     );
     const newComments = [...comments];
     newComments[targetId] = newComment;
-    await firebase.saveEditComment(postId, newComments);
-    dispatch({
-      type: PopUpActions.HIDE_ALL,
-    });
-    alertDispatcher("success", "Edit Comment Success !");
     setComments(newComments);
-    setTextEditorDisplay(false);
-    setDisabledBtn(false);
+    return newComments;
   }
-
+  async function saveEditComment() {
+    const newComments = updateEditComment() as Comment[];
+    await firebase.saveEditComment(post!.postId, newComments);
+    closeEditor();
+    alertDispatcher("success", "Edit Comment Success !");
+  }
+  function switchToTradeType() {
+    setType("trade");
+    setCardWrapperDisplay(true);
+  }
+  function switchToDiscussionType() {
+    setType("discussion");
+    setCardWrapperDisplay(false);
+  }
   useEffect(() => {
-    async function getUserCards() {
-      const querySnapshot = await firebase.getUserCards(userInfo.userId);
-      if (!querySnapshot.empty) {
-        const cards: PlantCard[] = [];
-        const checkList = {} as Record<string, boolean>;
-        querySnapshot.forEach((doc) => {
-          cards.push(doc.data());
-          checkList[doc.data().cardId!] = false;
-        });
-        setCardList(cards);
-        setMenuSelect(checkList);
-      }
-    }
-    getUserCards();
-  }, []);
+    const checkList: Record<string, boolean> = {};
+    cardList.forEach((card) => {
+      checkList[card.cardId!] = false;
+    });
+    setMenuSelect(checkList);
+  }, [cardList]);
   return (
     <Wrapper $show={cardWrapperDisplay}>
       <EditoWrapper $mode={editorMode}>
@@ -271,14 +284,7 @@ const TextEditor = ({
             <LabelText>Post Type</LabelText>
             {cardList.length === 0 && (
               <TypeBtnWrapper>
-                <TypeBtn
-                  onClick={() => {
-                    setType("discussion");
-                    setCardWrapperDisplay(false);
-                  }}
-                >
-                  Discussion
-                </TypeBtn>
+                <TypeBtn onClick={switchToDiscussionType}>Discussion</TypeBtn>
                 <TypeBtnDisabled
                   onClick={() =>
                     alertDispatcher("fail", "You have no plant to trade.")
@@ -290,42 +296,16 @@ const TextEditor = ({
             )}
             {cardList.length > 0 && type === "discussion" && (
               <TypeBtnWrapper>
-                <TypeBtn
-                  onClick={() => {
-                    setType("discussion");
-                    setCardWrapperDisplay(false);
-                  }}
-                >
-                  Discussion
-                </TypeBtn>
-                <TypeBtnActive
-                  onClick={() => {
-                    setType("trade");
-                    setCardWrapperDisplay(true);
-                  }}
-                >
-                  Trade
-                </TypeBtnActive>
+                <TypeBtn onClick={switchToDiscussionType}>Discussion</TypeBtn>
+                <TypeBtnActive onClick={() => {}}>Trade</TypeBtnActive>
               </TypeBtnWrapper>
             )}
             {cardList.length > 0 && type === "trade" && (
               <TypeBtnWrapper>
-                <TypeBtnActive
-                  onClick={() => {
-                    setType("discussion");
-                    setCardWrapperDisplay(false);
-                  }}
-                >
+                <TypeBtnActive onClick={switchToDiscussionType}>
                   Discussion
                 </TypeBtnActive>
-                <TypeBtn
-                  onClick={() => {
-                    setType("trade");
-                    setCardWrapperDisplay(true);
-                  }}
-                >
-                  Trade
-                </TypeBtn>
+                <TypeBtn onClick={switchToTradeType}>Trade</TypeBtn>
               </TypeBtnWrapper>
             )}
           </TypeBtnWrapper>
@@ -342,11 +322,7 @@ const TextEditor = ({
               onClick={() => {
                 if (!disabledBtn) {
                   savePost();
-                  setTextEditorDisplay(false);
                   setDisabledBtn(true);
-                  dispatch({
-                    type: PopUpActions.HIDE_ALL,
-                  });
                 }
               }}
             >
@@ -359,11 +335,7 @@ const TextEditor = ({
               onClick={() => {
                 if (!disabledBtn) {
                   editPost();
-                  setTextEditorDisplay(false);
                   setDisabledBtn(true);
-                  dispatch({
-                    type: PopUpActions.HIDE_ALL,
-                  });
                 }
               }}
             >
@@ -373,11 +345,10 @@ const TextEditor = ({
           {editorMode === "AddComment" && (
             <TextEditorBtn
               $disabledBtn={disabledBtn}
-              onClick={async () => {
+              onClick={() => {
                 if (!disabledBtn) {
-                  await addComment();
+                  addComment();
                   setDisabledBtn(true);
-                  setTextEditorDisplay(false);
                 }
               }}
             >
@@ -397,15 +368,7 @@ const TextEditor = ({
               Save
             </TextEditorBtn>
           )}
-          <TextEditorBtn
-            $disabledBtn={disabledBtn}
-            onClick={() => {
-              setTextEditorDisplay(false);
-              dispatch({
-                type: PopUpActions.HIDE_ALL,
-              });
-            }}
-          >
+          <TextEditorBtn $disabledBtn={disabledBtn} onClick={closeEditor}>
             Cancel
           </TextEditorBtn>
         </TextEditorBtnWrapper>

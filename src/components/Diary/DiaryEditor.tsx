@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styled, { keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fabric } from "fabric";
@@ -6,7 +12,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
-import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import Canvas from "./Canvas";
 import { IconButton } from "../../components/GlobalStyles/button";
 import {
@@ -149,11 +154,10 @@ const ColorInput = styled.input`
 interface DiaryEditorProps {
   ownerId: string;
   diaryId: string;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
 }
 const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   const dispatch = useDispatch();
-  const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const fontSizeRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -200,7 +204,6 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
     });
     canvas?.add(text);
     canvas?.setActiveObject(text);
-    fontSizeRef.current!.value = "20";
   }
   function changeTextColor() {
     const cValue = colorRef.current?.value;
@@ -283,8 +286,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
     const file = fileRef.current!.files![0];
     const fileLink = await firebase.uploadFile(file);
     fabric.Image.fromURL(fileLink!, function(oImg) {
-      oImg.set({ left: 20, top: 50 });
-      oImg.scaleToWidth(200, false);
+      oImg.set({ left: 20, top: 50 }).scaleToWidth(200, false);
       canvas?.add(oImg);
       canvas?.setActiveObject(oImg);
     });
@@ -300,26 +302,26 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   function resetCanvas() {
     canvas?.remove(...canvas.getObjects());
   }
-  async function save() {
+  function prepareSave() {
     setAllObjDeactive();
     const page = JSON.stringify(canvas);
     const currentDiaries = [...diariesData];
+    return { page, currentDiaries };
+  }
+  function save() {
+    const { page, currentDiaries } = prepareSave();
     currentDiaries.push(page);
     setDiariesData(currentDiaries);
     setPageNo(currentDiaries.length - 1);
-    await firebase.saveDiary(diaryId, page);
-    alertDispatcher("success", "Save Diary Data Successfully.");
     switchToViewMode();
+    firebase.saveDiary(diaryId, page);
   }
-  async function saveEdit() {
-    setAllObjDeactive();
-    const page = JSON.stringify(canvas);
-    const currentDiaries = [...diariesData];
+  function saveEdit() {
+    const { page, currentDiaries } = prepareSave();
     currentDiaries[pageNo] = page;
     setDiariesData(currentDiaries);
-    await firebase.saveEditDiary(diaryId, currentDiaries);
-    alertDispatcher("success", "Update Diary Data Successfully.");
     switchToViewMode();
+    firebase.saveEditDiary(diaryId, currentDiaries);
   }
   function load(page: number) {
     canvas?.loadFromJSON(diariesData[page], () => {
@@ -351,6 +353,11 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
       type: PopUpActions.HIDE_ALL,
     });
   }
+  function handleAddNewPage() {
+    resetCanvas();
+    setSaveMode("saveAdd");
+    switchToEditMode();
+  }
   useEffect(() => {
     async function getDiary(diaryId: string) {
       if (!canvas) return;
@@ -377,8 +384,8 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   useEffect(() => {
     function handleObj(obj: fabric.IEvent) {
       if (!obj.selected) return;
-      if (obj.selected.length > 1) return;
-      if (obj.selected[0]!.type !== "i-text") return;
+      else if (obj.selected.length > 1) return;
+      else if (obj.selected[0]!.type !== "i-text") return;
       else {
         const target = obj.selected[0] as fabric.IText;
         fontSizeRef.current!.value = String(target.fontSize!);
@@ -473,13 +480,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
                   </DiaryIconButton>
                 )}
                 {isOwner(ownerId) && (
-                  <DiaryIconButton
-                    onClick={() => {
-                      resetCanvas();
-                      setSaveMode("saveAdd");
-                      switchToEditMode();
-                    }}
-                  >
+                  <DiaryIconButton onClick={handleAddNewPage}>
                     <StyledFontAwesomeIcon icon={faPlus} />
                   </DiaryIconButton>
                 )}

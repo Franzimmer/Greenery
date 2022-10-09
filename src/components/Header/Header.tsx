@@ -136,9 +136,8 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
     if (!isLoggedIn) {
       alertDispatcher("success", "Please Log In First");
       return;
-    }
-    if (sideBarDisplay) setSideBarDisplay(false);
-    if (!sideBarDisplay) setSideBarDisplay(true);
+    } else if (sideBarDisplay) setSideBarDisplay(false);
+    else if (!sideBarDisplay) setSideBarDisplay(true);
   }
   useEffect(() => {
     if (location.pathname === "/login") setBgState(true);

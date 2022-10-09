@@ -26,7 +26,7 @@ interface CommentSectionProps {
   comment: Comment;
   comments: Comment[];
   commentAuthorInfos: Record<string, UserInfo>;
-  openChatroom: (targetId: string) => Promise<void>;
+  openChatroom: (targetId: string) => void;
   setComments: Dispatch<SetStateAction<Comment[]>>;
   setEditTargetComment: Dispatch<SetStateAction<Comment | undefined>>;
   setInitContent: Dispatch<SetStateAction<string>>;
