@@ -1,8 +1,15 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { UserInfo } from "../../store/types/userInfoType";
+import { ChatroomType } from "../../store/types/chatroomType";
 import { RootState } from "../../store/reducer/index";
 import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { PopUpActions } from "../../store/actions/popUpActions";
@@ -104,16 +111,21 @@ const StyledCloseIcon = styled(StyledFontAwesomeIcon)`
   padding: 5px;
 `;
 interface ChatroomProps {
-  targetInfo: UserInfo;
-  chatroomDisplay: boolean;
+  chatInfo: ChatroomType;
+  activeChatrooms: ChatroomType[];
+  setActiveChatrooms: Dispatch<SetStateAction<ChatroomType[]>>;
 }
-const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
+const Chatroom = ({
+  chatInfo,
+  activeChatrooms,
+  setActiveChatrooms,
+}: ChatroomProps) => {
   const dispatch = useDispatch();
   const selfId = useSelector((state: RootState) => state.userInfo.userId);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const usersTarget = [targetInfo.userId, selfId];
+  const usersTarget = [chatInfo.targetInfo.userId, selfId];
   function writeMsg() {
     if (inputRef.current!.value === "") return;
     const data = {
@@ -139,7 +151,7 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
       }
     }
     listenToChatroom();
-  }, [chatroomDisplay]);
+  }, [chatInfo.chatroomDisplay]);
   useEffect(() => {
     function scrollToBottom() {
       if (!scrollRef?.current) return;
@@ -152,15 +164,15 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
     scrollToBottom();
   }, [msgs]);
   return (
-    <ChatroomWindow $show={chatroomDisplay}>
+    <ChatroomWindow $show={chatInfo.chatroomDisplay}>
       <FlexWrapper>
-        <InfoText>{targetInfo.userName}</InfoText>
+        <InfoText>{chatInfo.targetInfo.userName}</InfoText>
         <ChatBtn
           onClick={() =>
             dispatch({
               type: ChatroomActions.CLOSE_CHATROOM,
               payload: {
-                targetId: targetInfo.userId,
+                targetId: chatInfo.targetInfo.userId,
               },
             })
           }
@@ -187,8 +199,8 @@ const Chatroom = ({ targetInfo, chatroomDisplay }: ChatroomProps) => {
             dispatch({
               type: PopUpActions.SHOW_CARD_SELECT_TRADE,
               payload: {
-                targetId: targetInfo.userId,
-                targetName: targetInfo.userName,
+                targetId: chatInfo.targetInfo.userId,
+                targetName: chatInfo.targetInfo.userName,
               },
             })
           }

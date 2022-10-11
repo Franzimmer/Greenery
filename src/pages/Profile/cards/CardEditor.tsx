@@ -260,6 +260,7 @@ const CardEditor = ({
     } else if (e.key === "Enter" && searchActive !== -1) {
       if (!speciesRef.current || !activeRef.current) return;
       speciesRef.current.value = activeRef.current.textContent!;
+      setSearchSuggests([]);
     } else if (e.key === "Enter" && searchActive === -1) {
       setSearchSuggests([]);
     }

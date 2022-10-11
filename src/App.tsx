@@ -24,7 +24,6 @@ import { CardsActions } from "./store/actions/cardsActions";
 import { AuthorityActions } from "./store/actions/authorityActions";
 import { MyFollowersActions } from "./store/actions/myFollowersActions";
 import { NotificationActions } from "./store/actions/notificationActions";
-import { ChatroomActions } from "./store/actions/chatroomActions";
 import theme from "./theme";
 import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
 import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
@@ -153,9 +152,6 @@ function UserLogInObserver({
         });
         dispatch({
           type: NotificationActions.CLEAR_NOTIFICATION,
-        });
-        dispatch({
-          type: ChatroomActions.CLOSE_ALL_ROOMS,
         });
         dispatch({
           type: AuthorityActions.LOG_OUT,
