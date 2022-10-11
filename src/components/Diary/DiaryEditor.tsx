@@ -213,7 +213,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   }
   function checkSelectFont() {
     if (!fontSizeRef.current) return false;
-    else if (canvas?.getActiveObject()) return false;
+    else if (!canvas?.getActiveObject()) return false;
     else if (canvas?.getActiveObject().type !== "i-text") return false;
     else return true;
   }
