@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, MouseEvent } from "react";
 import styled from "styled-components";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
 import { LabelText } from "../../../components/GlobalStyles/text";
@@ -26,6 +26,7 @@ export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
   gap: 24px 36px;
+  row-gap: 12px;
   margin-top: 36px;
   flex-direction: column;
 `;
@@ -33,16 +34,16 @@ interface CardProps {
   $show?: boolean;
   $mode: "grid" | "list";
 }
-interface CardWrapperProps {
+interface DisplayProps {
   $show: boolean;
 }
-const CardWrapper = styled.div<CardWrapperProps>`
+const CardWrapper = styled.div<DisplayProps>`
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: row;
 `;
 export const Card = styled.div<CardProps>`
   width: ${(props) => (props.$mode === "grid" ? "280px" : "75vw")};
-  min-height: 290px;
+  min-height: ${(props) => props.$mode === "grid" && "290px"};
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: ${(props) => (props.$mode === "grid" ? "column" : "row")};
   justify-content: flex-start;
@@ -53,12 +54,11 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 1s;
-  // box-shadow: 6px 6px 4px 4px rgba(150, 150, 150, 0.4);
 `;
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;
   font-size: 20px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   margin-right: 8px;
   margin-left: ${(props) => props.$mode === "list" && "32px"};
   width: 200px;
@@ -82,7 +82,7 @@ const CardCheck = styled.input<GridWrapperProps>`
   height: 20px;
   width: 20px;
   &:checked {
-    accent-color: #6a5125;
+    accent-color: ${(props) => props.theme.colors.button};
   }
 `;
 interface CardGridIcon {
@@ -104,14 +104,12 @@ interface CardsGridProps {
   cardItems: PlantCard[];
   checkList: CheckList;
   filterCard: (tagList: string[]) => boolean;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
+  setOwnerId: Dispatch<SetStateAction<string>>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   switchOneCheck: (cardId: string) => void;
-  editorToggle: () => void;
   favoriteToggle: (cardId: string) => Promise<void>;
 }
 const CardsGrid = ({
@@ -122,18 +120,23 @@ const CardsGrid = ({
   cardItems,
   checkList,
   filterCard,
-  setDetailDisplay,
   setDetailData,
-  setDiaryDisplay,
   setDiaryId,
   setOwnerId,
   setEditCardId,
+  setEditorDisplay,
   switchOneCheck,
-  editorToggle,
   favoriteToggle,
 }: CardsGridProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  function handleDiaryClick(card: PlantCard) {
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+    setDiaryId(card.cardId);
+    setOwnerId(card.ownerId);
+  }
   return (
     <>
       <GridWrapper $mode={viewMode}>
@@ -149,9 +152,8 @@ const CardsGrid = ({
                   $show={filterCard(card.tags || [])}
                   onClick={() => {
                     dispatch({
-                      type: popUpActions.SHOW_MASK,
+                      type: PopUpActions.SHOW_MASK,
                     });
-                    setDetailDisplay(true);
                     setDetailData(card);
                   }}
                 >
@@ -167,11 +169,11 @@ const CardsGrid = ({
                     />
                   )}
                   {viewMode === "grid" && (
-                    <PlantImg path={card.plantPhoto || defaultImg} />
+                    <PlantImg $path={card.plantPhoto || defaultImg} />
                   )}
                   <NameText $mode={viewMode}>{card.plantName}</NameText>
                   <SpeciesText>{card.species}</SpeciesText>
-                  <TagsWrapper viewMode={viewMode}>
+                  <TagsWrapper $viewMode={viewMode}>
                     {card?.tags?.length !== 0 &&
                       card.tags?.map((tag: string) => {
                         return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
@@ -180,13 +182,8 @@ const CardsGrid = ({
                   <CardGridDiaryIcon
                     $show={isSelf || (!isSelf && diariesExist[index])}
                     $mode={viewMode}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
-                      dispatch({
-                        type: popUpActions.SHOW_MASK,
-                      });
-                      setDiaryDisplay(true);
-                      setDiaryId(card.cardId);
-                      setOwnerId(card.ownerId);
+                    onClick={(e: MouseEvent<HTMLElement>) => {
+                      handleDiaryClick(card);
                       e.stopPropagation();
                     }}
                   >
@@ -216,10 +213,9 @@ const CardsGrid = ({
               </NoDataText>
               <NoDataBtn
                 onClick={() => {
-                  setEditCardId(null);
-                  editorToggle();
+                  setEditorDisplay(true);
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                 }}
               >

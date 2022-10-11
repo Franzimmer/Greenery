@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import { firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { CardsActions } from "../../store/actions/cardsActions";
 import { PlantCard } from "../../store/types/plantCardType";
+import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { OperationBtn } from "../../components/GlobalStyles/button";
 import { LabelText } from "../../components/GlobalStyles/text";
 interface DialogWrapperProps {
@@ -35,7 +36,7 @@ const Input = styled.input`
   height: 30px;
   padding: 15px;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 const ParentInput = styled(Input)`
   width: 150px;
@@ -51,21 +52,16 @@ const TypeBtn = styled.div`
   letter-spacing: 0.5px;
   margin: 0 6px;
   color: #fff;
-  background: #6a5125;
+  background: ${(props) => props.theme.colors.button};
   padding: 4px 8px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 4px;
   cursor: pointer;
 `;
 const TypeBtnInactive = styled(TypeBtn)`
   background: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
 `;
-interface PropagationMenuProps {
-  propagateDisplay: boolean;
-  setPropagateDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  propagateParentData: PlantCard;
-}
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -83,8 +79,8 @@ const ParentPanel = styled.div`
 `;
 const PropageOperationBtn = styled(OperationBtn)`
   margin-top: 12px;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   width: 120px;
   transition: 0.25s;
   &:hover {
@@ -92,50 +88,42 @@ const PropageOperationBtn = styled(OperationBtn)`
     transition: 0.25s;
   }
 `;
+interface PropagationMenuProps {
+  propagateDisplay: boolean;
+  setPropagateDisplay: Dispatch<SetStateAction<boolean>>;
+  propagateParentData: PlantCard;
+}
 const PropagationMenu = ({
   propagateDisplay,
   setPropagateDisplay,
   propagateParentData,
 }: PropagationMenuProps) => {
+  const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const numberRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<string>("asexual");
-  const dispatch = useDispatch();
 
   async function addDocPromise(data: PlantCard) {
-    let cardId = await firebase.addCard(data);
+    const cardId = await firebase.addCard(data);
     const uploadData = { ...data, cardId };
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: uploadData },
     });
   }
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
-  async function propagate() {
+  function propagateInputCheck() {
     if (!numberRef.current?.value) {
-      emitAlert("fail", "Please fill the number you want to propagate.");
-      return;
+      alertDispatcher("fail", "Please fill the number you want to propagate.");
+      return false;
     } else if (type === "seedling" && !inputRef.current?.value) {
-      emitAlert("fail", "Please fill out parent info.");
-      return;
-    }
-    let parents = [propagateParentData.plantName];
-    if (type === "seedling") {
-      parents.push(inputRef.current!.value);
-    }
+      alertDispatcher("fail", "Please fill out parent info.");
+      return false;
+    } else return true;
+  }
+  function preparePropagateData() {
+    const parents = [propagateParentData.plantName];
+    if (type === "seedling") parents.push(inputRef.current!.value);
     const data = {
       ...propagateParentData,
       parents: parents,
@@ -144,16 +132,34 @@ const PropagationMenu = ({
       cardId: "",
       plantName: `Baby ${propagateParentData.species}`,
     };
-    const targets = Array(Number(numberRef.current.value)).fill(data);
-    let promises = targets.map((target) => addDocPromise(target));
-    await Promise.all(promises);
+    return data;
+  }
+  function propagate() {
+    if (!propagateInputCheck()) return;
+    const data = preparePropagateData();
+    const targets = Array(Number(numberRef.current!.value)).fill(data);
+    const promises = targets.map((target) => addDocPromise(target));
+    Promise.all(promises)
+      .then(() => {
+        dispatch({
+          type: PopUpActions.HIDE_ALL,
+        });
+        setPropagateDisplay(false);
+        alertDispatcher("success", "Propagate success!");
+        if (numberRef.current) numberRef.current!.value = "";
+        if (inputRef.current) inputRef.current!.value = "";
+      })
+      .catch((error: Error) => {
+        alertDispatcher("fail", error.message);
+      });
+  }
+  function handleCloseClick() {
+    numberRef.current!.value = "";
+    if (inputRef.current) inputRef.current!.value = "";
     setPropagateDisplay(false);
     dispatch({
-      type: popUpActions.HIDE_ALL,
+      type: PopUpActions.HIDE_ALL,
     });
-    emitAlert("success", "Propagate success!");
-    if (numberRef.current) numberRef.current!.value = "";
-    if (inputRef.current) inputRef.current!.value = "";
   }
   return (
     <DialogWrapper $display={propagateDisplay}>
@@ -199,16 +205,7 @@ const PropagationMenu = ({
       )}
       <FlexWrapper>
         <PropageOperationBtn onClick={propagate}>Propagate</PropageOperationBtn>
-        <PropageOperationBtn
-          onClick={() => {
-            numberRef.current!.value = "";
-            if (inputRef.current) inputRef.current!.value = "";
-            setPropagateDisplay(false);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
+        <PropageOperationBtn onClick={handleCloseClick}>
           Close
         </PropageOperationBtn>
       </FlexWrapper>

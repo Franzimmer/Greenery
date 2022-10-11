@@ -8,7 +8,7 @@ import {
 } from "../../utils/helpers";
 
 interface WindowMaskProps {
-  show: boolean;
+  $show: boolean;
 }
 const WindowMask = styled.div<WindowMaskProps>`
   width: 100vw;
@@ -18,7 +18,7 @@ const WindowMask = styled.div<WindowMaskProps>`
   z-index: 100;
   top: 0;
   right: 0;
-  display: ${(props) => (props.show ? "block" : "none")};
+  display: ${(props) => (props.$show ? "block" : "none")};
   transition: 0.25s;
   overflow: hidden;
 `;
@@ -29,7 +29,7 @@ const Mask = () => {
     if (maskDisplay) disableWindowScrolling();
     else enableWindowScrolling();
   }, [maskDisplay]);
-  return <WindowMask show={maskDisplay}></WindowMask>;
+  return <WindowMask $show={maskDisplay}></WindowMask>;
 };
 
 export default Mask;

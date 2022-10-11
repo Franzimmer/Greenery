@@ -3,12 +3,12 @@ import styled, { css, keyframes } from "styled-components";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../store/reducer/index";
 import { UserInfoActions } from "../../store/actions/userInfoActions";
-import { popUpActions } from "../../store/reducer/popUpReducer";
 import { UserInfo } from "../../store/types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { OperationBtn, IconButton } from "../../components/GlobalStyles/button";
 import user from "../../assets/user.png";
@@ -20,19 +20,19 @@ const UserInfoWrapper = styled.div`
   margin-bottom: 20px;
 `;
 interface UserPhotoProps {
-  path: string | undefined;
+  $path: string | undefined;
 }
 export const UserPhoto = styled.div<UserPhotoProps>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background-image: url(${(props) => (props.path ? props.path : user)});
+  background-image: url(${(props) => (props.$path ? props.$path : user)});
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
 `;
 const UserInfoText = styled.div`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   padding: 0px 10px;
   font-size: 26px;
   font-weight: 600;
@@ -66,7 +66,7 @@ const UserInfoBtn = styled(OperationBtn)`
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   height: 25px;
 `;
 const NameWrapper = styled.div``;
@@ -106,6 +106,7 @@ interface UserInfoProps {
 const UserInfoSection = ({ id }: UserInfoProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alertDispatcher = useAlertDispatcher();
   const photoRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const { isLoggedIn, isSelf } = useSelector(
@@ -115,43 +116,28 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   const [userData, setUserData] = useState<UserInfo>();
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
-
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function userSignOut() {
     signOut(auth)
       .then(() => {
         navigate("/login");
-        emitAlert("success", "Log Out Success !");
+        alertDispatcher("success", "Log Out Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   async function editUserPhoto() {
     if (!photoRef.current) return;
     if (photoRef.current.files!.length === 0) return;
-    let link = await firebase.uploadFile(photoRef.current.files![0]);
+    const link = await firebase.uploadFile(photoRef.current.files![0]);
     photoRef.current.value = "";
     dispatch({
       type: UserInfoActions.EDIT_USER_PHOTO,
       payload: { photoUrl: link },
     });
     await firebase.updateUserPhoto(id!, link);
-    emitAlert("success", "User Photo Upload Success !");
+    alertDispatcher("success", "User Photo Upload Success !");
   }
   async function editUserName() {
     setShowNameInput(false);
@@ -170,13 +156,13 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
       payload: { userName: nameInput },
     });
     await firebase.updateUserName(id!, nameRef.current.textContent);
-    emitAlert("success", "Edit Success !");
+    alertDispatcher("success", "Edit Success !");
   }
   async function followStatusToggle() {
     if (isFollowed) {
       setIsFollowed(false);
       await firebase.removeFollowList(userInfo.userId, id!);
-      emitAlert("success", "Unfollow Success.");
+      alertDispatcher("success", "Unfollow Success.");
       dispatch({
         type: UserInfoActions.REMOVE_FOLLOW_LIST,
         payload: { targetId: id },
@@ -185,7 +171,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
     if (!isFollowed) {
       setIsFollowed(true);
       await firebase.addFollowList(userInfo.userId, id!);
-      emitAlert("success", "Follow Success.");
+      alertDispatcher("success", "Follow Success.");
       dispatch({
         type: UserInfoActions.ADD_FOLLOW_LIST,
         payload: { targetId: id },
@@ -195,9 +181,9 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   useEffect(() => {
     async function getUserInfo() {
       if (id && !isSelf) {
-        let result = await firebase.getUserInfo(id);
+        const result = await firebase.getUserInfo(id);
         if (!result.exists()) {
-          emitAlert("fail", "Page Not Exist.");
+          alertDispatcher("fail", "Page Not Exist.");
           navigate("/");
         }
         setUserData(result.data() as UserInfo);
@@ -220,7 +206,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   }, [showNameInput]);
   return (
     <UserInfoWrapper>
-      <UserPhoto path={userData?.photoUrl} />
+      <UserPhoto $path={userData?.photoUrl} />
       {isSelf && (
         <>
           <IconButtonLabel htmlFor="upload">
@@ -246,10 +232,9 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
               if (e.key === "Enter") editUserName();
             }}
             onBlur={() => {
-              if (nameRef.current?.textContent !== userInfo.userName) {
+              if (nameRef.current?.textContent !== userInfo.userName)
                 editUserName();
-              }
-              setShowNameInput(false);
+              else setShowNameInput(false);
             }}
           >
             {userData?.userName}
@@ -257,9 +242,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
           {isSelf && (
             <NameButtonLabel
               htmlFor="nameInput"
-              onClick={() => {
-                setShowNameInput(true);
-              }}
+              onClick={() => setShowNameInput(true)}
             >
               <StyledFontAwesomeIcon icon={faPenToSquare} />
             </NameButtonLabel>

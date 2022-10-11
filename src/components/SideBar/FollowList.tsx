@@ -2,10 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { UserPhoto } from "../../pages/Profile/UserInfoSection";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
 import { NoDataText } from "../GlobalStyles/noDataLayout";
+import { UserPhoto } from "../../pages/Profile/UserInfoSection";
+
 const ListWrapper = styled.div`
   width: 100%;
   height: 300px;
@@ -37,7 +38,7 @@ export const PersonPhoto = styled(UserPhoto)`
 const PersonText = styled.p`
   font-size: normal;
   letter-spacing: 1px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
 `;
 const StyleWrapper = styled.div`
   display: flex;
@@ -47,7 +48,10 @@ export const NoSidebarDataText = styled(NoDataText)`
   padding: 14px 22px;
   color: #aaa;
 `;
-const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
+interface FollowListProps {
+  followInfos: UserInfo[];
+}
+const FollowList = ({ followInfos }: FollowListProps) => {
   const { followList } = useSelector((state: RootState) => state.userInfo);
   const navigate = useNavigate();
   return (
@@ -60,7 +64,7 @@ const FollowList = ({ followInfos }: { followInfos: UserInfo[] }) => {
               key={`${user.userId}`}
             >
               <StyleWrapper>
-                <PersonPhoto path={user.photoUrl} />
+                <PersonPhoto $path={user.photoUrl} />
                 <PersonText>{user.userName}</PersonText>
               </StyleWrapper>
             </Person>

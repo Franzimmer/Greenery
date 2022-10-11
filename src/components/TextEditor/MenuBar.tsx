@@ -24,8 +24,8 @@ const TextEditorBtn = styled.label`
   display: flex;
   justify-content: center;
   alugn-items: center;
-  color: #6a5125;
-  border: 1px solid #6a5125;
+  color: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 3px;
   width: 26px;
   height: 26px;
@@ -39,9 +39,8 @@ const TextEditorBtn = styled.label`
     transition: 0.25s;
   }
 `;
-
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 16px;
   height: 16px;
   background: none;
@@ -54,11 +53,10 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   if (!editor) {
     return null;
   }
-
   async function addImage() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length === 0) return;
-    let imgLink = await firebase.uploadFile(imageRef.current.files![0]);
+    const imgLink = await firebase.uploadFile(imageRef.current.files![0]);
     if (imgLink) {
       editor!
         .chain()
@@ -67,7 +65,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
         .run();
     }
   }
-
   return (
     <OperationMenu>
       <TextEditorBtn
@@ -106,7 +103,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
       >
         <StyledFontAwesomeIcon icon={faStrikethrough} />
       </TextEditorBtn>
-
       <TextEditorBtn
         onClick={() =>
           editor

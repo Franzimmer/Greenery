@@ -1,32 +1,36 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
 import { PlantCard } from "../../../store/types/plantCardType";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { firebase } from "../../../utils/firebase";
 import { unixTimeToString } from "../../../utils/helpers";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import {
   OperationBtn,
   CloseBtn,
 } from "../../../components/GlobalStyles/button";
 import { speciesContents } from "./speciesContents";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 
-interface CardEditorWrapperProps {
-  $display: boolean;
-}
-const CardEditorWrapper = styled.div<CardEditorWrapperProps>`
+const CardEditorWrapper = styled.div`
   position: fixed;
   z-index: 101;
   top: 50vh;
   left: 50vw;
   transform: translateX(-50%) translateY(-50%);
   border-radius: 15px;
-  display: ${(props) => (props.$display ? "flex" : "none")};
+  display: flex;
   justify-content: center;
   align-items: center;
   background: #f5f0ec;
@@ -40,18 +44,18 @@ const PageWrapper = styled.div`
   padding: 30px;
 `;
 const InputLabel = styled.span`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-weight: 500;
   margin-right: 8px;
 `;
 
 interface PhotoPreviewProps {
-  path: string | null;
+  $path: string | null;
 }
 const PhotoPreview = styled.div<PhotoPreviewProps>`
   width: 280px;
   height: 150px;
-  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
+  background-image: url(${(props) => (props.$path ? props.$path : defaultImg)});
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;
@@ -67,7 +71,7 @@ const Input = styled.input`
   width: 200px;
   height: 30px;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 0px 15px;
   & ::placeholder {
     color: #ddd;
@@ -76,7 +80,7 @@ const Input = styled.input`
 const TextArea = styled.textarea`
   width: 280px;
   height: 100px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 5px;
 `;
 const InputWrapper = styled.div`
@@ -91,7 +95,7 @@ const InputFlexWrapper = styled(InputWrapper)`
 const Tag = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   background-color: none;
   padding: 0px 5px;
   border-radius: 14px;
@@ -99,7 +103,7 @@ const Tag = styled.div`
   margin: 8px 8px 0px 0px;
 `;
 const TagText = styled.div`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 14px;
   border-radius: 7px;
 `;
@@ -116,16 +120,19 @@ const BtnWrpper = styled.div`
   justify-content: space-between;
 `;
 interface EditortnProps {
-  disabledBtn: boolean;
+  $disabledBtn: boolean;
 }
 const EditorBtn = styled(OperationBtn)<EditortnProps>`
   color: #fff;
   width: 100px;
   margin-top: 12px;
   border: ${(props) =>
-    props.disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
-  background: ${(props) => (props.disabledBtn ? "#aaa" : "#6a5125")};
-  cursor: ${(props) => props.disabledBtn && "not-allowed"};
+    props.$disabledBtn
+      ? "1px solid #aaa"
+      : `1px solid ${props.theme.colors.button}`};
+  background: ${(props) =>
+    props.$disabledBtn ? "#aaa" : props.theme.colors.button};
+  cursor: ${(props) => props.$disabledBtn && "not-allowed"};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -133,7 +140,7 @@ const EditorBtn = styled(OperationBtn)<EditortnProps>`
   }
 `;
 const RemoveTagBtn = styled(CloseBtn)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 20px;
   height: 20px;
   font-size: 20px;
@@ -150,7 +157,7 @@ const RemoveTagBtn = styled(CloseBtn)`
   }
 `;
 const UploadIcon = styled(FontAwesomeIcon)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 20px;
   height: 20px;
 `;
@@ -171,28 +178,32 @@ const SearchSuggestion = styled.p`
   font-size: 14px;
   padding: 6px;
   &:hover {
-    background-color: #5c836f;
+    background-color: ${(props) => props.theme.colors.main};
     color: #fff;
   }
 `;
 const SearchActive = styled(SearchSuggestion)`
-  background-color: #5c836f;
+  background-color: ${(props) => props.theme.colors.main};
   color: #fff;
 `;
-interface FCProps {
+interface CardEditorProps {
   userId: string;
-  editorDisplay: boolean;
-  editorToggle: () => void;
   editCardId: string | null;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  editorDisplay: boolean;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
 }
 const CardEditor = ({
   userId,
-  editorDisplay,
-  editorToggle,
   editCardId,
   setEditCardId,
-}: FCProps) => {
+  editorDisplay,
+  setEditorDisplay,
+}: CardEditorProps) => {
+  const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
+  const cardList = useSelector((state: RootState) => state.cards);
+  const myFollowers = useSelector((state: RootState) => state.myFollowers);
   const imageRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const speciesRef = useRef<HTMLInputElement>(null);
@@ -206,31 +217,12 @@ const CardEditor = ({
   const [tags, setTags] = useState<string[]>([]);
   const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
   const [searchSuggests, setSearchSuggests] = useState<string[]>([]);
-  const [searchSuggestsDisplay, setSearchSuggestsDisplay] = useState<boolean>(
-    false
-  );
   const [searchActive, setSearchActive] = useState<number>(-1);
-  const cardList = useSelector((state: RootState) => state.cards);
-  const myFollowers = useSelector((state: RootState) => state.myFollowers);
-  const dispatch = useDispatch();
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   function createPreviewLink() {
     if (!imageRef.current) return;
     if (imageRef.current.files!.length !== 0) {
-      let path = URL.createObjectURL(imageRef.current.files![0]);
+      const path = URL.createObjectURL(imageRef.current.files![0]);
       setPreviewLink(path);
     } else {
       setPreviewLink(null);
@@ -240,8 +232,8 @@ const CardEditor = ({
   function searchRecommends() {
     if (!speciesRef.current) return;
     if (speciesRef.current.value === "") {
+      setSearchSuggests([]);
       setSearchActive(-1);
-      setSearchSuggestsDisplay(false);
       return;
     }
     let results: string[] = [];
@@ -250,18 +242,16 @@ const CardEditor = ({
       if (speciesName.startsWith(targetString)) results.push(speciesName);
     });
     if (results.length > 0) {
-      setSearchSuggestsDisplay(true);
       setSearchSuggests(results);
       setSearchActive(0);
     } else {
-      setSearchSuggestsDisplay(true);
-      setSearchSuggests(["No Search Result"]);
+      setSearchSuggests([]);
       setSearchActive(-1);
     }
   }
   function switchActive(e: React.KeyboardEvent) {
-    let min = 0;
-    let max = searchSuggests.length - 1;
+    const min = 0;
+    const max = searchSuggests.length - 1;
     if (e.key === "ArrowUp" && searchActive > min) {
       e.preventDefault();
       setSearchActive((prev) => prev - 1);
@@ -270,10 +260,8 @@ const CardEditor = ({
     } else if (e.key === "Enter" && searchActive !== -1) {
       if (!speciesRef.current || !activeRef.current) return;
       speciesRef.current.value = activeRef.current.textContent!;
-      setSearchSuggestsDisplay(false);
     } else if (e.key === "Enter" && searchActive === -1) {
       setSearchSuggests([]);
-      setSearchSuggestsDisplay(false);
     }
   }
   async function searchPlantSpecies(input: string) {
@@ -283,137 +271,125 @@ const CardEditor = ({
       waterRef.current!.value = "";
       lightRef.current!.value = "";
       toxicityRef.current!.value = "";
-      return;
+    } else {
+      querySnapshot.forEach((doc) => {
+        waterRef.current!.value = doc.data().WATER;
+        lightRef.current!.value = doc.data().LIGHT;
+        toxicityRef.current!.value = doc.data().TOXICITY;
+      });
     }
-    querySnapshot.forEach((doc) => {
-      waterRef.current!.value = doc.data().WATER;
-      lightRef.current!.value = doc.data().LIGHT;
-      toxicityRef.current!.value = doc.data().TOXICITY;
-    });
   }
   function addTag() {
     if (!tagRef.current) return;
     if (tagRef.current.value === "") return;
     if (tags.includes(tagRef.current.value)) return;
-    let currentTags = [...tags];
+    const currentTags = [...tags];
     currentTags.push(tagRef.current.value);
     setTags(currentTags);
   }
-  function RemoveTag(e: React.MouseEvent<HTMLElement>) {
+  function RemoveTag(target: string) {
     if (!tagRef.current) return;
-    let currentTags = [...tags];
-    let button = e.target as HTMLDivElement;
-    let newTags = currentTags.filter((tag) => tag !== button.parentElement!.id);
+    const currentTags = [...tags];
+    const newTags = currentTags.filter((tag) => tag !== target);
     setTags(newTags);
   }
   async function uploadFile() {
     if (!imageRef.current) return null;
     if (imageRef.current!.value === "") return null;
-    let file = imageRef.current!.files![0];
-    let dowloadLink = await firebase.uploadFile(file);
+    const file = imageRef.current!.files![0];
+    const dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
-  }
-  function resetEditor() {
-    imageRef.current!.value = "";
-    nameRef.current!.value = "";
-    speciesRef.current!.value = "";
-    birthdayRef.current!.value = "";
-    tagRef.current!.value = "";
-    waterRef.current!.value = "";
-    lightRef.current!.value = "";
-    toxicityRef.current!.value = "";
-    setSearchActive(-1);
-    setSearchSuggests([]);
-    setSearchSuggestsDisplay(false);
-    setPreviewLink(null);
-    setTags([]);
   }
   function checkInput() {
     if (nameRef.current?.value === "") {
-      emitAlert("fail", "Please fill plant name.");
+      alertDispatcher("fail", "Please fill plant name.");
+      setDisabledBtn(false);
       return false;
     } else if (speciesRef.current?.value === "") {
-      emitAlert("fail", "Please fill plant species.");
+      alertDispatcher("fail", "Please fill plant species.");
+      setDisabledBtn(false);
       return false;
     } else return true;
   }
-  async function addCard() {
-    const imgLink = await uploadFile();
-    if (!checkInput()) return;
-    setDisabledBtn(true);
+  async function handleUploadData() {
+    let imgLink;
+    if (imageRef.current?.value) imgLink = await uploadFile();
+    else imgLink = previewLink!;
     const data: PlantCard = {
-      cardId: null,
+      cardId: editCardId ? editCardId : null,
       ownerId: userId,
-      plantName: nameRef.current?.value!,
       plantPhoto: imgLink || "",
-      tags: tags,
+      tags: tags || [],
+      plantName: nameRef.current?.value!,
       species: speciesRef.current?.value!,
       waterPref: waterRef.current?.value,
       lightPref: lightRef.current?.value,
       toxicity: toxicityRef.current?.value,
-      followers: 0,
-      createdTime: NaN,
+      createdTime: editCardId
+        ? cardList.find((card) => card.cardId === editCardId)!.createdTime
+        : NaN,
+      followers: editCardId
+        ? cardList.find((card) => card.cardId === editCardId)!.followers
+        : 0,
     };
     if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
       data["birthday"] = Date.parse(birthdayRef.current?.value!);
     }
-    let cardId = await firebase.addCard(data);
+    if (editCardId) {
+      data["parents"] =
+        cardList.find((card) => card.cardId === editCardId)!.parents || [];
+    }
+    return data;
+  }
+  async function addCard() {
+    setDisabledBtn(true);
+    if (!checkInput()) return;
+    const data = await handleUploadData();
+    const cardId = await firebase.addCard(data);
     await firebase.emitNotices(userId, myFollowers, "1");
     dispatch({
       type: CardsActions.ADD_NEW_PLANT_CARD,
       payload: { newCard: { ...data, cardId } },
     });
-    dispatch({
-      type: popUpActions.HIDE_ALL,
-    });
-    emitAlert("success", "You add a new plant card !");
-    editorToggle();
-    setDisabledBtn(false);
-    resetEditor();
+    handleCloseClick();
+    alertDispatcher("success", "You add a new plant card !");
   }
   async function editCard() {
-    let imgLink;
-    if (imageRef.current?.value) imgLink = await uploadFile();
-    else imgLink = previewLink!;
-    if (!checkInput()) return;
     setDisabledBtn(true);
-    const data: PlantCard = {
-      cardId: editCardId!,
-      parents:
-        cardList.find((card) => card.cardId === editCardId)!.parents || [],
-      followers: cardList.find((card) => card.cardId === editCardId)!.followers,
-      ownerId: userId,
-      plantName: nameRef.current?.value!,
-      plantPhoto: imgLink || "",
-      tags: tags || [],
-      species: speciesRef.current?.value!,
-      waterPref: waterRef.current?.value,
-      lightPref: lightRef.current?.value,
-      toxicity: toxicityRef.current?.value,
-      createdTime: cardList.find((card) => card.cardId === editCardId)!
-        .createdTime,
-    };
-    if (!isNaN(Date.parse(birthdayRef.current?.value || ""))) {
-      data["birthday"] = Date.parse(birthdayRef.current?.value!);
-    }
+    if (!checkInput()) return;
+    const data = await handleUploadData();
     await firebase.editCard(editCardId!, data);
-    editorToggle();
     dispatch({
       type: CardsActions.EDIT_PLANT_INFO,
       payload: { editCard: data },
     });
-    dispatch({
-      type: popUpActions.HIDE_ALL,
-    });
-    emitAlert("success", "Edit Card Success!");
-    resetEditor();
-    setDisabledBtn(false);
-    setEditCardId(null);
+    handleCloseClick();
+    alertDispatcher("success", "Edit Card Success!");
+  }
+  function handleCloseClick() {
+    if (!disabledBtn) {
+      setEditCardId(null);
+      setEditorDisplay(false);
+      setPreviewLink(null);
+      setDisabledBtn(false);
+      setTags([]);
+      setSearchSuggests([]);
+      dispatch({
+        type: PopUpActions.HIDE_ALL,
+      });
+    }
+  }
+  function handleSpeciesSearch(name: string) {
+    if (!speciesRef.current) return;
+    speciesRef.current.value = name;
+    searchPlantSpecies(name);
+    setSearchActive(-1);
+    setSearchSuggests([]);
   }
   useEffect(() => {
-    async function getEditCardData() {
-      if (!editCardId) return;
-      let data = cardList.find((card) => card.cardId === editCardId);
+    if (!editCardId) return;
+    else {
+      const data = cardList.find((card) => card.cardId === editCardId);
       setPreviewLink(data!.plantPhoto || null);
       setTags(data?.tags || []);
       nameRef.current!.value = data!.plantName;
@@ -424,18 +400,17 @@ const CardEditor = ({
       if (data?.birthday)
         birthdayRef.current!.value = unixTimeToString(data?.birthday);
     }
-    if (editCardId) getEditCardData();
   }, [editCardId]);
   useEffect(() => {
     if (activeRef.current) {
       activeRef.current.scrollIntoView();
     }
   }, [searchActive]);
-  return (
-    <CardEditorWrapper $display={editorDisplay}>
+  return editCardId || editorDisplay ? (
+    <CardEditorWrapper>
       <PageWrapper>
         <InputWrapper>
-          <PhotoPreview path={previewLink || defaultImg} />
+          <PhotoPreview $path={previewLink || defaultImg} />
           <PhotoInputLabel htmlFor="img">
             <UploadIcon icon={faPenToSquare} />
           </PhotoInputLabel>
@@ -444,9 +419,7 @@ const CardEditor = ({
             ref={imageRef}
             type="file"
             accept="image/*"
-            onChange={() => {
-              createPreviewLink();
-            }}
+            onChange={createPreviewLink}
             hidden
           />
         </InputWrapper>
@@ -466,33 +439,24 @@ const CardEditor = ({
               type="text"
               ref={speciesRef}
               maxLength={40}
-              placeholder={"enter 1-40 character(s)"}
+              placeholder={"press enter to search"}
               onKeyPress={(e) => {
                 if (!speciesRef.current) return;
-                if (e.key === "Enter") {
+                if (e.key === "Enter")
                   searchPlantSpecies(speciesRef.current.value);
-                }
               }}
-              onKeyDown={(e) => {
-                switchActive(e);
-              }}
+              onKeyDown={(e) => switchActive(e)}
               onChange={searchRecommends}
             />
-            {searchSuggestsDisplay && (
+            {!!searchSuggests.length && (
               <SearchSuggestionsWrapper>
                 {searchSuggests.map((name, index) => {
                   if (index === searchActive)
                     return (
                       <SearchActive
+                        key={name}
                         ref={activeRef}
-                        onClick={() => {
-                          if (!speciesRef.current) return;
-                          speciesRef.current.value = name;
-                          searchPlantSpecies(name);
-                          setSearchSuggestsDisplay(false);
-                          setSearchActive(-1);
-                          setSearchSuggests([]);
-                        }}
+                        onClick={() => handleSpeciesSearch(name)}
                       >
                         {name}
                       </SearchActive>
@@ -500,14 +464,8 @@ const CardEditor = ({
                   else
                     return (
                       <SearchSuggestion
-                        onClick={() => {
-                          if (!speciesRef.current) return;
-                          speciesRef.current.value = name;
-                          searchPlantSpecies(name);
-                          setSearchSuggestsDisplay(false);
-                          setSearchActive(-1);
-                          setSearchSuggests([]);
-                        }}
+                        key={name}
+                        onClick={() => handleSpeciesSearch(name)}
                       >
                         {name}
                       </SearchSuggestion>
@@ -540,9 +498,9 @@ const CardEditor = ({
           {tags &&
             tags.map((tag) => {
               return (
-                <Tag key={tag} id={tag}>
+                <Tag key={tag}>
                   <TagText>{tag}</TagText>
-                  <RemoveTagBtn onClick={(e) => RemoveTag(e)}>
+                  <RemoveTagBtn onClick={() => RemoveTag(tag)}>
                     &#215;
                   </RemoveTagBtn>
                 </Tag>
@@ -578,46 +536,30 @@ const CardEditor = ({
         <BtnWrpper>
           {editCardId ? (
             <EditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
-                if (!disabledBtn) {
-                  editCard();
-                }
+                if (!disabledBtn) editCard();
               }}
             >
               Save
             </EditorBtn>
           ) : (
             <EditorBtn
-              disabledBtn={disabledBtn}
+              $disabledBtn={disabledBtn}
               onClick={() => {
-                if (!disabledBtn) {
-                  addCard();
-                }
+                if (!disabledBtn) addCard();
               }}
             >
               Add
             </EditorBtn>
           )}
-          <EditorBtn
-            disabledBtn={disabledBtn}
-            onClick={() => {
-              if (!disabledBtn) {
-                editorToggle();
-                resetEditor();
-                setEditCardId(null);
-                dispatch({
-                  type: popUpActions.HIDE_ALL,
-                });
-              }
-            }}
-          >
+          <EditorBtn $disabledBtn={disabledBtn} onClick={handleCloseClick}>
             Cancel
           </EditorBtn>
         </BtnWrpper>
       </PageWrapper>
     </CardEditorWrapper>
-  );
+  ) : null;
 };
 
 export default CardEditor;

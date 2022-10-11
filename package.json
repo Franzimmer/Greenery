@@ -28,6 +28,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-redux": "^7.1.24",
     "components": "^0.1.0",
+    "dotenv": "^16.0.3",
     "fabric": "^5.2.4",
     "firebase": "^9.9.3",
     "html-react-parser": "^3.0.4",

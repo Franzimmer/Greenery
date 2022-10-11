@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { firebase } from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer/index";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { CardsActions } from "../../../store/actions/cardsActions";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { PlantCard } from "../../../store/types/plantCardType";
+import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { OperationBtn } from "../../../components/GlobalStyles/button";
 import OperationMenu from "./OperationMenu";
 import CardsGrid from "./CardsGrid";
@@ -23,12 +24,12 @@ const Wrapper = styled.div<WrapperProps>`
 `;
 
 interface PlantImgProps {
-  path: string | undefined;
+  $path: string | undefined;
 }
 export const PlantImg = styled.div<PlantImgProps>`
   border-radius: 10px;
   margin: 8px auto;
-  background-image: url(${(props) => (props.path ? props.path : defaultImg)});
+  background-image: url(${(props) => (props.$path ? props.$path : defaultImg)});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -40,29 +41,29 @@ export const Text = styled.p`
   margin-bottom: 10px;
 `;
 export const Tag = styled.p`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   padding: 0px 3px;
   border-radius: 8px;
   font-size: 14px;
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   margin: 5px 5px 0 0;
   cursor: pointer;
   transition: 0.25s;
   &:hover {
-    background: #5c836f;
+    background: ${(props) => props.theme.colors.main};
     color: #fff;
     transition: 0.25s;
   }
 `;
-interface TagsWrapper {
-  viewMode?: "grid" | "list";
+interface TagsWrapperProps {
+  $viewMode?: "grid" | "list";
 }
-export const TagsWrapper = styled.div<TagsWrapper>`
+export const TagsWrapper = styled.div<TagsWrapperProps>`
   width: 200px;
   display: flex;
   flex-wrap: wrap;
   margin: ${(props) =>
-    props.viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
+    props.$viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
   padding: 2px;
 `;
 const open = keyframes`
@@ -93,7 +94,7 @@ const ConfirmPanel = styled.div`
   padding: 24px;
   background: #f5f0ec;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 const BtnWrapper = styled.div`
   display: flex;
@@ -114,8 +115,8 @@ const ConfirmBoldMsg = styled(ConfirmMsg)`
 `;
 const ConfirmBtn = styled(OperationBtn)`
   width: 100px;
-  background-color: #6a5125;
-  border: 1px solid #6a5125;
+  background-color: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
@@ -125,6 +126,7 @@ interface CardsGridProps {
 }
 const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const cardList = useSelector((state: RootState) => state.cards);
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -133,51 +135,30 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
   const [editorDisplay, setEditorDisplay] = useState<boolean>(false);
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [ownerId, setOwnerId] = useState<string>("");
-  const [diaryDisplay, setDiaryDisplay] = useState<boolean>(false);
+  const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
   const [detailData, setDetailData] = useState<PlantCard>();
-  const [detailDisplay, setDetailDisplay] = useState<boolean>(false);
   const [tagList, setTagList] = useState<string[]>([]);
   const [checkList, setCheckList] = useState<CheckList>({});
   const [filter, setFilter] = useState<string>("");
-  const [filterOptions, setFilterOptionsOpen] = useState<boolean>(false);
+  const [filterOptionsOpen, setFilterOptionsOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [diariesExist, setDiariesExist] = useState<boolean[]>([]);
-  const [ConfirmDisplay, setConfirmDisplay] = useState<boolean>(false);
   const [confirmMsg, setConfirmMsg] = useState<string>("");
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
-  function editorToggle() {
-    editorDisplay ? setEditorDisplay(false) : setEditorDisplay(true);
-  }
+
   function filterToggle() {
-    if (filterOptions) {
+    if (filterOptionsOpen) {
       setFilterOptionsOpen(false);
       setFilter("");
-      let checkboxes = {} as CheckList;
+      const checkboxes = {} as CheckList;
       cardList.forEach((card) => {
         checkboxes[card.cardId!] = false;
       });
       setCheckList(checkboxes);
     } else setFilterOptionsOpen(true);
   }
-  function selectFilter(e: React.MouseEvent<HTMLElement>) {
-    let eventTarget = e.target as HTMLDivElement;
-    let filter = eventTarget.textContent!;
-    setFilter(filter);
-    let filtered = cardList.filter((card) => card.tags?.includes(filter));
-    let checkboxes = {} as CheckList;
+  function selectFilter(tag: string) {
+    setFilter(tag);
+    const filtered = cardList.filter((card) => card.tags?.includes(tag));
+    const checkboxes = {} as CheckList;
     filtered.forEach((card) => {
       checkboxes[card.cardId!] = false;
     });
@@ -188,19 +169,19 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     else return true;
   }
   function allCheck() {
-    let newObj = Object.fromEntries(
+    const newObj = Object.fromEntries(
       Object.keys(checkList).map((key) => [key, true])
     );
     setCheckList(newObj);
   }
   function clearAllCheck() {
-    let newObj = Object.fromEntries(
+    const newObj = Object.fromEntries(
       Object.keys(checkList).map((key) => [key, false])
     );
     setCheckList(newObj);
   }
   function switchOneCheck(cardId: string) {
-    let newObj = { ...checkList };
+    const newObj = { ...checkList };
     newObj[cardId] ? (newObj[cardId] = false) : (newObj[cardId] = true);
     setCheckList(newObj);
   }
@@ -209,18 +190,21 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
       (key) => checkList[key] === true
     );
     if (!eventIds.length) return;
-    let idList: string[] = [];
-    let nameList: string[] = [];
+    const idList: string[] = [];
+    const nameList: string[] = [];
     eventIds.forEach((eventId) => {
-      let targetCard = cardList.find((card) => card.cardId === eventId);
+      const targetCard = cardList.find((card) => card.cardId === eventId);
       idList.push(targetCard!.cardId!);
       nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
-      emitAlert("success", `Watering ${nameList.join(" & ")} Success!`);
+      alertDispatcher("success", `Watering ${nameList.join(" & ")} Success!`);
     }
     if (type === "fertilize")
-      emitAlert("success", `Fertilizing ${nameList.join(" & ")} Success!`);
+      alertDispatcher(
+        "success",
+        `Fertilizing ${nameList.join(" & ")} Success!`
+      );
     clearAllCheck();
     await firebase.addEvents(type, idList, userInfo.userId);
   }
@@ -233,49 +217,58 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     });
     setConfirmMsg(`${targetNames.join(", ")}`);
   }
-  async function deleteCards() {
+  function deleteCards() {
     const targets = Object.keys(checkList).filter(
       (key) => checkList[key] === true
     );
     if (!targets.length) return;
-    let promises = targets.map((target) => {
+    const promises = targets.map((target) => {
       return firebase.deleteCard(target);
     });
-    await Promise.all(promises);
-    dispatch({
-      type: CardsActions.DELETE_PLANT_CARDS,
-      payload: { cardIds: targets },
-    });
-    dispatch({
-      type: popUpActions.HIDE_ALL,
-    });
-    setConfirmDisplay(false);
-    emitAlert("success", `Delete Card Success`);
+    Promise.all(promises)
+      .then(() => {
+        dispatch({
+          type: CardsActions.DELETE_PLANT_CARDS,
+          payload: { cardIds: targets },
+        });
+        dispatch({
+          type: PopUpActions.HIDE_ALL,
+        });
+      })
+      .then(() => {
+        setConfirmMsg("");
+        alertDispatcher("success", `Delete Card Success`);
+      });
   }
   async function favoriteToggle(cardId: string) {
-    let userId = userInfo.userId;
+    const userId = userInfo.userId;
     if (userInfo.favoriteCards.includes(cardId)) {
       dispatch({
         type: UserInfoActions.DELETE_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.removeFavCard(userId, cardId);
-      emitAlert("success", "Remove from your Favorites.");
+      alertDispatcher("success", "Remove from your Favorites.");
     } else {
       dispatch({
         type: UserInfoActions.ADD_FAVORITE_PLANT,
         payload: { cardId },
       });
       await firebase.addFavCard(userId, cardId);
-      emitAlert("success", "Add to Favorites!");
+      alertDispatcher("success", "Add to Favorites!");
     }
+  }
+  function handleCancelConfirm() {
+    dispatch({
+      type: PopUpActions.HIDE_ALL,
+    });
+    setConfirmMsg("");
   }
   useEffect(() => {
     async function getUserCards() {
       let cards: PlantCard[] = [];
-      let cardsIds: string[] = [];
-      let checkboxes = {} as CheckList;
-
+      const cardsIds: string[] = [];
+      const checkboxes = {} as CheckList;
       if (isSelf) {
         cards = cardList;
         cards.forEach((card) => {
@@ -283,13 +276,12 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
           checkboxes[card.cardId!] = false;
         });
       } else {
-        let querySnapshot = await firebase.getUserCards(id!);
+        const querySnapshot = await firebase.getUserCards(id!);
         querySnapshot.forEach((doc) => {
           cards.push(doc.data());
           cardsIds.push(doc.data().cardId!);
         });
       }
-
       let result = await firebase.checkDiariesExistence(cardsIds);
       setDiariesExist(result);
       setCardItems(cards);
@@ -298,10 +290,10 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     getUserCards();
   }, [id, isSelf, cardList]);
   useEffect(() => {
-    let tags: string[] = [];
-    let checkboxes = {} as CheckList;
+    const tags: string[] = [];
+    const checkboxes = {} as CheckList;
     cardList.forEach((card) => {
-      let searchTargets = card.tags;
+      const searchTargets = card.tags;
       checkboxes[card.cardId!] = false;
       searchTargets?.forEach((tag) => {
         if (!tags.includes(tag)) tags.push(tag);
@@ -314,8 +306,6 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     <Wrapper $show={cardsDisplay}>
       <DiaryEditor
         ownerId={ownerId}
-        diaryDisplay={diaryDisplay}
-        setDiaryDisplay={setDiaryDisplay}
         diaryId={diaryId!}
         setDiaryId={setDiaryId}
       />
@@ -325,18 +315,17 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         checkList={checkList}
         setViewMode={setViewMode}
         setEditCardId={setEditCardId}
-        editorToggle={editorToggle}
+        setEditorDisplay={setEditorDisplay}
         filterToggle={filterToggle}
         allCheck={allCheck}
         clearAllCheck={clearAllCheck}
         addEvents={addEvents}
-        setConfirmDisplay={setConfirmDisplay}
         setConfirmMessage={setConfirmMessage}
       />
-      {filterOptions && tagList.length && (
+      {filterOptionsOpen && (
         <TagsList>
           {tagList.map((tag: string) => (
-            <Tag key={tag} onClick={selectFilter}>
+            <Tag key={tag} onClick={() => selectFilter(tag)}>
               {tag}
             </Tag>
           ))}
@@ -350,29 +339,23 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         cardItems={cardItems}
         checkList={checkList}
         filterCard={filterCard}
-        setDetailDisplay={setDetailDisplay}
         setDetailData={setDetailData}
-        setDiaryDisplay={setDiaryDisplay}
         setDiaryId={setDiaryId}
         setOwnerId={setOwnerId}
         setEditCardId={setEditCardId}
         switchOneCheck={switchOneCheck}
-        editorToggle={editorToggle}
+        setEditorDisplay={setEditorDisplay}
         favoriteToggle={favoriteToggle}
       />
       <CardEditor
         userId={userInfo.userId}
-        editorDisplay={editorDisplay}
-        editorToggle={editorToggle}
         editCardId={editCardId}
+        editorDisplay={editorDisplay}
+        setEditorDisplay={setEditorDisplay}
         setEditCardId={setEditCardId}
       />
-      <DetailedCard
-        detailDisplay={detailDisplay}
-        setDetailDisplay={setDetailDisplay}
-        detailData={detailData!}
-      />
-      {ConfirmDisplay && (
+      <DetailedCard detailData={detailData!} setDetailData={setDetailData} />
+      {!!confirmMsg && (
         <ConfirmPanel>
           <MsgWrapper>
             <ConfirmMsg>Are you goin to delete</ConfirmMsg>
@@ -381,16 +364,7 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
           </MsgWrapper>
           <BtnWrapper>
             <ConfirmBtn onClick={deleteCards}>Sure</ConfirmBtn>
-            <ConfirmBtn
-              onClick={() => {
-                dispatch({
-                  type: popUpActions.HIDE_ALL,
-                });
-                setConfirmDisplay(false);
-              }}
-            >
-              Cancel
-            </ConfirmBtn>
+            <ConfirmBtn onClick={handleCancelConfirm}>Cancel</ConfirmBtn>
           </BtnWrapper>
         </ConfirmPanel>
       )}

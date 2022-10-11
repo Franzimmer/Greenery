@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Outlet } from "react-router-dom";
-// import { Reset } from "styled-reset";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Alert from "./components/GlobalStyles/Alert";
@@ -22,9 +21,11 @@ import { auth, firebase, db } from "./utils/firebase";
 import { Note } from "./store/types/notificationType";
 import { UserInfoActions } from "./store/actions/userInfoActions";
 import { CardsActions } from "./store/actions/cardsActions";
-import { AuthorityActions } from "./store/reducer/authorityReducer";
-import { myFollowersActions } from "./store/reducer/myFollowersReducer";
+import { AuthorityActions } from "./store/actions/authorityActions";
+import { MyFollowersActions } from "./store/actions/myFollowersActions";
 import { NotificationActions } from "./store/actions/notificationActions";
+import { ChatroomActions } from "./store/actions/chatroomActions";
+import theme from "./theme";
 import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
 import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
 import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
@@ -80,7 +81,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 100%;
     height: 100%;
-    background: #F5F0EC;
+    background:${(props) => props.theme.colors.bg};
     overflow-x:hidden;
   }
 
@@ -110,7 +111,7 @@ function UserLogInObserver({
     onSnapshot(docRef, (doc) => {
       if (doc.exists())
         dispatch({
-          type: myFollowersActions.SET_FOLLOWERS,
+          type: MyFollowersActions.SET_FOLLOWERS,
           payload: { followers: doc.data()!.followers },
         });
     });
@@ -148,10 +149,13 @@ function UserLogInObserver({
           type: UserInfoActions.CLEAR_USER_INFO,
         });
         dispatch({
-          type: myFollowersActions.CLEAR_FOLLOWERS,
+          type: MyFollowersActions.CLEAR_FOLLOWERS,
         });
         dispatch({
           type: NotificationActions.CLEAR_NOTIFICATION,
+        });
+        dispatch({
+          type: ChatroomActions.CLOSE_ALL_ROOMS,
         });
         dispatch({
           type: AuthorityActions.LOG_OUT,
@@ -165,8 +169,7 @@ function UserLogInObserver({
 function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
   return (
-    <>
-      {/* <Reset /> */}
+    <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver setSideBarDisplay={setSideBarDisplay} />
@@ -181,7 +184,7 @@ function App() {
         <ChatroomsWrapper />
         <Outlet />
       </Provider>
-    </>
+    </ThemeProvider>
   );
 }
 

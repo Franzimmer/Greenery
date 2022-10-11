@@ -3,19 +3,19 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
-import { AuthorityActions } from "../../store/reducer/authorityReducer";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { AuthorityActions } from "../../store/actions/authorityActions";
 import UserInfoSection from "./UserInfoSection";
 import ProfileMenu from "./ProfileMenu";
 import Cards from "./cards/Cards";
 import CalendarApp from "./calendar/CalendarApp";
 import Gallery from "./gallery/Gallery";
 import Favorites from "./favorites/Favorites";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
 interface MainWrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const MainWrapper = styled.div<MainWrapperProps>`
-  display: ${(props) => (props.isLoading ? "none" : "flex")};
+  display: ${(props) => (props.$isLoading ? "none" : "flex")};
   flex-direction: column;
   justify-content: center;
   margin: 100px auto 50px;
@@ -54,12 +54,12 @@ const Profile = () => {
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-  }, [id, userInfo.userId]);
+  }, [dispatch, id, userInfo.userId]);
 
   return (
     <>
       {isLoading && <PageLoader />}
-      <MainWrapper isLoading={isLoading}>
+      <MainWrapper $isLoading={isLoading}>
         <UserInfoSection id={id} />
         <ProfileMenu tabDisplay={tabDisplay} setTabDisplay={setTabDisplay} />
 

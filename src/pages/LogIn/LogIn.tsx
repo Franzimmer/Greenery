@@ -1,10 +1,9 @@
 import React, { useRef, useState } from "react";
-import styled, { css, keyframes } from "styled-components";
-import { useDispatch } from "react-redux";
-import { popUpActions } from "../../store/reducer/popUpReducer";
-import { OperationBtn } from "../../components/GlobalStyles/button";
-import { auth, firebase } from "../../utils/firebase";
+import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { auth, firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
+import { OperationBtn } from "../../components/GlobalStyles/button";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -36,7 +35,6 @@ const LogoWrapper = styled.div`
   transform: translateX(-50%) translateY(-50%);
   color: #222422;
   font-weight: 500;
-  // mix-blend-mode: overlay;
   padding: 12px 36px;
   filter: drop-shadow(0px 0px 10px #fff);
 `;
@@ -69,7 +67,7 @@ const FlexWrapper = styled.div`
 const InputLabel = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   align-self: flex-start;
   margin: 0 0 6px 0;
 `;
@@ -78,7 +76,7 @@ const Input = styled.input`
   width: 100%;
   margin: 0 0 36px 0;
   padding-left: 8px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   background-color: rgba(92, 131, 111, 0.2);
   &:-webkit-autofill,
   :-webkit-autofill:hover,
@@ -93,7 +91,7 @@ const Tab = styled.div`
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -105,8 +103,8 @@ const TabActive = styled(Tab)`
   filter: drop-shadow(1px 4px 3px #aaa);
 `;
 const LogInBtn = styled(OperationBtn)`
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -114,27 +112,13 @@ const LogInBtn = styled(OperationBtn)`
   }
 `;
 const LogIn = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alertDispatcher = useAlertDispatcher();
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"login" | "signin">("login");
-  const emailRule = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+  const emailRule = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
   function createNewAccount() {
     if (!emailRef.current || !passwordRef.current || !nameRef.current) return;
     if (
@@ -142,10 +126,10 @@ const LogIn = () => {
       passwordRef.current.value === "" ||
       nameRef.current.value === ""
     ) {
-      emitAlert("fail", "Please fill info completely !");
+      alertDispatcher("fail", "Please fill info completely !");
       return;
     } else if (!emailRule.test(emailRef.current.value)) {
-      emitAlert("fail", "Invalid email!");
+      alertDispatcher("fail", "Invalid email!");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -166,17 +150,17 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
-        emitAlert("success", "Sign In Success !");
+        alertDispatcher("success", "Sign In Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   function userSignIn() {
     if (!emailRef.current || !passwordRef.current) return;
     if (emailRef.current.value === "" || passwordRef.current.value === "") {
-      emitAlert("fail", "Please fill info completely !");
+      alertDispatcher("fail", "Please fill info completely !");
     }
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -187,11 +171,11 @@ const LogIn = () => {
       })
       .then((id) => {
         navigate(`/profile/${id}`);
-        emitAlert("success", "Log In Success !");
+        alertDispatcher("success", "Log In Success !");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        emitAlert("fail", `${errorMessage}`);
+        alertDispatcher("fail", `${errorMessage}`);
       });
   }
   return (
@@ -206,25 +190,13 @@ const LogIn = () => {
         <FlexWrapper>
           {mode === "login" && (
             <>
-              <TabActive
-                onClick={() => {
-                  setMode("login");
-                }}
-              >
-                Log In{" "}
-              </TabActive>
-              <Tab
-                onClick={() => {
-                  setMode("signin");
-                }}
-              >
-                Sign In
-              </Tab>
+              <TabActive onClick={() => setMode("login")}>Log In</TabActive>
+              <Tab onClick={() => setMode("signin")}>Sign In</Tab>
             </>
           )}
           {mode === "signin" && (
             <>
-              <Tab onClick={() => setMode("login")}>Log In </Tab>
+              <Tab onClick={() => setMode("login")}>Log In</Tab>
               <TabActive onClick={() => setMode("signin")}>Sign In</TabActive>
             </>
           )}

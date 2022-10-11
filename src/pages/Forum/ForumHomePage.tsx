@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import parse from "html-react-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer/index";
-import { popUpActions } from "../../store/reducer/popUpReducer";
-import { OperationBtn } from "../../components/GlobalStyles/button";
-import { Post } from "./ForumPost";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
+import TextEditor from "../../components/TextEditor/TextEditor";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { OperationBtn } from "../../components/GlobalStyles/button";
+import { Post } from "./ForumPost/ForumPost";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
 } from "../../components/GlobalStyles/noDataLayout";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";
 interface WrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
-  display: ${(props) => (props.isLoading ? "none" : "block")};
+  display: ${(props) => (props.$isLoading ? "none" : "block")};
   margin: 150px auto 50px;
   width: 80vw;
 `;
@@ -36,13 +36,13 @@ const ForumSectionWrapper = styled.div`
   margin: 0px auto 50px;
 `;
 interface ForumPostPageProps {
-  show: boolean;
+  $show: boolean;
 }
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80vw;
   height: 100px;
-  border: 1px solid #6a5125;
-  display: ${(props) => (props.show ? "flex" : "none")};
+  border: 1px solid ${(props) => props.theme.colors.button};
+  display: ${(props) => (props.$show ? "flex" : "none")};
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
@@ -52,7 +52,7 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
 export const ForumPostPageInfo = styled.div`
   font-size: 20px;
   text-decoration: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   ${ForumPostPage}:hover & {
     text-decoration: underline;
@@ -69,7 +69,7 @@ const FlexWrapper = styled.div`
   }
 `;
 export const TypeText = styled.p`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
@@ -77,12 +77,12 @@ export const TypeText = styled.p`
   height: 20px;
   text-align: center;
   line-height: 20px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 10px;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 26px;
   height: 26px;
   background: none;
@@ -127,8 +127,8 @@ const AddPostBtn = styled(OperationBtn)`
   width: 100px;
   display: block;
   margin: 10px 0 20px auto;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.2);
@@ -151,13 +151,13 @@ const ForumHomePage = () => {
     setInitContent("");
     setTextEditorDisplay(true);
     dispatch({
-      type: popUpActions.SHOW_MASK,
+      type: PopUpActions.SHOW_MASK,
     });
   }
   useEffect(() => {
     async function getPosts() {
-      let postList: Post[] = [];
-      let posts = await firebase.getPosts();
+      const postList: Post[] = [];
+      const posts = await firebase.getPosts();
       posts.forEach((post) => {
         postList.push(post.data());
       });
@@ -169,7 +169,7 @@ const ForumHomePage = () => {
   return (
     <>
       {isLoading && <PageLoader />}
-      <Wrapper isLoading={isLoading}>
+      <Wrapper $isLoading={isLoading}>
         <ForumSectionWrapper>
           <PostTypeBtn
             style={{ backgroundImage: `url(${all})` }}
@@ -201,7 +201,7 @@ const ForumHomePage = () => {
             return (
               <ForumPostPage
                 key={post.postId}
-                show={post.type === filter || filter === "any"}
+                $show={post.type === filter || filter === "any"}
                 onClick={() => navigate(`/forum/${post.postId}`)}
               >
                 <FlexWrapper>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { LabelText } from "../../components/GlobalStyles/text";
 import { TabDisplayType } from "./Profile";
@@ -9,35 +9,36 @@ const MenuWrapper = styled.div`
   margin-bottom 10px;
 `;
 interface MenuItemProps {
-  show: boolean;
+  $show: boolean;
 }
 const MenuItem = styled(LabelText)<MenuItemProps>`
   font-size: 16px;
   margin-right: 20px;
   padding: 5px;
   cursor: pointer;
-  color: ${(props) => (props.show ? "#5c836f" : "#6a5125")};
+  color: ${(props) =>
+    props.$show ? props.theme.colors.main : props.theme.colors.button};
   transition: 0.5s;
   &:hover {
-    color: #5c836f;
+    color: ${(props) => props.theme.colors.main};
     transform: scale(1.1);
     transition: 0.5s;
   }
 `;
 interface ProfileMenuProps {
   tabDisplay: TabDisplayType;
-  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
+  setTabDisplay: Dispatch<SetStateAction<TabDisplayType>>;
 }
 const ProfileMenu = ({ tabDisplay, setTabDisplay }: ProfileMenuProps) => {
-  function tabSwitcher(event: React.MouseEvent<HTMLElement>) {
-    let resetState = {
+  function tabSwitcher(event: MouseEvent<HTMLElement>) {
+    const resetState = {
       Cards: false,
       Calendar: false,
       Gallery: false,
       Favorites: false,
     };
-    let target = event.target as HTMLButtonElement;
-    let key = target.textContent as
+    const target = event.target as HTMLButtonElement;
+    const key = target.textContent as
       | "Cards"
       | "Calendar"
       | "Gallery"
@@ -47,16 +48,16 @@ const ProfileMenu = ({ tabDisplay, setTabDisplay }: ProfileMenuProps) => {
   }
   return (
     <MenuWrapper>
-      <MenuItem show={tabDisplay.Cards} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Cards} onClick={(e) => tabSwitcher(e)}>
         Cards
       </MenuItem>
-      <MenuItem show={tabDisplay.Calendar} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Calendar} onClick={(e) => tabSwitcher(e)}>
         Calendar
       </MenuItem>
-      <MenuItem show={tabDisplay.Gallery} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Gallery} onClick={(e) => tabSwitcher(e)}>
         Gallery
       </MenuItem>
-      <MenuItem show={tabDisplay.Favorites} onClick={(e) => tabSwitcher(e)}>
+      <MenuItem $show={tabDisplay.Favorites} onClick={(e) => tabSwitcher(e)}>
         Favorites
       </MenuItem>
     </MenuWrapper>

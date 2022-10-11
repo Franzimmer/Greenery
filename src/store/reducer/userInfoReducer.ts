@@ -31,7 +31,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_FOLLOW_LIST: {
-      let currentFollowList = [...state.followList];
+      const currentFollowList = [...state.followList];
       currentFollowList?.push(action.payload.targetId);
       return {
         ...state,
@@ -39,7 +39,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.REMOVE_FOLLOW_LIST: {
-      let newFollowList = state.followList?.filter(
+      const newFollowList = state.followList?.filter(
         (id) => id !== action.payload.targetId
       );
       return {
@@ -48,7 +48,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_GALLERY: {
-      let currentGallery = [...state.gallery];
+      const currentGallery = [...state.gallery];
       currentGallery?.unshift(action.payload.link);
       return {
         ...state,
@@ -56,7 +56,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.REMOVE_GALLERY: {
-      let newGallery = state.gallery?.filter(
+      const newGallery = state.gallery?.filter(
         (asset) => asset !== action.payload.link
       );
       return {
@@ -65,7 +65,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_FAVORITE_PLANT: {
-      let newFavPlants = [...state.favoriteCards];
+      const newFavPlants = [...state.favoriteCards];
       newFavPlants.push(action.payload.cardId);
       return {
         ...state,
@@ -73,7 +73,7 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.DELETE_FAVORITE_PLANT: {
-      let newFavPlants = state.favoriteCards?.filter(
+      const newFavPlants = state.favoriteCards?.filter(
         (id) => id !== action.payload.cardId
       );
       return {

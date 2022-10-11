@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDroplet, faPersonDigging } from "@fortawesome/free-solid-svg-icons";
-import { unixTimeToString } from "../../../utils/helpers";
-import { firebase } from "../../../utils/firebase";
 import { PlantCard } from "../../../store/types/plantCardType";
+import { firebase } from "../../../utils/firebase";
+import { unixTimeToString } from "../../../utils/helpers";
 import CalenderContainer from "./CalendarContainer";
+import { faDroplet, faPersonDigging } from "@fortawesome/free-solid-svg-icons";
+import "react-calendar/dist/Calendar.css";
 let defaultState = {
   watering: [],
   fertilizing: [],
@@ -28,7 +28,7 @@ const StyledFontAwesome = styled(FontAwesomeIcon)`
   width: 36px;
   height: 36px;
   margin-right: 16px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
 `;
 const Description = styled.p`
   font-size: 16px;
@@ -45,27 +45,27 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
   useEffect(() => {
     async function getEventData() {
       let eventRef;
-      let docName = unixTimeToString(value.getTime());
+      const docName = unixTimeToString(value.getTime());
       const docSnapshot = await firebase.getEvent(docName, id);
       if (docSnapshot.exists()) {
         eventRef = docSnapshot.data();
-        let cardList: PlantCard[] = [];
-        let waterEvents = docSnapshot.data().watering;
-        let fertilizeEvents = docSnapshot.data().fertilizing;
-        let eventIds = waterEvents.concat(
+        const cardList: PlantCard[] = [];
+        const waterEvents = docSnapshot.data().watering;
+        const fertilizeEvents = docSnapshot.data().fertilizing;
+        const eventIds = waterEvents.concat(
           fertilizeEvents.filter(
             (item: string) => waterEvents.indexOf(item) < 0
           )
         );
-        const querySnapshot = await firebase.getCards(eventIds);
+        const querySnapshot = await firebase.getCardsByIds(eventIds);
         if (querySnapshot?.empty) return;
         querySnapshot!.forEach((doc) => {
           cardList.push(doc.data());
         });
-        let waterRef = eventRef.watering.map((id: string) => {
+        const waterRef = eventRef.watering.map((id: string) => {
           return cardList.find((card) => card.cardId === id)?.plantName;
         });
-        let fertilizeRef = eventRef.fertilizing.map((id: string) => {
+        const fertilizeRef = eventRef.fertilizing.map((id: string) => {
           return cardList.find((card) => card.cardId === id)?.plantName;
         });
         setEvents({

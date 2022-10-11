@@ -1,13 +1,14 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
 import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { PlantImg, Tag, TagsWrapper } from "../cards/Cards";
 import { GridWrapper, Card, NameText, SpeciesText } from "../cards/CardsGrid";
 import {
@@ -19,15 +20,15 @@ import { IconButton } from "../../../components/GlobalStyles/button";
 import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import defaultImg from "../../../assets/default.jpg";
 interface SectionWrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const SectionWrapper = styled.div<SectionWrapperProps>`
-  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  opacity: ${(props) => (props.$isLoading ? "0" : "1")};
   transition: 1s;
 `;
 const UserLink = styled(Link)`
   text-decoration: none;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   &:hover {
     text-decoration: underline;
   }
@@ -65,7 +66,7 @@ export const DiaryIconBtn = styled(IconButton)<DiaryBtnProps>`
   }
 `;
 export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 26px;
   height: 26px;
 `;
@@ -73,11 +74,9 @@ interface FavGridsProps {
   isLoading: boolean;
   diariesExist: boolean[];
   favCards: PlantCard[];
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
+  setOwnerId: Dispatch<SetStateAction<string>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({
@@ -85,69 +84,61 @@ const FavGrids = ({
   diariesExist,
   favCards,
   setDetailData,
-  setDetailDisplay,
-  setDiaryDisplay,
   setDiaryId,
   setOwnerId,
   findOwnerName,
 }: FavGridsProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   function isOwner(ownerId: string) {
     if (userInfo.userId === ownerId) return true;
     else return false;
   }
   async function removeFavorite(cardId: string) {
-    let userId = userInfo.userId;
+    const userId = userInfo.userId;
     dispatch({
       type: UserInfoActions.DELETE_FAVORITE_PLANT,
       payload: { cardId },
     });
     await firebase.removeFavCard(userId, cardId);
-    emitAlert("success", "Remove from your Favorites.");
+    alertDispatcher("success", "Remove from your Favorites.");
+  }
+  function handleDetailClick(card: PlantCard) {
+    setDetailData(card);
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+  }
+  function handleDiaryclick(card: PlantCard) {
+    setOwnerId(card.ownerId);
+    setDiaryId(card.cardId);
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
   }
   return (
-    <SectionWrapper isLoading={isLoading}>
+    <SectionWrapper $isLoading={isLoading}>
       <GridWrapper $mode={"grid"}>
         {favCards.length !== 0 &&
           favCards.map((card: PlantCard, index) => {
             return (
               <Card
                 key={card.cardId}
-                id={card.cardId!}
                 $mode={"grid"}
                 $show={true}
-                onClick={() => {
-                  setDetailDisplay(true);
-                  setDetailData(card);
-                  dispatch({
-                    type: popUpActions.SHOW_MASK,
-                  });
-                }}
+                onClick={() => handleDetailClick(card)}
               >
-                <PlantImg path={card.plantPhoto || defaultImg} />
+                <PlantImg $path={card.plantPhoto || defaultImg} />
                 <NameText>
                   <UserLink
                     to={`/profile/${card.ownerId}`}
                     onClick={(e) => {
                       dispatch({
-                        type: popUpActions.HIDE_ALL,
+                        type: PopUpActions.HIDE_ALL,
                       });
                       e.stopPropagation();
                     }}
@@ -169,12 +160,7 @@ const FavGrids = ({
                     (!isOwner(card.ownerId) && diariesExist[index])
                   }
                   onClick={(e) => {
-                    setDiaryDisplay(true);
-                    setOwnerId(card.ownerId);
-                    setDiaryId(card.cardId);
-                    dispatch({
-                      type: popUpActions.SHOW_MASK,
-                    });
+                    handleDiaryclick(card);
                     e.stopPropagation();
                   }}
                 >
