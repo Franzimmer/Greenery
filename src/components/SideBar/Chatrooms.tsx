@@ -24,7 +24,7 @@ const ChatroomsWrapper = styled.div`
 `;
 const ChatroomText = styled.p`
   font-size: normal;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   background: none;
 `;
 const Spin = keyframes`

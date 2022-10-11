@@ -56,7 +56,7 @@ const FlexRowWrapper = styled(FlexColumnWrapper)`
 `;
 const NameText = styled(LabelText)`
   font-size: 26px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   margin-right: 12px;
   width: 340px;
   word-wrap: break-word;
@@ -71,7 +71,7 @@ const SpeciesText = styled.div`
 `;
 const DetailLabelText = styled(LabelText)`
   font-size: 18px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   margin: 0 8px 8px 0;
 `;
 const Description = styled.p`
@@ -81,7 +81,7 @@ const PlantImg = styled.img`
   width: auto;
   height: auto;
   margin: auto;
-  box-shadow: 16px 12px 0px 0px #5c836f;
+  box-shadow: 16px 12px 0px 0px ${(props) => props.theme.colors.main};
   max-width: 340px;
   max-height: 450px;
 `;
@@ -90,8 +90,8 @@ const FlexBtnWrapper = styled(FlexRowWrapper)`
   justify-content: space-around;
 `;
 const DetailOperationBtn = styled(OperationBtn)`
-  background: #5c836f;
-  border: 1px solid #5c836f;
+  background: ${(props) => props.theme.colors.main};
+  border: 1px solid ${(props) => props.theme.colors.main};
   width: 150px;
   transition: 0.25s;
   margin-top: 16px;
@@ -109,7 +109,7 @@ const EditIconBtn = styled(IconButton)`
     transition: 0.25s;
   }
   & * {
-    color: #5c836f;
+    color: ${(props) => props.theme.colors.main};
   }
 `;
 interface DetailedCardProps {
@@ -127,10 +127,8 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
     else return false;
   }
   function handleEditorClick(cardId: string) {
-    dispatch({
-      type: PopUpActions.SHOW_MASK,
-    });
     setEditCardId(cardId);
+    setDetailData(undefined);
   }
   return (
     <>
@@ -163,7 +161,7 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
             {detailData && detailData.ownerId === userInfo.userId && (
               <EditIconBtn
                 onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  handleEditorClick(editCardId!);
+                  handleEditorClick(detailData.cardId!);
                   e.stopPropagation();
                 }}
               >

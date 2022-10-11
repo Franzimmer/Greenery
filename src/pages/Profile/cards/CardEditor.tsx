@@ -44,7 +44,7 @@ const PageWrapper = styled.div`
   padding: 30px;
 `;
 const InputLabel = styled.span`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-weight: 500;
   margin-right: 8px;
 `;
@@ -71,7 +71,7 @@ const Input = styled.input`
   width: 200px;
   height: 30px;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 0px 15px;
   & ::placeholder {
     color: #ddd;
@@ -80,7 +80,7 @@ const Input = styled.input`
 const TextArea = styled.textarea`
   width: 280px;
   height: 100px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 5px;
 `;
 const InputWrapper = styled.div`
@@ -95,7 +95,7 @@ const InputFlexWrapper = styled(InputWrapper)`
 const Tag = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   background-color: none;
   padding: 0px 5px;
   border-radius: 14px;
@@ -103,7 +103,7 @@ const Tag = styled.div`
   margin: 8px 8px 0px 0px;
 `;
 const TagText = styled.div`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 14px;
   border-radius: 7px;
 `;
@@ -127,8 +127,11 @@ const EditorBtn = styled(OperationBtn)<EditortnProps>`
   width: 100px;
   margin-top: 12px;
   border: ${(props) =>
-    props.$disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
-  background: ${(props) => (props.$disabledBtn ? "#aaa" : "#6a5125")};
+    props.$disabledBtn
+      ? "1px solid #aaa"
+      : `1px solid ${props.theme.colors.button}`};
+  background: ${(props) =>
+    props.$disabledBtn ? "#aaa" : props.theme.colors.button};
   cursor: ${(props) => props.$disabledBtn && "not-allowed"};
   transition: 0.25s;
   &:hover {
@@ -137,7 +140,7 @@ const EditorBtn = styled(OperationBtn)<EditortnProps>`
   }
 `;
 const RemoveTagBtn = styled(CloseBtn)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 20px;
   height: 20px;
   font-size: 20px;
@@ -154,7 +157,7 @@ const RemoveTagBtn = styled(CloseBtn)`
   }
 `;
 const UploadIcon = styled(FontAwesomeIcon)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 20px;
   height: 20px;
 `;
@@ -175,12 +178,12 @@ const SearchSuggestion = styled.p`
   font-size: 14px;
   padding: 6px;
   &:hover {
-    background-color: #5c836f;
+    background-color: ${(props) => props.theme.colors.main};
     color: #fff;
   }
 `;
 const SearchActive = styled(SearchSuggestion)`
-  background-color: #5c836f;
+  background-color: ${(props) => props.theme.colors.main};
   color: #fff;
 `;
 interface CardEditorProps {

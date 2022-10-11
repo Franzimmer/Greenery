@@ -36,8 +36,8 @@ const MainStyleWrapper = styled.div`
 const MainStyle = styled.img`
   width: 30%;
   transform: translateX(-20px) translateY(-30px);
-  box-shadow: 30px 40px 0 #5c836f;
-  border: 1px solid #5c836f;
+  box-shadow: 30px 40px 0 ${(props) => props.theme.colors.main};
+  border: 1px solid ${(props) => props.theme.colors.main};
 `;
 const MainDescriptionWrapper = styled.div`
   width: 180px;
@@ -81,7 +81,7 @@ const DecorationCoco = styled.img`
   top: 8vh;
   right: 5vw;
   width: 17vw;
-  background: #fddba9;
+  background: ${(props) => props.theme.colors.second};
   box-shadow: -10vw 90px #f5f0ec inset;
   opacity: 0;
   animation: ${showOpacity} 1s linear 1.25s forwards;
@@ -92,7 +92,7 @@ const DecorationTaquila = styled.img`
   bottom: 11vh;
   left: 12vw;
   width: 22vw;
-  background: #fddba9;
+  background: ${(props) => props.theme.colors.second};
   box-shadow: 0px 30px #f5f0ec inset;
   opacity: 0;
   animation: ${showOpacity} 1s linear 1.25s forwards;

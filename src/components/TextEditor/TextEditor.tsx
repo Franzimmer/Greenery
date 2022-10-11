@@ -61,9 +61,12 @@ interface TextEditorBtnProps {
 }
 const TextEditorBtn = styled(OperationBtn)<TextEditorBtnProps>`
   width: 100px;
-  background: ${(props) => (props.$disabledBtn ? "#aaa" : "#6a5125")};
+  background: ${(props) =>
+    props.$disabledBtn ? "#aaa" : props.theme.colors.button};
   border: ${(props) =>
-    props.$disabledBtn ? "1px solid #aaa" : "1px solid #6a5125"};
+    props.$disabledBtn
+      ? "1px solid #aaa"
+      : `1px solid ${props.theme.colors.button}`};
   cursor: ${(props) => (props.$disabledBtn ? "not-allowed" : "pointer")};
   margin: 8px 8px 0px 0px;
   transtion: 0.25s;
@@ -91,14 +94,14 @@ const TypeBtn = styled.div`
   line-height: 30px;
   text-align: center;
   border-radius: 10px;
-  border: 1px solid #6a5125;
-  background: #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
+  background: ${(props) => props.theme.colors.button};
   color: #fff;
   margin-right: 8px;
 `;
 const TypeBtnActive = styled(TypeBtn)`
   background: #fff;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
 `;
 const TypeBtnDisabled = styled(TypeBtnActive)`
   border: 1px solid #aaa;

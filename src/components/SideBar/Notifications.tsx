@@ -51,7 +51,7 @@ const NoticeText = styled.div`
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: block;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   height: 14px;
   background: none;
 `;

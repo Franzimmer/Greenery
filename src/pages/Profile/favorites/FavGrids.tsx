@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const SectionWrapper = styled.div<SectionWrapperProps>`
 `;
 const UserLink = styled(Link)`
   text-decoration: none;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   &:hover {
     text-decoration: underline;
   }
@@ -66,7 +66,7 @@ export const DiaryIconBtn = styled(IconButton)<DiaryBtnProps>`
   }
 `;
 export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 26px;
   height: 26px;
 `;
@@ -74,9 +74,9 @@ interface FavGridsProps {
   isLoading: boolean;
   diariesExist: boolean[];
   favCards: PlantCard[];
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
+  setOwnerId: Dispatch<SetStateAction<string>>;
   findOwnerName: (ownerId: string) => string | undefined;
 }
 const FavGrids = ({
@@ -107,6 +107,19 @@ const FavGrids = ({
     await firebase.removeFavCard(userId, cardId);
     alertDispatcher("success", "Remove from your Favorites.");
   }
+  function handleDetailClick(card: PlantCard) {
+    setDetailData(card);
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+  }
+  function handleDiaryclick(card: PlantCard) {
+    setOwnerId(card.ownerId);
+    setDiaryId(card.cardId);
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+  }
   return (
     <SectionWrapper $isLoading={isLoading}>
       <GridWrapper $mode={"grid"}>
@@ -115,15 +128,9 @@ const FavGrids = ({
             return (
               <Card
                 key={card.cardId}
-                id={card.cardId!}
                 $mode={"grid"}
                 $show={true}
-                onClick={() => {
-                  setDetailData(card);
-                  dispatch({
-                    type: PopUpActions.SHOW_MASK,
-                  });
-                }}
+                onClick={() => handleDetailClick(card)}
               >
                 <PlantImg $path={card.plantPhoto || defaultImg} />
                 <NameText>
@@ -153,11 +160,7 @@ const FavGrids = ({
                     (!isOwner(card.ownerId) && diariesExist[index])
                   }
                   onClick={(e) => {
-                    setOwnerId(card.ownerId);
-                    setDiaryId(card.cardId);
-                    dispatch({
-                      type: PopUpActions.SHOW_MASK,
-                    });
+                    handleDiaryclick(card);
                     e.stopPropagation();
                   }}
                 >

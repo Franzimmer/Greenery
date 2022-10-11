@@ -18,7 +18,7 @@ const CardListWrapper = styled.div<CardListWrapperProps>`
 const CardWrapper = styled.div`
   width: 90%;
   display: flex;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   align-items: center;
   justify-content: start;
   padding: 8px;
@@ -52,7 +52,7 @@ const CardCheck = styled.input`
   height: 22px;
   width: 22px;
   &:checked {
-    accent-color: #6a5125;
+    accent-color: ${(props) => props.theme.colors.button};
   }
 `;
 interface CardsWrapperProps {

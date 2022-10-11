@@ -41,7 +41,7 @@ interface ForumPostPageProps {
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80vw;
   height: 100px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   display: ${(props) => (props.$show ? "flex" : "none")};
   align-items: center;
   justify-content: space-between;
@@ -52,7 +52,7 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
 export const ForumPostPageInfo = styled.div`
   font-size: 20px;
   text-decoration: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   ${ForumPostPage}:hover & {
     text-decoration: underline;
@@ -69,7 +69,7 @@ const FlexWrapper = styled.div`
   }
 `;
 export const TypeText = styled.p`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
@@ -77,12 +77,12 @@ export const TypeText = styled.p`
   height: 20px;
   text-align: center;
   line-height: 20px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 10px;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 26px;
   height: 26px;
   background: none;
@@ -127,8 +127,8 @@ const AddPostBtn = styled(OperationBtn)`
   width: 100px;
   display: block;
   margin: 10px 0 20px auto;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.2);

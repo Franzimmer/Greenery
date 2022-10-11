@@ -103,7 +103,8 @@ const FlexWrapper = styled.label<FlexWrapperProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${(props) => (props.$disableBtn ? "#aaa" : "#5c836f")};
+  background: ${(props) =>
+    props.$disableBtn ? "#aaa" : props.theme.colors.main};
   cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   transition: 0.25s;
   &:hover {
@@ -111,7 +112,8 @@ const FlexWrapper = styled.label<FlexWrapperProps>`
     transition: 0.25s;
   }
   & * {
-    background: ${(props) => (props.$disableBtn ? "#aaa" : "#5c836f")};
+    background: ${(props) =>
+      props.$disableBtn ? "#aaa" : props.theme.colors.main};
     cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   }
 `;
@@ -220,11 +222,7 @@ const Gallery = ({ id }: GalleryProps) => {
                   {index % 3 === 1 && (
                     <SmallPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </SmallPin>
@@ -232,11 +230,7 @@ const Gallery = ({ id }: GalleryProps) => {
                   {index % 3 === 2 && (
                     <MediumPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </MediumPin>
@@ -244,11 +238,7 @@ const Gallery = ({ id }: GalleryProps) => {
                   {index % 3 === 0 && (
                     <LargePin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </LargePin>

@@ -38,7 +38,7 @@ const CardsFlexWrpper = styled.div`
 `;
 const UserLink = styled(Link)`
   text-decoration: none;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   &:hover {
     text-decoration: underline;
   }

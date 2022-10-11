@@ -21,7 +21,7 @@ const Wrapper = styled.div<WrapperProps>`
   width: ${(props) => (props.$show ? "300px" : "0px")};
   max-height: ${(props) => (props.$show ? "1000px" : 0)};
   background: rgba(255, 255, 255);
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   border-radius: 20px;
   margin-top: 112px;
   position: fixed;
@@ -42,7 +42,7 @@ const Tabs = styled.div`
   justify-content: space-around;
   border-radius: 20px 20px 0 0;
   position: relative;
-  border-bottom: 1px solid #5c836f;
+  border-bottom: 1px solid ${(props) => props.theme.colors.main};
   background-color: #fff;
   & * {
     background-color: #fff;
@@ -54,7 +54,7 @@ const Tab = styled(Tabs)`
   cursor: pointer;
   margin: 8px 0px;
   border-radius: 50%;
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   &:hover {
     border: 1px solid #7bc09a;
     box-shadow: 0 0 10px #ddd;
@@ -70,7 +70,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)<
   ${Tab}:hover & {
     color: #7bc09a;
   }
-  color: ${(props) => (props.$tab ? "#5c836f" : "#aaa")};
+  color: ${(props) => (props.$tab ? props.theme.colors.main : "#aaa")};
   height: 25px;
 `;
 interface SidebarWrapperProps {

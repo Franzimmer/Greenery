@@ -28,7 +28,7 @@ const CalenderContainer = styled.div`
   /* ~~~ button styles ~~~ */
   .react-calendar__month-view__days__day {
     height: 70px;
-    background-color: #5c836f;
+    background-color: ${(props) => props.theme.colors.main};
     border: 0;
     border-radius: 10px;
     color: #000;
@@ -37,11 +37,11 @@ const CalenderContainer = styled.div`
     padding: 5px 0;
 
     &:hover {
-      background-color: #fddba9;
+      background-color: ${(props) => props.theme.colors.second};
     }
 
     &:active {
-      background-color: #fddba9;
+      background-color: ${(props) => props.theme.colors.second};
     }
   }
   .react-calendar__navigation {
@@ -81,7 +81,7 @@ const CalenderContainer = styled.div`
   }
   .react-calendar__tile--now:enabled,
   .react-calendar__tile--now:enabled:focus {
-    background: #fddba9;
+    background: ${(props) => props.theme.colors.second};
   }
   .react-calendar__tile--now:enabled:hover {
     background: #f5f0ec;

@@ -35,17 +35,17 @@ interface followerDocType {
 }
 
 const firebaseConfig = {
-  apiKey: `${process.env.FIREBASE_APP_API_KEY}`,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "greenery-8647b.firebaseapp.com",
   projectId: "greenery-8647b",
   storageBucket: "greenery-8647b.appspot.com",
-  messagingSenderId: `${process.env.FIREBASE_MESSAGING_SENDER_ID}`,
-  appId: `${process.env.FIREBASE_APP_ID}`,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore(app);
 const users = collection(db, "users") as CollectionReference<UserInfo>;
 const cards = collection(db, "cards") as CollectionReference<PlantCard>;

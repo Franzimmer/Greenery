@@ -38,7 +38,7 @@ export const PersonPhoto = styled(UserPhoto)`
 const PersonText = styled.p`
   font-size: normal;
   letter-spacing: 1px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
 `;
 const StyleWrapper = styled.div`
   display: flex;

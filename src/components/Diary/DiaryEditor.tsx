@@ -83,7 +83,7 @@ const ArrowWrapper = styled(BtnWrapper)`
   background: #f5f0ec;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 20px;
   height: 20px;
 `;
@@ -117,7 +117,7 @@ const Spin = keyframes`
   }
 `;
 const PageNumber = styled.span`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   margin: 0 auto;
 `;
 interface LoadingProps {

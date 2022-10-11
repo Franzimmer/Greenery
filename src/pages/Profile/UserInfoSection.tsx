@@ -32,7 +32,7 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   background-position: center center;
 `;
 const UserInfoText = styled.div`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   padding: 0px 10px;
   font-size: 26px;
   font-weight: 600;
@@ -66,7 +66,7 @@ const UserInfoBtn = styled(OperationBtn)`
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   height: 25px;
 `;
 const NameWrapper = styled.div``;
@@ -232,10 +232,9 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
               if (e.key === "Enter") editUserName();
             }}
             onBlur={() => {
-              if (nameRef.current?.textContent !== userInfo.userName) {
+              if (nameRef.current?.textContent !== userInfo.userName)
                 editUserName();
-              }
-              setShowNameInput(false);
+              else setShowNameInput(false);
             }}
           >
             {userData?.userName}
@@ -243,9 +242,7 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
           {isSelf && (
             <NameButtonLabel
               htmlFor="nameInput"
-              onClick={() => {
-                setShowNameInput(true);
-              }}
+              onClick={() => setShowNameInput(true)}
             >
               <StyledFontAwesomeIcon icon={faPenToSquare} />
             </NameButtonLabel>

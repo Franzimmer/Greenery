@@ -31,7 +31,7 @@ export const PostWrapper = styled.div`
   margin-top: 12px;
   display: flex;
   justify-content: flex-start;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 5px;
   width: 100%;
   position: relative;
@@ -59,7 +59,7 @@ export const AuthorPhoto = styled.div<AuthorPhotoProps>`
   margin: 0 auto;
 `;
 export const AuthorName = styled.p`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   margin-top: 8px;
   font-size: 16px;
   letter-spacing: 1px;
@@ -68,7 +68,7 @@ export const AuthorName = styled.p`
   cursor: pointer;
 `;
 export const Content = styled.div`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   word-break: break-all;
   padding: 40px 20px;
   & > * + * {
@@ -94,7 +94,7 @@ export const Content = styled.div`
 
   & blockquote {
     padding-left: 1rem;
-    border-left: 5px solid #6a5125;
+    border-left: 5px solid ${(props) => props.theme.colors.button};
   }
 `;
 export const BtnWrapper = styled.div`
@@ -113,7 +113,7 @@ export const EditIconBtn = styled(IconButton)`
   height: 26px;
   margin-left: 12px;
   background: #fff;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   padding: 3px;
   border-radius: 4px;
   &:hover {
@@ -122,7 +122,7 @@ export const EditIconBtn = styled(IconButton)`
   }
 `;
 export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 18px;
   height: 18px;
 `;
@@ -140,12 +140,12 @@ const FlexWrapper = styled.div`
 `;
 const PostTitle = styled.div`
   font-size: 26px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   line-height: 30px;
 `;
 const CommentBtn = styled(OperationBtn)`
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   align-self: flex-end;
   transition: 0.25s;
   &:hover {
@@ -160,8 +160,8 @@ export const OpenChatRoomBtn = styled(OperationBtn)`
   text-align: center;
   font-size: 14px;
   background: none;
-  border: 1px solid #6a5125;
-  color: #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
+  color: ${(props) => props.theme.colors.button};
   display: block;
   margin-top: 12px;
   transition: 0.25s;

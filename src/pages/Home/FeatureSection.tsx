@@ -28,7 +28,7 @@ const FeatureSecondTitle = styled(MainDescription)`
   margin-bottom: 12px;
 `;
 const FeatureIcon = styled(FontAwesomeIcon)`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 22px;
   height: 22px;
   margin: 0 16px 0 0;
@@ -40,11 +40,11 @@ const RedirectIcon = styled(FeatureIcon)`
 `;
 const FeatureImg = styled.img`
   width: 40%;
-  box-shadow: -20px 20px 0 10px #fddba9;
+  box-shadow: -20px 20px 0 10px ${(props) => props.theme.colors.second};
 `;
 export const SectionTitle = styled.p`
   margin-bottom: 16px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 26px;
   letter-spacing: 2px;
   line-height: 30px;
@@ -57,7 +57,7 @@ const SectionTitleAlign = styled(SectionTitle)`
 `;
 const LogInRedirect = styled.div`
   background: #fff;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 16px;
   line-height: 22px;
   letter-spacing: 1px;

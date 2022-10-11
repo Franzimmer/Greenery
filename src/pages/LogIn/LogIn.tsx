@@ -67,7 +67,7 @@ const FlexWrapper = styled.div`
 const InputLabel = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   align-self: flex-start;
   margin: 0 0 6px 0;
 `;
@@ -76,7 +76,7 @@ const Input = styled.input`
   width: 100%;
   margin: 0 0 36px 0;
   padding-left: 8px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   background-color: rgba(92, 131, 111, 0.2);
   &:-webkit-autofill,
   :-webkit-autofill:hover,
@@ -91,7 +91,7 @@ const Tab = styled.div`
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -103,8 +103,8 @@ const TabActive = styled(Tab)`
   filter: drop-shadow(1px 4px 3px #aaa);
 `;
 const LogInBtn = styled(OperationBtn)`
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
@@ -190,25 +190,13 @@ const LogIn = () => {
         <FlexWrapper>
           {mode === "login" && (
             <>
-              <TabActive
-                onClick={() => {
-                  setMode("login");
-                }}
-              >
-                Log In{" "}
-              </TabActive>
-              <Tab
-                onClick={() => {
-                  setMode("signin");
-                }}
-              >
-                Sign In
-              </Tab>
+              <TabActive onClick={() => setMode("login")}>Log In</TabActive>
+              <Tab onClick={() => setMode("signin")}>Sign In</Tab>
             </>
           )}
           {mode === "signin" && (
             <>
-              <Tab onClick={() => setMode("login")}>Log In </Tab>
+              <Tab onClick={() => setMode("login")}>Log In</Tab>
               <TabActive onClick={() => setMode("signin")}>Sign In</TabActive>
             </>
           )}

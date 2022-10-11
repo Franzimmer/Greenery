@@ -41,16 +41,16 @@ export const Text = styled.p`
   margin-bottom: 10px;
 `;
 export const Tag = styled.p`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   padding: 0px 3px;
   border-radius: 8px;
   font-size: 14px;
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   margin: 5px 5px 0 0;
   cursor: pointer;
   transition: 0.25s;
   &:hover {
-    background: #5c836f;
+    background: ${(props) => props.theme.colors.main};
     color: #fff;
     transition: 0.25s;
   }
@@ -94,7 +94,7 @@ const ConfirmPanel = styled.div`
   padding: 24px;
   background: #f5f0ec;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 const BtnWrapper = styled.div`
   display: flex;
@@ -115,8 +115,8 @@ const ConfirmBoldMsg = styled(ConfirmMsg)`
 `;
 const ConfirmBtn = styled(OperationBtn)`
   width: 100px;
-  background-color: #6a5125;
-  border: 1px solid #6a5125;
+  background-color: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {

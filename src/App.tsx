@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Outlet } from "react-router-dom";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
@@ -25,6 +25,7 @@ import { AuthorityActions } from "./store/actions/authorityActions";
 import { MyFollowersActions } from "./store/actions/myFollowersActions";
 import { NotificationActions } from "./store/actions/notificationActions";
 import { ChatroomActions } from "./store/actions/chatroomActions";
+import theme from "./theme";
 import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
 import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
 import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
@@ -80,7 +81,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 100%;
     height: 100%;
-    background: #F5F0EC;
+    background:${(props) => props.theme.colors.bg};
     overflow-x:hidden;
   }
 
@@ -168,7 +169,7 @@ function UserLogInObserver({
 function App() {
   const [sideBarDisplay, setSideBarDisplay] = useState<boolean>(false);
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Provider store={store}>
         <UserLogInObserver setSideBarDisplay={setSideBarDisplay} />
@@ -183,7 +184,7 @@ function App() {
         <ChatroomsWrapper />
         <Outlet />
       </Provider>
-    </>
+    </ThemeProvider>
   );
 }
 

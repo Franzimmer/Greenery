@@ -26,7 +26,7 @@ const MenuBtn = styled(IconButton)`
   height: 30px;
   margin: 8px;
   border-radius: 5px;
-  border: 2px solid #5c836f;
+  border: 2px solid ${(props) => props.theme.colors.main};
   background: #fff;
   transition: 0.25s;
   &:hover {
@@ -35,7 +35,7 @@ const MenuBtn = styled(IconButton)`
   }
 `;
 const MenuBtnActive = styled(MenuBtn)`
-  background: #5c836f;
+  background: ${(props) => props.theme.colors.main};
   & * {
     color: #fff;
   }
@@ -52,7 +52,7 @@ const MenuBtnDisabled = styled(MenuBtn)`
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 26px;
   height: 26px;
 `;
@@ -69,7 +69,7 @@ const BtnWrapper = styled.div`
 const IconLabel = styled.span`
   font-size: 14px;
   letter-spacing: 0.5px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
 `;
 interface OperationMenuProps {
   isSelf: boolean;

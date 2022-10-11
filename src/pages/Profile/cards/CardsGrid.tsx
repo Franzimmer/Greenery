@@ -58,7 +58,7 @@ export const Card = styled.div<CardProps>`
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;
   font-size: 20px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   margin-right: 8px;
   margin-left: ${(props) => props.$mode === "list" && "32px"};
   width: 200px;
@@ -82,7 +82,7 @@ const CardCheck = styled.input<GridWrapperProps>`
   height: 20px;
   width: 20px;
   &:checked {
-    accent-color: #6a5125;
+    accent-color: ${(props) => props.theme.colors.button};
   }
 `;
 interface CardGridIcon {

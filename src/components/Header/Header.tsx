@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled, { keyframes } from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -29,10 +29,10 @@ const HeaderLink = styled(Link)`
   text-decoration: none;
   font-size: 26px;
   letter-spacing: 4px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   position: relative;
   &:hover {
-    color: #5c836f;
+    color: ${(props) => props.theme.colors.main};
     &::after {
       width: 100%;
     }
@@ -40,7 +40,7 @@ const HeaderLink = styled(Link)`
   &::after {
     content: "";
     height: 3px;
-    background: #5c836f;
+    background: ${(props) => props.theme.colors.main};
     position: absolute;
     bottom: -4px;
     margin: 0 auto;
@@ -54,7 +54,7 @@ const LogoLink = styled(HeaderLink)`
   letter-spacing: 8px;
 `;
 const SideBarBtnWrapper = styled.div`
-  background: #5c836f;
+  background: ${(props) => props.theme.colors.main};
   width: 90px;
   height: 90px;
   display: flex;
@@ -123,7 +123,7 @@ const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
 `;
 
 interface HeaderProps {
-  setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  setSideBarDisplay: Dispatch<SetStateAction<boolean>>;
   sideBarDisplay: boolean;
 }
 const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {

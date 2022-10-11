@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { LabelText } from "../../components/GlobalStyles/text";
 import { TabDisplayType } from "./Profile";
@@ -16,20 +16,21 @@ const MenuItem = styled(LabelText)<MenuItemProps>`
   margin-right: 20px;
   padding: 5px;
   cursor: pointer;
-  color: ${(props) => (props.$show ? "#5c836f" : "#6a5125")};
+  color: ${(props) =>
+    props.$show ? props.theme.colors.main : props.theme.colors.button};
   transition: 0.5s;
   &:hover {
-    color: #5c836f;
+    color: ${(props) => props.theme.colors.main};
     transform: scale(1.1);
     transition: 0.5s;
   }
 `;
 interface ProfileMenuProps {
   tabDisplay: TabDisplayType;
-  setTabDisplay: React.Dispatch<React.SetStateAction<TabDisplayType>>;
+  setTabDisplay: Dispatch<SetStateAction<TabDisplayType>>;
 }
 const ProfileMenu = ({ tabDisplay, setTabDisplay }: ProfileMenuProps) => {
-  function tabSwitcher(event: React.MouseEvent<HTMLElement>) {
+  function tabSwitcher(event: MouseEvent<HTMLElement>) {
     const resetState = {
       Cards: false,
       Calendar: false,

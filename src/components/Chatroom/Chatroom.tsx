@@ -9,7 +9,6 @@ import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase, chatrooms } from "../../utils/firebase";
 import { onSnapshot, DocumentData, doc } from "firebase/firestore";
 import { faLeaf, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 
 export interface message {
   userId: string;
@@ -31,7 +30,7 @@ const FlexWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #5c836f;
+  background-color: ${(props) => props.theme.colors.main};
   padding: 8px;
 `;
 const FlexInputWrapper = styled(FlexWrapper)`
@@ -46,16 +45,16 @@ const InfoText = styled.span`
   font-size: 16px;
   line-height: 26px;
   letter-spacing: 2px;
-  background-color: #5c836f;
+  background-color: ${(props) => props.theme.colors.main};
   padding-left: 8px;
 `;
 const LeftText = styled.div`
   font-size: 14px;
   max-width: 60%;
   align-self: flex-start;
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   background-color: #fff;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   border-radius: 16px;
   padding: 2px 10px;
   margin: 6px 0px;
@@ -63,9 +62,9 @@ const LeftText = styled.div`
 `;
 const RightText = styled(LeftText)`
   align-self: flex-end;
-  border: 1px solid #fddba9;
-  color: #6a5125;
-  background-color: #fddba9;
+  border: 1px solid ${(props) => props.theme.colors.second};
+  color: ${(props) => props.theme.colors.button};
+  background-color: ${(props) => props.theme.colors.second};
 `;
 const MsgWindow = styled.div`
   width: 100%;
@@ -80,7 +79,7 @@ const ChatInput = styled.textarea`
   width: 90%;
   height: 36px;
   max-height: 50px;
-  border: 1px solid #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
   border-radius: 18px;
   margin-left: 8px;
   background-color: #fff;
@@ -99,7 +98,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   padding: 2px;
   background-color: #fff;
   border-radius: 50%;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
 `;
 const StyledCloseIcon = styled(StyledFontAwesomeIcon)`
   padding: 5px;

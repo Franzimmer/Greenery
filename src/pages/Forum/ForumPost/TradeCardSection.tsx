@@ -33,7 +33,7 @@ const TradeCard = styled(Card)`
   margin: 12px;
 `;
 const BookFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 26px;
   height: 26px;
 `;

@@ -16,7 +16,7 @@ interface DialogWrapperProps {
 const DialogWrapper = styled.div<DialogWrapperProps>`
   width: 500px;
   height: 500px;
-  background: #fddba9;
+  background: ${(props) => props.theme.colors.second};
   padding: 30px 15px;
   position: fixed;
   z-index: 101;
@@ -33,14 +33,14 @@ const DialogCloseBtn = styled(CloseBtn)`
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #fddba9;
-  background-color: #6a5125;
-  border: 1px solid #6a5125;
+  color: ${(props) => props.theme.colors.second};
+  background-color: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
-    color: #fddba9;
-    background-color: #6a5125;
-    border: 1px solid #6a5125;
+    color: ${(props) => props.theme.colors.second};
+    background-color: ${(props) => props.theme.colors.button};
+    border: 1px solid ${(props) => props.theme.colors.button};
     transform: scale(1.1);
     transition: 0.25s;
   }
@@ -59,9 +59,9 @@ const CardSelectBtn = styled(OperationBtn)`
   font-weight: 500;
   margin: 30px auto 0px;
   background: #fff;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   color: #fff;
-  background: #6a5125;
+  background: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     color: #fff;

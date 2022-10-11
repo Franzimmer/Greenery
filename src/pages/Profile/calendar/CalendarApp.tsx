@@ -28,7 +28,7 @@ const StyledFontAwesome = styled(FontAwesomeIcon)`
   width: 36px;
   height: 36px;
   margin-right: 16px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
 `;
 const Description = styled.p`
   font-size: 16px;

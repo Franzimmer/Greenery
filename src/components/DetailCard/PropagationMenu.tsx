@@ -36,7 +36,7 @@ const Input = styled.input`
   height: 30px;
   padding: 15px;
   border-radius: 15px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
 `;
 const ParentInput = styled(Input)`
   width: 150px;
@@ -52,15 +52,15 @@ const TypeBtn = styled.div`
   letter-spacing: 0.5px;
   margin: 0 6px;
   color: #fff;
-  background: #6a5125;
+  background: ${(props) => props.theme.colors.button};
   padding: 4px 8px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 4px;
   cursor: pointer;
 `;
 const TypeBtnInactive = styled(TypeBtn)`
   background: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -79,8 +79,8 @@ const ParentPanel = styled.div`
 `;
 const PropageOperationBtn = styled(OperationBtn)`
   margin-top: 12px;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   width: 120px;
   transition: 0.25s;
   &:hover {
