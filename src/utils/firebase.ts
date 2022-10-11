@@ -376,10 +376,14 @@ const firebase = {
     Promise.all(promises).then((result) => (checkResult = result));
     return checkResult;
   },
-  async deleteDairy(cardId: string) {
-    const diaryref = doc(diaries, cardId);
+  async deleteDairy(diaryId: string) {
+    const diaryref = doc(diaries, diaryId);
     const docSnapshot = await getDoc(diaryref);
-    if (docSnapshot.exists()) await deleteDoc(doc(db, "diaries", cardId));
+    if (docSnapshot.exists()) await deleteDoc(doc(db, "diaries", diaryId));
+  },
+  async deleteDiaryPage(diaryId: string, page: string) {
+    const diaryref = doc(diaries, diaryId);
+    await updateDoc(diaryref, { pages: arrayRemove(page) });
   },
   async searchSpecies(input: string) {
     const q = query(species, where("NAME", "==", input));
