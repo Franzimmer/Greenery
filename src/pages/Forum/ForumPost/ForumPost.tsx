@@ -69,7 +69,6 @@ export const AuthorName = styled.p`
 `;
 export const Content = styled.div`
   color: ${(props) => props.theme.colors.button};
-  word-break: break-all;
   padding: 40px 20px;
   & > * + * {
     margin-top: 0.75em;

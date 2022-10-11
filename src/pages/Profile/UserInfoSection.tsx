@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../store/reducer/index";
 import { UserInfoActions } from "../../store/actions/userInfoActions";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { UserInfo } from "../../store/types/userInfoType";
 import { auth, firebase } from "../../utils/firebase";
 import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
@@ -117,6 +118,9 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
   function userSignOut() {
+    dispatch({
+      type: ChatroomActions.CLOSE_ALL_ROOMS,
+    });
     signOut(auth)
       .then(() => {
         navigate("/login");

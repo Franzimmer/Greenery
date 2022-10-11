@@ -23,7 +23,10 @@ const useGetFavCardsData = (
       });
       setOwnerInfos(ownerInfo);
     }
-    if (!queryData) return;
+    if (!queryData) {
+      setTimeout(() => setIsLoading(false), 500);
+      return;
+    }
     const favCards: PlantCard[] = [];
     const favCardsIds: string[] = [];
     const ownerIds: string[] = [];

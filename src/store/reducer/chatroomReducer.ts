@@ -3,6 +3,7 @@ import {
   ChatroomActions,
   ChatroomActionType,
 } from "../actions/chatroomActions";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 
 const chatroom = (state: ChatroomType[] = [], action: ChatroomActionType) => {
   switch (action.type) {
@@ -20,17 +21,24 @@ const chatroom = (state: ChatroomType[] = [], action: ChatroomActionType) => {
       return [...state, newRoom];
     }
     case ChatroomActions.OPEN_CHATROOM: {
-      const target = state.find(
-        (room) => room.targetInfo.userId === action.payload.targetId
-      );
-      if (!target) return;
-      const index = state.findIndex(
-        (room) => room.targetInfo.userId === action.payload.targetId
-      ) as number;
-      target!.chatroomDisplay = true;
-      const newState = [...state];
-      newState[index] = target;
-      return newState;
+      const currentState = [...state];
+      let openCount = 0;
+      currentState.forEach((room) => {
+        if (room.chatroomDisplay) openCount += 1;
+      });
+      if (openCount < 3) {
+        const target = state.find(
+          (room) => room.targetInfo.userId === action.payload.targetId
+        );
+        if (!target) return;
+        const index = state.findIndex(
+          (room) => room.targetInfo.userId === action.payload.targetId
+        ) as number;
+        target!.chatroomDisplay = true;
+        const newState = [...state];
+        newState[index] = target;
+        return newState;
+      } else return state;
     }
     case ChatroomActions.CLOSE_CHATROOM: {
       const target = state.find(
@@ -46,10 +54,13 @@ const chatroom = (state: ChatroomType[] = [], action: ChatroomActionType) => {
       return newState;
     }
     case ChatroomActions.CLOSE_ALL_ROOMS: {
-      const newState = state.map((room) => {
-        return (room.chatroomDisplay = false);
-      });
-      return newState;
+      if (state.length > 0) {
+        state.forEach((room: ChatroomType) => {
+          room["chatroomDisplay"] = false;
+        });
+        const newState = [...state];
+        return newState;
+      } else return state;
     }
     default:
       return state;

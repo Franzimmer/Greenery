@@ -191,20 +191,15 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
     );
     if (!eventIds.length) return;
     const idList: string[] = [];
-    const nameList: string[] = [];
     eventIds.forEach((eventId) => {
       const targetCard = cardList.find((card) => card.cardId === eventId);
       idList.push(targetCard!.cardId!);
-      nameList.push(targetCard!.plantName);
     });
     if (type === "water") {
-      alertDispatcher("success", `Watering ${nameList.join(" & ")} Success!`);
+      alertDispatcher("success", `Watering Success!`);
     }
     if (type === "fertilize")
-      alertDispatcher(
-        "success",
-        `Fertilizing ${nameList.join(" & ")} Success!`
-      );
+      alertDispatcher("success", `Fertilizing Success!`);
     clearAllCheck();
     await firebase.addEvents(type, idList, userInfo.userId);
   }

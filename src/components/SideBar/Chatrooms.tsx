@@ -56,6 +56,7 @@ export const ChatroomFlexWrapper = styled.div`
 `;
 const Chatrooms = () => {
   const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const { userId } = useSelector((state: RootState) => state.userInfo);
   const chatInfos = useSelector(
     (state: RootState) => state.chatroom
@@ -64,6 +65,7 @@ const Chatrooms = () => {
 
   useEffect(() => {
     async function getChatTargets() {
+      if (!userId) return;
       const targetList: string[] = [];
       const chatData: UserInfo[] = [];
       const chatrooms = await firebase.getChatrooms(userId);
@@ -96,12 +98,13 @@ const Chatrooms = () => {
       <ChatroomsWrapper>
         <Spinner $show={spinDisplay} />
         {chatInfos &&
+          isLoggedIn &&
           !spinDisplay &&
           chatInfos?.length !== 0 &&
           chatInfos?.map((room) => {
             return (
               <Person
-                key={`${room.targetInfo.userId}_chat`}
+                key={`${room.targetInfo?.userId}_chat`}
                 onClick={() =>
                   dispatch({
                     type: ChatroomActions.OPEN_CHATROOM,
