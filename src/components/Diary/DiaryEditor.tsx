@@ -213,7 +213,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   }
   function checkSelectFont() {
     if (!fontSizeRef.current) return false;
-    else if (canvas?.getActiveObject()) return false;
+    else if (!canvas?.getActiveObject()) return false;
     else if (canvas?.getActiveObject().type !== "i-text") return false;
     else return true;
   }
@@ -300,7 +300,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
     canvas?.discardActiveObject().renderAll();
   }
   function resetCanvas() {
-    canvas?.remove(...canvas.getObjects());
+    canvas?.remove(...canvas.getObjects()).renderAll();
   }
   function prepareSave() {
     setAllObjDeactive();
@@ -342,6 +342,18 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
     load(pageNo);
     switchToViewMode();
   }
+  function handlePageWhenDelete() {
+    if (pageNo > 0) setPageNo((prev) => prev - 1);
+    else setPageNo(-1);
+  }
+  function deleteDairyPage() {
+    resetCanvas();
+    const currentDiaries = [...diariesData];
+    currentDiaries.splice(pageNo, 1);
+    setDiariesData(currentDiaries);
+    handlePageWhenDelete();
+    firebase.deleteDiaryPage(diaryId, diariesData[pageNo]);
+  }
   function handleClose() {
     resetCanvas();
     setPageNo(-1);
@@ -380,7 +392,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   }, [diaryId, canvas]);
   useEffect(() => {
     load(pageNo);
-  }, [pageNo]);
+  }, [pageNo, diariesData]);
   useEffect(() => {
     function handleObj(obj: fabric.IEvent) {
       if (!obj.selected) return;
@@ -488,6 +500,9 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
                   onClick={() => setPageNo(diariesData.length - 1)}
                 >
                   <StyledFontAwesomeIcon icon={faBookmark} />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={deleteDairyPage}>
+                  <StyledFontAwesomeIcon icon={faTrashCan} />
                 </DiaryIconButton>
               </>
             )}

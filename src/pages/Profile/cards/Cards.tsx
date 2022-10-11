@@ -226,11 +226,11 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
           type: CardsActions.DELETE_PLANT_CARDS,
           payload: { cardIds: targets },
         });
+      })
+      .then(() => {
         dispatch({
           type: PopUpActions.HIDE_ALL,
         });
-      })
-      .then(() => {
         setConfirmMsg("");
         alertDispatcher("success", `Delete Card Success`);
       });
