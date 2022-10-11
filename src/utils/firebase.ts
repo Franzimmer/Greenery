@@ -293,6 +293,7 @@ const firebase = {
   },
   async deleteCard(cardId: string) {
     await deleteDoc(doc(db, "cards", cardId));
+    this.deleteDairy(cardId);
   },
   //post collection
   async addPost(postData: {
@@ -374,6 +375,11 @@ const firebase = {
     let checkResult: boolean[] = [];
     Promise.all(promises).then((result) => (checkResult = result));
     return checkResult;
+  },
+  async deleteDairy(cardId: string) {
+    const diaryref = doc(diaries, cardId);
+    const docSnapshot = await getDoc(diaryref);
+    if (docSnapshot.exists()) await deleteDoc(doc(db, "diaries", cardId));
   },
   async searchSpecies(input: string) {
     const q = query(species, where("NAME", "==", input));
