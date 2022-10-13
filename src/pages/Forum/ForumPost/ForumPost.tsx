@@ -47,7 +47,7 @@ export const AuthorInfo = styled.div`
   justify-content: flex-start;
   align-items: center;
   margin: 16px;
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     padding: 8px 0 0 0;
     margin: 0px;
     flex-direction: row;
@@ -69,12 +69,10 @@ export const AuthorPhoto = styled.div<AuthorPhotoProps>`
     height: 120px;
     width: 120px;
   }
-  @media (max-width: 530px) {
-    height: 90px;
-    width: 90px;
-  }
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     margin: 8px;
+    height: 80px;
+    width: 80px;
   }
 `;
 export const AuthorName = styled.p`
@@ -85,8 +83,15 @@ export const AuthorName = styled.p`
   font-weight: 500;
   text-align: center;
   cursor: pointer;
-  @media (max-width: 500px) {
-    margin-right: 12px;
+  word-break: break-word;
+  @media (max-width: 600px) {
+    margin: 0px;
+    font-size: 14px;
+    letter-spacing: 0px;
+  }
+  @media (max-width: 400px) {
+    width: 100px;
+    text-align: left;
   }
 `;
 export const Content = styled.div`
@@ -123,8 +128,11 @@ export const Content = styled.div`
       font-size: 16px;
     }
   }
+  @media (max-width: 600px) {
+    padding: 12px;
+    flex-direction: column;
+  }
   @media (max-width: 530px) {
-    padding: 40px 12px;
     & p {
       font-size: 14px;
     }
@@ -213,10 +221,16 @@ export const OpenChatRoomBtn = styled(OperationBtn)`
     width: 120px;
     font-size: 12px;
   }
+  @media (max-width: 600px) {
+    margin: 0 8px 0 auto;
+    font-size: 10px;
+    height: 24px;
+    line-height: 1.1;
+  }
   @media (max-width: 530px) {
     width: 90px;
-    font-size: 10px;
-    line-height: 1.1;
+    height: fit-content;
+    line-height: normal;
   }
 `;
 export interface Post {

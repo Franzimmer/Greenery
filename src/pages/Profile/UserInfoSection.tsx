@@ -155,6 +155,9 @@ const FlexWrapper = styled.div`
   align-items: center;
   width: fit-content;
   margin: 10px auto 0;
+  @media (max-width: 850px) {
+    margin: 0;
+  }
 `;
 const MobileFlexWrapper = styled.div`
   display: flex;

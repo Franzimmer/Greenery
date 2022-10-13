@@ -223,6 +223,14 @@ const Text = styled.div`
   font-size: 20px;
   margin-bottom: 12px;
   animation: ${Jump} 2s ease-in-out infinite;
+  @media (max-width: 1000px) {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  @media (max-width: 600px) {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
 `;
 export const SectionLoader = () => {
   return (

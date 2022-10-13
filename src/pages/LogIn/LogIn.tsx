@@ -237,6 +237,7 @@ const LogIn = () => {
           name="emailInput"
           id="emailInput"
           ref={emailRef}
+          defaultValue="user8@gmail.com"
         ></Input>
         <InputLabel htmlFor="passwordInput">Password</InputLabel>
         <Input
@@ -244,6 +245,7 @@ const LogIn = () => {
           name="passwordInput"
           id="passwordInput"
           ref={passwordRef}
+          defaultValue="123456"
         ></Input>
         {mode === "login" && <LogInBtn onClick={userSignIn}>Log In</LogInBtn>}
         {mode === "signin" && (

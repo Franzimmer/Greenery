@@ -66,7 +66,7 @@ const FlexColumnWrapper = styled.div`
   flex-wrap: wrap;
   margin-top: 12px;
   @media (max-width: 800px) {
-    margin-top: 8px;
+    margin-top: 0px;
   }
 `;
 const FlexRowWrapper = styled(FlexColumnWrapper)`
@@ -79,7 +79,8 @@ const NameText = styled(LabelText)`
   width: 340px;
   word-wrap: break-word;
   @media (max-width: 800px) {
-    font-size: 20px;
+    font-size: 16px;
+    margin-top: 4px;
   }
 `;
 const SpeciesText = styled.div`
@@ -99,13 +100,15 @@ const DetailLabelText = styled(LabelText)`
   color: ${(props) => props.theme.colors.main};
   margin: 0 8px 8px 0;
   @media (max-width: 800px) {
-    font-size: 16px;
+    font-size: 14px;
+    margin: 0 8px 0 0;
   }
 `;
 const Description = styled.p`
   font-size: 14px;
   @media (max-width: 800px) {
-    padding: 4px;
+    padding: 4px 0px;
+    font-size: 12px;
   }
 `;
 const PlantImg = styled.img`
@@ -117,14 +120,8 @@ const PlantImg = styled.img`
   max-height: 450px;
   @media (max-width: 800px) {
     max-width: 310px;
-    max-height: 300px;
+    max-height: 80%;
     box-shadow: 0 0 8px 4px rgb(0 0 0 / 25%);
-  }
-  @media (max-width: 500px) {
-    max-height: 200px;
-  }
-  @media (max-width: 400px) {
-    max-height: 180px;
   }
 `;
 const FlexBtnWrapper = styled(FlexRowWrapper)`
@@ -143,6 +140,9 @@ const DetailOperationBtn = styled(OperationBtn)`
   }
   @media (max-width: 800px) {
     width: 100px;
+    font-size: 14px;
+    height: 24px;
+    padding: 0;
   }
 `;
 const EditIconBtn = styled(IconButton)`
