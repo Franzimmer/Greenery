@@ -35,6 +35,9 @@ export const PostWrapper = styled.div`
   border-radius: 5px;
   width: 100%;
   position: relative;
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 export const AuthorInfo = styled.div`
   padding: 15px;
@@ -44,6 +47,11 @@ export const AuthorInfo = styled.div`
   justify-content: flex-start;
   align-items: center;
   margin: 16px;
+  @media (max-width: 600px) {
+    padding: 8px 0 0 0;
+    margin: 0px;
+    flex-direction: row;
+  }
 `;
 interface AuthorPhotoProps {
   $path: string | undefined;
@@ -57,6 +65,15 @@ export const AuthorPhoto = styled.div<AuthorPhotoProps>`
   width: 150px;
   cursor: pointer;
   margin: 0 auto;
+  @media (max-width: 860px) {
+    height: 120px;
+    width: 120px;
+  }
+  @media (max-width: 600px) {
+    margin: 8px;
+    height: 80px;
+    width: 80px;
+  }
 `;
 export const AuthorName = styled.p`
   color: ${(props) => props.theme.colors.button};
@@ -66,10 +83,21 @@ export const AuthorName = styled.p`
   font-weight: 500;
   text-align: center;
   cursor: pointer;
+  word-break: break-word;
+  @media (max-width: 600px) {
+    margin: 0px;
+    font-size: 14px;
+    letter-spacing: 0px;
+  }
+  @media (max-width: 400px) {
+    width: 100px;
+    text-align: left;
+  }
 `;
 export const Content = styled.div`
   color: ${(props) => props.theme.colors.button};
   padding: 40px 20px;
+  word-break: break-word;
   & > * + * {
     margin-top: 0.75em;
   }
@@ -94,6 +122,20 @@ export const Content = styled.div`
   & blockquote {
     padding-left: 1rem;
     border-left: 5px solid ${(props) => props.theme.colors.button};
+  }
+  @media (max-width: 860px) {
+    & p {
+      font-size: 16px;
+    }
+  }
+  @media (max-width: 600px) {
+    padding: 12px;
+    flex-direction: column;
+  }
+  @media (max-width: 530px) {
+    & p {
+      font-size: 14px;
+    }
   }
 `;
 export const BtnWrapper = styled.div`
@@ -141,6 +183,9 @@ const PostTitle = styled.div`
   font-size: 26px;
   color: ${(props) => props.theme.colors.button};
   line-height: 30px;
+  @media (max-width: 500px) {
+    font-size: 20px;
+  }
 `;
 const CommentBtn = styled(OperationBtn)`
   background: ${(props) => props.theme.colors.button};
@@ -150,6 +195,10 @@ const CommentBtn = styled(OperationBtn)`
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
+  }
+  @media (max-width: 500px) {
+    font-size: 14px;
+    padding: 4px;
   }
 `;
 export const OpenChatRoomBtn = styled(OperationBtn)`
@@ -167,6 +216,21 @@ export const OpenChatRoomBtn = styled(OperationBtn)`
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
+  }
+  @media (max-width: 860px) {
+    width: 120px;
+    font-size: 12px;
+  }
+  @media (max-width: 600px) {
+    margin: 0 8px 0 auto;
+    font-size: 10px;
+    height: 24px;
+    line-height: 1.1;
+  }
+  @media (max-width: 530px) {
+    width: 90px;
+    height: fit-content;
+    line-height: normal;
   }
 `;
 export interface Post {

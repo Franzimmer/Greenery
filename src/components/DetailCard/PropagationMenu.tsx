@@ -92,11 +92,13 @@ interface PropagationMenuProps {
   propagateDisplay: boolean;
   setPropagateDisplay: Dispatch<SetStateAction<boolean>>;
   propagateParentData: PlantCard;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
 }
 const PropagationMenu = ({
   propagateDisplay,
   setPropagateDisplay,
   propagateParentData,
+  setDetailData,
 }: PropagationMenuProps) => {
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
@@ -145,6 +147,7 @@ const PropagationMenu = ({
           type: PopUpActions.HIDE_ALL,
         });
         setPropagateDisplay(false);
+        setDetailData(undefined);
         alertDispatcher("success", "Propagate success!");
         if (numberRef.current) numberRef.current!.value = "";
         if (inputRef.current) inputRef.current!.value = "";
@@ -157,6 +160,7 @@ const PropagationMenu = ({
     numberRef.current!.value = "";
     if (inputRef.current) inputRef.current!.value = "";
     setPropagateDisplay(false);
+    setDetailData(undefined);
     dispatch({
       type: PopUpActions.HIDE_ALL,
     });
@@ -198,7 +202,7 @@ const PropagationMenu = ({
         <ParentPanel>
           <LabelText>Parents</LabelText>
           <FlexColumnWrapper>
-            <Text>{propagateParentData.plantName} &#38; </Text>
+            <Text>{propagateParentData?.plantName} &#38; </Text>
             <ParentInput ref={inputRef} placeholder="Parent Name" />
           </FlexColumnWrapper>
         </ParentPanel>

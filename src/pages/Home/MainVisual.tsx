@@ -7,18 +7,6 @@ import main from "./main.webp";
 import taquila from "./taquila.png";
 import coconut from "./coconut.png";
 import { faAnglesDown } from "@fortawesome/free-solid-svg-icons";
-const Banner = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 95vh;
-  padding: 100px 10vh 10px 10vw;
-`;
 const showOpacity = keyframes`
   from {
     opacity: 0;
@@ -27,96 +15,29 @@ const showOpacity = keyframes`
     opacity: 1;
   }
 `;
-const MainStyleWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  opacity: 0;
-  animation: ${showOpacity} 0.5s linear forwards;
-`;
-const MainStyle = styled.img`
-  width: 30%;
-  transform: translateX(-20px) translateY(-30px);
-  box-shadow: 30px 40px 0 ${(props) => props.theme.colors.main};
-  border: 1px solid ${(props) => props.theme.colors.main};
-`;
-const MainDescriptionWrapper = styled.div`
-  width: 180px;
-  margin: 0 0 0 24px;
-  color: #224229;
-`;
-const MainDescriptionTitle = styled.p`
-  font-size: 36px;
-  letter-spacing: 2px;
-  margin: 0 0 24px 0;
-`;
-export const MainDescription = styled.p`
-  font-size: 14px;
-  letter-spacing: 1px;
-  line-height: 22px;
-  display: flex;
-  align-items: center;
-`;
-const DecorationEucari = styled.img`
-  position: absolute;
-  top: 15vh;
-  left: 8vw;
-  width: 10vw;
-  background: #bedce6;
-  box-shadow: 5vw 80px #f5f0ec inset;
-  opacity: 0;
-  animation: ${showOpacity} 1s linear 1s forwards;
-`;
-const DecorationRubber = styled.img`
-  position: absolute;
-  bottom: 5vh;
-  right: 10vw;
-  width: 15vw;
-  background: #bedce6;
-  box-shadow: 0px 80px #f5f0ec inset;
-  opacity: 0;
-  animation: ${showOpacity} 1s linear 1s forwards;
-`;
-const DecorationCoco = styled.img`
-  position: absolute;
-  top: 8vh;
-  right: 5vw;
-  width: 17vw;
-  background: ${(props) => props.theme.colors.second};
-  box-shadow: -10vw 90px #f5f0ec inset;
-  opacity: 0;
-  animation: ${showOpacity} 1s linear 1.25s forwards;
-`;
-const DecorationTaquila = styled.img`
-  position: absolute;
-  z-index: -1;
-  bottom: 11vh;
-  left: 12vw;
-  width: 22vw;
-  background: ${(props) => props.theme.colors.second};
-  box-shadow: 0px 30px #f5f0ec inset;
-  opacity: 0;
-  animation: ${showOpacity} 1s linear 1.25s forwards;
-`;
 const jump = keyframes`
   0% {
-    transform: translateX(-45vw) translateY(0);
+    transform:  translateY(0);
   }
   50% {
-    transform: translateX(-45vw) translateY(-8px);
+    transform: translateY(-8px);
   }
   100% {
-    transform: translateX(-45vw) translateY(0);
+    transform: translateY(0);
   }
 `;
 const ExploreWrapper = styled.div`
+  grid-column: 5 / span 1;
+  grid-row: 6 / span 1;
   display: flex;
-  align-self: flex-end;
+  align-items: center;
+  justify-content: center;
   width: 100px;
   color: #224229;
-  position: absolute;
-  right: 0;
-  bottom: 0;
   animation: 1s ease ${jump} infinite;
+  @media (max-width: 800px) {
+    margin-top: 24px;
+  }
 `;
 const ArrowIcon = styled(FontAwesomeIcon)`
   color: #224229;
@@ -124,10 +45,129 @@ const ArrowIcon = styled(FontAwesomeIcon)`
   height: 20px;
   margin: 0 12px 0 0;
 `;
+const GridWrapper = styled.div`
+  width: 100vw;
+  height: calc(100vh - 100px);
+  margin-top: 100px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+`;
+const GridItem = styled.div`
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: ${showOpacity} 1s linear forwards;
+`;
+const Eucari = styled(GridItem)`
+  background-image: url(${eucari});
+  background-color: #bedce6;
+  grid-column: 1 / span 1;
+  grid-row: 2 / span 3;
+  position: relative;
+  @media (max-width: 1100px) {
+    display: none;
+  }
+`;
+const Rubber = styled(GridItem)`
+  background-image: url(${rubber});
+  background-color: #bedce6;
+  grid-column: 7 / span 2;
+  grid-row: 4 / span 2;
+  @media (max-width: 1100px) {
+    display: none;
+  }
+`;
+const Taquila = styled(GridItem)`
+  background-image: url(${taquila});
+  background-color: ${(props) => props.theme.colors.second};
+  grid-column: 2 / span 2;
+  grid-row: 5 / span 2;
+  @media (max-width: 1100px) {
+    display: none;
+  }
+`;
+const Coconut = styled(GridItem)`
+  background-image: url(${coconut});
+  background-color: ${(props) => props.theme.colors.second};
+  grid-column: 8 / span 1;
+  grid-row: 2 / span 2;
+  @media (max-width: 1100px) {
+    display: none;
+  }
+`;
+const Main = styled(GridItem)`
+  grid-column: 2 / span 5;
+  grid-row: 1 / span 5;
+  display: flex;
+  @media (max-width: 1000px) {
+    grid-column: 2 / span 4;
+  }
+  @media (max-width: 500px) {
+    flex-direction: column;
+    grid-column: 3 / span 4;
+    grid-row: 1 / span 5;
+    margin: auto;
+  }
+`;
+const MainStyle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right;
+  filter: drop-shadow(30px 20px 0 ${(props) => props.theme.colors.main});
+  @media (max-width: 1000px) {
+    object-position: center;
+  }
+`;
+const MainDescriptionWrapper = styled.div`
+  width: 180px;
+  color: #224229;
+  margin-left: 36px;
+  @media (max-width: 930px) {
+    margin-top: auto;
+  }
+  @media (max-width: 500px) {
+    width: auto;
+    margin-left: 0px;
+    margin-top: 24px;
+  }
+`;
+const MainDescriptionTitle = styled.p`
+  font-size: 36px;
+  letter-spacing: 2px;
+  margin: 0 0 30px 0;
+  @media (max-width: 900px) {
+    font-size: 30px;
+  }
+  @media (max-width: 800px) {
+    font-size: 26px;
+  }
+  @media (max-width: 600px) {
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin: 0 0 8px 0;
+  }
+`;
+export const MainDescription = styled.p`
+  font-size: 14px;
+  letter-spacing: 1px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  @media (max-width: 600px) {
+    font-size: 10px;
+    letter-spacing: 0px;
+  }
+`;
 const MainVisual = () => {
   return (
-    <Banner>
-      <MainStyleWrapper>
+    <GridWrapper>
+      <Eucari />
+      <Rubber />
+      <Taquila />
+      <Coconut />
+      <Main>
         <MainStyle src={main} />
         <MainDescriptionWrapper>
           <MainDescriptionTitle>
@@ -137,19 +177,14 @@ const MainVisual = () => {
           <MainDescription>
             Our innate desire to connect with nature.
           </MainDescription>
-          <br></br>
           <MainDescription>It’s in our DNA.</MainDescription>
         </MainDescriptionWrapper>
-      </MainStyleWrapper>
-      <DecorationEucari src={eucari}></DecorationEucari>
-      <DecorationTaquila src={taquila}></DecorationTaquila>
-      <DecorationCoco src={coconut}></DecorationCoco>
-      <DecorationRubber src={rubber}></DecorationRubber>
+      </Main>
       <ExploreWrapper>
         <ArrowIcon icon={faAnglesDown} />
         <MainDescription>Explore</MainDescription>
       </ExploreWrapper>
-    </Banner>
+    </GridWrapper>
   );
 };
 

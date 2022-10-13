@@ -76,6 +76,9 @@ const BtnWrapper = styled.div`
   width: 400px;
   height: 40px;
   padding: 0px 10px;
+  @media screen and (max-width: 500px) {
+    width: 340px;
+  }
 `;
 const ArrowWrapper = styled(BtnWrapper)`
   margin: 0 auto;

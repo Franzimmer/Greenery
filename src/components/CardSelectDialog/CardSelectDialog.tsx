@@ -25,6 +25,15 @@ const DialogWrapper = styled.div<DialogWrapperProps>`
   transform: translate(-50%, -50%);
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: column;
+  @media (max-width: 600px) {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  @media (max-width: 500px) {
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  @media (max-width: 450px) {
+    transform: translate(-50%, -50%) scale(0.7);
+  }
 `;
 const DialogCloseBtn = styled(CloseBtn)`
   width: 20px;

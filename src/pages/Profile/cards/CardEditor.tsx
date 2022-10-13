@@ -34,19 +34,31 @@ const CardEditorWrapper = styled.div`
   justify-content: center;
   align-items: center;
   background: #f5f0ec;
+  @media (max-width: 800px) {
+    flex-direction: column;
+    height: fit-content;
+  }
 `;
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  align-items: center;
   width: 360px;
   height: auto;
   padding: 30px;
+  @media (max-width: 800px) {
+    width: 340px;
+    padding: 8px 15px;
+  }
 `;
 const InputLabel = styled.span`
   color: ${(props) => props.theme.colors.button};
   font-weight: 500;
   margin-right: 8px;
+  @media (max-width: 800px) {
+    font-size: 14px;
+  }
 `;
 
 interface PhotoPreviewProps {
@@ -60,6 +72,11 @@ const PhotoPreview = styled.div<PhotoPreviewProps>`
   background-size: contain;
   background-position: center center;
   background-color: #eee;
+  margin: auto;
+  @media (max-width: 800px) {
+    width: 180px;
+    height: 100px;
+  }
 `;
 const PhotoInputLabel = styled.label`
   width: 30px;
@@ -76,16 +93,26 @@ const Input = styled.input`
   & ::placeholder {
     color: #ddd;
   }
+  @media (max-width: 800px) {
+    height: 24px;
+    font-size: 14px;
+  }
 `;
 const TextArea = styled.textarea`
   width: 280px;
   height: 100px;
   border: 1px solid ${(props) => props.theme.colors.button};
   padding: 5px;
+  @media (max-width: 800px) {
+    height: 70px;
+  }
 `;
 const InputWrapper = styled.div`
   margin-bottom: 10px;
   width: 280px;
+  @media (max-width: 800px) {
+    margin-bottom: 6px;
+  }
 `;
 const InputFlexWrapper = styled(InputWrapper)`
   display: flex;
@@ -429,8 +456,8 @@ const CardEditor = ({
           <Input
             type="text"
             ref={nameRef}
-            maxLength={16}
-            placeholder={"enter 1-16 character(s)"}
+            maxLength={10}
+            placeholder={"enter 1-10 character(s)"}
           />
         </InputFlexWrapper>
         <InputFlexWrapper>
@@ -485,8 +512,8 @@ const CardEditor = ({
           <Input
             type="text"
             ref={tagRef}
-            maxLength={30}
-            placeholder={"enter 1-30 character(s)"}
+            maxLength={20}
+            placeholder={"enter 1-20 character(s)"}
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 addTag();

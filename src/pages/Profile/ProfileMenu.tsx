@@ -6,7 +6,10 @@ const MenuWrapper = styled.div`
   display: flex;
   align-items: baseline;
   padding-bottom: 20px;
-  margin-bottom 10px;
+  margin-bottom: 10px;
+  @media (max-width: 400px) {
+    margin: 0 auto 10px;
+  }
 `;
 interface MenuItemProps {
   $show: boolean;
@@ -23,6 +26,12 @@ const MenuItem = styled(LabelText)<MenuItemProps>`
     color: ${(props) => props.theme.colors.main};
     transform: scale(1.1);
     transition: 0.5s;
+  }
+  @media (max-width: 500px) {
+    font-size: 14px;
+    margin-right: 8px;
+    font-weight: 500;
+    padding-left: 0px;
   }
 `;
 interface ProfileMenuProps {
