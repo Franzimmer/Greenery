@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
-import { firebase } from "../../utils/firebase";
-import { Person, PersonPhoto } from "./FollowList";
+import { ChatroomType } from "../../store/types/chatroomType";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { UserInfo } from "../../store/types/userInfoType";
-import { ChatroomActions } from "../../store/reducer/chatroomReducer";
-import { NoSidebarDataText } from "./FollowList";
+import { firebase } from "../../utils/firebase";
+import { Person, PersonPhoto, NoSidebarDataText } from "./FollowList";
 import spinner50 from "../../assets/spinner50.png";
 const ChatroomsWrapper = styled.div`
   width: 100%;
@@ -24,7 +24,7 @@ const ChatroomsWrapper = styled.div`
 `;
 const ChatroomText = styled.p`
   font-size: normal;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   background: none;
 `;
 const Spin = keyframes`
@@ -56,26 +56,29 @@ export const ChatroomFlexWrapper = styled.div`
 `;
 const Chatrooms = () => {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-  const chatInfos = useSelector((state: RootState) => state.chatroom);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authority);
+  const { userId } = useSelector((state: RootState) => state.userInfo);
+  const chatInfos = useSelector(
+    (state: RootState) => state.chatroom
+  ) as ChatroomType[];
   const [spinDisplay, setSpinDisplay] = useState<boolean>(true);
 
   useEffect(() => {
     async function getChatTargets() {
-      let targetList: string[] = [];
-      let chatData: UserInfo[] = [];
-
-      let chatrooms = await firebase.getChatrooms(userInfo.userId);
+      if (!userId) return;
+      const targetList: string[] = [];
+      const chatData: UserInfo[] = [];
+      const chatrooms = await firebase.getChatrooms(userId);
       if (!chatrooms.empty) {
         chatrooms.forEach((chat) => {
-          let chatData = chat.data();
-          let targetId = chatData.users.filter(
-            (user: string) => user !== userInfo.userId
+          const chatData = chat.data();
+          const targetId = chatData.users.filter(
+            (user: string) => user !== userId
           );
           targetList.push(targetId[0]);
         });
       }
-      let queryData = await firebase.getUsers(targetList);
+      const queryData = await firebase.getUsers(targetList);
       queryData?.forEach((doc) => {
         chatData.push(doc.data());
       });
@@ -89,18 +92,19 @@ const Chatrooms = () => {
       }, 500);
     }
     getChatTargets();
-  }, [userInfo.userId]);
+  }, [userId, dispatch]);
   return (
     <>
       <ChatroomsWrapper>
         <Spinner $show={spinDisplay} />
         {chatInfos &&
+          isLoggedIn &&
           !spinDisplay &&
           chatInfos?.length !== 0 &&
           chatInfos?.map((room) => {
             return (
               <Person
-                key={`${room.targetInfo.userId}_chat`}
+                key={`${room.targetInfo?.userId}_chat`}
                 onClick={() =>
                   dispatch({
                     type: ChatroomActions.OPEN_CHATROOM,
@@ -108,8 +112,8 @@ const Chatrooms = () => {
                   })
                 }
               >
-                <PersonPhoto path={room.targetInfo?.photoUrl} />
-                <ChatroomText>with {room.targetInfo?.userName}</ChatroomText>
+                <PersonPhoto $path={room.targetInfo?.photoUrl} />
+                <ChatroomText>{room.targetInfo?.userName}</ChatroomText>
               </Person>
             );
           })}

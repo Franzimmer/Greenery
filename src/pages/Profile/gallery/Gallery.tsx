@@ -1,37 +1,34 @@
 import React, { useEffect, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
 import { UserInfoActions } from "../../../store/actions/userInfoActions";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
 import { firebase } from "../../../utils/firebase";
+import { useAlertDispatcher } from "../../../utils/useAlertDispatcher";
 import { IconButton } from "../../../components/GlobalStyles/button";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../../components/GlobalStyles/NoDataLayout";
+} from "../../../components/GlobalStyles/noDataLayout";
 import { SectionLoader } from "../../../components/GlobalStyles/PageLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 interface SectionWrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const SectionWrapper = styled.div<SectionWrapperProps>`
-  opacity: ${(props) => (props.isLoading ? "0" : "1")};
+  opacity: ${(props) => (props.$isLoading ? "0" : "1")};
   transition: 1s;
 `;
-interface GalleryProps {
-  id: string | undefined;
-}
 interface PinProps {
-  path: string;
+  $path: string;
 }
 const Pin = styled.div<PinProps>`
   cursor: pointer;
   position: relative;
   margin: 20px 15px;
-  background-image: url(${(props) => props.path});
+  background-image: url(${(props) => props.$path});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -67,7 +64,7 @@ const PinMask = styled.div`
 `;
 const PinsWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, 250px);
+  grid-template-columns: repeat(auto-fill, 240px);
   grid-auto-rows: 10px;
   width: 80vw;
 `;
@@ -94,7 +91,7 @@ const LabelBtn = styled(IconButton)`
   color: #fff;
 `;
 interface FlexWrapperProps {
-  disableBtn: boolean;
+  $disableBtn: boolean;
 }
 const FlexWrapper = styled.label<FlexWrapperProps>`
   align-self: flex-end;
@@ -106,50 +103,43 @@ const FlexWrapper = styled.label<FlexWrapperProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
-  cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
+  background: ${(props) =>
+    props.$disableBtn ? "#aaa" : props.theme.colors.main};
+  cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   transition: 0.25s;
   &:hover {
     transform: scale(1.1);
     transition: 0.25s;
   }
   & * {
-    background: ${(props) => (props.disableBtn ? "#aaa" : "#5c836f")};
-    cursor: ${(props) => (props.disableBtn ? "not-allowed" : "pointer")};
+    background: ${(props) =>
+      props.$disableBtn ? "#aaa" : props.theme.colors.main};
+    cursor: ${(props) => (props.$disableBtn ? "not-allowed" : "pointer")};
   }
 `;
 const NoGallerySection = styled(NoDataSection)`
   margin-top: 20px;
 `;
+interface GalleryProps {
+  id: string | undefined;
+}
 const Gallery = ({ id }: GalleryProps) => {
   const dispatch = useDispatch();
+  const alertDispatcher = useAlertDispatcher();
   const { isSelf } = useSelector((state: RootState) => state.authority);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
   const [disableBtn, setDisableBtn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
+
   async function saveGalleryData() {
     if (mediaRef.current!.value === "") {
-      emitAlert("fail", "Please choose a file.");
+      alertDispatcher("fail", "Please choose a file.");
       return;
     }
-    let file = mediaRef.current!.files![0];
-    let link = await firebase.uploadFile(file);
+    const file = mediaRef.current!.files![0];
+    const link = await firebase.uploadFile(file);
     dispatch({
       type: UserInfoActions.ADD_GALLERY,
       payload: { link },
@@ -157,7 +147,7 @@ const Gallery = ({ id }: GalleryProps) => {
     mediaRef.current!.value = "";
     await firebase.addGallery(id!, link);
     setDisableBtn(false);
-    emitAlert("success", "Upload Success !");
+    alertDispatcher("success", "Upload Success !");
   }
   async function deleteMedia(link: string) {
     await firebase.deleteGallery(id!, link);
@@ -165,7 +155,7 @@ const Gallery = ({ id }: GalleryProps) => {
       type: UserInfoActions.REMOVE_GALLERY,
       payload: { link },
     });
-    emitAlert("success", "Delete Success !");
+    alertDispatcher("success", "Delete Success !");
   }
   useEffect(() => {
     async function getMediaData() {
@@ -186,10 +176,10 @@ const Gallery = ({ id }: GalleryProps) => {
   return (
     <>
       {isLoading && <SectionLoader></SectionLoader>}
-      <SectionWrapper isLoading={isLoading}>
+      <SectionWrapper $isLoading={isLoading}>
         {isSelf && media.length !== 0 && (
           <FlexWrapper
-            disableBtn={disableBtn}
+            $disableBtn={disableBtn}
             htmlFor="image"
             onClick={(e) => {
               if (disableBtn) e.preventDefault();
@@ -230,37 +220,25 @@ const Gallery = ({ id }: GalleryProps) => {
               return (
                 <Fragment key={`${asset}-asset`}>
                   {index % 3 === 1 && (
-                    <SmallPin path={asset}>
+                    <SmallPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </SmallPin>
                   )}
                   {index % 3 === 2 && (
-                    <MediumPin path={asset}>
+                    <MediumPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </MediumPin>
                   )}
                   {index % 3 === 0 && (
-                    <LargePin path={asset}>
+                    <LargePin $path={asset}>
                       <PinMask />
-                      <DeleteBtn
-                        onClick={() => {
-                          deleteMedia(asset);
-                        }}
-                      >
+                      <DeleteBtn onClick={() => deleteMedia(asset)}>
                         <StyledFontAwesome icon={faTrashCan} />
                       </DeleteBtn>
                     </LargePin>

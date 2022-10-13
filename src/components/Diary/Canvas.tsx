@@ -7,6 +7,20 @@ const CanvasContainer = styled.div`
   .lower-canvas {
     background: none;
   }
+
+  @media screen and (max-width: 500px) {
+    width: 340px;
+    height: 340px;
+    .upper-canvas,
+    .lower-canvas {
+      transform: scale(0.85);
+      transform-origin: 0 0;
+    }
+    .canvas-container {
+      width: 340px !important;
+      height: 340px !important;
+    }
+  }
 `;
 
 interface CanvasProps {
@@ -27,7 +41,7 @@ function Canvas({ setCanvas }: CanvasProps): JSX.Element {
 
   return (
     <CanvasContainer>
-      <canvas ref={canvasRef} style={{ border: "1px solid #DDD" }}></canvas>
+      <canvas ref={canvasRef} id="canvas"></canvas>
     </CanvasContainer>
   );
 }

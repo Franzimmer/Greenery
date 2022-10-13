@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled, { keyframes } from "styled-components";
-import { RootState } from "../../store/reducer/index";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/reducer/index";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
 interface HeaderWrapperProps {
-  bgState: boolean;
+  $bgState: boolean;
 }
 const HeaderWrapper = styled.div<HeaderWrapperProps>`
   display: flex;
@@ -17,8 +17,8 @@ const HeaderWrapper = styled.div<HeaderWrapperProps>`
   position: fixed;
   top: 0;
   z-index: 99;
-  background-color: ${(props) => !props.bgState && "#F5F0EC"};
-  mix-blend-mode: ${(props) => props.bgState && "plus-lighter"};
+  background-color: ${(props) => !props.$bgState && "#F5F0EC"};
+  mix-blend-mode: ${(props) => props.$bgState && "plus-lighter"};
 `;
 const LinkWrapper = styled.div`
   display: flex;
@@ -29,10 +29,10 @@ const HeaderLink = styled(Link)`
   text-decoration: none;
   font-size: 26px;
   letter-spacing: 4px;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   position: relative;
   &:hover {
-    color: #5c836f;
+    color: ${(props) => props.theme.colors.main};
     &::after {
       width: 100%;
     }
@@ -40,7 +40,7 @@ const HeaderLink = styled(Link)`
   &::after {
     content: "";
     height: 3px;
-    background: #5c836f;
+    background: ${(props) => props.theme.colors.main};
     position: absolute;
     bottom: -4px;
     margin: 0 auto;
@@ -49,19 +49,43 @@ const HeaderLink = styled(Link)`
     width: 0%;
     transition: 0.5s;
   }
+  @media (max-width: 800px) {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  @media (max-width: 600px) {
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
 `;
 const LogoLink = styled(HeaderLink)`
+  font-weight: 500;
   letter-spacing: 8px;
+  @media (max-width: 800px) {
+    letter-spacing: 4px;
+  }
+  @media (max-width: 600px) {
+    letter-spacing: 1px;
+  }
 `;
 const SideBarBtnWrapper = styled.div`
-  // background: linear-gradient(90deg, #7bc09a, #e4e783);
-  background: #5c836f;
+  background: ${(props) => props.theme.colors.main};
   width: 90px;
   height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  @media (max-width: 800px) {
+    transform: scale(0.8);
+  }
+  @media (max-width: 600px) {
+    transform: scale(0.7);
+  }
 `;
 const SideBarBtnHint = styled.span`
   position: absolute;
@@ -88,14 +112,14 @@ const hoverEffect = keyframes`
   }
 `;
 interface SideBarBtnDivProps {
-  sideBarDisplay: boolean;
+  $sideBarDisplay: boolean;
 }
 const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
-  width: ${(props) => (props.sideBarDisplay ? "0px" : "70px")};
+  width: ${(props) => (props.$sideBarDisplay ? "0px" : "70px")};
   height: 1px;
   background: #fff;
   transform: ${(props) =>
-    props.sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
+    props.$sideBarDisplay ? "rotate(45deg)" : "rotate(315deg)"};
   position: relative;
   display: flex;
   justify-content: center;
@@ -107,60 +131,45 @@ const SideBarBtnDiv = styled.div<SideBarBtnDivProps>`
   &::before,
   ::after {
     content: "";
-    width: ${(props) => (props.sideBarDisplay ? "60px" : "40px")};
+    width: ${(props) => (props.$sideBarDisplay ? "60px" : "40px")};
     height: 1px;
     background: #fff;
     position: absolute;
-    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "10px")};
+    bottom: ${(props) => (props.$sideBarDisplay ? "0px" : "10px")};
     ${SideBarBtn}:hover & {
       animation: 1s ${hoverEffect} ease-out;
     }
   }
   &::after {
-    bottom: ${(props) => (props.sideBarDisplay ? "0px" : "-10px")};
+    bottom: ${(props) => (props.$sideBarDisplay ? "0px" : "-10px")};
     transform: ${(props) =>
-      props.sideBarDisplay ? "rotate(90deg)" : "rotate(0deg)"};
+      props.$sideBarDisplay ? "rotate(90deg)" : "rotate(0deg)"};
   }
 `;
 
 interface HeaderProps {
-  setSideBarDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+  setSideBarDisplay: Dispatch<SetStateAction<boolean>>;
   sideBarDisplay: boolean;
 }
 const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
-  const dispatch = useDispatch();
   const location = useLocation();
+  const alertDispatcher = useAlertDispatcher();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [bgState, setBgState] = useState<boolean>(false);
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function sideBarToggle() {
     if (!isLoggedIn) {
-      emitAlert("success", "Please Log In First");
+      alertDispatcher("success", "Please Log In First");
       return;
-    }
-    if (sideBarDisplay) setSideBarDisplay(false);
-    if (!sideBarDisplay) setSideBarDisplay(true);
+    } else if (sideBarDisplay) setSideBarDisplay(false);
+    else if (!sideBarDisplay) setSideBarDisplay(true);
   }
   useEffect(() => {
     if (location.pathname === "/login") setBgState(true);
     else setBgState(false);
   }, [location]);
   return (
-    <HeaderWrapper bgState={bgState}>
+    <HeaderWrapper $bgState={bgState}>
       <LinkWrapper>
         <LogoLink to="/">GREENERY</LogoLink>
       </LinkWrapper>
@@ -178,7 +187,7 @@ const Header = ({ setSideBarDisplay, sideBarDisplay }: HeaderProps) => {
           )}
           <SideBarBtn onClick={sideBarToggle}>
             <SideBarBtnDiv
-              sideBarDisplay={isLoggedIn && sideBarDisplay}
+              $sideBarDisplay={isLoggedIn && sideBarDisplay}
             ></SideBarBtnDiv>
           </SideBarBtn>
         </SideBarBtnWrapper>

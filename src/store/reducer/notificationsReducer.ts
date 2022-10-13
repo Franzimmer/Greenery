@@ -14,16 +14,16 @@ const notifications = (
       return action.payload.data;
     }
     case NotificationActions.UPDATE_READ_STATUS: {
-      let currentNotifications = [...state];
-      let editTarget = currentNotifications.find(
+      const currentNotifications = [...state];
+      const editTarget = currentNotifications.find(
         (notice: Note) => notice?.noticeId === action.paylaod?.noticeId
       ) as Note;
       if (editTarget) editTarget["read"] = true;
       return currentNotifications;
     }
     case NotificationActions.DELETE_NOTIFICATION: {
-      let currentNotifications = [...state];
-      let result = currentNotifications.filter(
+      const currentNotifications = [...state];
+      const result = currentNotifications.filter(
         (notice: Note) => notice.noticeId !== action.paylaod?.noticeId
       );
       return result;

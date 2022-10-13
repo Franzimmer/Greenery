@@ -5,7 +5,7 @@ import App from "./App";
 import Profile from "./pages/Profile/Profile";
 import LogIn from "./pages/LogIn/LogIn";
 import ForumHomePage from "./pages/Forum/ForumHomePage";
-import ForumPost from "./pages/Forum/ForumPost";
+import ForumPost from "./pages/Forum/ForumPost/ForumPost";
 import Home from "./pages/Home/Home";
 
 const root = ReactDOM.createRoot(

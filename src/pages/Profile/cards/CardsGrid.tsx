@@ -1,23 +1,22 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, MouseEvent } from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBook,
-  faPenToSquare,
-  faBookmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/reducer";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../../store/actions/popUpActions";
 import { PlantCard } from "../../../store/types/plantCardType";
 import { PlantImg, Tag, TagsWrapper } from "./Cards";
-import { IconButton } from "../../../components/GlobalStyles/button";
 import { LabelText } from "../../../components/GlobalStyles/text";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../../components/GlobalStyles/NoDataLayout";
+} from "../../../components/GlobalStyles/noDataLayout";
+import {
+  FavIconButton,
+  DiaryIconBtn,
+  StyledFontAwesomeIcon,
+} from "../favorites/FavGrids";
 import defaultImg from "../../../assets/default.jpg";
 
 interface GridWrapperProps {
@@ -26,7 +25,8 @@ interface GridWrapperProps {
 export const GridWrapper = styled.div<GridWrapperProps>`
   display: ${(props) => (props.$mode === "grid" ? "grid" : "flex")};
   grid-template-columns: repeat(auto-fill, 280px);
-  gap: 24px 64px;
+  gap: 24px 36px;
+  row-gap: 12px;
   margin-top: 36px;
   flex-direction: column;
 `;
@@ -34,15 +34,16 @@ interface CardProps {
   $show?: boolean;
   $mode: "grid" | "list";
 }
-interface CardWrapperProps {
+interface DisplayProps {
   $show: boolean;
 }
-const CardWrapper = styled.div<CardWrapperProps>`
+const CardWrapper = styled.div<DisplayProps>`
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: row;
 `;
 export const Card = styled.div<CardProps>`
   width: ${(props) => (props.$mode === "grid" ? "280px" : "75vw")};
+  min-height: ${(props) => props.$mode === "grid" && "290px"};
   display: ${(props) => (props.$show ? "flex" : "none")};
   flex-direction: ${(props) => (props.$mode === "grid" ? "column" : "row")};
   justify-content: flex-start;
@@ -53,18 +54,32 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 1s;
-  // box-shadow: 6px 6px 4px 4px rgba(150, 150, 150, 0.4);
+  @media (max-width: 1000px) {
+    padding-top: ${(props) => props.$mode === "list" && "35px"};
+  }
 `;
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;
   font-size: 20px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   margin-right: 8px;
   margin-left: ${(props) => props.$mode === "list" && "32px"};
   width: 200px;
   word-wrap: break-word;
+  @media (max-width: 600px) {
+    width: ${(props) => props.$mode === "list" && "100px"};
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+  @media (max-width: 400px) {
+    font-size: 16px;
+  }
 `;
-export const SpeciesText = styled.div`
+interface SpeciesTextProps {
+  $mode?: "grid" | "list";
+}
+export const SpeciesText = styled.div<SpeciesTextProps>`
   font-size: 14px;
   letter-spacing: 1px;
   font-style: italic;
@@ -72,43 +87,10 @@ export const SpeciesText = styled.div`
   margin-right: 10px;
   width: 200px;
   word-wrap: break-word;
-`;
-const EditIconBtn = styled(IconButton)`
-  width: 100%;
-  background: rgba(0, 0, 0, 0);
-  margin: 0 0 16px 0;
-  transition: 0.25s;
-  &:hover {
-    transform: scale(1.1);
-    transition: 0.25s;
+  @media (max-width: 600px) {
+    font-size: ${(props) => props.$mode === "list" && "12"};
+    width: ${(props) => props.$mode === "list" && "100px"};
   }
-  & * {
-    color: #5c836f;
-  }
-`;
-interface DiaryBtnProps {
-  $show?: boolean;
-}
-const DiaryIconBtn = styled(EditIconBtn)<DiaryBtnProps>`
-  display: ${(props) => (props.$show ? "block" : "none")};
-`;
-interface FavBtnProps {
-  $fav?: boolean;
-}
-const BookMarkIconBtn = styled(EditIconBtn)<FavBtnProps>`
-  & * {
-    color: ${(props) => (props.$fav ? "#5c836f" : "#bbb")};
-  }
-`;
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  display: block;
-  background: rgba(0, 0, 0, 0);
-  width: 28px;
-  height: 28px;
-`;
-const BookmarkIcon = styled(StyledFontAwesomeIcon)`
-  width: 28px;
-  height: 28px;
 `;
 const CardCheck = styled.input<GridWrapperProps>`
   position: absolute;
@@ -119,19 +101,46 @@ const CardCheck = styled.input<GridWrapperProps>`
   height: 20px;
   width: 20px;
   &:checked {
-    accent-color: #6a5125;
+    accent-color: ${(props) => props.theme.colors.button};
+  }
+  @media (max-width: 1000px) {
+    transform: ${(props) => props.$mode === "list" && "unset"};
   }
 `;
-const IconWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  border-radius: 15px;
-  background: rgba(0, 0, 0, 0);
-  margin: 4px 0 0 8px;
+const ListIcon = styled(StyledFontAwesomeIcon)`
+  @media (max-width: 1000px) {
+    width: 22px;
+    height: 24px;
+  }
 `;
 
+interface CardGridIcon {
+  $mode: "grid" | "list";
+}
+const CardGridFavIcon = styled(FavIconButton)<CardGridIcon>`
+  top: ${(props) => (props.$mode === "grid" ? "195px" : "initial")};
+`;
+const CardGridDiaryIcon = styled(DiaryIconBtn)<CardGridIcon>`
+  bottom: ${(props) => (props.$mode === "grid" ? "8px" : "initial")};
+  right: ${(props) => (props.$mode === "grid" ? "8px" : "48px")};
+`;
+const IconWrapper = styled.div<CardGridIcon>`
+  display: flex;
+  align-items: center;
+  @media (max-width: 1000px) {
+    position: ${(props) => props.$mode === "list" && "absolute"};
+    top: ${(props) => props.$mode === "list" && "20px"};
+    right: ${(props) => props.$mode === "list" && "0"};
+  }
+`;
+const InfoWrapper = styled.div<CardGridIcon>`
+  display: ${(props) => (props.$mode === "list" ? "flex" : "block")};
+  align-items: center;
+  @media (max-width: 900px) {
+    flex-direction: ${(props) => props.$mode === "list" && "column"};
+    align-items: ${(props) => props.$mode === "list" && "flex-end"};
+  }
+`;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
   isSelf: boolean;
@@ -141,14 +150,12 @@ interface CardsGridProps {
   cardItems: PlantCard[];
   checkList: CheckList;
   filterCard: (tagList: string[]) => boolean;
-  setDetailDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDetailData: React.Dispatch<React.SetStateAction<PlantCard | undefined>>;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOwnerId: React.Dispatch<React.SetStateAction<string>>;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
+  setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
+  setOwnerId: Dispatch<SetStateAction<string>>;
+
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   switchOneCheck: (cardId: string) => void;
-  editorToggle: () => void;
   favoriteToggle: (cardId: string) => Promise<void>;
 }
 const CardsGrid = ({
@@ -159,18 +166,22 @@ const CardsGrid = ({
   cardItems,
   checkList,
   filterCard,
-  setDetailDisplay,
   setDetailData,
-  setDiaryDisplay,
   setDiaryId,
   setOwnerId,
-  setEditCardId,
+  setEditorDisplay,
   switchOneCheck,
-  editorToggle,
   favoriteToggle,
 }: CardsGridProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  function handleDiaryClick(card: PlantCard) {
+    dispatch({
+      type: PopUpActions.SHOW_MASK,
+    });
+    setDiaryId(card.cardId);
+    setOwnerId(card.ownerId);
+  }
   return (
     <>
       <GridWrapper $mode={viewMode}>
@@ -186,9 +197,8 @@ const CardsGrid = ({
                   $show={filterCard(card.tags || [])}
                   onClick={() => {
                     dispatch({
-                      type: popUpActions.SHOW_MASK,
+                      type: PopUpActions.SHOW_MASK,
                     });
-                    setDetailDisplay(true);
                     setDetailData(card);
                   }}
                 >
@@ -204,56 +214,48 @@ const CardsGrid = ({
                     />
                   )}
                   {viewMode === "grid" && (
-                    <PlantImg path={card.plantPhoto || defaultImg} />
+                    <PlantImg $path={card.plantPhoto || defaultImg} />
                   )}
-                  <NameText $mode={viewMode}>{card.plantName}</NameText>
-                  <SpeciesText>{card.species}</SpeciesText>
-                  <TagsWrapper viewMode={viewMode}>
+                  <InfoWrapper $mode={viewMode}>
+                    <NameText $mode={viewMode}>{card.plantName}</NameText>
+                    <SpeciesText $mode={viewMode}>{card.species}</SpeciesText>
+                  </InfoWrapper>
+                  <TagsWrapper $viewMode={viewMode}>
                     {card?.tags?.length !== 0 &&
                       card.tags?.map((tag: string) => {
-                        return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                        return (
+                          <Tag
+                            key={`${card.cardId}-${tag}`}
+                            $viewMode={viewMode}
+                          >
+                            {tag}
+                          </Tag>
+                        );
                       })}
                   </TagsWrapper>
-                </Card>
-                <IconWrapper>
-                  {isSelf && (
-                    <EditIconBtn
-                      onClick={(e: React.MouseEvent<HTMLElement>) => {
-                        dispatch({
-                          type: popUpActions.SHOW_MASK,
-                        });
-                        setEditCardId(card.cardId);
-                        editorToggle();
+                  <IconWrapper $mode={viewMode}>
+                    <CardGridDiaryIcon
+                      $show={isSelf || (!isSelf && diariesExist[index])}
+                      $mode={viewMode}
+                      onClick={(e: MouseEvent<HTMLElement>) => {
+                        handleDiaryClick(card);
                         e.stopPropagation();
                       }}
                     >
-                      <StyledFontAwesomeIcon icon={faPenToSquare} />
-                    </EditIconBtn>
-                  )}
-                  <DiaryIconBtn
-                    $show={isSelf || (!isSelf && diariesExist[index])}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
-                      dispatch({
-                        type: popUpActions.SHOW_MASK,
-                      });
-                      setDiaryDisplay(true);
-                      setDiaryId(card.cardId);
-                      setOwnerId(card.ownerId);
-                      e.stopPropagation();
-                    }}
-                  >
-                    <StyledFontAwesomeIcon icon={faBook} />
-                  </DiaryIconBtn>
-                  <BookMarkIconBtn
-                    $fav={userInfo.favoriteCards.includes(card.cardId!)}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
-                      favoriteToggle(card.cardId!);
-                      e.stopPropagation();
-                    }}
-                  >
-                    <BookmarkIcon icon={faBookmark} />
-                  </BookMarkIconBtn>
-                </IconWrapper>
+                      <ListIcon icon={faBook} />
+                    </CardGridDiaryIcon>
+                    <CardGridFavIcon
+                      $show={userInfo.favoriteCards.includes(card.cardId!)}
+                      $mode={viewMode}
+                      onClick={(e) => {
+                        favoriteToggle(card.cardId!);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <ListIcon icon={faBookmark} />
+                    </CardGridFavIcon>
+                  </IconWrapper>
+                </Card>
               </CardWrapper>
             );
           })}
@@ -267,10 +269,9 @@ const CardsGrid = ({
               </NoDataText>
               <NoDataBtn
                 onClick={() => {
-                  setEditCardId(null);
-                  editorToggle();
+                  setEditorDisplay(true);
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                 }}
               >

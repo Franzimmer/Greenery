@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import parse from "html-react-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer/index";
-import { popUpActions } from "../../store/reducer/popUpReducer";
-import { OperationBtn } from "../../components/GlobalStyles/button";
-import { Post } from "./ForumPost";
+import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase } from "../../utils/firebase";
+import TextEditor from "../../components/TextEditor/TextEditor";
+import PageLoader from "../../components/GlobalStyles/PageLoader";
+import { OperationBtn } from "../../components/GlobalStyles/button";
+import { Post } from "./ForumPost/ForumPost";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../components/GlobalStyles/NoDataLayout";
-import TextEditor from "../../components/TextEditor/TextEditor";
-import PageLoader from "../../components/GlobalStyles/PageLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from "../../components/GlobalStyles/noDataLayout";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import parse from "html-react-parser";
 import discuss from "./discuss.jpeg";
 import all from "./all.jpeg";
 import trade from "./trade.jpeg";
 interface WrapperProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
-  display: ${(props) => (props.isLoading ? "none" : "block")};
+  display: ${(props) => (props.$isLoading ? "none" : "block")};
   margin: 150px auto 50px;
   width: 80vw;
 `;
@@ -36,27 +36,43 @@ const ForumSectionWrapper = styled.div`
   margin: 0px auto 50px;
 `;
 interface ForumPostPageProps {
-  show: boolean;
+  $show: boolean;
 }
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80vw;
-  height: 100px;
-  border: 1px solid #6a5125;
-  display: ${(props) => (props.show ? "flex" : "none")};
+  border: 1px solid ${(props) => props.theme.colors.button};
+  display: ${(props) => (props.$show ? "flex" : "none")};
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
   cursor: pointer;
   margin: 0px auto;
+  @media (max-width: 500px) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: ceenter;
+    padding: 16px 8px;
+  }
 `;
 export const ForumPostPageInfo = styled.div`
+  padding: 12px;
   font-size: 20px;
   text-decoration: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   ${ForumPostPage}:hover & {
     text-decoration: underline;
     transition: 0.25s;
+  }
+  @media (max-width: 900px) {
+    font-size: 16px;
+  }
+  @media (max-width: 800px) {
+    padding: 8px 0;
+  }
+  @media (max-width: 600px) {
+    font-size: 14px;
+    line-height: 18px;
   }
 `;
 const FlexWrapper = styled.div`
@@ -69,7 +85,7 @@ const FlexWrapper = styled.div`
   }
 `;
 export const TypeText = styled.p`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
@@ -77,12 +93,16 @@ export const TypeText = styled.p`
   height: 20px;
   text-align: center;
   line-height: 20px;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 10px;
+  @media (max-width: 600px) {
+    font-size: 10px;
+    width: 80px;
+  }
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: none;
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
   width: 26px;
   height: 26px;
   background: none;
@@ -102,6 +122,9 @@ const PostTypeBtn = styled.div`
   align-items: center;
   position: relative;
   cursor: pointer;
+  @media (max-width: 530px) {
+    height: 75px;
+  }
 `;
 const PostMask = styled.div`
   position: absolute;
@@ -122,17 +145,38 @@ const PostTypeText = styled.p`
   text-align: center;
   position: relative;
   z-index: 1;
+  @media (max-width: 930px) {
+    font-size: 30px;
+    letter-spacing: 8px;
+  }
+  @media (max-width: 700px) {
+    font-size: 26px;
+    letter-spacing: 6px;
+  }
+  @media (max-width: 530px) {
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+  @media (max-width: 400px) {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
 `;
 const AddPostBtn = styled(OperationBtn)`
   width: 100px;
   display: block;
   margin: 10px 0 20px auto;
-  background: #6a5125;
-  border: 1px solid #6a5125;
+  background: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     transform: scale(1.2);
     transition: 0.25s;
+  }
+  @media (max-width: 500px) {
+    width: 80px;
+    font-size: 14px;
+    padding: 4px;
   }
 `;
 
@@ -151,13 +195,13 @@ const ForumHomePage = () => {
     setInitContent("");
     setTextEditorDisplay(true);
     dispatch({
-      type: popUpActions.SHOW_MASK,
+      type: PopUpActions.SHOW_MASK,
     });
   }
   useEffect(() => {
     async function getPosts() {
-      let postList: Post[] = [];
-      let posts = await firebase.getPosts();
+      const postList: Post[] = [];
+      const posts = await firebase.getPosts();
       posts.forEach((post) => {
         postList.push(post.data());
       });
@@ -169,7 +213,7 @@ const ForumHomePage = () => {
   return (
     <>
       {isLoading && <PageLoader />}
-      <Wrapper isLoading={isLoading}>
+      <Wrapper $isLoading={isLoading}>
         <ForumSectionWrapper>
           <PostTypeBtn
             style={{ backgroundImage: `url(${all})` }}
@@ -201,7 +245,7 @@ const ForumHomePage = () => {
             return (
               <ForumPostPage
                 key={post.postId}
-                show={post.type === filter || filter === "any"}
+                $show={post.type === filter || filter === "any"}
                 onClick={() => navigate(`/forum/${post.postId}`)}
               >
                 <FlexWrapper>

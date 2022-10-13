@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
-import { firebase } from "../../utils/firebase";
-import { CardsActions } from "../../store/actions/cardsActions";
-import {
-  popUpActions,
-  PopUpDisplayType,
-} from "../../store/reducer/popUpReducer";
-import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
-import CardsWrapper from "./CardsWrapper";
-import { RootState } from "../../store/reducer";
-import { PlantCard } from "../../store/types/plantCardType";
 import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/reducer";
+import { PopUpType } from "../../store/types/popUpType";
+import { CardsActions } from "../../store/actions/cardsActions";
+import { PopUpActions } from "../../store/actions/popUpActions";
+import { firebase } from "../../utils/firebase";
+import { useAlertDispatcher } from "../../utils/useAlertDispatcher";
+import CardsWrapper from "./CardsWrapper";
+import { OperationBtn, CloseBtn } from "../GlobalStyles/button";
 interface DialogWrapperProps {
   show: boolean;
 }
 const DialogWrapper = styled.div<DialogWrapperProps>`
   width: 500px;
   height: 500px;
-  background: #fddba9;
+  background: ${(props) => props.theme.colors.second};
   padding: 30px 15px;
   position: fixed;
   z-index: 101;
@@ -27,6 +25,15 @@ const DialogWrapper = styled.div<DialogWrapperProps>`
   transform: translate(-50%, -50%);
   display: ${(props) => (props.show ? "flex" : "none")};
   flex-direction: column;
+  @media (max-width: 600px) {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  @media (max-width: 500px) {
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  @media (max-width: 450px) {
+    transform: translate(-50%, -50%) scale(0.7);
+  }
 `;
 const DialogCloseBtn = styled(CloseBtn)`
   width: 20px;
@@ -35,14 +42,14 @@ const DialogCloseBtn = styled(CloseBtn)`
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #fddba9;
-  background-color: #6a5125;
-  border: 1px solid #6a5125;
+  color: ${(props) => props.theme.colors.second};
+  background-color: ${(props) => props.theme.colors.button};
+  border: 1px solid ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
-    color: #fddba9;
-    background-color: #6a5125;
-    border: 1px solid #6a5125;
+    color: ${(props) => props.theme.colors.second};
+    background-color: ${(props) => props.theme.colors.button};
+    border: 1px solid ${(props) => props.theme.colors.button};
     transform: scale(1.1);
     transition: 0.25s;
   }
@@ -61,9 +68,9 @@ const CardSelectBtn = styled(OperationBtn)`
   font-weight: 500;
   margin: 30px auto 0px;
   background: #fff;
-  border: 1px solid #6a5125;
+  border: 1px solid ${(props) => props.theme.colors.button};
   color: #fff;
-  background: #6a5125;
+  background: ${(props) => props.theme.colors.button};
   transition: 0.25s;
   &:hover {
     color: #fff;
@@ -98,113 +105,124 @@ const OverflowWrapper = styled.div`
 const CardSelectDialog = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const alertDispatcher = useAlertDispatcher();
+  const selfId = useSelector((state: RootState) => state.userInfo.userId);
   const cardList = useSelector((state: RootState) => state.cards);
-  const popUpDisplay: PopUpDisplayType = useSelector(
-    (state: RootState) => state.popUp
-  );
+  const popUp: PopUpType = useSelector((state: RootState) => state.popUp);
+  const { target } = useSelector((state: RootState) => state.popUp);
   const [confirm, setConfirm] = useState<string>();
   const [menuSelect, setMenuSelect] = useState<Record<string, boolean>>({});
   const [cardListDisplay, setCardListDisplay] = useState<boolean>(true);
   const [btnWrapperDisplay, setBtnWrapperDisplay] = useState<boolean>(true);
-  const selfId = userInfo.userId;
-  const targetId = popUpDisplay.target.id;
-  const targetName = popUpDisplay.target.name;
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
-  function confirmTradeItems() {
-    if (!targetId) return;
+
+  function checkCardSelect() {
     if (Object.values(menuSelect).every((select) => select === false)) {
-      emitAlert("fail", "Choose at least one plant !");
-      return;
-    }
-    setCardListDisplay(false);
-    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
-    let nameList = selected.map((card) => {
+      alertDispatcher("fail", "Choose at least one plant !");
+      return false;
+    } else return true;
+  }
+  function setConfirmMsg() {
+    const selected = cardList.filter(
+      (card) => menuSelect[card.cardId!] === true
+    );
+    const nameList = selected.map((card) => {
       return card.plantName;
     });
-    let msg = `Are you sure to send ${nameList.join(" & ")} to ${targetName}?`;
-    setBtnWrapperDisplay(true);
+    const msg = `Are you sure to send ${nameList.join(" & ")} to ${
+      target.name
+    }?`;
     setConfirm(msg);
   }
-
-  async function tradePlants() {
-    if (!targetId || !selfId) return;
-    let selected = cardList.filter((card) => menuSelect[card.cardId!] === true);
-    let idList = selected.map((card) => {
-      return card.cardId;
+  function confirmTradeItems() {
+    if (!target.id) return;
+    if (!checkCardSelect()) return;
+    setConfirmMsg();
+    setCardListDisplay(false);
+    setBtnWrapperDisplay(true);
+  }
+  function filterTagetPlants() {
+    const idList: string[] = [];
+    const nameList: string[] = [];
+    const selected = cardList.filter(
+      (card) => menuSelect[card.cardId!] === true
+    );
+    selected.forEach((card) => {
+      idList.push(card.cardId!);
+      nameList.push(card.plantName);
     });
-    let nameList = selected.map((card) => {
-      return card.plantName;
-    });
-    const newOwnerId = targetId;
-    let promises = idList.map((cardId) => {
-      return firebase.changePlantOwner(cardId!, newOwnerId);
-    });
-    await Promise.all(promises);
+    return { idList, nameList };
+  }
+  function removeTradePlants(idList: string[]) {
     if (id === selfId) {
       dispatch({
         type: CardsActions.DELETE_PLANT_CARDS,
         payload: { cardIds: idList },
       });
     }
-    const usersTarget = [targetId!, selfId!];
+  }
+  async function sendTradeMsg(nameList: string[]) {
+    const usersTarget = [target.id!, selfId!];
     const data = {
       userId: selfId,
       msg: `${nameList.join(" & ")} has been sent to your space`,
     };
     await firebase.storeChatroomData(usersTarget, data);
-    setBtnWrapperDisplay(false);
-    setCardListDisplay(true);
-    dispatch({
-      type: popUpActions.HIDE_ALL,
+  }
+  function tradePlants() {
+    if (!target.id || !selfId) return;
+    const { idList, nameList } = filterTagetPlants();
+    const newOwnerId = target.id;
+    const promises = idList.map((cardId) => {
+      return firebase.changePlantOwner(cardId!, newOwnerId);
     });
-    emitAlert("success", "Send out success !");
+    Promise.all(promises)
+      .then(() => {
+        removeTradePlants(idList!);
+        sendTradeMsg(nameList);
+      })
+      .then(() => {
+        dispatch({
+          type: PopUpActions.HIDE_ALL,
+        });
+        alertDispatcher("success", "Send out success !");
+      })
+      .catch((error: Error) => {
+        alertDispatcher("fail", error.message);
+      })
+      .finally(() => {
+        setBtnWrapperDisplay(false);
+        setCardListDisplay(true);
+      });
     return;
   }
   function resetCheck() {
-    let menuCheck = {} as Record<string, boolean>;
+    const menuCheck = {} as Record<string, boolean>;
     cardList.forEach((card) => {
       menuCheck[card.cardId!] = false;
     });
     setMenuSelect(menuCheck);
+  }
+  function handleDialogCloseClick() {
+    resetCheck();
+    setCardListDisplay(true);
+    dispatch({
+      type: PopUpActions.HIDE_ALL,
+    });
   }
   useEffect(() => {
     resetCheck();
   }, [cardList]);
   return (
     <>
-      <DialogWrapper show={popUpDisplay.cardSelect}>
-        <DialogCloseBtn
-          onClick={() => {
-            resetCheck();
-            setCardListDisplay(true);
-            dispatch({
-              type: popUpActions.HIDE_ALL,
-            });
-          }}
-        >
-          &#215;
-        </DialogCloseBtn>
+      <DialogWrapper show={popUp.cardSelect}>
+        <DialogCloseBtn onClick={handleDialogCloseClick}>&#215;</DialogCloseBtn>
         <OverflowWrapper>
           <CardsWrapper
             cardList={cardList}
             cardListDisplay={cardListDisplay}
             menuSelect={menuSelect}
             setMenuSelect={setMenuSelect}
-          ></CardsWrapper>
+          />
         </OverflowWrapper>
         {!cardListDisplay && (
           <ConfirmWrapper>

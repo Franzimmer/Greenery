@@ -5,6 +5,7 @@ const CalenderContainer = styled.div`
     width: 70vw;
     padding: 20px;
     border: 1px solid #ddd;
+    margin: auto;
   }
 
   /* ~~~ navigation styles ~~~ */
@@ -27,21 +28,21 @@ const CalenderContainer = styled.div`
 
   /* ~~~ button styles ~~~ */
   .react-calendar__month-view__days__day {
-    height: 70px;
-    background-color: #5c836f;
+    height: 60px;
+    background-color: ${(props) => props.theme.colors.main};
     border: 0;
     border-radius: 10px;
     color: #000;
-    font-size: 14px;
+    font-size: 16px;
     letter-spacing: 1px;
     padding: 5px 0;
 
     &:hover {
-      background-color: #fddba9;
+      background-color: ${(props) => props.theme.colors.second};
     }
 
     &:active {
-      background-color: #fddba9;
+      background-color: ${(props) => props.theme.colors.second};
     }
   }
   .react-calendar__navigation {
@@ -54,7 +55,10 @@ const CalenderContainer = styled.div`
     margin: 20px 0px 10px;
   }
   .react-calendar__month-view__weekdays__weekday abbr {
+    text-transform: inherit;
     text-decoration: none;
+    letter-spacing: 0;
+    font-weight: 400;
     font-size: 16px;
   }
   .react-calendar__navigation__label span {
@@ -81,7 +85,7 @@ const CalenderContainer = styled.div`
   }
   .react-calendar__tile--now:enabled,
   .react-calendar__tile--now:enabled:focus {
-    background: #fddba9;
+    background: ${(props) => props.theme.colors.second};
   }
   .react-calendar__tile--now:enabled:hover {
     background: #f5f0ec;
@@ -96,6 +100,35 @@ const CalenderContainer = styled.div`
 
   .react-calendar__tile--active: enabled: focus {
     background: #f5f0ec;
+  }
+  @media (max-width: 650px) {
+    .react-calendar__month-view__days__day {
+      height: 50px;
+      font-size: 14px;
+    }
+    .react-calendar__month-view__weekdays__weekday abbr {
+      font-size: 14px;
+    }
+    .react-calendar__navigation__label span {
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+  }
+  @media (max-width: 550px) {
+    .react-calendar__month-view__days__day {
+      height: 30px;
+      font-size: 10px;
+    }
+    .react-calendar__month-view__weekdays__weekday {
+      padding: 0;
+    }
+    .react-calendar__month-view__weekdays__weekday abbr {
+      font-size: 10px;
+    }
+    .react-calendar__navigation__label span {
+      font-size: 12px;
+      letter-spacing: 0px;
+    }
   }
 `;
 

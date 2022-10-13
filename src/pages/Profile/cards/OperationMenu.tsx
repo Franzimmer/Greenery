@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../store/reducer/index";
-import { popUpActions } from "../../../store/reducer/popUpReducer";
-import { IconButton } from "../../../components/GlobalStyles/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RootState } from "../../../store/reducer/index";
+import { PopUpActions } from "../../../store/actions/popUpActions";
+import { IconButton } from "../../../components/GlobalStyles/button";
 import {
   faPlus,
   faFilter,
@@ -17,6 +17,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 const OperationMenuWrapper = styled.div`
   display: flex;
+  @media (max-width: 530px) {
+    flex-wrap: wrap;
+  }
 `;
 const MenuBtn = styled(IconButton)`
   display: flex;
@@ -26,16 +29,20 @@ const MenuBtn = styled(IconButton)`
   height: 30px;
   margin: 8px;
   border-radius: 5px;
-  border: 2px solid #5c836f;
+  border: 2px solid ${(props) => props.theme.colors.main};
   background: #fff;
   transition: 0.25s;
   &:hover {
     transform: scale(1.2);
     transition: 0.25s;
   }
+  @media (max-width: 530px) {
+    width: 26px;
+    height: 26px;
+  }
 `;
 const MenuBtnActive = styled(MenuBtn)`
-  background: #5c836f;
+  background: ${(props) => props.theme.colors.main};
   & * {
     color: #fff;
   }
@@ -49,10 +56,11 @@ const MenuBtnDisabled = styled(MenuBtn)`
   &:hover {
     transform: scale(1);
   }
+  align-self: center;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 26px;
   height: 26px;
 `;
@@ -65,24 +73,32 @@ const BtnWrapper = styled.div`
   align-items: center;
   margin-right: 12px;
   cursor: pointer;
+  @media (max-width: 960px) {
+    flex-direction: column;
+    margin: 8px;
+  }
 `;
 const IconLabel = styled.span`
   font-size: 14px;
   letter-spacing: 0.5px;
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
+  @media (max-width: 960px) {
+    font-size: 12px;
+    letter-spacing: 0px;
+    text-align: center;
+  }
 `;
 interface OperationMenuProps {
   isSelf: boolean;
   viewMode: "grid" | "list";
   checkList: Record<string, boolean>;
-  setViewMode: React.Dispatch<React.SetStateAction<"grid" | "list">>;
-  setEditCardId: React.Dispatch<React.SetStateAction<string | null>>;
-  editorToggle: () => void;
+  setViewMode: Dispatch<SetStateAction<"grid" | "list">>;
+  setEditCardId: Dispatch<SetStateAction<string | null>>;
+  setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   filterToggle: () => void;
   allCheck: () => void;
   clearAllCheck: () => void;
   addEvents: (type: "water" | "fertilize") => Promise<void>;
-  setConfirmDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   setConfirmMessage: () => void;
 }
 const OperationMenu = ({
@@ -91,12 +107,11 @@ const OperationMenu = ({
   checkList,
   setViewMode,
   setEditCardId,
-  editorToggle,
+  setEditorDisplay,
   filterToggle,
   allCheck,
   clearAllCheck,
   addEvents,
-  setConfirmDisplay,
   setConfirmMessage,
 }: OperationMenuProps) => {
   const dispatch = useDispatch();
@@ -113,10 +128,9 @@ const OperationMenu = ({
       {isSelf && (
         <BtnWrapper
           onClick={() => {
-            setEditCardId(null);
-            editorToggle();
+            setEditorDisplay(true);
             dispatch({
-              type: popUpActions.SHOW_MASK,
+              type: PopUpActions.SHOW_MASK,
             });
           }}
         >
@@ -195,10 +209,9 @@ const OperationMenu = ({
               <BtnWrapper
                 onClick={() => {
                   dispatch({
-                    type: popUpActions.SHOW_MASK,
+                    type: PopUpActions.SHOW_MASK,
                   });
                   setConfirmMessage();
-                  setConfirmDisplay(true);
                 }}
               >
                 <MenuBtn>

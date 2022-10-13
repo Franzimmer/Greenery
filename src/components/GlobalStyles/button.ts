@@ -7,8 +7,8 @@ export const OperationBtn = styled.button`
   height: 30px;
   padding: 10px;
   border-radius: 15px;
-  border: 1px solid #5c836f;
-  background: #5c836f;
+  border: 1px solid ${(props) => props.theme.colors.main};
+  background: ${(props) => props.theme.colors.main};
   color: #fff;
 `;
 
@@ -22,8 +22,8 @@ export const CloseBtn = styled.button`
   border-radius: 50%;
   font-weight: 500;
   color: #fff;
-  background-color: #5c836f;
-  border: 1px solid #5c836f;
+  background-color: ${(props) => props.theme.colors.main};
+  border: 1px solid ${(props) => props.theme.colors.main};
 `;
 
 export const IconButton = styled.label`

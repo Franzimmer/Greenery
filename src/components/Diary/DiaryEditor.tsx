@@ -1,17 +1,24 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styled, { keyframes } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fabric } from "fabric";
-import { firebase } from "../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
-import { popUpActions } from "../../store/reducer/popUpReducer";
+import { PopUpActions } from "../../store/actions/popUpActions";
+import { firebase } from "../../utils/firebase";
+import Canvas from "./Canvas";
 import { IconButton } from "../../components/GlobalStyles/button";
 import {
   NoDataSection,
   NoDataText,
   NoDataBtn,
-} from "../../components/GlobalStyles/NoDataLayout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from "../GlobalStyles/noDataLayout";
 import {
   faArrowRight,
   faArrowLeft,
@@ -31,15 +38,11 @@ import {
   faCircleXmark,
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import Canvas from "./Canvas";
 import spinner from "../../assets/spinner.png";
 import forward from "./bring-to-front.png";
 
-interface WrapperProps {
-  $display: boolean;
-}
-const Wrapper = styled.div<WrapperProps>`
-  display: ${(props) => (props.$display ? "flex" : "none")};
+const Wrapper = styled.div`
+  display: flex;
   flex-direction: column;
   position: fixed;
   top: 50vh;
@@ -73,13 +76,17 @@ const BtnWrapper = styled.div`
   width: 400px;
   height: 40px;
   padding: 0px 10px;
+  @media screen and (max-width: 500px) {
+    width: 340px;
+  }
 `;
 const ArrowWrapper = styled(BtnWrapper)`
+  margin: 0 auto;
   justify-content: center;
   background: #f5f0ec;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  color: #5c836f;
+  color: ${(props) => props.theme.colors.main};
   width: 20px;
   height: 20px;
 `;
@@ -113,9 +120,13 @@ const Spin = keyframes`
   }
 `;
 const PageNumber = styled.span`
-  color: #6a5125;
+  color: ${(props) => props.theme.colors.button};
+  margin: 0 auto;
 `;
-const Loading = styled.div<WrapperProps>`
+interface LoadingProps {
+  $display: boolean;
+}
+const Loading = styled.div<LoadingProps>`
   display: ${(props) => (props.$display ? "flex" : "none")};
   width: 100px;
   height: 100px;
@@ -145,24 +156,16 @@ const ColorInput = styled.input`
 `;
 interface DiaryEditorProps {
   ownerId: string;
-  diaryDisplay: boolean;
-  setDiaryDisplay: React.Dispatch<React.SetStateAction<boolean>>;
   diaryId: string;
-  setDiaryId: React.Dispatch<React.SetStateAction<string | null>>;
+  setDiaryId: Dispatch<SetStateAction<string | null>>;
 }
-const DiaryEditor = ({
-  ownerId,
-  diaryDisplay,
-  setDiaryDisplay,
-  diaryId,
-  setDiaryId,
-}: DiaryEditorProps) => {
+const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [pageNo, setPageNo] = useState<number>(0);
   const fontSizeRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
+  const [pageNo, setPageNo] = useState<number>(-1);
   const [canvas, setCanvas] = useState<fabric.Canvas>();
   const [diariesData, setDiariesData] = useState<string[]>([]);
   const [mode, setMode] = useState<"view" | "edit">("view");
@@ -170,20 +173,6 @@ const DiaryEditor = ({
     "saveAdd"
   );
   const [loaderDisplay, setLoaderDisplay] = useState<boolean>(true);
-  function emitAlert(type: string, msg: string) {
-    dispatch({
-      type: popUpActions.SHOW_ALERT,
-      payload: {
-        type,
-        msg,
-      },
-    });
-    setTimeout(() => {
-      dispatch({
-        type: popUpActions.CLOSE_ALERT,
-      });
-    }, 2000);
-  }
   function isOwner(ownerId: string) {
     if (userInfo.userId === ownerId) return true;
     else return false;
@@ -210,7 +199,7 @@ const DiaryEditor = ({
   }
   function addText() {
     if (!fontSizeRef.current) return;
-    let text = new fabric.IText("hello world", {
+    const text = new fabric.IText("hello world", {
       left: 100,
       top: 100,
       fontFamily: "Montserrat",
@@ -218,75 +207,78 @@ const DiaryEditor = ({
     });
     canvas?.add(text);
     canvas?.setActiveObject(text);
-    fontSizeRef.current!.value = "20";
   }
   function changeTextColor() {
-    let cValue = colorRef.current?.value;
+    const cValue = colorRef.current?.value;
     if (canvas?.getActiveObject().type !== "i-text") return;
     canvas?.getActiveObject().set("fill", cValue);
     canvas?.renderAll();
   }
+  function checkSelectFont() {
+    if (!fontSizeRef.current) return false;
+    else if (!canvas?.getActiveObject()) return false;
+    else if (canvas?.getActiveObject().type !== "i-text") return false;
+    else return true;
+  }
+  function limitFontSize() {
+    const fontSize = Number(fontSizeRef.current!.value);
+    if (fontSize > 48) {
+      fontSizeRef.current!.value = "48";
+    } else if (fontSize < 10) {
+      fontSizeRef.current!.value = "10";
+    }
+  }
   function plusFontSize() {
-    if (!fontSizeRef.current) return;
-    if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
+    if (!checkSelectFont()) return;
+    const target = canvas!.getActiveObject() as fabric.IText;
+    const fontSize = Number(fontSizeRef.current!.value);
     if (fontSize <= 46 && fontSize >= 10)
-      fontSizeRef.current.value = String(fontSize + 2);
-    else if (fontSize > 48) fontSizeRef.current.value = "48";
-    else if (fontSize < 10) fontSizeRef.current.value = "10";
-    target.fontSize = Number(fontSizeRef.current.value);
+      fontSizeRef.current!.value = String(fontSize + 2);
+    limitFontSize();
+    target.fontSize = Number(fontSizeRef.current!.value);
     canvas?.renderAll();
   }
   function minusFontSize() {
-    if (!fontSizeRef.current) return;
-    if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
+    if (!checkSelectFont()) return;
+    const target = canvas!.getActiveObject() as fabric.IText;
+    const fontSize = Number(fontSizeRef.current!.value);
     if (fontSize >= 12 && fontSize <= 48)
-      fontSizeRef.current.value = String(fontSize - 2);
-    else if (fontSize > 48) fontSizeRef.current.value = "48";
-    else if (fontSize < 10) fontSizeRef.current.value = "10";
-    target.fontSize = Number(fontSizeRef.current.value);
+      fontSizeRef.current!.value = String(fontSize - 2);
+    limitFontSize();
+    target.fontSize = Number(fontSizeRef.current!.value);
     canvas?.renderAll();
   }
   function changeFontSize() {
-    if (!fontSizeRef.current) return;
-    if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
-    let fontSize = Number(fontSizeRef.current.value);
-    if (fontSize > 48) {
-      fontSizeRef.current.value = "48";
-    } else if (fontSize < 10) {
-      fontSizeRef.current.value = "10";
-    }
-    target.fontSize = Number(fontSizeRef.current.value);
+    if (!checkSelectFont()) return;
+    const target = canvas!.getActiveObject() as fabric.IText;
+    limitFontSize();
+    target.fontSize = Number(fontSizeRef.current!.value);
     canvas?.renderAll();
   }
   function changeFontStyle() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.fontStyle === "normal") target.fontStyle = "italic";
     else if (target.fontStyle === "italic") target.fontStyle = "normal";
     canvas?.renderAll();
   }
   function strikeThrough() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.linethrough === false) target.set("linethrough", true);
     else if (target.linethrough === true) target.set("linethrough", false);
     canvas?.renderAll();
   }
   function underLine() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.underline === false) target.set("underline", true);
     else if (target.underline === true) target.set("underline", false);
     canvas?.renderAll();
   }
   function changeTextWeight() {
     if (canvas?.getActiveObject().type !== "i-text") return;
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     if (target.fontWeight === "normal") target.set("fontWeight", 500);
     else if (target.fontWeight === 500) target.set("fontWeight", "normal");
     canvas?.renderAll();
@@ -294,17 +286,16 @@ const DiaryEditor = ({
   async function addImage() {
     if (!fileRef.current) return;
     if (!fileRef.current.files!.length) return;
-    let file = fileRef.current!.files![0];
-    let fileLink = await firebase.uploadFile(file);
+    const file = fileRef.current!.files![0];
+    const fileLink = await firebase.uploadFile(file);
     fabric.Image.fromURL(fileLink!, function(oImg) {
-      oImg.set({ left: 20, top: 50 });
-      oImg.scaleToWidth(200, false);
+      oImg.set({ left: 20, top: 50 }).scaleToWidth(200, false);
       canvas?.add(oImg);
       canvas?.setActiveObject(oImg);
     });
   }
   function bringForward() {
-    let target = canvas?.getActiveObject() as fabric.IText;
+    const target = canvas?.getActiveObject() as fabric.IText;
     target.bringForward();
   }
   function removeItem() {
@@ -312,32 +303,31 @@ const DiaryEditor = ({
     canvas?.discardActiveObject().renderAll();
   }
   function resetCanvas() {
-    canvas?.remove(...canvas.getObjects());
+    canvas?.remove(...canvas.getObjects()).renderAll();
   }
-  async function save() {
+  function prepareSave() {
     setAllObjDeactive();
-    let page = JSON.stringify(canvas);
-    let currentDiaries = [...diariesData];
+    const page = JSON.stringify(canvas);
+    const currentDiaries = [...diariesData];
+    return { page, currentDiaries };
+  }
+  function save() {
+    const { page, currentDiaries } = prepareSave();
     currentDiaries.push(page);
     setDiariesData(currentDiaries);
     setPageNo(currentDiaries.length - 1);
     switchToViewMode();
-    await firebase.saveDiary(diaryId, page);
-    emitAlert("success", "Save Diary Data Successfully.");
+    firebase.saveDiary(diaryId, page);
   }
-  async function saveEdit() {
-    setAllObjDeactive();
-    let index = pageNo;
-    let page = JSON.stringify(canvas);
-    let currentDiaries = [...diariesData];
-    currentDiaries[index] = page;
-    await firebase.saveEditDiary(diaryId, currentDiaries);
-    emitAlert("success", "Update Diary Data Successfully.");
+  function saveEdit() {
+    const { page, currentDiaries } = prepareSave();
+    currentDiaries[pageNo] = page;
     setDiariesData(currentDiaries);
     switchToViewMode();
+    firebase.saveEditDiary(diaryId, currentDiaries);
   }
-  async function load(page: number) {
-    canvas?.loadFromJSON(diariesData[page], async () => {
+  function load(page: number) {
+    canvas?.loadFromJSON(diariesData[page], () => {
       canvas!.selection = false;
       canvas?.getObjects().forEach((obj) => {
         obj.set({ selectable: false, hoverCursor: "text" });
@@ -355,15 +345,42 @@ const DiaryEditor = ({
     load(pageNo);
     switchToViewMode();
   }
+  function handlePageWhenDelete() {
+    if (pageNo > 0) setPageNo((prev) => prev - 1);
+    else setPageNo(-1);
+  }
+  function deleteDairyPage() {
+    resetCanvas();
+    const currentDiaries = [...diariesData];
+    currentDiaries.splice(pageNo, 1);
+    setDiariesData(currentDiaries);
+    handlePageWhenDelete();
+    firebase.deleteDiaryPage(diaryId, diariesData[pageNo]);
+  }
+  function handleClose() {
+    resetCanvas();
+    setPageNo(-1);
+    setDiariesData([]);
+    setDiaryId(null);
+    setLoaderDisplay(true);
+    switchToViewMode();
+    dispatch({
+      type: PopUpActions.HIDE_ALL,
+    });
+  }
+  function handleAddNewPage() {
+    resetCanvas();
+    setSaveMode("saveAdd");
+    switchToEditMode();
+  }
   useEffect(() => {
     async function getDiary(diaryId: string) {
-      resetCanvas();
       if (!canvas) return;
-      let docSnap = await firebase.getDiary(diaryId);
-      if (docSnap.exists()) {
-        setDiariesData(docSnap.data().pages);
+      const docSnapshot = await firebase.getDiary(diaryId);
+      if (docSnapshot.exists()) {
+        setDiariesData(docSnapshot.data().pages);
         switchToViewMode();
-        canvas?.loadFromJSON(docSnap.data().pages[0], async () => {
+        canvas?.loadFromJSON(docSnapshot.data().pages[0], async () => {
           canvas.selection = false;
           canvas.getObjects().forEach((obj) => {
             obj.set({ selectable: false, hoverCursor: "text" });
@@ -375,35 +392,33 @@ const DiaryEditor = ({
       setLoaderDisplay(false);
     }
     if (diaryId) getDiary(diaryId);
-  }, [diaryId]);
+  }, [diaryId, canvas]);
   useEffect(() => {
     load(pageNo);
-  }, [pageNo]);
+  }, [pageNo, diariesData]);
   useEffect(() => {
     function handleObj(obj: fabric.IEvent) {
-      console.log(obj.selected);
       if (!obj.selected) return;
-      if (obj.selected.length > 1) return;
-      if (obj.selected[0]!.type !== "i-text") return;
+      else if (obj.selected.length > 1) return;
+      else if (obj.selected[0]!.type !== "i-text") return;
       else {
-        let target = obj.selected[0] as fabric.IText;
+        const target = obj.selected[0] as fabric.IText;
         fontSizeRef.current!.value = String(target.fontSize!);
       }
     }
     if (!canvas || !fontSizeRef.current) return;
-    canvas.on("selection:updated", (obj) => handleObj(obj));
-    canvas.on("selection:created", (obj) => handleObj(obj));
-    canvas.on("selection:cleared", (obj) => handleObj(obj));
-  }, [canvas]);
+    if (mode === "edit") {
+      canvas.on("selection:updated", (obj) => handleObj(obj));
+      canvas.on("selection:created", (obj) => handleObj(obj));
+      canvas.on("selection:cleared", (obj) => handleObj(obj));
+    } else if (mode === "view") {
+      canvas.off();
+    }
+  }, [mode]);
   return (
     <>
       <NoDiarySection
-        $display={
-          diaryDisplay &&
-          !loaderDisplay &&
-          diariesData.length === 0 &&
-          mode === "view"
-        }
+        $display={!loaderDisplay && diariesData.length === 0 && mode === "view"}
       >
         <NoDataText>You haven't write plants diary</NoDataText>
         <NoDataBtn
@@ -415,158 +430,142 @@ const DiaryEditor = ({
           Write Diary
         </NoDataBtn>
       </NoDiarySection>
-      <Loading $display={diaryDisplay && loaderDisplay} />
-      <Wrapper $display={diaryDisplay}>
-        {mode === "edit" && isOwner(ownerId) && (
-          <BtnWrapper>
-            <>
-              <DiaryIconButton onClick={addText}>
-                <StyledFontAwesomeIcon icon={faFont} />
-              </DiaryIconButton>
-              <MinusIconButton onClick={minusFontSize}>
-                <StyledFontAwesomeIcon icon={faMinus} />
-              </MinusIconButton>
-              <FontSizeInput
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") changeFontSize();
-                }}
-                ref={fontSizeRef}
-                type="number"
-                min="10"
-                max="48"
-                defaultValue="20"
-              />
-              <DiaryIconButton onClick={plusFontSize}>
-                <StyledFontAwesomeIcon icon={faPlus} />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={changeTextWeight}>
-                <StyledFontAwesomeIcon icon={faBold} />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={changeFontStyle}>
-                <StyledFontAwesomeIcon icon={faItalic} />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={strikeThrough}>
-                <StyledFontAwesomeIcon icon={faStrikethrough} />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={underLine}>
-                <StyledFontAwesomeIcon icon={faUnderline} />
-              </DiaryIconButton>
-              <DiaryIconButton htmlFor="palette">
-                <ColorWrapper>
-                  <StyledFontAwesomeIcon icon={faPalette} />
-                  <ColorInput
-                    type="color"
-                    id="palette"
-                    ref={colorRef}
-                    onChange={changeTextColor}
-                  />
-                </ColorWrapper>
-              </DiaryIconButton>
-            </>
-          </BtnWrapper>
-        )}
-        <BtnWrapper>
-          {mode === "view" && diariesData.length !== 0 && (
-            <>
-              {isOwner(ownerId) && (
-                <DiaryIconButton
-                  onClick={() => {
-                    setSaveMode("saveEdit");
-                    switchToEditMode();
-                  }}
-                >
-                  <StyledFontAwesomeIcon icon={faPenToSquare} />
+      <Loading $display={!!diaryId && loaderDisplay} />
+      {diaryId && (
+        <Wrapper>
+          {mode === "edit" && isOwner(ownerId) && (
+            <BtnWrapper>
+              <>
+                <DiaryIconButton onClick={addText}>
+                  <StyledFontAwesomeIcon icon={faFont} />
                 </DiaryIconButton>
-              )}
-              {isOwner(ownerId) && (
-                <DiaryIconButton
-                  onClick={() => {
-                    resetCanvas();
-                    setSaveMode("saveAdd");
-                    switchToEditMode();
+                <MinusIconButton onClick={minusFontSize}>
+                  <StyledFontAwesomeIcon icon={faMinus} />
+                </MinusIconButton>
+                <FontSizeInput
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") changeFontSize();
                   }}
-                >
+                  ref={fontSizeRef}
+                  type="number"
+                  min="10"
+                  max="48"
+                  defaultValue="20"
+                />
+                <DiaryIconButton onClick={plusFontSize}>
                   <StyledFontAwesomeIcon icon={faPlus} />
                 </DiaryIconButton>
-              )}
-              <DiaryIconButton
-                onClick={() => setPageNo(diariesData.length - 1)}
-              >
-                <StyledFontAwesomeIcon icon={faBookmark} />
-              </DiaryIconButton>
-            </>
-          )}
-          {mode === "edit" && isOwner(ownerId) && (
-            <>
-              <DiaryIconButton htmlFor="image">
-                <StyledFontAwesomeIcon icon={faImage} />
-                <AddImgInput
-                  id="image"
-                  ref={fileRef}
-                  type="file"
-                  onChange={async () => {
-                    await addImage();
-                  }}
-                  hidden
-                />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={bringForward}>
-                <ForwardIcon />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={removeItem}>
-                <StyledFontAwesomeIcon icon={faTrashCan} />
-              </DiaryIconButton>
-              <DiaryIconButton onClick={cancelEdit}>
-                <StyledFontAwesomeIcon icon={faArrowRotateLeft} />
-              </DiaryIconButton>
-              {saveMode === "saveAdd" && (
-                <DiaryIconButton onClick={save}>
-                  <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                <DiaryIconButton onClick={changeTextWeight}>
+                  <StyledFontAwesomeIcon icon={faBold} />
                 </DiaryIconButton>
-              )}
-              {saveMode === "saveEdit" && (
-                <DiaryIconButton onClick={saveEdit}>
-                  <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                <DiaryIconButton onClick={changeFontStyle}>
+                  <StyledFontAwesomeIcon icon={faItalic} />
                 </DiaryIconButton>
-              )}
-            </>
+                <DiaryIconButton onClick={strikeThrough}>
+                  <StyledFontAwesomeIcon icon={faStrikethrough} />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={underLine}>
+                  <StyledFontAwesomeIcon icon={faUnderline} />
+                </DiaryIconButton>
+                <DiaryIconButton htmlFor="palette">
+                  <ColorWrapper>
+                    <StyledFontAwesomeIcon icon={faPalette} />
+                    <ColorInput
+                      type="color"
+                      id="palette"
+                      ref={colorRef}
+                      onChange={changeTextColor}
+                    />
+                  </ColorWrapper>
+                </DiaryIconButton>
+              </>
+            </BtnWrapper>
           )}
-          <DiaryIconButton
-            onClick={() => {
-              resetCanvas();
-              setPageNo(0);
-              setDiariesData([]);
-              setDiaryDisplay(false);
-              setDiaryId(null);
-              setLoaderDisplay(true);
-              switchToViewMode();
-              dispatch({
-                type: popUpActions.HIDE_ALL,
-              });
-            }}
-          >
-            <StyledFontAwesomeIcon icon={faCircleXmark} />
-          </DiaryIconButton>
-        </BtnWrapper>
-        <FlexWrapper>
-          <Canvas setCanvas={setCanvas} />
-        </FlexWrapper>
-        <ArrowWrapper>
-          {mode === "view" && diariesData.length !== 0 && (
-            <>
-              <DiaryIconButton onClick={() => switchPage("-")}>
-                <StyledFontAwesomeIcon icon={faArrowLeft} />
-              </DiaryIconButton>
-              <PageNumber>
-                {pageNo + 1} / {diariesData.length}
-              </PageNumber>
-              <DiaryIconButton onClick={() => switchPage("+")}>
-                <StyledFontAwesomeIcon icon={faArrowRight} />
-              </DiaryIconButton>
-            </>
-          )}
-        </ArrowWrapper>
-      </Wrapper>
+          <BtnWrapper>
+            {mode === "view" && diariesData.length !== 0 && (
+              <>
+                {isOwner(ownerId) && (
+                  <DiaryIconButton
+                    onClick={() => {
+                      setSaveMode("saveEdit");
+                      switchToEditMode();
+                    }}
+                  >
+                    <StyledFontAwesomeIcon icon={faPenToSquare} />
+                  </DiaryIconButton>
+                )}
+                {isOwner(ownerId) && (
+                  <DiaryIconButton onClick={handleAddNewPage}>
+                    <StyledFontAwesomeIcon icon={faPlus} />
+                  </DiaryIconButton>
+                )}
+                <DiaryIconButton
+                  onClick={() => setPageNo(diariesData.length - 1)}
+                >
+                  <StyledFontAwesomeIcon icon={faBookmark} />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={deleteDairyPage}>
+                  <StyledFontAwesomeIcon icon={faTrashCan} />
+                </DiaryIconButton>
+              </>
+            )}
+            {mode === "edit" && isOwner(ownerId) && (
+              <>
+                <DiaryIconButton htmlFor="image">
+                  <StyledFontAwesomeIcon icon={faImage} />
+                  <AddImgInput
+                    id="image"
+                    ref={fileRef}
+                    type="file"
+                    onChange={async () => await addImage()}
+                    hidden
+                  />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={bringForward}>
+                  <ForwardIcon />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={removeItem}>
+                  <StyledFontAwesomeIcon icon={faTrashCan} />
+                </DiaryIconButton>
+                <DiaryIconButton onClick={cancelEdit}>
+                  <StyledFontAwesomeIcon icon={faArrowRotateLeft} />
+                </DiaryIconButton>
+                {saveMode === "saveAdd" && (
+                  <DiaryIconButton onClick={save}>
+                    <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                  </DiaryIconButton>
+                )}
+                {saveMode === "saveEdit" && (
+                  <DiaryIconButton onClick={saveEdit}>
+                    <StyledFontAwesomeIcon icon={faFileArrowUp} />
+                  </DiaryIconButton>
+                )}
+              </>
+            )}
+            <DiaryIconButton onClick={handleClose}>
+              <StyledFontAwesomeIcon icon={faCircleXmark} />
+            </DiaryIconButton>
+          </BtnWrapper>
+          <FlexWrapper>
+            <Canvas setCanvas={setCanvas} />
+          </FlexWrapper>
+          <ArrowWrapper>
+            {mode === "view" && diariesData.length !== 0 && (
+              <>
+                <DiaryIconButton onClick={() => switchPage("-")}>
+                  <StyledFontAwesomeIcon icon={faArrowLeft} />
+                </DiaryIconButton>
+                <PageNumber>
+                  {pageNo + 1} / {diariesData.length}
+                </PageNumber>
+                <DiaryIconButton onClick={() => switchPage("+")}>
+                  <StyledFontAwesomeIcon icon={faArrowRight} />
+                </DiaryIconButton>
+              </>
+            )}
+          </ArrowWrapper>
+        </Wrapper>
+      )}
     </>
   );
 };

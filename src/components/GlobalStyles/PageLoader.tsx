@@ -113,7 +113,7 @@ const BladeLeftSmall = styled(Blade)`
     right: 0;
     height: 120px;
     width: 90px;
-    border-right: 20px solid #5c836f;
+    border-right: 20px solid ${(props) => props.theme.colors.main};
   }
   &::after {
     top: 1px;
@@ -121,7 +121,7 @@ const BladeLeftSmall = styled(Blade)`
     height: 120px;
     width: 90px;
     transform: rotateZ(15deg);
-    border-right: 18px solid #5c836f;
+    border-right: 18px solid ${(props) => props.theme.colors.main};
   }
 `;
 const BladeLeftLarge = styled(Blade)`
@@ -133,7 +133,7 @@ const BladeLeftLarge = styled(Blade)`
     right: 2px;
     height: 190px;
     width: 160px;
-    border-right: 20px solid #5c836f;
+    border-right: 20px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(10deg);
   }
 
@@ -141,7 +141,7 @@ const BladeLeftLarge = styled(Blade)`
     right: 7px;
     height: 190px;
     width: 160px;
-    border-right: 18px solid #5c836f;
+    border-right: 18px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(20deg);
   }
 `;
@@ -154,14 +154,14 @@ const BladeRightSmall = styled(Blade)`
     left: 0;
     height: 190px;
     width: 100px;
-    border-left: 22px solid #5c836f;
+    border-left: 22px solid ${(props) => props.theme.colors.main};
   }
 
   &::after {
     left: 15px;
     height: 190px;
     width: 100px;
-    border-left: 13px solid #5c836f;
+    border-left: 13px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(-10deg);
   }
 `;
@@ -174,14 +174,14 @@ const BladeRightLarge = styled(Blade)`
     left: 0;
     height: 190px;
     width: 160px;
-    border-left: 26px solid #5c836f;
+    border-left: 26px solid ${(props) => props.theme.colors.main};
   }
 
   &::after {
     left: 6px;
     height: 190px;
     width: 160px;
-    border-left: 20px solid #5c836f;
+    border-left: 20px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(-10deg);
   }
 `;
@@ -194,7 +194,7 @@ const BladeCenter = styled(Blade)`
     right: 10px;
     height: 240px;
     width: 140px;
-    border-right: 28px solid #5c836f;
+    border-right: 28px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(15deg);
   }
 
@@ -202,7 +202,7 @@ const BladeCenter = styled(Blade)`
     right: 15px;
     height: 240px;
     width: 140px;
-    border-right: 17px solid #5c836f;
+    border-right: 17px solid ${(props) => props.theme.colors.main};
     transform: rotateZ(15deg);
   }
 `;
@@ -223,18 +223,26 @@ const Text = styled.div`
   font-size: 20px;
   margin-bottom: 12px;
   animation: ${Jump} 2s ease-in-out infinite;
+  @media (max-width: 1000px) {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  @media (max-width: 600px) {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
 `;
 export const SectionLoader = () => {
   return (
     <SectionWrapper>
       <LoaderWrapper>
         <Base>
-          <FlowerPot></FlowerPot>
-          <BladeCenter></BladeCenter>
-          <BladeLeftSmall></BladeLeftSmall>
-          <BladeRightSmall></BladeRightSmall>
-          <BladeLeftLarge></BladeLeftLarge>
-          <BladeRightLarge></BladeRightLarge>
+          <FlowerPot />
+          <BladeCenter />
+          <BladeLeftSmall />
+          <BladeRightSmall />
+          <BladeLeftLarge />
+          <BladeRightLarge />
         </Base>
       </LoaderWrapper>
       <Text>LOADING</Text>
@@ -246,12 +254,12 @@ const PageLoader = () => {
     <FlexWrapper>
       <LoaderWrapper>
         <Base>
-          <FlowerPot></FlowerPot>
-          <BladeCenter></BladeCenter>
-          <BladeLeftSmall></BladeLeftSmall>
-          <BladeRightSmall></BladeRightSmall>
-          <BladeLeftLarge></BladeLeftLarge>
-          <BladeRightLarge></BladeRightLarge>
+          <FlowerPot />
+          <BladeCenter />
+          <BladeLeftSmall />
+          <BladeRightSmall />
+          <BladeLeftLarge />
+          <BladeRightLarge />
         </Base>
       </LoaderWrapper>
       <Text>LOADING</Text>
