@@ -22,6 +22,11 @@ const DetailedCardWrapper = styled.div`
   justify-content: space-around;
   background: #f5f0ec;
   display: flex;
+  @media (max-width: 800px) {
+    flex-direction: column;
+    max-height: 90vh;
+    justify-content: center;
+  }
 `;
 const PageWrapper = styled.div`
   width: 400px;
@@ -29,6 +34,12 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 30px;
+  @media (max-width: 800px) {
+    width: 340px;
+    padding: 15px;
+    min-height: 0;
+    margin-top: 8px;
+  }
 `;
 const DescriptionWrapper = styled.div`
   height: 500px;
@@ -43,13 +54,20 @@ const DescriptionWrapper = styled.div`
     background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
   }
+  @media (max-width: 800px) {
+    height: 300px;
+    margin: 0 0 8px 0;
+  }
 `;
 const FlexColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: baseline;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 12px;
+  @media (max-width: 800px) {
+    margin-top: 8px;
+  }
 `;
 const FlexRowWrapper = styled(FlexColumnWrapper)`
   flex-direction: row;
@@ -60,6 +78,9 @@ const NameText = styled(LabelText)`
   margin-right: 12px;
   width: 340px;
   word-wrap: break-word;
+  @media (max-width: 800px) {
+    font-size: 20px;
+  }
 `;
 const SpeciesText = styled.div`
   font-size: 14px;
@@ -68,14 +89,24 @@ const SpeciesText = styled.div`
   color: #999;
   width: 340px;
   word-wrap: break-word;
+  @media (max-width: 800px) {
+    font-size: 12px;
+    letter-spacing: 0px;
+  }
 `;
 const DetailLabelText = styled(LabelText)`
   font-size: 18px;
   color: ${(props) => props.theme.colors.main};
   margin: 0 8px 8px 0;
+  @media (max-width: 800px) {
+    font-size: 16px;
+  }
 `;
 const Description = styled.p`
   font-size: 14px;
+  @media (max-width: 800px) {
+    padding: 4px;
+  }
 `;
 const PlantImg = styled.img`
   width: auto;
@@ -84,6 +115,17 @@ const PlantImg = styled.img`
   box-shadow: 16px 12px 0px 0px ${(props) => props.theme.colors.main};
   max-width: 340px;
   max-height: 450px;
+  @media (max-width: 800px) {
+    max-width: 310px;
+    max-height: 300px;
+    box-shadow: 0 0 8px 4px rgb(0 0 0 / 25%);
+  }
+  @media (max-width: 500px) {
+    max-height: 200px;
+  }
+  @media (max-width: 400px) {
+    max-height: 180px;
+  }
 `;
 const FlexBtnWrapper = styled(FlexRowWrapper)`
   margin-top: auto;
@@ -99,6 +141,9 @@ const DetailOperationBtn = styled(OperationBtn)`
     transform: scale(1.1);
     transition: 0.25s;
   }
+  @media (max-width: 800px) {
+    width: 100px;
+  }
 `;
 const EditIconBtn = styled(IconButton)`
   background: rgba(0, 0, 0, 0);
@@ -110,6 +155,12 @@ const EditIconBtn = styled(IconButton)`
   }
   & * {
     color: ${(props) => props.theme.colors.main};
+  }
+`;
+const EditIcon = styled(StyledFontAwesomeIcon)`
+  @media (max-width: 800px) {
+    width: 20px;
+    height: 20px;
   }
 `;
 interface DetailedCardProps {
@@ -132,7 +183,7 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
   }
   return (
     <>
-      {detailData && (
+      {detailData && !propagateDisplay && (
         <DetailedCardWrapper>
           <PageWrapper>
             {detailData?.plantPhoto ? (
@@ -148,6 +199,14 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
                 <SpeciesText>{detailData.species}</SpeciesText>
               )}
             </FlexRowWrapper>
+            {detailData?.parents && detailData?.parents?.length !== 0 && (
+              <FlexRowWrapper>
+                <DetailLabelText>Family</DetailLabelText>
+                <Description>
+                  {detailData?.parents?.join(" & ")}'s Baby
+                </Description>
+              </FlexRowWrapper>
+            )}
             {detailData?.birthday && (
               <FlexRowWrapper>
                 <DetailLabelText>Birthday</DetailLabelText>
@@ -165,7 +224,7 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
                   e.stopPropagation();
                 }}
               >
-                <StyledFontAwesomeIcon icon={faPenToSquare} />
+                <EditIcon icon={faPenToSquare} />
               </EditIconBtn>
             )}
             <DescriptionWrapper>
@@ -193,7 +252,6 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
                 <DetailOperationBtn
                   onClick={() => {
                     setPropagateDisplay(true);
-                    setDetailData(undefined);
                   }}
                 >
                   Propagate
@@ -217,6 +275,7 @@ const DetailedCard = ({ detailData, setDetailData }: DetailedCardProps) => {
         propagateDisplay={propagateDisplay}
         setPropagateDisplay={setPropagateDisplay}
         propagateParentData={detailData}
+        setDetailData={setDetailData}
       />
       <CardEditor
         userId={userInfo.userId}

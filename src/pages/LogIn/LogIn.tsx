@@ -33,15 +33,26 @@ const LogoWrapper = styled.div`
   top: 50%;
   left: 30%;
   transform: translateX(-50%) translateY(-50%);
-  color: #222422;
+  color: #224229;
   font-weight: 500;
   padding: 12px 36px;
   filter: drop-shadow(0px 0px 10px #fff);
+  @media (max-width: 1000px) {
+    font-size: 20px;
+    letter-spacing: 1px;
+    left: 35%;
+  }
+  @media (max-width: 850px) {
+    display: none;
+  }
 `;
 const Author = styled.span`
   font-size: 16px;
   letter-spacing: 1px;
   mix-blend-mode: overlay;
+  @media (max-width: 1000px) {
+    font-size: 14px;
+  }
 `;
 const LogInPanel = styled.div`
   position: absolute;
@@ -57,6 +68,12 @@ const LogInPanel = styled.div`
   padding: 24px;
   background: rgba(255, 255, 255, 0.65);
   box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.2);
+  @media (max-width: 1000px) {
+    left: 80%;
+  }
+  @media (max-width: 850px) {
+    left: 50%;
+  }
 `;
 const FlexWrapper = styled.div`
   display: flex;

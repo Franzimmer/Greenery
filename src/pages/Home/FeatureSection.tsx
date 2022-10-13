@@ -17,11 +17,17 @@ const FeatureWrapper = styled.div`
   justify-content: space-between;
   margin: 0 0 120px 0;
   position: relative;
+  @media (max-width: 1100px) {
+    flex-direction: column;
+  }
 `;
 const FeatureTextWrapper = styled(FeatureWrapper)`
   margin: 0 0 0 72px;
   flex-direction: column;
   justify-content: space-evenly;
+  @media (max-width: 1100px) {
+    margin: 0 auto;
+  }
 `;
 const FeatureSecondTitle = styled(MainDescription)`
   font-size: 16px;
@@ -40,7 +46,15 @@ const RedirectIcon = styled(FeatureIcon)`
 `;
 const FeatureImg = styled.img`
   width: 40%;
+  min-width: 500px;
+  height: max-content;
   box-shadow: -20px 20px 0 10px ${(props) => props.theme.colors.second};
+  @media (max-width: 1100px) {
+    width: 100%;
+    min-width: auto;
+    margin: 0 auto 36px;
+    box-shadow: none;
+  }
 `;
 export const SectionTitle = styled.p`
   margin-bottom: 16px;
@@ -49,11 +63,11 @@ export const SectionTitle = styled.p`
   letter-spacing: 2px;
   line-height: 30px;
   font-weight: 500;
-`;
-const SectionTitleAlign = styled(SectionTitle)`
-  align-self: end;
-  line-height: 26px;
-  transform: translateY(-16px;);
+  @media (max-width: 500px) {
+    font-size: 22px;
+    line-height: 22px;
+    letter-spacing: 1px;
+  }
 `;
 const LogInRedirect = styled.div`
   background: #fff;
@@ -72,6 +86,9 @@ const LogInRedirect = styled.div`
   }
   cursor: pointer;
   box-shadow: 0px 0px 8px 8px rgba(150, 150, 150, 0.1);
+  @media (max-width: 1300px) {
+    bottom: -70px;
+  }
 `;
 const FeatureSection = () => {
   const navigate = useNavigate();
@@ -82,10 +99,9 @@ const FeatureSection = () => {
       <FeatureImg src={feature} />
       <FeatureTextWrapper>
         <SectionTitle>A space for plants,</SectionTitle>
-        <SectionTitleAlign>a space for Yourself</SectionTitleAlign>
+        <SectionTitle> A space for Yourself</SectionTitle>
         <FeatureSecondTitle>
-          Greenery is a social space designed for plant people,
-          <br /> here you can:
+          Greenery is a social space designed for plant people,here you can:
         </FeatureSecondTitle>
         <Feature>
           <FeatureIcon icon={faCircleCheck} />

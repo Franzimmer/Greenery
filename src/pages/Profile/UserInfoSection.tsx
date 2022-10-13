@@ -19,6 +19,9 @@ const UserInfoWrapper = styled.div`
   align-items: center;
   padding-bottom: 10px;
   margin-bottom: 20px;
+  @media (max-width: 430px) {
+    flex-direction: column;
+  }
 `;
 interface UserPhotoProps {
   $path: string | undefined;
@@ -31,6 +34,18 @@ export const UserPhoto = styled.div<UserPhotoProps>`
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+  @media (max-width: 650px) {
+    width: 120px;
+    height: 120px;
+  }
+  @media (max-width: 530px) {
+    width: 100px;
+    height: 100px;
+  }
+  @media (max-width: 430px) {
+    width: 150px;
+    height: 150px;
+  }
 `;
 const UserInfoText = styled.div`
   color: ${(props) => props.theme.colors.button};
@@ -39,6 +54,19 @@ const UserInfoText = styled.div`
   font-weight: 600;
   &:focus {
     background: #fff;
+  }
+  @media (max-width: 800px) {
+    font-weight: 500;
+  }
+  @media (max-width: 650px) {
+    font-size: 20px;
+  }
+  @media (max-width: 530px) {
+    font-size: 16px;
+  }
+  @media (max-width: 430px) {
+    font-size: 20px;
+    font-weight: 500;
   }
 `;
 const IconButtonLabel = styled(IconButton)`
@@ -51,11 +79,22 @@ const IconButtonLabel = styled(IconButton)`
     transform: scale(1.1);
     transition: 0.25s;
   }
+  @media (max-width: 650px) {
+    top: 45px;
+  }
+  @media (max-width: 430px) {
+    top: -10px;
+    right: -60px;
+    left: auto;
+  }
 `;
 const NameButtonLabel = styled(IconButtonLabel)`
   padding: 10px;
   top: 0px;
   left: 5px;
+  @media (max-width: 650px) {
+    left: 0px;
+  }
 `;
 const UserInfoBtn = styled(OperationBtn)`
   margin: 10px 0 0 40px;
@@ -64,11 +103,26 @@ const UserInfoBtn = styled(OperationBtn)`
     transform: scale(1.1);
     transition: 0.5s;
   }
+  @media (max-width: 850px) {
+    margin: 10px 0 0 10px;
+  }
+  @media (max-width: 650px) {
+    font-size: 12px;
+    height: 24px;
+    border-radius: 12px;
+    padding: 0px 10px;
+  }
+  @media (max-width: 430px) {
+    margin: 10px auto 0 auto;
+  }
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
   color: ${(props) => props.theme.colors.main};
   height: 25px;
+  @media (max-width: 650px) {
+    height: 20px;
+  }
 `;
 const NameWrapper = styled.div``;
 interface FloatMsgProps {
@@ -97,9 +151,17 @@ const FloatMsg = styled.div<FloatMsgProps>`
   animation: ${(props) => props.$show && showMixin};
 `;
 const FlexWrapper = styled.div`
-  margin-top: 10px;
   display: flex;
   align-items: center;
+  width: fit-content;
+  margin: 10px auto 0;
+`;
+const MobileFlexWrapper = styled.div`
+  display: flex;
+  @media (max-width: 850px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 interface UserInfoProps {
   id: string | undefined;
@@ -226,41 +288,42 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
           />
         </>
       )}
-      <NameWrapper>
-        <FloatMsg $show={showNameInput}>Enter 1-20 character(s)</FloatMsg>
-        <FlexWrapper>
-          <UserInfoText
-            contentEditable={showNameInput}
-            ref={nameRef}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") editUserName();
-            }}
-            onBlur={() => {
-              if (nameRef.current?.textContent !== userInfo.userName)
-                editUserName();
-              else setShowNameInput(false);
-            }}
-          >
-            {userData?.userName}
-          </UserInfoText>
-          {isSelf && (
-            <NameButtonLabel
-              htmlFor="nameInput"
-              onClick={() => setShowNameInput(true)}
+      <MobileFlexWrapper>
+        <NameWrapper>
+          <FloatMsg $show={showNameInput}>Enter 1-20 character(s)</FloatMsg>
+          <FlexWrapper>
+            <UserInfoText
+              contentEditable={showNameInput}
+              ref={nameRef}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") editUserName();
+              }}
+              onBlur={() => {
+                if (nameRef.current?.textContent !== userInfo.userName)
+                  editUserName();
+                else setShowNameInput(false);
+              }}
             >
-              <StyledFontAwesomeIcon icon={faPenToSquare} />
-            </NameButtonLabel>
-          )}
-        </FlexWrapper>
-      </NameWrapper>
-
-      {isLoggedIn && !isSelf && !isFollowed && (
-        <UserInfoBtn onClick={followStatusToggle}>Follow</UserInfoBtn>
-      )}
-      {isLoggedIn && !isSelf && isFollowed && (
-        <UserInfoBtn onClick={followStatusToggle}>Unfollow</UserInfoBtn>
-      )}
-      {isSelf && <UserInfoBtn onClick={userSignOut}>Log Out</UserInfoBtn>}
+              {userData?.userName}
+            </UserInfoText>
+            {isSelf && (
+              <NameButtonLabel
+                htmlFor="nameInput"
+                onClick={() => setShowNameInput(true)}
+              >
+                <StyledFontAwesomeIcon icon={faPenToSquare} />
+              </NameButtonLabel>
+            )}
+          </FlexWrapper>
+        </NameWrapper>
+        {isLoggedIn && !isSelf && !isFollowed && (
+          <UserInfoBtn onClick={followStatusToggle}>Follow</UserInfoBtn>
+        )}
+        {isLoggedIn && !isSelf && isFollowed && (
+          <UserInfoBtn onClick={followStatusToggle}>Unfollow</UserInfoBtn>
+        )}
+        {isSelf && <UserInfoBtn onClick={userSignOut}>Log Out</UserInfoBtn>}
+      </MobileFlexWrapper>
     </UserInfoWrapper>
   );
 };

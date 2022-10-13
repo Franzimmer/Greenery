@@ -54,6 +54,9 @@ export const Card = styled.div<CardProps>`
   cursor: pointer;
   position: relative;
   transition: 1s;
+  @media (max-width: 1000px) {
+    padding-top: ${(props) => props.$mode === "list" && "35px"};
+  }
 `;
 export const NameText = styled(LabelText)<GridWrapperProps>`
   font-weight: 600;
@@ -63,8 +66,20 @@ export const NameText = styled(LabelText)<GridWrapperProps>`
   margin-left: ${(props) => props.$mode === "list" && "32px"};
   width: 200px;
   word-wrap: break-word;
+  @media (max-width: 600px) {
+    width: ${(props) => props.$mode === "list" && "100px"};
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+  @media (max-width: 400px) {
+    font-size: 16px;
+  }
 `;
-export const SpeciesText = styled.div`
+interface SpeciesTextProps {
+  $mode?: "grid" | "list";
+}
+export const SpeciesText = styled.div<SpeciesTextProps>`
   font-size: 14px;
   letter-spacing: 1px;
   font-style: italic;
@@ -72,6 +87,10 @@ export const SpeciesText = styled.div`
   margin-right: 10px;
   width: 200px;
   word-wrap: break-word;
+  @media (max-width: 600px) {
+    font-size: ${(props) => props.$mode === "list" && "12"};
+    width: ${(props) => props.$mode === "list" && "100px"};
+  }
 `;
 const CardCheck = styled.input<GridWrapperProps>`
   position: absolute;
@@ -84,7 +103,17 @@ const CardCheck = styled.input<GridWrapperProps>`
   &:checked {
     accent-color: ${(props) => props.theme.colors.button};
   }
+  @media (max-width: 1000px) {
+    transform: ${(props) => props.$mode === "list" && "unset"};
+  }
 `;
+const ListIcon = styled(StyledFontAwesomeIcon)`
+  @media (max-width: 1000px) {
+    width: 22px;
+    height: 24px;
+  }
+`;
+
 interface CardGridIcon {
   $mode: "grid" | "list";
 }
@@ -94,6 +123,23 @@ const CardGridFavIcon = styled(FavIconButton)<CardGridIcon>`
 const CardGridDiaryIcon = styled(DiaryIconBtn)<CardGridIcon>`
   bottom: ${(props) => (props.$mode === "grid" ? "8px" : "initial")};
   right: ${(props) => (props.$mode === "grid" ? "8px" : "48px")};
+`;
+const IconWrapper = styled.div<CardGridIcon>`
+  display: flex;
+  align-items: center;
+  @media (max-width: 1000px) {
+    position: ${(props) => props.$mode === "list" && "absolute"};
+    top: ${(props) => props.$mode === "list" && "20px"};
+    right: ${(props) => props.$mode === "list" && "0"};
+  }
+`;
+const InfoWrapper = styled.div<CardGridIcon>`
+  display: ${(props) => (props.$mode === "list" ? "flex" : "block")};
+  align-items: center;
+  @media (max-width: 900px) {
+    flex-direction: ${(props) => props.$mode === "list" && "column"};
+    align-items: ${(props) => props.$mode === "list" && "flex-end"};
+  }
 `;
 type CheckList = Record<string, boolean>;
 interface CardsGridProps {
@@ -107,7 +153,7 @@ interface CardsGridProps {
   setDetailData: Dispatch<SetStateAction<PlantCard | undefined>>;
   setDiaryId: Dispatch<SetStateAction<string | null>>;
   setOwnerId: Dispatch<SetStateAction<string>>;
-  setEditCardId: Dispatch<SetStateAction<string | null>>;
+
   setEditorDisplay: Dispatch<SetStateAction<boolean>>;
   switchOneCheck: (cardId: string) => void;
   favoriteToggle: (cardId: string) => Promise<void>;
@@ -123,7 +169,6 @@ const CardsGrid = ({
   setDetailData,
   setDiaryId,
   setOwnerId,
-  setEditCardId,
   setEditorDisplay,
   switchOneCheck,
   favoriteToggle,
@@ -171,34 +216,45 @@ const CardsGrid = ({
                   {viewMode === "grid" && (
                     <PlantImg $path={card.plantPhoto || defaultImg} />
                   )}
-                  <NameText $mode={viewMode}>{card.plantName}</NameText>
-                  <SpeciesText>{card.species}</SpeciesText>
+                  <InfoWrapper $mode={viewMode}>
+                    <NameText $mode={viewMode}>{card.plantName}</NameText>
+                    <SpeciesText $mode={viewMode}>{card.species}</SpeciesText>
+                  </InfoWrapper>
                   <TagsWrapper $viewMode={viewMode}>
                     {card?.tags?.length !== 0 &&
                       card.tags?.map((tag: string) => {
-                        return <Tag key={`${card.cardId}-${tag}`}>{tag}</Tag>;
+                        return (
+                          <Tag
+                            key={`${card.cardId}-${tag}`}
+                            $viewMode={viewMode}
+                          >
+                            {tag}
+                          </Tag>
+                        );
                       })}
                   </TagsWrapper>
-                  <CardGridDiaryIcon
-                    $show={isSelf || (!isSelf && diariesExist[index])}
-                    $mode={viewMode}
-                    onClick={(e: MouseEvent<HTMLElement>) => {
-                      handleDiaryClick(card);
-                      e.stopPropagation();
-                    }}
-                  >
-                    <StyledFontAwesomeIcon icon={faBook} />
-                  </CardGridDiaryIcon>
-                  <CardGridFavIcon
-                    $show={userInfo.favoriteCards.includes(card.cardId!)}
-                    $mode={viewMode}
-                    onClick={(e) => {
-                      favoriteToggle(card.cardId!);
-                      e.stopPropagation();
-                    }}
-                  >
-                    <StyledFontAwesomeIcon icon={faBookmark} />
-                  </CardGridFavIcon>
+                  <IconWrapper $mode={viewMode}>
+                    <CardGridDiaryIcon
+                      $show={isSelf || (!isSelf && diariesExist[index])}
+                      $mode={viewMode}
+                      onClick={(e: MouseEvent<HTMLElement>) => {
+                        handleDiaryClick(card);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <ListIcon icon={faBook} />
+                    </CardGridDiaryIcon>
+                    <CardGridFavIcon
+                      $show={userInfo.favoriteCards.includes(card.cardId!)}
+                      $mode={viewMode}
+                      onClick={(e) => {
+                        favoriteToggle(card.cardId!);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <ListIcon icon={faBookmark} />
+                    </CardGridFavIcon>
+                  </IconWrapper>
                 </Card>
               </CardWrapper>
             );

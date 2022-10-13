@@ -13,6 +13,9 @@ const ChatroomFlexWrapper = styled.div`
   flex-wrap: nowrap;
   flex-direction: row-reverse;
   z-index: 2;
+  @media (max-width: 450px) {
+    right: 0;
+  }
 `;
 
 const ChatroomsWrapper = () => {

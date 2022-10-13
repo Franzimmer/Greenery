@@ -28,13 +28,18 @@ const Wrapper = styled.div<CardPanelWrapperProps>`
   position: fixed;
   top: 50vh;
   left: 50vw;
-  transtion: 1s;
   transform: translateX(-50%) translateY(-50%);
   z-index: 101;
   display: flex;
+  @media (max-width: 750px) {
+    width: 90vw;
+    max-height: 100vh;
+    flex-direction: column;
+  }
 `;
 interface EditorWrapperProps {
   $mode: "AddPost" | "EditPost" | "AddComment" | "EditComment";
+  $type: string;
 }
 const EditoWrapper = styled.div<EditorWrapperProps>`
   width: 50vw;
@@ -47,6 +52,16 @@ const EditoWrapper = styled.div<EditorWrapperProps>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  @media (max-width: 927px) {
+    height: ${(props) =>
+      props.$mode === "AddComment" || props.$mode === "EditComment"
+        ? "fit-content"
+        : "480px"};
+  }
+  @media (max-width: 750px) {
+    width: 90vw;
+    margin-top: ${(props) => props.$type === "discussion" && "120px"};
+  }
 `;
 const LabelText = styled.div`
   font-size: 16px;
@@ -82,6 +97,12 @@ const CardPanelWrapper = styled.div<CardPanelWrapperProps>`
   padding: ${(props) => (props.$show ? "15px" : 0)};
   background: #fff;
   transition: 1s;
+  @media (max-width: 927px) {
+    height: 480px;
+  }
+  @media (max-width: 750px) {
+    width: ${(props) => (props.$show ? "90vw" : 0)};
+  }
 `;
 const TypeBtnWrapper = styled.div`
   display: flex;
@@ -281,7 +302,7 @@ const TextEditor = ({
   }, [cardList]);
   return (
     <Wrapper $show={cardWrapperDisplay}>
-      <EditoWrapper $mode={editorMode}>
+      <EditoWrapper $mode={editorMode} $type={type}>
         {editorMode === "AddPost" && (
           <TypeBtnWrapper>
             <LabelText>Post Type</LabelText>
@@ -300,7 +321,7 @@ const TextEditor = ({
             {cardList.length > 0 && type === "discussion" && (
               <TypeBtnWrapper>
                 <TypeBtn onClick={switchToDiscussionType}>Discussion</TypeBtn>
-                <TypeBtnActive onClick={() => {}}>Trade</TypeBtnActive>
+                <TypeBtnActive onClick={switchToTradeType}>Trade</TypeBtnActive>
               </TypeBtnWrapper>
             )}
             {cardList.length > 0 && type === "trade" && (

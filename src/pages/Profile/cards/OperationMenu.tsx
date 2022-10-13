@@ -17,6 +17,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 const OperationMenuWrapper = styled.div`
   display: flex;
+  @media (max-width: 530px) {
+    flex-wrap: wrap;
+  }
 `;
 const MenuBtn = styled(IconButton)`
   display: flex;
@@ -32,6 +35,10 @@ const MenuBtn = styled(IconButton)`
   &:hover {
     transform: scale(1.2);
     transition: 0.25s;
+  }
+  @media (max-width: 530px) {
+    width: 26px;
+    height: 26px;
   }
 `;
 const MenuBtnActive = styled(MenuBtn)`
@@ -49,6 +56,7 @@ const MenuBtnDisabled = styled(MenuBtn)`
   &:hover {
     transform: scale(1);
   }
+  align-self: center;
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   background-color: rgba(0, 0, 0, 0);
@@ -65,11 +73,20 @@ const BtnWrapper = styled.div`
   align-items: center;
   margin-right: 12px;
   cursor: pointer;
+  @media (max-width: 960px) {
+    flex-direction: column;
+    margin: 8px;
+  }
 `;
 const IconLabel = styled.span`
   font-size: 14px;
   letter-spacing: 0.5px;
   color: ${(props) => props.theme.colors.main};
+  @media (max-width: 960px) {
+    font-size: 12px;
+    letter-spacing: 0px;
+    text-align: center;
+  }
 `;
 interface OperationMenuProps {
   isSelf: boolean;

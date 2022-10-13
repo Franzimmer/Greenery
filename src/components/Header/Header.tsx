@@ -49,9 +49,28 @@ const HeaderLink = styled(Link)`
     width: 0%;
     transition: 0.5s;
   }
+  @media (max-width: 800px) {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  @media (max-width: 600px) {
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
 `;
 const LogoLink = styled(HeaderLink)`
+  font-weight: 500;
   letter-spacing: 8px;
+  @media (max-width: 800px) {
+    letter-spacing: 4px;
+  }
+  @media (max-width: 600px) {
+    letter-spacing: 1px;
+  }
 `;
 const SideBarBtnWrapper = styled.div`
   background: ${(props) => props.theme.colors.main};
@@ -61,6 +80,12 @@ const SideBarBtnWrapper = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  @media (max-width: 800px) {
+    transform: scale(0.8);
+  }
+  @media (max-width: 600px) {
+    transform: scale(0.7);
+  }
 `;
 const SideBarBtnHint = styled.span`
   position: absolute;

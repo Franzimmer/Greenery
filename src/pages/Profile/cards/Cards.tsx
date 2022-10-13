@@ -40,7 +40,10 @@ export const PlantImg = styled.div<PlantImgProps>`
 export const Text = styled.p`
   margin-bottom: 10px;
 `;
-export const Tag = styled.p`
+interface TagsWrapperProps {
+  $viewMode?: "grid" | "list";
+}
+export const Tag = styled.p<TagsWrapperProps>`
   color: ${(props) => props.theme.colors.main};
   padding: 0px 3px;
   border-radius: 8px;
@@ -54,10 +57,11 @@ export const Tag = styled.p`
     color: #fff;
     transition: 0.25s;
   }
+  @media (max-width: 800px) {
+    word-break: break-word;
+    font-size: 10px;
+  }
 `;
-interface TagsWrapperProps {
-  $viewMode?: "grid" | "list";
-}
 export const TagsWrapper = styled.div<TagsWrapperProps>`
   width: 200px;
   display: flex;
@@ -65,6 +69,7 @@ export const TagsWrapper = styled.div<TagsWrapperProps>`
   margin: ${(props) =>
     props.$viewMode === "list" ? "0px 5px" : "10px 5px 0px 0px"};
   padding: 2px;
+  @media (max-width: );
 `;
 const open = keyframes`
     from {
@@ -337,7 +342,6 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
         setDetailData={setDetailData}
         setDiaryId={setDiaryId}
         setOwnerId={setOwnerId}
-        setEditCardId={setEditCardId}
         switchOneCheck={switchOneCheck}
         setEditorDisplay={setEditorDisplay}
         favoriteToggle={favoriteToggle}

@@ -13,9 +13,12 @@ interface WrapperProps {
   isLoading: boolean;
 }
 const Wrapper = styled.div<WrapperProps>`
-  width: 80vw;
-  margin: 150px auto 50px;
+  margin: 100px 0 50px;
   opacity: ${(props) => (props.isLoading ? "0" : "1")};
+`;
+const ContentWrapper = styled.div`
+  width: 80vw;
+  margin: 50px auto;
 `;
 const Home = () => {
   const { favCards, ownerInfos, diariesExist, isLoading } = useFavCards();
@@ -27,16 +30,18 @@ const Home = () => {
       {isLoading && <PageLoader />}
       <Wrapper isLoading={isLoading}>
         <MainVisual />
-        <Quote />
-        <FeatureSection />
-        <PopularCards
-          ownerInfos={ownerInfos}
-          favCards={favCards}
-          setDetailData={setDetailData}
-          diariesExist={diariesExist}
-          setDiaryId={setDiaryId}
-          setOwnerId={setOwnerId}
-        ></PopularCards>
+        <ContentWrapper>
+          <Quote />
+          <FeatureSection />
+          <PopularCards
+            ownerInfos={ownerInfos}
+            favCards={favCards}
+            setDetailData={setDetailData}
+            diariesExist={diariesExist}
+            setDiaryId={setDiaryId}
+            setOwnerId={setOwnerId}
+          />
+        </ContentWrapper>
         <DetailedCard detailData={detailData!} setDetailData={setDetailData} />
         <DiaryEditor
           ownerId={ownerId}

@@ -40,7 +40,6 @@ interface ForumPostPageProps {
 }
 export const ForumPostPage = styled.div<ForumPostPageProps>`
   width: 80vw;
-  height: 100px;
   border: 1px solid ${(props) => props.theme.colors.button};
   display: ${(props) => (props.$show ? "flex" : "none")};
   align-items: center;
@@ -48,8 +47,15 @@ export const ForumPostPage = styled.div<ForumPostPageProps>`
   padding: 8px 16px;
   cursor: pointer;
   margin: 0px auto;
+  @media (max-width: 500px) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: ceenter;
+    padding: 16px 8px;
+  }
 `;
 export const ForumPostPageInfo = styled.div`
+  padding: 12px;
   font-size: 20px;
   text-decoration: none;
   color: ${(props) => props.theme.colors.button};
@@ -57,6 +63,16 @@ export const ForumPostPageInfo = styled.div`
   ${ForumPostPage}:hover & {
     text-decoration: underline;
     transition: 0.25s;
+  }
+  @media (max-width: 900px) {
+    font-size: 16px;
+  }
+  @media (max-width: 800px) {
+    padding: 8px 0;
+  }
+  @media (max-width: 600px) {
+    font-size: 14px;
+    line-height: 18px;
   }
 `;
 const FlexWrapper = styled.div`
@@ -79,6 +95,10 @@ export const TypeText = styled.p`
   line-height: 20px;
   border: 1px solid ${(props) => props.theme.colors.button};
   border-radius: 10px;
+  @media (max-width: 600px) {
+    font-size: 10px;
+    width: 80px;
+  }
 `;
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   display: none;
@@ -102,6 +122,9 @@ const PostTypeBtn = styled.div`
   align-items: center;
   position: relative;
   cursor: pointer;
+  @media (max-width: 530px) {
+    height: 75px;
+  }
 `;
 const PostMask = styled.div`
   position: absolute;
@@ -122,6 +145,22 @@ const PostTypeText = styled.p`
   text-align: center;
   position: relative;
   z-index: 1;
+  @media (max-width: 930px) {
+    font-size: 30px;
+    letter-spacing: 8px;
+  }
+  @media (max-width: 700px) {
+    font-size: 26px;
+    letter-spacing: 6px;
+  }
+  @media (max-width: 530px) {
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+  @media (max-width: 400px) {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
 `;
 const AddPostBtn = styled(OperationBtn)`
   width: 100px;
@@ -133,6 +172,11 @@ const AddPostBtn = styled(OperationBtn)`
   &:hover {
     transform: scale(1.2);
     transition: 0.25s;
+  }
+  @media (max-width: 500px) {
+    width: 80px;
+    font-size: 14px;
+    padding: 4px;
   }
 `;
 
