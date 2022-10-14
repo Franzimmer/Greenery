@@ -504,9 +504,11 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
                 >
                   <StyledFontAwesomeIcon icon={faBookmark} />
                 </DiaryIconButton>
-                <DiaryIconButton onClick={deleteDairyPage}>
-                  <StyledFontAwesomeIcon icon={faTrashCan} />
-                </DiaryIconButton>
+                {isOwner(ownerId) && (
+                  <DiaryIconButton onClick={deleteDairyPage}>
+                    <StyledFontAwesomeIcon icon={faTrashCan} />
+                  </DiaryIconButton>
+                )}
               </>
             )}
             {mode === "edit" && isOwner(ownerId) && (
