@@ -1,46 +1,59 @@
-# Getting Started with Create React App
+<p align="center">
+  <img src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Greenery_Logo.png?alt=media&token=e0b6ea6c-22aa-400a-9142-026e6053786d"/>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 🌱 Greenery 
 
-## Available Scripts
+A social platform designed for plantaholics, where users can easily manage, 
+record and share their plants' information, photos, and diaries with others.
 
-In the project directory, you can run:
+🪴 [Visit Greenery](https://greenery-8647b.web.app/)
+ 
+### Table of Contents 
+- [Tech](#Tech)
+- [Flowchart](#Flowchart)
+- [Demo](#Demo)
+- [Future Features](#Future)
 
-### `npm start`
+<a name="Tech"></a>
+## Tech
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+**Built with**
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white) ![styled-components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white) ![Firebase](https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black) ![FontAwesome](https://img.shields.io/badge/Font_Awesome-339AF0?style=for-the-badge&logo=fontawesome&logoColor=white)
 
-### `npm test`
+**Libraries**
+- Fabric.js
+- react-calendar
+- Tiptap text editor
+- react-html-parser
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<a name="Flowchart"></a>
+## Flowchart
+<img src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/FlowChart.png?alt=media&token=693bd18a-e0eb-4c1e-83f7-1000e1729fb2" width="75%" />
 
-### `npm run build`
+<a name="Demo"></a>
+## Demo
+- ### Add a new plant card
+<img width="75%" src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Add_Card.gif?alt=media&token=8b26f19b-c32b-407e-9909-8f1f4bba1f70"/>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- ### Add a new page of plant diary
+<img src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Add_Diary.gif?alt=media&token=e8fa3b71-f50b-485c-8c41-d56a93779c64" width="75%"/>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- ### Add a new trade post
+<img width="75%" src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Add_New_Trade_Post.gif?alt=media&token=dc61f63a-ffde-47fe-84c7-f1d32a2a8cec" />
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- ### Add comment below a post and open personal chatroom 
+<img width="75%" src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Add_Comment.gif?alt=media&token=81539a81-8ff8-48db-bd95-39577edc597f" />
 
-### `npm run eject`
+- ### Add plant cards to favorite
+<img width="75%" src="https://firebasestorage.googleapis.com/v0/b/greenery-8647b.appspot.com/o/Add_Fav.gif?alt=media&token=bc559354-e167-4cdd-b1c0-89a56e485878"/>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+<a name="Future"></a>
+## Future Features
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Search Feature: search user, plants or posts
+- Website guiding
+- Plant E-commerce Shop: let plant shop owners can easily have their plant shops opened online! 
+- Customize species database: users can add their own care tips or knowledge in customize species database and apply it to their cards
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
