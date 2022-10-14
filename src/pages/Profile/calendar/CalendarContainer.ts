@@ -28,7 +28,7 @@ const CalenderContainer = styled.div`
 
   /* ~~~ button styles ~~~ */
   .react-calendar__month-view__days__day {
-    height: 60px;
+    height: 50px;
     background-color: ${(props) => props.theme.colors.main};
     border: 0;
     border-radius: 10px;
