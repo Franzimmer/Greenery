@@ -20,19 +20,32 @@ const SectionWrapper = styled.div<SectionWrapperProps>`
   transition: 1s;
 `;
 const FlexWrapper = styled.div`
+  width: 70vw;
   display: flex;
   align-items: center;
-  margin: 12px 0px 18px 0px;
+  margin: 12px auto 18px auto;
 `;
 const StyledFontAwesome = styled(FontAwesomeIcon)`
   width: 36px;
   height: 36px;
   margin-right: 16px;
   color: ${(props) => props.theme.colors.main};
+  @media (max-width: 1000px) {
+    width: 26px;
+    height: 26px;
+  }
+  @media (max-width: 800px) {
+    width: 20px;
+    height: 20px;
+  }
 `;
 const Description = styled.p`
   font-size: 16px;
   letter-spacing: 1px;
+  @media (max-width: 800px) {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
 `;
 interface CalendarAppProps {
   id: string;
@@ -84,7 +97,8 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
           <FlexWrapper>
             <StyledFontAwesome icon={faDroplet} />
             <Description>
-              You have watered {events.watering.join()} on this day !
+              You have watered <strong>{events.watering.join()}</strong> on this
+              day !
             </Description>
           </FlexWrapper>
         )}
@@ -92,7 +106,8 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
           <FlexWrapper>
             <StyledFontAwesome icon={faPersonDigging} />
             <Description>
-              You have fertilized {events.fertilizing.join()} on this day !
+              You have fertilized <strong>{events.fertilizing.join()}</strong>{" "}
+              on this day !
             </Description>
           </FlexWrapper>
         )}
