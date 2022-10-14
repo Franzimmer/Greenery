@@ -373,8 +373,7 @@ const firebase = {
       return this.checkDiaryExistence(id);
     });
     let checkResult: boolean[] = [];
-    Promise.all(promises).then((result) => (checkResult = result));
-    return checkResult;
+    return Promise.all(promises);
   },
   async deleteDairy(diaryId: string) {
     const diaryref = doc(diaries, diaryId);
