@@ -5,7 +5,7 @@ import notifications from "./notificationsReducer";
 import myFollowers from "./myFollowersReducer";
 import popUp from "./popUpReducer";
 import authority from "./authorityReducer";
-import chatroom from "./chatroomReducer";
+import chatrooms from "./chatroomReducer";
 
 const allReducers = combineReducers({
   userInfo,
@@ -14,7 +14,7 @@ const allReducers = combineReducers({
   myFollowers,
   popUp,
   authority,
-  chatroom,
+  chatrooms,
 });
 
 export type RootState = ReturnType<typeof allReducers>;

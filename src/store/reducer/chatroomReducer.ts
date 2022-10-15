@@ -1,23 +1,29 @@
-import { ChatroomType } from "../types/chatroomType";
+import { Chatrooms } from "../types/chatroomType";
 import {
   ChatroomActions,
   ChatroomActionType,
 } from "../actions/chatroomActions";
-
-const chatroom = (state: ChatroomType[] = [], action: ChatroomActionType) => {
+const initialState = {
+  allRooms: [],
+  activeRooms: [],
+};
+const chatrooms = (
+  state: Chatrooms = initialState,
+  action: ChatroomActionType
+) => {
   switch (action.type) {
     case ChatroomActions.SET_CHATROOMDATA: {
-      const newState = action.payload.targetInfos.map((user) => {
-        return { targetInfo: user, chatroomDisplay: false };
-      });
-      return newState;
+      return { ...state, allRooms: action.payload.targetInfos };
     }
     case ChatroomActions.ADD_CHATROOM: {
-      const newRoom = {
-        targetInfo: action.payload.targetInfo,
-        chatroomDisplay: true,
-      };
-      return [...state, newRoom];
+      const currentRooms = [...state.allRooms];
+      const checkTarget = currentRooms.find(
+        (room) => room.userId === action.payload.targetInfo.userId
+      );
+      if (!checkTarget) {
+        currentRooms.push(action.payload.targetInfo);
+        return { ...state, allRooms: currentRooms };
+      } else return state;
     }
     case ChatroomActions.OPEN_CHATROOM: {
       const width =
@@ -26,50 +32,48 @@ const chatroom = (state: ChatroomType[] = [], action: ChatroomActionType) => {
       if (width > 1200) limit = 3;
       else if (width <= 1200 && width > 820) limit = 2;
       else limit = 1;
-      const currentState = [...state];
-      let openCount = 0;
-      currentState.forEach((room) => {
-        if (room.chatroomDisplay) openCount += 1;
-      });
-      if (openCount < limit) {
-        const target = state.find(
-          (room) => room.targetInfo.userId === action.payload.targetId
-        );
-        if (!target) return;
-        const index = state.findIndex(
-          (room) => room.targetInfo.userId === action.payload.targetId
-        ) as number;
-        target!.chatroomDisplay = true;
-        const newState = [...state];
-        newState[index] = target;
-        return newState;
+      const currentActive = [...state.activeRooms];
+      const currentAllRooms = [...state.allRooms];
+      const openCount = currentActive.length;
+      const target = currentAllRooms.find(
+        (room) => room.userId === action.payload.targetId
+      );
+      if (target && currentActive.includes(target)) return state;
+      if (openCount < limit && target) {
+        currentActive.push(target);
+        return { ...state, activeRooms: currentActive };
+      } else if (openCount === limit && target) {
+        const currentActive = [...state.activeRooms];
+        currentActive.shift();
+        currentActive.push(target);
+        return { ...state, activeRooms: currentActive };
       } else return state;
     }
     case ChatroomActions.CLOSE_CHATROOM: {
-      const target = state.find(
-        (room) => room.targetInfo.userId === action.payload.targetId
+      const currentActive = [...state.activeRooms];
+      const target = currentActive.find(
+        (room) => room.userId === action.payload.targetId
       );
       if (!target) return;
-      const index = state.findIndex(
-        (room) => room.targetInfo.userId === action.payload.targetId
+      const index = currentActive.findIndex(
+        (room) => room.userId === action.payload.targetId
       ) as number;
-      target!.chatroomDisplay = false;
-      const newState = [...state];
-      newState[index] = target;
-      return newState;
+      currentActive.splice(index, 1);
+      return { ...state, activeRooms: currentActive };
+    }
+    case ChatroomActions.RESIZE_ROOMS: {
+      const currentActive = [...state.activeRooms];
+      if (currentActive.length === 0) return state;
+      else if (currentActive.length === 3) currentActive.pop();
+      else if (currentActive.length === 2) currentActive.pop();
+      return { ...state, activeRooms: currentActive };
     }
     case ChatroomActions.CLOSE_ALL_ROOMS: {
-      if (state.length > 0) {
-        state.forEach((room: ChatroomType) => {
-          room["chatroomDisplay"] = false;
-        });
-        const newState = [...state];
-        return newState;
-      } else return state;
+      return { ...state, activeRooms: [] };
     }
     default:
       return state;
   }
 };
 
-export default chatroom;
+export default chatrooms;

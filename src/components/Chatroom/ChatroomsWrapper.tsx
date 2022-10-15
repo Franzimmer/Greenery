@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { ChatroomType } from "../../store/types/chatroomType";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
+import { UserInfo } from "../../store/types/userInfoType";
+import { ChatroomActions } from "../../store/actions/chatroomActions";
 import Chatroom from "./Chatroom";
 
 const ChatroomFlexWrapper = styled.div`
@@ -19,22 +20,29 @@ const ChatroomFlexWrapper = styled.div`
 `;
 
 const ChatroomsWrapper = () => {
-  const chatInfos = useSelector(
-    (state: RootState) => state.chatroom
-  ) as ChatroomType[];
-  const [activeChatrooms, setActiveChatrooms] = useState<ChatroomType[]>([]);
+  const dispatch = useDispatch();
+  const chatRooms = useSelector((state: RootState) => state.chatrooms);
+  useEffect(() => {
+    function resizeChatroomsWrapper() {
+      const width = window.innerWidth;
+      if (width <= 1150 && width > 800) {
+        dispatch({
+          type: ChatroomActions.RESIZE_ROOMS,
+        });
+      } else if (width <= 800 && width > 500) {
+        dispatch({
+          type: ChatroomActions.RESIZE_ROOMS,
+        });
+      }
+    }
+    window.addEventListener("resize", () => resizeChatroomsWrapper);
+    return () =>
+      window.removeEventListener("resize", () => resizeChatroomsWrapper);
+  }, []);
   return (
     <ChatroomFlexWrapper>
-      {chatInfos?.map((room) => {
-        if (room.chatroomDisplay)
-          return (
-            <Chatroom
-              key={`${room.targetInfo.userId}_chat`}
-              chatInfo={room}
-              activeChatrooms={activeChatrooms}
-              setActiveChatrooms={setActiveChatrooms}
-            />
-          );
+      {chatRooms?.activeRooms?.map((room: UserInfo) => {
+        return <Chatroom key={`${room.userId}_chat`} chatInfo={room} />;
       })}
     </ChatroomFlexWrapper>
   );

@@ -1,5 +1,5 @@
 import { UserInfo } from "./userInfoType";
-export interface ChatroomType {
-  targetInfo: UserInfo;
-  chatroomDisplay: boolean;
+export interface Chatrooms {
+  allRooms: UserInfo[];
+  activeRooms: UserInfo[];
 }

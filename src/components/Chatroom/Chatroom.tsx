@@ -1,16 +1,9 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
-import { UserInfo } from "../../store/types/userInfoType";
-import { ChatroomType } from "../../store/types/chatroomType";
 import { RootState } from "../../store/reducer/index";
+import { UserInfo } from "../../store/types/userInfoType";
 import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { PopUpActions } from "../../store/actions/popUpActions";
 import { firebase, chatrooms } from "../../utils/firebase";
@@ -21,15 +14,11 @@ export interface message {
   userId: string;
   msg: string;
 }
-interface ChatroomWindowProps {
-  $show: boolean;
-}
-const ChatroomWindow = styled.div<ChatroomWindowProps>`
+const ChatroomWindow = styled.div`
   width: 328px;
   height: 445px;
   margin-right: 20px;
   box-shadow: 5px 2px 10px #aaa;
-  display: ${(props) => (props.$show ? "block" : "none")};
 `;
 const FlexWrapper = styled.div`
   width: 100%;
@@ -111,21 +100,15 @@ const StyledCloseIcon = styled(StyledFontAwesomeIcon)`
   padding: 5px;
 `;
 interface ChatroomProps {
-  chatInfo: ChatroomType;
-  activeChatrooms: ChatroomType[];
-  setActiveChatrooms: Dispatch<SetStateAction<ChatroomType[]>>;
+  chatInfo: UserInfo;
 }
-const Chatroom = ({
-  chatInfo,
-  activeChatrooms,
-  setActiveChatrooms,
-}: ChatroomProps) => {
+const Chatroom = ({ chatInfo }: ChatroomProps) => {
   const dispatch = useDispatch();
   const selfId = useSelector((state: RootState) => state.userInfo.userId);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [msgs, setMsgs] = useState<message[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const usersTarget = [chatInfo.targetInfo.userId, selfId];
+  const usersTarget = [chatInfo.userId, selfId];
   function writeMsg() {
     if (inputRef.current!.value === "") return;
     const data = {
@@ -141,17 +124,17 @@ const Chatroom = ({
       if (querySnapshot.empty) return;
       else {
         querySnapshot.forEach((docData: DocumentData) => {
-          let docRef = doc(chatrooms, docData.id);
+          const docRef = doc(chatrooms, docData.id);
           setMsgs(docData.data().msgs);
           onSnapshot(docRef, async (doc: DocumentData) => {
-            let msgs = doc.data().msgs;
+            const msgs = doc.data().msgs;
             setMsgs(msgs);
           });
         });
       }
     }
     listenToChatroom();
-  }, [chatInfo.chatroomDisplay]);
+  }, []);
   useEffect(() => {
     function scrollToBottom() {
       if (!scrollRef?.current) return;
@@ -164,15 +147,15 @@ const Chatroom = ({
     scrollToBottom();
   }, [msgs]);
   return (
-    <ChatroomWindow $show={chatInfo.chatroomDisplay}>
+    <ChatroomWindow>
       <FlexWrapper>
-        <InfoText>{chatInfo.targetInfo.userName}</InfoText>
+        <InfoText>{chatInfo.userName}</InfoText>
         <ChatBtn
           onClick={() =>
             dispatch({
               type: ChatroomActions.CLOSE_CHATROOM,
               payload: {
-                targetId: chatInfo.targetInfo.userId,
+                targetId: chatInfo.userId,
               },
             })
           }
@@ -199,8 +182,8 @@ const Chatroom = ({
             dispatch({
               type: PopUpActions.SHOW_CARD_SELECT_TRADE,
               payload: {
-                targetId: chatInfo.targetInfo.userId,
-                targetName: chatInfo.targetInfo.userName,
+                targetId: chatInfo.userId,
+                targetName: chatInfo.userName,
               },
             })
           }
