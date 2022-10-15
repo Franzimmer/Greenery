@@ -105,6 +105,7 @@ export const Content = styled.div`
   & p {
     font-size: 18px;
     line-height: 1.25;
+    white-space: pre-wrap;
   }
 
   & h1,
@@ -117,6 +118,9 @@ export const Content = styled.div`
   & ul,
   ol {
     padding: 0 1rem;
+    & li {
+      white-space: pre-wrap;
+    }
   }
 
   & blockquote {
@@ -329,7 +333,7 @@ const ForumPost = () => {
       }
     }
     getPost();
-  }, []);
+  }, [post]);
   useEffect(() => {
     function getCommentAuthorInfo() {
       const authorInfos: Record<string, UserInfo> = {};
