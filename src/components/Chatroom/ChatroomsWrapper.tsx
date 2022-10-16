@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/reducer";
 import { UserInfo } from "../../store/types/userInfoType";
-import { ChatroomActions } from "../../store/actions/chatroomActions";
 import Chatroom from "./Chatroom";
 
 const ChatroomFlexWrapper = styled.div`
@@ -22,23 +21,7 @@ const ChatroomFlexWrapper = styled.div`
 const ChatroomsWrapper = () => {
   const dispatch = useDispatch();
   const chatRooms = useSelector((state: RootState) => state.chatrooms);
-  useEffect(() => {
-    function resizeChatroomsWrapper() {
-      const width = window.innerWidth;
-      if (width <= 1150 && width > 800) {
-        dispatch({
-          type: ChatroomActions.RESIZE_ROOMS,
-        });
-      } else if (width <= 800 && width > 500) {
-        dispatch({
-          type: ChatroomActions.RESIZE_ROOMS,
-        });
-      }
-    }
-    window.addEventListener("resize", () => resizeChatroomsWrapper);
-    return () =>
-      window.removeEventListener("resize", () => resizeChatroomsWrapper);
-  }, []);
+
   return (
     <ChatroomFlexWrapper>
       {chatRooms?.activeRooms?.map((room: UserInfo) => {

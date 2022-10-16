@@ -61,13 +61,6 @@ const chatrooms = (
       currentActive.splice(index, 1);
       return { ...state, activeRooms: currentActive };
     }
-    case ChatroomActions.RESIZE_ROOMS: {
-      const currentActive = [...state.activeRooms];
-      if (currentActive.length === 0) return state;
-      else if (currentActive.length === 3) currentActive.pop();
-      else if (currentActive.length === 2) currentActive.pop();
-      return { ...state, activeRooms: currentActive };
-    }
     case ChatroomActions.CLOSE_ALL_ROOMS: {
       return { ...state, activeRooms: [] };
     }

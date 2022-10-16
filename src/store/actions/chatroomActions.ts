@@ -4,7 +4,6 @@ export enum ChatroomActions {
   ADD_CHATROOM = "SET_CHATROOM",
   OPEN_CHATROOM = "OPEN_CHATROOM",
   CLOSE_CHATROOM = "CLOSE_CHATROOM",
-  RESIZE_ROOMS = "RESIZE_ROOMS",
   CLOSE_ALL_ROOMS = "CLOSE_ALL_ROOMS",
 }
 interface setChatroom {
@@ -31,9 +30,6 @@ interface closeChatroom {
     targetId: string;
   };
 }
-interface closeRoomForWindowResize {
-  type: ChatroomActions.RESIZE_ROOMS;
-}
 interface closeRooms {
   type: ChatroomActions.CLOSE_ALL_ROOMS;
 }
@@ -42,5 +38,4 @@ export type ChatroomActionType =
   | addChatroom
   | openChatroom
   | closeChatroom
-  | closeRoomForWindowResize
   | closeRooms;
