@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import { RootState } from "../../store/reducer";
-import { ChatroomType } from "../../store/types/chatroomType";
 import { ChatroomActions } from "../../store/actions/chatroomActions";
 import { UserInfo } from "../../store/types/userInfoType";
 import { firebase } from "../../utils/firebase";
@@ -58,9 +57,7 @@ const Chatrooms = () => {
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.authority);
   const { userId } = useSelector((state: RootState) => state.userInfo);
-  const chatInfos = useSelector(
-    (state: RootState) => state.chatroom
-  ) as ChatroomType[];
+  const chatrooms = useSelector((state: RootState) => state.chatrooms);
   const [spinDisplay, setSpinDisplay] = useState<boolean>(true);
 
   useEffect(() => {
@@ -97,27 +94,27 @@ const Chatrooms = () => {
     <>
       <ChatroomsWrapper>
         <Spinner $show={spinDisplay} />
-        {chatInfos &&
+        {chatrooms &&
           isLoggedIn &&
           !spinDisplay &&
-          chatInfos?.length !== 0 &&
-          chatInfos?.map((room) => {
+          chatrooms.allRooms?.length !== 0 &&
+          chatrooms.allRooms?.map((room) => {
             return (
               <Person
-                key={`${room.targetInfo?.userId}_chat`}
+                key={`${room?.userId}_chat`}
                 onClick={() =>
                   dispatch({
                     type: ChatroomActions.OPEN_CHATROOM,
-                    payload: { targetId: room.targetInfo.userId },
+                    payload: { targetId: room.userId },
                   })
                 }
               >
-                <PersonPhoto $path={room.targetInfo?.photoUrl} />
-                <ChatroomText>{room.targetInfo?.userName}</ChatroomText>
+                <PersonPhoto $path={room?.photoUrl} />
+                <ChatroomText>{room?.userName}</ChatroomText>
               </Person>
             );
           })}
-        {chatInfos?.length === 0 && !spinDisplay && (
+        {chatrooms?.allRooms?.length === 0 && !spinDisplay && (
           <NoSidebarDataText>No chatroom history</NoSidebarDataText>
         )}
       </ChatroomsWrapper>

@@ -22,14 +22,12 @@ interface openChatroom {
   type: ChatroomActions.OPEN_CHATROOM;
   payload: {
     targetId: string;
-    chatroomDisplay: boolean;
   };
 }
 interface closeChatroom {
   type: ChatroomActions.CLOSE_CHATROOM;
   payload: {
     targetId: string;
-    chatroomDisplay: boolean;
   };
 }
 interface closeRooms {

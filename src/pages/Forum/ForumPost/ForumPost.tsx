@@ -105,6 +105,7 @@ export const Content = styled.div`
   & p {
     font-size: 18px;
     line-height: 1.25;
+    white-space: pre-wrap;
   }
 
   & h1,
@@ -117,6 +118,9 @@ export const Content = styled.div`
   & ul,
   ol {
     padding: 0 1rem;
+    & li {
+      white-space: pre-wrap;
+    }
   }
 
   & blockquote {
@@ -290,14 +294,23 @@ const ForumPost = () => {
     const users = [userInfo.userId, targetId];
     const getUserInfo = firebase.getUserInfo(targetId);
     const checkRoom = firebase.checkChatroom(users);
-    Promise.all([getUserInfo, checkRoom]).then((result) =>
-      dispatch({
-        type: ChatroomActions.ADD_CHATROOM,
-        payload: {
-          targetInfo: result[0].data(),
-        },
-      })
-    );
+    Promise.all([getUserInfo, checkRoom])
+      .then((result) =>
+        dispatch({
+          type: ChatroomActions.ADD_CHATROOM,
+          payload: {
+            targetInfo: result[0].data(),
+          },
+        })
+      )
+      .then(() =>
+        dispatch({
+          type: ChatroomActions.OPEN_CHATROOM,
+          payload: {
+            targetId,
+          },
+        })
+      );
   }
   useEffect(() => {
     async function getPost() {
@@ -329,7 +342,7 @@ const ForumPost = () => {
       }
     }
     getPost();
-  }, []);
+  }, [post]);
   useEffect(() => {
     function getCommentAuthorInfo() {
       const authorInfos: Record<string, UserInfo> = {};
