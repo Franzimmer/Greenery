@@ -294,14 +294,23 @@ const ForumPost = () => {
     const users = [userInfo.userId, targetId];
     const getUserInfo = firebase.getUserInfo(targetId);
     const checkRoom = firebase.checkChatroom(users);
-    Promise.all([getUserInfo, checkRoom]).then((result) =>
-      dispatch({
-        type: ChatroomActions.ADD_CHATROOM,
-        payload: {
-          targetInfo: result[0].data(),
-        },
-      })
-    );
+    Promise.all([getUserInfo, checkRoom])
+      .then((result) =>
+        dispatch({
+          type: ChatroomActions.ADD_CHATROOM,
+          payload: {
+            targetInfo: result[0].data(),
+          },
+        })
+      )
+      .then(() =>
+        dispatch({
+          type: ChatroomActions.OPEN_CHATROOM,
+          payload: {
+            targetId,
+          },
+        })
+      );
   }
   useEffect(() => {
     async function getPost() {
