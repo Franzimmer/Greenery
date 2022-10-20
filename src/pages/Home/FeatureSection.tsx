@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
-import feature from "./feature.jpeg";
+import feature from "./assets/feature.jpeg";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { MainDescription } from "./MainVisual";
