@@ -25,57 +25,13 @@ import { AuthorityActions } from "./store/actions/authorityActions";
 import { MyFollowersActions } from "./store/actions/myFollowersActions";
 import { NotificationActions } from "./store/actions/notificationActions";
 import theme from "./theme";
-import MontserratSemiBold from "./assets/fonts/Montserrat-SemiBold.ttf";
-import MontserratMedium from "./assets/fonts/Montserrat-Medium.ttf";
-import MontserratMediumItalic from "./assets/fonts/Montserrat-MediumItalic.ttf";
-import MontserratRegular from "./assets/fonts/Montserrat-Regular.ttf";
-import MontserratRegularItalic from "./assets/fonts/Montserrat-Italic.ttf";
-import MontserratExtraLight from "./assets/fonts/Montserrat-ExtraLight.ttf";
-import MontserratExtraLightItalic from "./assets/fonts/Montserrat-ExtraLightItalic.ttf";
 const GlobalStyle = createGlobalStyle`
-@font-face {
-    font-family: Montserrat;
-    src: url(${MontserratSemiBold}) format('truetype');
-    font-weight: 600;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratMedium}) format('truetype');
-    font-weight: 500;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratMediumItalic}) format('truetype');
-    font-weight: 500;
-    font-style: italic;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratRegular}) format('truetype');
-    font-weight: 400;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratRegularItalic}) format('truetype');
-    font-weight: 400;
-    font-style: italic;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratExtraLight}) format('truetype');
-    font-weight: 200;
-  }
-  @font-face {
-    font-family: Montserrat;
-    src: url(${MontserratExtraLightItalic}) format('truetype');
-    font-weight: 200;
-    font-style: italic;
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,500;0,600;1,200;1,400;1,500&display=swap');
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Montserrat;
+    font-family: "Montserrat";
   }
   body {
     width: 100%;
