@@ -17,9 +17,9 @@ import {
   NoDataBtn,
 } from "../../components/GlobalStyles/noDataLayout";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import discuss from "./discuss.jpeg";
-import all from "./all.jpeg";
-import trade from "./trade.jpeg";
+import discuss from "./assets/discuss.jpeg";
+import all from "./assets/all.jpeg";
+import trade from "./assets/trade.jpeg";
 interface WrapperProps {
   $isLoading: boolean;
 }

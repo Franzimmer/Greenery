@@ -1,11 +1,11 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import rubber from "./rubber.png";
-import eucari from "./eucari.png";
-import main from "./main.webp";
-import taquila from "./taquila.png";
-import coconut from "./coconut.png";
+import rubber from "./assets/rubber.png";
+import eucari from "./assets/eucari.png";
+import main from "./assets/main.webp";
+import taquila from "./assets/taquila.png";
+import coconut from "./assets/coconut.png";
 import { faAnglesDown } from "@fortawesome/free-solid-svg-icons";
 const showOpacity = keyframes`
   from {

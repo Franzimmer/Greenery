@@ -39,7 +39,7 @@ import {
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import spinner from "../../assets/spinner.png";
-import forward from "./bring-to-front.png";
+import forward from "./assets/bring-to-front.png";
 
 const Wrapper = styled.div`
   display: flex;
