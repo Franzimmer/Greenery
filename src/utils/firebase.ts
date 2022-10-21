@@ -20,6 +20,7 @@ import {
   orderBy,
   limit,
   addDoc,
+  documentId,
 } from "firebase/firestore";
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { getStorage } from "firebase/storage";
@@ -253,7 +254,7 @@ const firebase = {
     const querySnapshot = await getDocs(q);
     return querySnapshot;
   },
-  //cards coolection
+  //cards collection
   async changePlantOwner(cardId: string, newOwnerId: string) {
     const docRef = doc(cards, cardId);
     await updateDoc(docRef, { ownerId: newOwnerId });
@@ -362,18 +363,10 @@ const firebase = {
     const docRef = doc(diaries, diaryId);
     await setDoc(docRef, { pages: currentDiaries });
   },
-  async checkDiaryExistence(id: string) {
-    const docRef = doc(diaries, id);
-    const docSnapshot = await getDoc(docRef);
-    if (docSnapshot.exists()) return true;
-    else return false;
-  },
-  async checkDiariesExistence(idList: string[]) {
-    const promises = idList.map((id) => {
-      return this.checkDiaryExistence(id);
-    });
-    let checkResult: boolean[] = [];
-    return Promise.all(promises);
+  async getDiaries(idList: string[]) {
+    const q = query(diaries, where(documentId(), "in", idList));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
   },
   async deleteDairy(diaryId: string) {
     const diaryref = doc(diaries, diaryId);

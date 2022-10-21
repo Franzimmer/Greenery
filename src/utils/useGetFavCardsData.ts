@@ -12,7 +12,14 @@ const useGetFavCardsData = (
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     async function checkDiary(favCardsIds: string[]) {
-      const diariesCheck = await firebase.checkDiariesExistence(favCardsIds);
+      const diaries = await firebase.getDiaries(favCardsIds);
+      const diariesExist: string[] = [];
+      diaries.forEach((diary) => {
+        diariesExist.push(diary.id);
+      });
+      const diariesCheck = favCardsIds.map((cardId) => {
+        return diariesExist.includes(cardId);
+      });
       setDiariesExist(diariesCheck);
     }
     async function getOwnerData(ownerIds: string[]) {
