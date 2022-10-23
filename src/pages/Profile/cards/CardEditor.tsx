@@ -263,8 +263,8 @@ const CardEditor = ({
       setSearchActive(-1);
       return;
     }
-    let results: string[] = [];
-    let targetString = speciesRef.current!.value.toLowerCase();
+    const results: string[] = [];
+    const targetString = speciesRef.current!.value.toLowerCase();
     speciesContents.forEach((speciesName) => {
       if (speciesName.startsWith(targetString)) results.push(speciesName);
     });
@@ -308,8 +308,7 @@ const CardEditor = ({
     }
   }
   function addTag() {
-    if (!tagRef.current) return;
-    if (tagRef.current.value === "") return;
+    if (!tagRef.current || tagRef.current.value === "") return;
     if (tags.includes(tagRef.current.value)) return;
     const currentTags = [...tags];
     currentTags.push(tagRef.current.value);
@@ -322,8 +321,7 @@ const CardEditor = ({
     setTags(newTags);
   }
   async function uploadFile() {
-    if (!imageRef.current) return null;
-    if (imageRef.current!.value === "") return null;
+    if (!imageRef.current || imageRef.current!.value === "") return null;
     const file = imageRef.current!.files![0];
     const dowloadLink = await firebase.uploadFile(file);
     return dowloadLink;
@@ -416,23 +414,19 @@ const CardEditor = ({
   }
   useEffect(() => {
     if (!editCardId) return;
-    else {
-      const data = cardList.find((card) => card.cardId === editCardId);
-      setPreviewLink(data!.plantPhoto || null);
-      setTags(data?.tags || []);
-      nameRef.current!.value = data!.plantName;
-      speciesRef.current!.value = data!.species;
-      waterRef.current!.value = data?.waterPref ?? "";
-      lightRef.current!.value = data?.lightPref ?? "";
-      toxicityRef.current!.value = data?.toxicity ?? "";
-      if (data?.birthday)
-        birthdayRef.current!.value = unixTimeToString(data?.birthday);
-    }
+    const data = cardList.find((card) => card.cardId === editCardId);
+    setPreviewLink(data!.plantPhoto || null);
+    setTags(data?.tags || []);
+    nameRef.current!.value = data!.plantName;
+    speciesRef.current!.value = data!.species;
+    waterRef.current!.value = data?.waterPref ?? "";
+    lightRef.current!.value = data?.lightPref ?? "";
+    toxicityRef.current!.value = data?.toxicity ?? "";
+    if (data?.birthday)
+      birthdayRef.current!.value = unixTimeToString(data?.birthday);
   }, [editCardId]);
   useEffect(() => {
-    if (activeRef.current) {
-      activeRef.current.scrollIntoView();
-    }
+    if (activeRef.current) activeRef.current.scrollIntoView();
   }, [searchActive]);
   return editCardId || editorDisplay ? (
     <CardEditorWrapper>

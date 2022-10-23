@@ -25,6 +25,7 @@ const Home = () => {
   const [detailData, setDetailData] = useState<PlantCard>();
   const [diaryId, setDiaryId] = useState<string | null>(null);
   const [ownerId, setOwnerId] = useState<string>("");
+
   return (
     <>
       {isLoading && <PageLoader />}

@@ -122,16 +122,14 @@ const Chatroom = ({ chatInfo }: ChatroomProps) => {
     async function listenToChatroom() {
       const querySnapshot = await firebase.findChatroom(usersTarget);
       if (querySnapshot.empty) return;
-      else {
-        querySnapshot.forEach((docData: DocumentData) => {
-          const docRef = doc(chatrooms, docData.id);
-          setMsgs(docData.data().msgs);
-          onSnapshot(docRef, async (doc: DocumentData) => {
-            const msgs = doc.data().msgs;
-            setMsgs(msgs);
-          });
+      querySnapshot.forEach((docData: DocumentData) => {
+        const docRef = doc(chatrooms, docData.id);
+        setMsgs(docData.data().msgs);
+        onSnapshot(docRef, (doc: DocumentData) => {
+          const msgs = doc.data().msgs;
+          setMsgs(msgs);
         });
-      }
+      });
     }
     listenToChatroom();
   }, []);

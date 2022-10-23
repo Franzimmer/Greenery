@@ -266,10 +266,8 @@ const UserInfoSection = ({ id }: UserInfoProps) => {
     getUserInfo();
   }, [id, isSelf]);
   useEffect(() => {
-    if (id && isSelf) {
-      setUserData(userInfo);
-    }
-  }, [userInfo, isSelf]);
+    if (id && isSelf) setUserData(userInfo);
+  }, [id, userInfo, isSelf]);
   useEffect(() => {
     if (showNameInput) nameRef.current?.focus();
   }, [showNameInput]);
