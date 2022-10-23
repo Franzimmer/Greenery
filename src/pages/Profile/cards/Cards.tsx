@@ -282,8 +282,15 @@ const Cards = ({ id, isLoading, cardsDisplay }: CardsGridProps) => {
           cardsIds.push(doc.data().cardId!);
         });
       }
-      const result = await firebase.checkDiariesExistence(cardsIds);
-      setDiariesExist(result);
+      const diaries = await firebase.getDiaries(cardsIds);
+      const diariesExist: string[] = [];
+      diaries.forEach((diary) => {
+        diariesExist.push(diary.id);
+      });
+      const diariesCheck = cardsIds.map((cardId) => {
+        return diariesExist.includes(cardId);
+      });
+      setDiariesExist(diariesCheck);
       setCardItems(cards);
       setCheckList(checkboxes);
     }

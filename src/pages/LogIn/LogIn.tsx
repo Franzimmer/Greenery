@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import login from "./login.jpeg";
+import login from "./assets/login.jpeg";
 const Wrapper = styled.div`
   display: flex;
 `;

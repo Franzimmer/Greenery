@@ -81,22 +81,19 @@ const CalendarApp = ({ id, $show }: CalendarAppProps) => {
     if (type === "water" && operation === "show") {
       setWaterEvent(events.watering);
       setWaterEllipsis("close");
-      return;
     } else if (type === "fertilizer" && operation === "show") {
       setFertilizingEvent(events.fertilizing);
       setFertilizeEllipsis("close");
-      return;
     } else if (type === "water" && operation === "close") {
       const newEventList = events.watering.slice(0, 3);
       setWaterEvent(newEventList);
       setWaterEllipsis("show");
-      return;
     } else if (type === "fertilizer" && operation === "close") {
       const newEventList = events.fertilizing.slice(0, 3);
       setFertilizingEvent(newEventList);
       setFertilizeEllipsis("show");
-      return;
     }
+    return;
   }
   useEffect(() => {
     async function getEventData() {

@@ -19,7 +19,7 @@ const Favorites = ({ id }: FavoritesProps) => {
   const [ownerId, setOwnerId] = useState<string>("");
   const { favCards, ownerInfos, diariesExist, isLoading } = useFavCards();
   function findOwnerName(ownerId: string) {
-    let target = ownerInfos.find((owner) => owner.userId === ownerId);
+    const target = ownerInfos.find((owner) => owner.userId === ownerId);
     return target?.userName;
   }
   return (

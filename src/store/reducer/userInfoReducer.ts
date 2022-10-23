@@ -31,11 +31,9 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_FOLLOW_LIST: {
-      const currentFollowList = [...state.followList];
-      currentFollowList?.push(action.payload.targetId);
       return {
         ...state,
-        followList: currentFollowList,
+        followList: [...state.followList, action.payload.targetId],
       };
     }
     case UserInfoActions.REMOVE_FOLLOW_LIST: {
@@ -65,11 +63,9 @@ const userInfo = (state = initialUserInfo, action: userInfoActionsTypes) => {
       };
     }
     case UserInfoActions.ADD_FAVORITE_PLANT: {
-      const newFavPlants = [...state.favoriteCards];
-      newFavPlants.push(action.payload.cardId);
       return {
         ...state,
-        favoriteCards: newFavPlants,
+        favoriteCards: [...state.favoriteCards, action.payload.cardId],
       };
     }
     case UserInfoActions.DELETE_FAVORITE_PLANT: {

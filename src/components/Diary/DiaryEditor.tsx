@@ -39,7 +39,7 @@ import {
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import spinner from "../../assets/spinner.png";
-import forward from "./bring-to-front.png";
+import forward from "./assets/bring-to-front.png";
 
 const Wrapper = styled.div`
   display: flex;
@@ -284,8 +284,7 @@ const DiaryEditor = ({ ownerId, diaryId, setDiaryId }: DiaryEditorProps) => {
     canvas?.renderAll();
   }
   async function addImage() {
-    if (!fileRef.current) return;
-    if (!fileRef.current.files!.length) return;
+    if (!fileRef.current || !fileRef.current.files!.length) return;
     const file = fileRef.current!.files![0];
     const fileLink = await firebase.uploadFile(file);
     fabric.Image.fromURL(fileLink!, function(oImg) {
