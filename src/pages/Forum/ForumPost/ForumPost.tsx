@@ -344,7 +344,7 @@ const ForumPost = () => {
     getPost();
   }, [post]);
   useEffect(() => {
-    function getCommentAuthorInfo() {
+    async function getCommentAuthorInfo() {
       const authorInfos: Record<string, UserInfo> = {};
       if (!comments) return;
       const authorIdList: string[] = [];
@@ -352,17 +352,12 @@ const ForumPost = () => {
         if (!authorIdList.includes(comment.authorId))
           authorIdList.push(comment.authorId);
       });
-      const promises = authorIdList.map(async (id) => {
-        return firebase.getUserInfo(id);
+      const querySnapshot = await firebase.getUsers(authorIdList);
+      querySnapshot?.forEach((doc) => {
+        const userData = doc.data() as UserInfo;
+        authorInfos[userData.userId] = userData;
       });
-      Promise.all(promises)
-        .then((data) =>
-          data.forEach((promise) => {
-            const userData = promise.data() as UserInfo;
-            authorInfos[userData.userId] = userData;
-          })
-        )
-        .then(() => setCommentAuthorInfos(authorInfos));
+      setCommentAuthorInfos(authorInfos);
     }
     getCommentAuthorInfo();
   }, [comments]);

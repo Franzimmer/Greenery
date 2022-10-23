@@ -27,7 +27,7 @@ const useFavCards = () => {
       }
       const queryData = await firebase.getCardsByIds(favorites);
       if (queryData?.empty || !queryData) return;
-      else setQueryData(queryData);
+      setQueryData(queryData);
     }
     getUserFavorites();
   }, [id, favoriteCards]);

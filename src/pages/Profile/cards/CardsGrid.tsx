@@ -207,7 +207,7 @@ const CardsGrid = ({
                       type="checkbox"
                       $mode={viewMode}
                       checked={checkList[card.cardId!]}
-                      onClick={(e) => {
+                      onChange={(e) => {
                         switchOneCheck(card.cardId!);
                         e.stopPropagation();
                       }}
