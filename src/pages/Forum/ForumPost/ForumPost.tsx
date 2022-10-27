@@ -396,6 +396,7 @@ const ForumPost = () => {
                 <CommentSection
                   post={post}
                   comments={comments}
+                  isLoggedIn={isLoggedIn}
                   userInfo={userInfo}
                   comment={comment}
                   commentAuthorInfos={commentAuthorInfos}
