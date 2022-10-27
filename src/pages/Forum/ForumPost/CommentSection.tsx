@@ -23,6 +23,7 @@ import { faTrashCan, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 interface CommentSectionProps {
   post: Post | undefined;
   userInfo: UserInfo;
+  isLoggedIn: boolean;
   comment: Comment;
   comments: Comment[];
   commentAuthorInfos: Record<string, UserInfo>;
@@ -38,6 +39,7 @@ interface CommentSectionProps {
 const CommentSection = ({
   post,
   userInfo,
+  isLoggedIn,
   comment,
   comments,
   commentAuthorInfos,
@@ -77,7 +79,7 @@ const CommentSection = ({
         <AuthorName>
           {commentAuthorInfos[comment.authorId]?.userName}
         </AuthorName>
-        {userInfo.userId !== comment.authorId && (
+        {userInfo.userId !== comment.authorId && isLoggedIn && (
           <OpenChatRoomBtn onClick={() => openChatroom(comment.authorId)}>
             Open Chatroom
           </OpenChatRoomBtn>
