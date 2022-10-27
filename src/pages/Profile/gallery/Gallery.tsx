@@ -126,7 +126,9 @@ interface GalleryProps {
 const Gallery = ({ id }: GalleryProps) => {
   const dispatch = useDispatch();
   const alertDispatcher = useAlertDispatcher();
-  const { isSelf } = useSelector((state: RootState) => state.authority);
+  const { isSelf, isLoggedIn } = useSelector(
+    (state: RootState) => state.authority
+  );
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const mediaRef = useRef<HTMLInputElement>(null);
   const [media, setMedia] = useState<string[]>([]);
@@ -222,25 +224,31 @@ const Gallery = ({ id }: GalleryProps) => {
                   {index % 3 === 1 && (
                     <SmallPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn onClick={() => deleteMedia(asset)}>
-                        <StyledFontAwesome icon={faTrashCan} />
-                      </DeleteBtn>
+                      {isLoggedIn && isSelf && (
+                        <DeleteBtn onClick={() => deleteMedia(asset)}>
+                          <StyledFontAwesome icon={faTrashCan} />
+                        </DeleteBtn>
+                      )}
                     </SmallPin>
                   )}
                   {index % 3 === 2 && (
                     <MediumPin $path={asset}>
                       <PinMask />
-                      <DeleteBtn onClick={() => deleteMedia(asset)}>
-                        <StyledFontAwesome icon={faTrashCan} />
-                      </DeleteBtn>
+                      {isLoggedIn && isSelf && (
+                        <DeleteBtn onClick={() => deleteMedia(asset)}>
+                          <StyledFontAwesome icon={faTrashCan} />
+                        </DeleteBtn>
+                      )}
                     </MediumPin>
                   )}
                   {index % 3 === 0 && (
                     <LargePin $path={asset}>
                       <PinMask />
-                      <DeleteBtn onClick={() => deleteMedia(asset)}>
-                        <StyledFontAwesome icon={faTrashCan} />
-                      </DeleteBtn>
+                      {isLoggedIn && isSelf && (
+                        <DeleteBtn onClick={() => deleteMedia(asset)}>
+                          <StyledFontAwesome icon={faTrashCan} />
+                        </DeleteBtn>
+                      )}
                     </LargePin>
                   )}
                 </Fragment>

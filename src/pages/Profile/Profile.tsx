@@ -36,6 +36,7 @@ export const defaultState = {
 };
 const Profile = () => {
   const { id } = useParams();
+
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [tabDisplay, setTabDisplay] = useState<TabDisplayType>(defaultState);
